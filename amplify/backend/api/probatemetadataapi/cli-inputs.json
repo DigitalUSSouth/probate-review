@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/record/{docid}": {
+      "name": "/record/{docid}",
+      "lambdaFunction": "getProbateMetadata",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

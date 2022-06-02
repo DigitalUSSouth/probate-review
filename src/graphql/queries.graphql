@@ -1,0 +1,259 @@
+# this is an auto generated file. This will be overwritten
+query GetProbateRecord($id: ID!) {
+  getProbateRecord(id: $id) {
+    id
+    title
+    deceased {
+      id
+      name
+      gender
+      createdAt
+      updatedAt
+    }
+    filing {
+      id
+      state
+      county
+      date
+      filer
+      probate {
+        id
+        title
+        appraiser
+        witness
+        createdAt
+        updatedAt
+        probateRecordDeceasedId
+        probateRecordFilingId
+      }
+      createdAt
+      updatedAt
+      filingProbateId
+    }
+    appraiser
+    witness
+    items {
+      items {
+        id
+        title
+        description
+        category
+        subcategory
+        createdAt
+        updatedAt
+        probateRecordItemsId
+      }
+      nextToken
+    }
+    createdAt
+    updatedAt
+    probateRecordDeceasedId
+    probateRecordFilingId
+  }
+}
+query ListProbateRecords(
+  $filter: ModelProbateRecordFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listProbateRecords(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      title
+      deceased {
+        id
+        name
+        gender
+        createdAt
+        updatedAt
+      }
+      filing {
+        id
+        state
+        county
+        date
+        filer
+        createdAt
+        updatedAt
+        filingProbateId
+      }
+      appraiser
+      witness
+      items {
+        nextToken
+      }
+      createdAt
+      updatedAt
+      probateRecordDeceasedId
+      probateRecordFilingId
+    }
+    nextToken
+  }
+}
+query GetFiling($id: ID!) {
+  getFiling(id: $id) {
+    id
+    state
+    county
+    date
+    filer
+    probate {
+      id
+      title
+      deceased {
+        id
+        name
+        gender
+        createdAt
+        updatedAt
+      }
+      filing {
+        id
+        state
+        county
+        date
+        filer
+        createdAt
+        updatedAt
+        filingProbateId
+      }
+      appraiser
+      witness
+      items {
+        nextToken
+      }
+      createdAt
+      updatedAt
+      probateRecordDeceasedId
+      probateRecordFilingId
+    }
+    createdAt
+    updatedAt
+    filingProbateId
+  }
+}
+query ListFilings(
+  $filter: ModelFilingFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listFilings(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      state
+      county
+      date
+      filer
+      probate {
+        id
+        title
+        appraiser
+        witness
+        createdAt
+        updatedAt
+        probateRecordDeceasedId
+        probateRecordFilingId
+      }
+      createdAt
+      updatedAt
+      filingProbateId
+    }
+    nextToken
+  }
+}
+query GetDeceased($id: ID!) {
+  getDeceased(id: $id) {
+    id
+    name
+    gender
+    createdAt
+    updatedAt
+  }
+}
+query ListDeceaseds(
+  $filter: ModelDeceasedFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listDeceaseds(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      name
+      gender
+      createdAt
+      updatedAt
+    }
+    nextToken
+  }
+}
+query GetLineItem($id: ID!) {
+  getLineItem(id: $id) {
+    id
+    title
+    description
+    probate {
+      id
+      title
+      deceased {
+        id
+        name
+        gender
+        createdAt
+        updatedAt
+      }
+      filing {
+        id
+        state
+        county
+        date
+        filer
+        createdAt
+        updatedAt
+        filingProbateId
+      }
+      appraiser
+      witness
+      items {
+        nextToken
+      }
+      createdAt
+      updatedAt
+      probateRecordDeceasedId
+      probateRecordFilingId
+    }
+    category
+    subcategory
+    createdAt
+    updatedAt
+    probateRecordItemsId
+  }
+}
+query ListLineItems(
+  $filter: ModelLineItemFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listLineItems(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      title
+      description
+      probate {
+        id
+        title
+        appraiser
+        witness
+        createdAt
+        updatedAt
+        probateRecordDeceasedId
+        probateRecordFilingId
+      }
+      category
+      subcategory
+      createdAt
+      updatedAt
+      probateRecordItemsId
+    }
+    nextToken
+  }
+}

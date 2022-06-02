@@ -1,0 +1,8 @@
+{
+    "/records": {
+        "target": "https://dcbi1yud8a.execute-api.us-east-1.amazonaws.com",
+        "secure": false,
+        "changeOrigin": true,
+        "logLevel": "debug"
+    }
+}

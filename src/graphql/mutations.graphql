@@ -1,0 +1,472 @@
+# this is an auto generated file. This will be overwritten
+mutation CreateProbateRecord(
+  $input: CreateProbateRecordInput!
+  $condition: ModelProbateRecordConditionInput
+) {
+  createProbateRecord(input: $input, condition: $condition) {
+    id
+    title
+    deceased {
+      id
+      name
+      gender
+      createdAt
+      updatedAt
+    }
+    filing {
+      id
+      state
+      county
+      date
+      filer
+      probate {
+        id
+        title
+        appraiser
+        witness
+        createdAt
+        updatedAt
+        probateRecordDeceasedId
+        probateRecordFilingId
+      }
+      createdAt
+      updatedAt
+      filingProbateId
+    }
+    appraiser
+    witness
+    items {
+      items {
+        id
+        title
+        description
+        category
+        subcategory
+        createdAt
+        updatedAt
+        probateRecordItemsId
+      }
+      nextToken
+    }
+    createdAt
+    updatedAt
+    probateRecordDeceasedId
+    probateRecordFilingId
+  }
+}
+mutation UpdateProbateRecord(
+  $input: UpdateProbateRecordInput!
+  $condition: ModelProbateRecordConditionInput
+) {
+  updateProbateRecord(input: $input, condition: $condition) {
+    id
+    title
+    deceased {
+      id
+      name
+      gender
+      createdAt
+      updatedAt
+    }
+    filing {
+      id
+      state
+      county
+      date
+      filer
+      probate {
+        id
+        title
+        appraiser
+        witness
+        createdAt
+        updatedAt
+        probateRecordDeceasedId
+        probateRecordFilingId
+      }
+      createdAt
+      updatedAt
+      filingProbateId
+    }
+    appraiser
+    witness
+    items {
+      items {
+        id
+        title
+        description
+        category
+        subcategory
+        createdAt
+        updatedAt
+        probateRecordItemsId
+      }
+      nextToken
+    }
+    createdAt
+    updatedAt
+    probateRecordDeceasedId
+    probateRecordFilingId
+  }
+}
+mutation DeleteProbateRecord(
+  $input: DeleteProbateRecordInput!
+  $condition: ModelProbateRecordConditionInput
+) {
+  deleteProbateRecord(input: $input, condition: $condition) {
+    id
+    title
+    deceased {
+      id
+      name
+      gender
+      createdAt
+      updatedAt
+    }
+    filing {
+      id
+      state
+      county
+      date
+      filer
+      probate {
+        id
+        title
+        appraiser
+        witness
+        createdAt
+        updatedAt
+        probateRecordDeceasedId
+        probateRecordFilingId
+      }
+      createdAt
+      updatedAt
+      filingProbateId
+    }
+    appraiser
+    witness
+    items {
+      items {
+        id
+        title
+        description
+        category
+        subcategory
+        createdAt
+        updatedAt
+        probateRecordItemsId
+      }
+      nextToken
+    }
+    createdAt
+    updatedAt
+    probateRecordDeceasedId
+    probateRecordFilingId
+  }
+}
+mutation CreateFiling(
+  $input: CreateFilingInput!
+  $condition: ModelFilingConditionInput
+) {
+  createFiling(input: $input, condition: $condition) {
+    id
+    state
+    county
+    date
+    filer
+    probate {
+      id
+      title
+      deceased {
+        id
+        name
+        gender
+        createdAt
+        updatedAt
+      }
+      filing {
+        id
+        state
+        county
+        date
+        filer
+        createdAt
+        updatedAt
+        filingProbateId
+      }
+      appraiser
+      witness
+      items {
+        nextToken
+      }
+      createdAt
+      updatedAt
+      probateRecordDeceasedId
+      probateRecordFilingId
+    }
+    createdAt
+    updatedAt
+    filingProbateId
+  }
+}
+mutation UpdateFiling(
+  $input: UpdateFilingInput!
+  $condition: ModelFilingConditionInput
+) {
+  updateFiling(input: $input, condition: $condition) {
+    id
+    state
+    county
+    date
+    filer
+    probate {
+      id
+      title
+      deceased {
+        id
+        name
+        gender
+        createdAt
+        updatedAt
+      }
+      filing {
+        id
+        state
+        county
+        date
+        filer
+        createdAt
+        updatedAt
+        filingProbateId
+      }
+      appraiser
+      witness
+      items {
+        nextToken
+      }
+      createdAt
+      updatedAt
+      probateRecordDeceasedId
+      probateRecordFilingId
+    }
+    createdAt
+    updatedAt
+    filingProbateId
+  }
+}
+mutation DeleteFiling(
+  $input: DeleteFilingInput!
+  $condition: ModelFilingConditionInput
+) {
+  deleteFiling(input: $input, condition: $condition) {
+    id
+    state
+    county
+    date
+    filer
+    probate {
+      id
+      title
+      deceased {
+        id
+        name
+        gender
+        createdAt
+        updatedAt
+      }
+      filing {
+        id
+        state
+        county
+        date
+        filer
+        createdAt
+        updatedAt
+        filingProbateId
+      }
+      appraiser
+      witness
+      items {
+        nextToken
+      }
+      createdAt
+      updatedAt
+      probateRecordDeceasedId
+      probateRecordFilingId
+    }
+    createdAt
+    updatedAt
+    filingProbateId
+  }
+}
+mutation CreateDeceased(
+  $input: CreateDeceasedInput!
+  $condition: ModelDeceasedConditionInput
+) {
+  createDeceased(input: $input, condition: $condition) {
+    id
+    name
+    gender
+    createdAt
+    updatedAt
+  }
+}
+mutation UpdateDeceased(
+  $input: UpdateDeceasedInput!
+  $condition: ModelDeceasedConditionInput
+) {
+  updateDeceased(input: $input, condition: $condition) {
+    id
+    name
+    gender
+    createdAt
+    updatedAt
+  }
+}
+mutation DeleteDeceased(
+  $input: DeleteDeceasedInput!
+  $condition: ModelDeceasedConditionInput
+) {
+  deleteDeceased(input: $input, condition: $condition) {
+    id
+    name
+    gender
+    createdAt
+    updatedAt
+  }
+}
+mutation CreateLineItem(
+  $input: CreateLineItemInput!
+  $condition: ModelLineItemConditionInput
+) {
+  createLineItem(input: $input, condition: $condition) {
+    id
+    title
+    description
+    probate {
+      id
+      title
+      deceased {
+        id
+        name
+        gender
+        createdAt
+        updatedAt
+      }
+      filing {
+        id
+        state
+        county
+        date
+        filer
+        createdAt
+        updatedAt
+        filingProbateId
+      }
+      appraiser
+      witness
+      items {
+        nextToken
+      }
+      createdAt
+      updatedAt
+      probateRecordDeceasedId
+      probateRecordFilingId
+    }
+    category
+    subcategory
+    createdAt
+    updatedAt
+    probateRecordItemsId
+  }
+}
+mutation UpdateLineItem(
+  $input: UpdateLineItemInput!
+  $condition: ModelLineItemConditionInput
+) {
+  updateLineItem(input: $input, condition: $condition) {
+    id
+    title
+    description
+    probate {
+      id
+      title
+      deceased {
+        id
+        name
+        gender
+        createdAt
+        updatedAt
+      }
+      filing {
+        id
+        state
+        county
+        date
+        filer
+        createdAt
+        updatedAt
+        filingProbateId
+      }
+      appraiser
+      witness
+      items {
+        nextToken
+      }
+      createdAt
+      updatedAt
+      probateRecordDeceasedId
+      probateRecordFilingId
+    }
+    category
+    subcategory
+    createdAt
+    updatedAt
+    probateRecordItemsId
+  }
+}
+mutation DeleteLineItem(
+  $input: DeleteLineItemInput!
+  $condition: ModelLineItemConditionInput
+) {
+  deleteLineItem(input: $input, condition: $condition) {
+    id
+    title
+    description
+    probate {
+      id
+      title
+      deceased {
+        id
+        name
+        gender
+        createdAt
+        updatedAt
+      }
+      filing {
+        id
+        state
+        county
+        date
+        filer
+        createdAt
+        updatedAt
+        filingProbateId
+      }
+      appraiser
+      witness
+      items {
+        nextToken
+      }
+      createdAt
+      updatedAt
+      probateRecordDeceasedId
+      probateRecordFilingId
+    }
+    category
+    subcategory
+    createdAt
+    updatedAt
+    probateRecordItemsId
+  }
+}

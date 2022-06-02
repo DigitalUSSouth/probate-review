@@ -1,0 +1,11 @@
+{
+  "lambdaLayers": [
+    {
+      "type": "ProjectLayer",
+      "resourceName": "probatereviewawsclient",
+      "env": "staging",
+      "version": 2,
+      "isLatestVersionSelected": false
+    }
+  ]
+}

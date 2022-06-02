@@ -1,0 +1,436 @@
+# this is an auto generated file. This will be overwritten
+subscription OnCreateProbateRecord {
+  onCreateProbateRecord {
+    id
+    title
+    deceased {
+      id
+      name
+      gender
+      createdAt
+      updatedAt
+    }
+    filing {
+      id
+      state
+      county
+      date
+      filer
+      probate {
+        id
+        title
+        appraiser
+        witness
+        createdAt
+        updatedAt
+        probateRecordDeceasedId
+        probateRecordFilingId
+      }
+      createdAt
+      updatedAt
+      filingProbateId
+    }
+    appraiser
+    witness
+    items {
+      items {
+        id
+        title
+        description
+        category
+        subcategory
+        createdAt
+        updatedAt
+        probateRecordItemsId
+      }
+      nextToken
+    }
+    createdAt
+    updatedAt
+    probateRecordDeceasedId
+    probateRecordFilingId
+  }
+}
+subscription OnUpdateProbateRecord {
+  onUpdateProbateRecord {
+    id
+    title
+    deceased {
+      id
+      name
+      gender
+      createdAt
+      updatedAt
+    }
+    filing {
+      id
+      state
+      county
+      date
+      filer
+      probate {
+        id
+        title
+        appraiser
+        witness
+        createdAt
+        updatedAt
+        probateRecordDeceasedId
+        probateRecordFilingId
+      }
+      createdAt
+      updatedAt
+      filingProbateId
+    }
+    appraiser
+    witness
+    items {
+      items {
+        id
+        title
+        description
+        category
+        subcategory
+        createdAt
+        updatedAt
+        probateRecordItemsId
+      }
+      nextToken
+    }
+    createdAt
+    updatedAt
+    probateRecordDeceasedId
+    probateRecordFilingId
+  }
+}
+subscription OnDeleteProbateRecord {
+  onDeleteProbateRecord {
+    id
+    title
+    deceased {
+      id
+      name
+      gender
+      createdAt
+      updatedAt
+    }
+    filing {
+      id
+      state
+      county
+      date
+      filer
+      probate {
+        id
+        title
+        appraiser
+        witness
+        createdAt
+        updatedAt
+        probateRecordDeceasedId
+        probateRecordFilingId
+      }
+      createdAt
+      updatedAt
+      filingProbateId
+    }
+    appraiser
+    witness
+    items {
+      items {
+        id
+        title
+        description
+        category
+        subcategory
+        createdAt
+        updatedAt
+        probateRecordItemsId
+      }
+      nextToken
+    }
+    createdAt
+    updatedAt
+    probateRecordDeceasedId
+    probateRecordFilingId
+  }
+}
+subscription OnCreateFiling {
+  onCreateFiling {
+    id
+    state
+    county
+    date
+    filer
+    probate {
+      id
+      title
+      deceased {
+        id
+        name
+        gender
+        createdAt
+        updatedAt
+      }
+      filing {
+        id
+        state
+        county
+        date
+        filer
+        createdAt
+        updatedAt
+        filingProbateId
+      }
+      appraiser
+      witness
+      items {
+        nextToken
+      }
+      createdAt
+      updatedAt
+      probateRecordDeceasedId
+      probateRecordFilingId
+    }
+    createdAt
+    updatedAt
+    filingProbateId
+  }
+}
+subscription OnUpdateFiling {
+  onUpdateFiling {
+    id
+    state
+    county
+    date
+    filer
+    probate {
+      id
+      title
+      deceased {
+        id
+        name
+        gender
+        createdAt
+        updatedAt
+      }
+      filing {
+        id
+        state
+        county
+        date
+        filer
+        createdAt
+        updatedAt
+        filingProbateId
+      }
+      appraiser
+      witness
+      items {
+        nextToken
+      }
+      createdAt
+      updatedAt
+      probateRecordDeceasedId
+      probateRecordFilingId
+    }
+    createdAt
+    updatedAt
+    filingProbateId
+  }
+}
+subscription OnDeleteFiling {
+  onDeleteFiling {
+    id
+    state
+    county
+    date
+    filer
+    probate {
+      id
+      title
+      deceased {
+        id
+        name
+        gender
+        createdAt
+        updatedAt
+      }
+      filing {
+        id
+        state
+        county
+        date
+        filer
+        createdAt
+        updatedAt
+        filingProbateId
+      }
+      appraiser
+      witness
+      items {
+        nextToken
+      }
+      createdAt
+      updatedAt
+      probateRecordDeceasedId
+      probateRecordFilingId
+    }
+    createdAt
+    updatedAt
+    filingProbateId
+  }
+}
+subscription OnCreateDeceased {
+  onCreateDeceased {
+    id
+    name
+    gender
+    createdAt
+    updatedAt
+  }
+}
+subscription OnUpdateDeceased {
+  onUpdateDeceased {
+    id
+    name
+    gender
+    createdAt
+    updatedAt
+  }
+}
+subscription OnDeleteDeceased {
+  onDeleteDeceased {
+    id
+    name
+    gender
+    createdAt
+    updatedAt
+  }
+}
+subscription OnCreateLineItem {
+  onCreateLineItem {
+    id
+    title
+    description
+    probate {
+      id
+      title
+      deceased {
+        id
+        name
+        gender
+        createdAt
+        updatedAt
+      }
+      filing {
+        id
+        state
+        county
+        date
+        filer
+        createdAt
+        updatedAt
+        filingProbateId
+      }
+      appraiser
+      witness
+      items {
+        nextToken
+      }
+      createdAt
+      updatedAt
+      probateRecordDeceasedId
+      probateRecordFilingId
+    }
+    category
+    subcategory
+    createdAt
+    updatedAt
+    probateRecordItemsId
+  }
+}
+subscription OnUpdateLineItem {
+  onUpdateLineItem {
+    id
+    title
+    description
+    probate {
+      id
+      title
+      deceased {
+        id
+        name
+        gender
+        createdAt
+        updatedAt
+      }
+      filing {
+        id
+        state
+        county
+        date
+        filer
+        createdAt
+        updatedAt
+        filingProbateId
+      }
+      appraiser
+      witness
+      items {
+        nextToken
+      }
+      createdAt
+      updatedAt
+      probateRecordDeceasedId
+      probateRecordFilingId
+    }
+    category
+    subcategory
+    createdAt
+    updatedAt
+    probateRecordItemsId
+  }
+}
+subscription OnDeleteLineItem {
+  onDeleteLineItem {
+    id
+    title
+    description
+    probate {
+      id
+      title
+      deceased {
+        id
+        name
+        gender
+        createdAt
+        updatedAt
+      }
+      filing {
+        id
+        state
+        county
+        date
+        filer
+        createdAt
+        updatedAt
+        filingProbateId
+      }
+      appraiser
+      witness
+      items {
+        nextToken
+      }
+      createdAt
+      updatedAt
+      probateRecordDeceasedId
+      probateRecordFilingId
+    }
+    category
+    subcategory
+    createdAt
+    updatedAt
+    probateRecordItemsId
+  }
+}
