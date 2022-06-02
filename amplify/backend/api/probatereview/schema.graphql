@@ -10,6 +10,7 @@ type ProbateRecord @model {
   appraiser: [String]
   witness: [String]
   items: [LineItem] @hasMany
+  totalValue: Float
 }
 
 type Filing @model {
@@ -34,6 +35,8 @@ type LineItem @model {
   probate: ProbateRecord! @belongsTo
   category: String!
   subcategory: String!
+  quantity: Int
+  value: Float
   rect: Rect! @hasOne
 }
 
@@ -42,5 +45,4 @@ type Rect @model {
   top: Float!
   width: Float!
   height: Float!
-  line: LineItem @belongsTo
 }

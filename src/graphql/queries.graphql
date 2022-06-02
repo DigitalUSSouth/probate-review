@@ -21,6 +21,7 @@ query GetProbateRecord($id: ID!) {
         title
         appraiser
         witness
+        totalValue
         createdAt
         updatedAt
         probateRecordDeceasedId
@@ -39,6 +40,8 @@ query GetProbateRecord($id: ID!) {
         description
         category
         subcategory
+        quantity
+        value
         createdAt
         updatedAt
         probateRecordItemsId
@@ -46,6 +49,7 @@ query GetProbateRecord($id: ID!) {
       }
       nextToken
     }
+    totalValue
     createdAt
     updatedAt
     probateRecordDeceasedId
@@ -83,6 +87,7 @@ query ListProbateRecords(
       items {
         nextToken
       }
+      totalValue
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -123,6 +128,7 @@ query GetFiling($id: ID!) {
       items {
         nextToken
       }
+      totalValue
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -150,6 +156,7 @@ query ListFilings(
         title
         appraiser
         witness
+        totalValue
         createdAt
         updatedAt
         probateRecordDeceasedId
@@ -217,6 +224,7 @@ query GetLineItem($id: ID!) {
       items {
         nextToken
       }
+      totalValue
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -224,6 +232,8 @@ query GetLineItem($id: ID!) {
     }
     category
     subcategory
+    quantity
+    value
     rect {
       left
       top
@@ -235,6 +245,8 @@ query GetLineItem($id: ID!) {
         description
         category
         subcategory
+        quantity
+        value
         createdAt
         updatedAt
         probateRecordItemsId
@@ -266,6 +278,7 @@ query ListLineItems(
         title
         appraiser
         witness
+        totalValue
         createdAt
         updatedAt
         probateRecordDeceasedId
@@ -273,6 +286,8 @@ query ListLineItems(
       }
       category
       subcategory
+      quantity
+      value
       rect {
         left
         top
@@ -306,6 +321,7 @@ query GetRect($id: ID!) {
         title
         appraiser
         witness
+        totalValue
         createdAt
         updatedAt
         probateRecordDeceasedId
@@ -313,6 +329,8 @@ query GetRect($id: ID!) {
       }
       category
       subcategory
+      quantity
+      value
       rect {
         left
         top
@@ -351,6 +369,8 @@ query ListRects(
         description
         category
         subcategory
+        quantity
+        value
         createdAt
         updatedAt
         probateRecordItemsId

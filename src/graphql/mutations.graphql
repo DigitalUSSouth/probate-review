@@ -24,6 +24,7 @@ mutation CreateProbateRecord(
         title
         appraiser
         witness
+        totalValue
         createdAt
         updatedAt
         probateRecordDeceasedId
@@ -42,6 +43,8 @@ mutation CreateProbateRecord(
         description
         category
         subcategory
+        quantity
+        value
         createdAt
         updatedAt
         probateRecordItemsId
@@ -49,6 +52,7 @@ mutation CreateProbateRecord(
       }
       nextToken
     }
+    totalValue
     createdAt
     updatedAt
     probateRecordDeceasedId
@@ -80,6 +84,7 @@ mutation UpdateProbateRecord(
         title
         appraiser
         witness
+        totalValue
         createdAt
         updatedAt
         probateRecordDeceasedId
@@ -98,6 +103,8 @@ mutation UpdateProbateRecord(
         description
         category
         subcategory
+        quantity
+        value
         createdAt
         updatedAt
         probateRecordItemsId
@@ -105,6 +112,7 @@ mutation UpdateProbateRecord(
       }
       nextToken
     }
+    totalValue
     createdAt
     updatedAt
     probateRecordDeceasedId
@@ -136,6 +144,7 @@ mutation DeleteProbateRecord(
         title
         appraiser
         witness
+        totalValue
         createdAt
         updatedAt
         probateRecordDeceasedId
@@ -154,6 +163,8 @@ mutation DeleteProbateRecord(
         description
         category
         subcategory
+        quantity
+        value
         createdAt
         updatedAt
         probateRecordItemsId
@@ -161,6 +172,7 @@ mutation DeleteProbateRecord(
       }
       nextToken
     }
+    totalValue
     createdAt
     updatedAt
     probateRecordDeceasedId
@@ -202,6 +214,7 @@ mutation CreateFiling(
       items {
         nextToken
       }
+      totalValue
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -247,6 +260,7 @@ mutation UpdateFiling(
       items {
         nextToken
       }
+      totalValue
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -292,6 +306,7 @@ mutation DeleteFiling(
       items {
         nextToken
       }
+      totalValue
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -371,6 +386,7 @@ mutation CreateLineItem(
       items {
         nextToken
       }
+      totalValue
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -378,6 +394,8 @@ mutation CreateLineItem(
     }
     category
     subcategory
+    quantity
+    value
     rect {
       left
       top
@@ -389,6 +407,8 @@ mutation CreateLineItem(
         description
         category
         subcategory
+        quantity
+        value
         createdAt
         updatedAt
         probateRecordItemsId
@@ -438,6 +458,7 @@ mutation UpdateLineItem(
       items {
         nextToken
       }
+      totalValue
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -445,6 +466,8 @@ mutation UpdateLineItem(
     }
     category
     subcategory
+    quantity
+    value
     rect {
       left
       top
@@ -456,6 +479,8 @@ mutation UpdateLineItem(
         description
         category
         subcategory
+        quantity
+        value
         createdAt
         updatedAt
         probateRecordItemsId
@@ -505,6 +530,7 @@ mutation DeleteLineItem(
       items {
         nextToken
       }
+      totalValue
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -512,6 +538,8 @@ mutation DeleteLineItem(
     }
     category
     subcategory
+    quantity
+    value
     rect {
       left
       top
@@ -523,6 +551,8 @@ mutation DeleteLineItem(
         description
         category
         subcategory
+        quantity
+        value
         createdAt
         updatedAt
         probateRecordItemsId
@@ -557,6 +587,7 @@ mutation CreateRect(
         title
         appraiser
         witness
+        totalValue
         createdAt
         updatedAt
         probateRecordDeceasedId
@@ -564,6 +595,8 @@ mutation CreateRect(
       }
       category
       subcategory
+      quantity
+      value
       rect {
         left
         top
@@ -603,6 +636,7 @@ mutation UpdateRect(
         title
         appraiser
         witness
+        totalValue
         createdAt
         updatedAt
         probateRecordDeceasedId
@@ -610,6 +644,8 @@ mutation UpdateRect(
       }
       category
       subcategory
+      quantity
+      value
       rect {
         left
         top
@@ -649,6 +685,7 @@ mutation DeleteRect(
         title
         appraiser
         witness
+        totalValue
         createdAt
         updatedAt
         probateRecordDeceasedId
@@ -656,6 +693,8 @@ mutation DeleteRect(
       }
       category
       subcategory
+      quantity
+      value
       rect {
         left
         top

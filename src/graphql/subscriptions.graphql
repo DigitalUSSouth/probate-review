@@ -21,6 +21,7 @@ subscription OnCreateProbateRecord {
         title
         appraiser
         witness
+        totalValue
         createdAt
         updatedAt
         probateRecordDeceasedId
@@ -39,6 +40,8 @@ subscription OnCreateProbateRecord {
         description
         category
         subcategory
+        quantity
+        value
         createdAt
         updatedAt
         probateRecordItemsId
@@ -46,6 +49,7 @@ subscription OnCreateProbateRecord {
       }
       nextToken
     }
+    totalValue
     createdAt
     updatedAt
     probateRecordDeceasedId
@@ -74,6 +78,7 @@ subscription OnUpdateProbateRecord {
         title
         appraiser
         witness
+        totalValue
         createdAt
         updatedAt
         probateRecordDeceasedId
@@ -92,6 +97,8 @@ subscription OnUpdateProbateRecord {
         description
         category
         subcategory
+        quantity
+        value
         createdAt
         updatedAt
         probateRecordItemsId
@@ -99,6 +106,7 @@ subscription OnUpdateProbateRecord {
       }
       nextToken
     }
+    totalValue
     createdAt
     updatedAt
     probateRecordDeceasedId
@@ -127,6 +135,7 @@ subscription OnDeleteProbateRecord {
         title
         appraiser
         witness
+        totalValue
         createdAt
         updatedAt
         probateRecordDeceasedId
@@ -145,6 +154,8 @@ subscription OnDeleteProbateRecord {
         description
         category
         subcategory
+        quantity
+        value
         createdAt
         updatedAt
         probateRecordItemsId
@@ -152,6 +163,7 @@ subscription OnDeleteProbateRecord {
       }
       nextToken
     }
+    totalValue
     createdAt
     updatedAt
     probateRecordDeceasedId
@@ -190,6 +202,7 @@ subscription OnCreateFiling {
       items {
         nextToken
       }
+      totalValue
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -232,6 +245,7 @@ subscription OnUpdateFiling {
       items {
         nextToken
       }
+      totalValue
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -274,6 +288,7 @@ subscription OnDeleteFiling {
       items {
         nextToken
       }
+      totalValue
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -341,6 +356,7 @@ subscription OnCreateLineItem {
       items {
         nextToken
       }
+      totalValue
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -348,6 +364,8 @@ subscription OnCreateLineItem {
     }
     category
     subcategory
+    quantity
+    value
     rect {
       left
       top
@@ -359,6 +377,8 @@ subscription OnCreateLineItem {
         description
         category
         subcategory
+        quantity
+        value
         createdAt
         updatedAt
         probateRecordItemsId
@@ -405,6 +425,7 @@ subscription OnUpdateLineItem {
       items {
         nextToken
       }
+      totalValue
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -412,6 +433,8 @@ subscription OnUpdateLineItem {
     }
     category
     subcategory
+    quantity
+    value
     rect {
       left
       top
@@ -423,6 +446,8 @@ subscription OnUpdateLineItem {
         description
         category
         subcategory
+        quantity
+        value
         createdAt
         updatedAt
         probateRecordItemsId
@@ -469,6 +494,7 @@ subscription OnDeleteLineItem {
       items {
         nextToken
       }
+      totalValue
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -476,6 +502,8 @@ subscription OnDeleteLineItem {
     }
     category
     subcategory
+    quantity
+    value
     rect {
       left
       top
@@ -487,6 +515,8 @@ subscription OnDeleteLineItem {
         description
         category
         subcategory
+        quantity
+        value
         createdAt
         updatedAt
         probateRecordItemsId
@@ -518,6 +548,7 @@ subscription OnCreateRect {
         title
         appraiser
         witness
+        totalValue
         createdAt
         updatedAt
         probateRecordDeceasedId
@@ -525,6 +556,8 @@ subscription OnCreateRect {
       }
       category
       subcategory
+      quantity
+      value
       rect {
         left
         top
@@ -561,6 +594,7 @@ subscription OnUpdateRect {
         title
         appraiser
         witness
+        totalValue
         createdAt
         updatedAt
         probateRecordDeceasedId
@@ -568,6 +602,8 @@ subscription OnUpdateRect {
       }
       category
       subcategory
+      quantity
+      value
       rect {
         left
         top
@@ -604,6 +640,7 @@ subscription OnDeleteRect {
         title
         appraiser
         witness
+        totalValue
         createdAt
         updatedAt
         probateRecordDeceasedId
@@ -611,6 +648,8 @@ subscription OnDeleteRect {
       }
       category
       subcategory
+      quantity
+      value
       rect {
         left
         top

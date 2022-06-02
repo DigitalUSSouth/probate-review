@@ -32,6 +32,7 @@ export type CreateProbateRecordInput = {
   title?: string | null;
   appraiser?: Array<string | null> | null;
   witness?: Array<string | null> | null;
+  totalValue?: number | null;
   probateRecordDeceasedId?: string | null;
   probateRecordFilingId?: string | null;
 };
@@ -40,6 +41,7 @@ export type ModelProbateRecordConditionInput = {
   title?: ModelStringInput | null;
   appraiser?: ModelStringInput | null;
   witness?: ModelStringInput | null;
+  totalValue?: ModelFloatInput | null;
   and?: Array<ModelProbateRecordConditionInput | null> | null;
   or?: Array<ModelProbateRecordConditionInput | null> | null;
   not?: ModelProbateRecordConditionInput | null;
@@ -86,6 +88,18 @@ export type ModelSizeInput = {
   between?: Array<number | null> | null;
 };
 
+export type ModelFloatInput = {
+  ne?: number | null;
+  eq?: number | null;
+  le?: number | null;
+  lt?: number | null;
+  ge?: number | null;
+  gt?: number | null;
+  between?: Array<number | null> | null;
+  attributeExists?: boolean | null;
+  attributeType?: ModelAttributeTypes | null;
+};
+
 export type ModelIDInput = {
   ne?: string | null;
   eq?: string | null;
@@ -111,6 +125,7 @@ export type ProbateRecord = {
   appraiser?: Array<string | null> | null;
   witness?: Array<string | null> | null;
   items?: ModelLineItemConnection | null;
+  totalValue?: number | null;
   createdAt: string;
   updatedAt: string;
   probateRecordDeceasedId?: string | null;
@@ -153,6 +168,8 @@ export type LineItem = {
   probate: ProbateRecord;
   category: string;
   subcategory: string;
+  quantity?: number | null;
+  value?: number | null;
   rect: Rect;
   createdAt: string;
   updatedAt: string;
@@ -178,6 +195,7 @@ export type UpdateProbateRecordInput = {
   title?: string | null;
   appraiser?: Array<string | null> | null;
   witness?: Array<string | null> | null;
+  totalValue?: number | null;
   probateRecordDeceasedId?: string | null;
   probateRecordFilingId?: string | null;
 };
@@ -249,6 +267,8 @@ export type CreateLineItemInput = {
   description?: string | null;
   category: string;
   subcategory: string;
+  quantity?: number | null;
+  value?: number | null;
   probateRecordItemsId?: string | null;
   lineItemRectId: string;
 };
@@ -258,11 +278,25 @@ export type ModelLineItemConditionInput = {
   description?: ModelStringInput | null;
   category?: ModelStringInput | null;
   subcategory?: ModelStringInput | null;
+  quantity?: ModelIntInput | null;
+  value?: ModelFloatInput | null;
   and?: Array<ModelLineItemConditionInput | null> | null;
   or?: Array<ModelLineItemConditionInput | null> | null;
   not?: ModelLineItemConditionInput | null;
   probateRecordItemsId?: ModelIDInput | null;
   lineItemRectId?: ModelIDInput | null;
+};
+
+export type ModelIntInput = {
+  ne?: number | null;
+  eq?: number | null;
+  le?: number | null;
+  lt?: number | null;
+  ge?: number | null;
+  gt?: number | null;
+  between?: Array<number | null> | null;
+  attributeExists?: boolean | null;
+  attributeType?: ModelAttributeTypes | null;
 };
 
 export type UpdateLineItemInput = {
@@ -271,6 +305,8 @@ export type UpdateLineItemInput = {
   description?: string | null;
   category?: string | null;
   subcategory?: string | null;
+  quantity?: number | null;
+  value?: number | null;
   probateRecordItemsId?: string | null;
   lineItemRectId?: string | null;
 };
@@ -299,18 +335,6 @@ export type ModelRectConditionInput = {
   rectLineId?: ModelIDInput | null;
 };
 
-export type ModelFloatInput = {
-  ne?: number | null;
-  eq?: number | null;
-  le?: number | null;
-  lt?: number | null;
-  ge?: number | null;
-  gt?: number | null;
-  between?: Array<number | null> | null;
-  attributeExists?: boolean | null;
-  attributeType?: ModelAttributeTypes | null;
-};
-
 export type UpdateRectInput = {
   left?: number | null;
   top?: number | null;
@@ -329,6 +353,7 @@ export type ModelProbateRecordFilterInput = {
   title?: ModelStringInput | null;
   appraiser?: ModelStringInput | null;
   witness?: ModelStringInput | null;
+  totalValue?: ModelFloatInput | null;
   and?: Array<ModelProbateRecordFilterInput | null> | null;
   or?: Array<ModelProbateRecordFilterInput | null> | null;
   not?: ModelProbateRecordFilterInput | null;
@@ -381,6 +406,8 @@ export type ModelLineItemFilterInput = {
   description?: ModelStringInput | null;
   category?: ModelStringInput | null;
   subcategory?: ModelStringInput | null;
+  quantity?: ModelIntInput | null;
+  value?: ModelFloatInput | null;
   and?: Array<ModelLineItemFilterInput | null> | null;
   or?: Array<ModelLineItemFilterInput | null> | null;
   not?: ModelLineItemFilterInput | null;
@@ -430,6 +457,7 @@ export type CreateProbateRecordMutation = {
       title?: string | null;
       appraiser?: Array<string | null> | null;
       witness?: Array<string | null> | null;
+      totalValue?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordDeceasedId?: string | null;
@@ -450,6 +478,8 @@ export type CreateProbateRecordMutation = {
       description?: string | null;
       category: string;
       subcategory: string;
+      quantity?: number | null;
+      value?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
@@ -457,6 +487,7 @@ export type CreateProbateRecordMutation = {
     } | null>;
     nextToken?: string | null;
   } | null;
+  totalValue?: number | null;
   createdAt: string;
   updatedAt: string;
   probateRecordDeceasedId?: string | null;
@@ -488,6 +519,7 @@ export type UpdateProbateRecordMutation = {
       title?: string | null;
       appraiser?: Array<string | null> | null;
       witness?: Array<string | null> | null;
+      totalValue?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordDeceasedId?: string | null;
@@ -508,6 +540,8 @@ export type UpdateProbateRecordMutation = {
       description?: string | null;
       category: string;
       subcategory: string;
+      quantity?: number | null;
+      value?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
@@ -515,6 +549,7 @@ export type UpdateProbateRecordMutation = {
     } | null>;
     nextToken?: string | null;
   } | null;
+  totalValue?: number | null;
   createdAt: string;
   updatedAt: string;
   probateRecordDeceasedId?: string | null;
@@ -546,6 +581,7 @@ export type DeleteProbateRecordMutation = {
       title?: string | null;
       appraiser?: Array<string | null> | null;
       witness?: Array<string | null> | null;
+      totalValue?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordDeceasedId?: string | null;
@@ -566,6 +602,8 @@ export type DeleteProbateRecordMutation = {
       description?: string | null;
       category: string;
       subcategory: string;
+      quantity?: number | null;
+      value?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
@@ -573,6 +611,7 @@ export type DeleteProbateRecordMutation = {
     } | null>;
     nextToken?: string | null;
   } | null;
+  totalValue?: number | null;
   createdAt: string;
   updatedAt: string;
   probateRecordDeceasedId?: string | null;
@@ -615,6 +654,7 @@ export type CreateFilingMutation = {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
+    totalValue?: number | null;
     createdAt: string;
     updatedAt: string;
     probateRecordDeceasedId?: string | null;
@@ -661,6 +701,7 @@ export type UpdateFilingMutation = {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
+    totalValue?: number | null;
     createdAt: string;
     updatedAt: string;
     probateRecordDeceasedId?: string | null;
@@ -707,6 +748,7 @@ export type DeleteFilingMutation = {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
+    totalValue?: number | null;
     createdAt: string;
     updatedAt: string;
     probateRecordDeceasedId?: string | null;
@@ -778,6 +820,7 @@ export type CreateLineItemMutation = {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
+    totalValue?: number | null;
     createdAt: string;
     updatedAt: string;
     probateRecordDeceasedId?: string | null;
@@ -785,6 +828,8 @@ export type CreateLineItemMutation = {
   };
   category: string;
   subcategory: string;
+  quantity?: number | null;
+  value?: number | null;
   rect: {
     __typename: "Rect";
     left: number;
@@ -798,6 +843,8 @@ export type CreateLineItemMutation = {
       description?: string | null;
       category: string;
       subcategory: string;
+      quantity?: number | null;
+      value?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
@@ -848,6 +895,7 @@ export type UpdateLineItemMutation = {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
+    totalValue?: number | null;
     createdAt: string;
     updatedAt: string;
     probateRecordDeceasedId?: string | null;
@@ -855,6 +903,8 @@ export type UpdateLineItemMutation = {
   };
   category: string;
   subcategory: string;
+  quantity?: number | null;
+  value?: number | null;
   rect: {
     __typename: "Rect";
     left: number;
@@ -868,6 +918,8 @@ export type UpdateLineItemMutation = {
       description?: string | null;
       category: string;
       subcategory: string;
+      quantity?: number | null;
+      value?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
@@ -918,6 +970,7 @@ export type DeleteLineItemMutation = {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
+    totalValue?: number | null;
     createdAt: string;
     updatedAt: string;
     probateRecordDeceasedId?: string | null;
@@ -925,6 +978,8 @@ export type DeleteLineItemMutation = {
   };
   category: string;
   subcategory: string;
+  quantity?: number | null;
+  value?: number | null;
   rect: {
     __typename: "Rect";
     left: number;
@@ -938,6 +993,8 @@ export type DeleteLineItemMutation = {
       description?: string | null;
       category: string;
       subcategory: string;
+      quantity?: number | null;
+      value?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
@@ -971,6 +1028,7 @@ export type CreateRectMutation = {
       title?: string | null;
       appraiser?: Array<string | null> | null;
       witness?: Array<string | null> | null;
+      totalValue?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordDeceasedId?: string | null;
@@ -978,6 +1036,8 @@ export type CreateRectMutation = {
     };
     category: string;
     subcategory: string;
+    quantity?: number | null;
+    value?: number | null;
     rect: {
       __typename: "Rect";
       left: number;
@@ -1017,6 +1077,7 @@ export type UpdateRectMutation = {
       title?: string | null;
       appraiser?: Array<string | null> | null;
       witness?: Array<string | null> | null;
+      totalValue?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordDeceasedId?: string | null;
@@ -1024,6 +1085,8 @@ export type UpdateRectMutation = {
     };
     category: string;
     subcategory: string;
+    quantity?: number | null;
+    value?: number | null;
     rect: {
       __typename: "Rect";
       left: number;
@@ -1063,6 +1126,7 @@ export type DeleteRectMutation = {
       title?: string | null;
       appraiser?: Array<string | null> | null;
       witness?: Array<string | null> | null;
+      totalValue?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordDeceasedId?: string | null;
@@ -1070,6 +1134,8 @@ export type DeleteRectMutation = {
     };
     category: string;
     subcategory: string;
+    quantity?: number | null;
+    value?: number | null;
     rect: {
       __typename: "Rect";
       left: number;
@@ -1117,6 +1183,7 @@ export type GetProbateRecordQuery = {
       title?: string | null;
       appraiser?: Array<string | null> | null;
       witness?: Array<string | null> | null;
+      totalValue?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordDeceasedId?: string | null;
@@ -1137,6 +1204,8 @@ export type GetProbateRecordQuery = {
       description?: string | null;
       category: string;
       subcategory: string;
+      quantity?: number | null;
+      value?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
@@ -1144,6 +1213,7 @@ export type GetProbateRecordQuery = {
     } | null>;
     nextToken?: string | null;
   } | null;
+  totalValue?: number | null;
   createdAt: string;
   updatedAt: string;
   probateRecordDeceasedId?: string | null;
@@ -1181,6 +1251,7 @@ export type ListProbateRecordsQuery = {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
+    totalValue?: number | null;
     createdAt: string;
     updatedAt: string;
     probateRecordDeceasedId?: string | null;
@@ -1225,6 +1296,7 @@ export type GetFilingQuery = {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
+    totalValue?: number | null;
     createdAt: string;
     updatedAt: string;
     probateRecordDeceasedId?: string | null;
@@ -1250,6 +1322,7 @@ export type ListFilingsQuery = {
       title?: string | null;
       appraiser?: Array<string | null> | null;
       witness?: Array<string | null> | null;
+      totalValue?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordDeceasedId?: string | null;
@@ -1318,6 +1391,7 @@ export type GetLineItemQuery = {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
+    totalValue?: number | null;
     createdAt: string;
     updatedAt: string;
     probateRecordDeceasedId?: string | null;
@@ -1325,6 +1399,8 @@ export type GetLineItemQuery = {
   };
   category: string;
   subcategory: string;
+  quantity?: number | null;
+  value?: number | null;
   rect: {
     __typename: "Rect";
     left: number;
@@ -1338,6 +1414,8 @@ export type GetLineItemQuery = {
       description?: string | null;
       category: string;
       subcategory: string;
+      quantity?: number | null;
+      value?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
@@ -1367,6 +1445,7 @@ export type ListLineItemsQuery = {
       title?: string | null;
       appraiser?: Array<string | null> | null;
       witness?: Array<string | null> | null;
+      totalValue?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordDeceasedId?: string | null;
@@ -1374,6 +1453,8 @@ export type ListLineItemsQuery = {
     };
     category: string;
     subcategory: string;
+    quantity?: number | null;
+    value?: number | null;
     rect: {
       __typename: "Rect";
       left: number;
@@ -1410,6 +1491,7 @@ export type GetRectQuery = {
       title?: string | null;
       appraiser?: Array<string | null> | null;
       witness?: Array<string | null> | null;
+      totalValue?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordDeceasedId?: string | null;
@@ -1417,6 +1499,8 @@ export type GetRectQuery = {
     };
     category: string;
     subcategory: string;
+    quantity?: number | null;
+    value?: number | null;
     rect: {
       __typename: "Rect";
       left: number;
@@ -1454,6 +1538,8 @@ export type ListRectsQuery = {
       description?: string | null;
       category: string;
       subcategory: string;
+      quantity?: number | null;
+      value?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
@@ -1492,6 +1578,7 @@ export type OnCreateProbateRecordSubscription = {
       title?: string | null;
       appraiser?: Array<string | null> | null;
       witness?: Array<string | null> | null;
+      totalValue?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordDeceasedId?: string | null;
@@ -1512,6 +1599,8 @@ export type OnCreateProbateRecordSubscription = {
       description?: string | null;
       category: string;
       subcategory: string;
+      quantity?: number | null;
+      value?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
@@ -1519,6 +1608,7 @@ export type OnCreateProbateRecordSubscription = {
     } | null>;
     nextToken?: string | null;
   } | null;
+  totalValue?: number | null;
   createdAt: string;
   updatedAt: string;
   probateRecordDeceasedId?: string | null;
@@ -1550,6 +1640,7 @@ export type OnUpdateProbateRecordSubscription = {
       title?: string | null;
       appraiser?: Array<string | null> | null;
       witness?: Array<string | null> | null;
+      totalValue?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordDeceasedId?: string | null;
@@ -1570,6 +1661,8 @@ export type OnUpdateProbateRecordSubscription = {
       description?: string | null;
       category: string;
       subcategory: string;
+      quantity?: number | null;
+      value?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
@@ -1577,6 +1670,7 @@ export type OnUpdateProbateRecordSubscription = {
     } | null>;
     nextToken?: string | null;
   } | null;
+  totalValue?: number | null;
   createdAt: string;
   updatedAt: string;
   probateRecordDeceasedId?: string | null;
@@ -1608,6 +1702,7 @@ export type OnDeleteProbateRecordSubscription = {
       title?: string | null;
       appraiser?: Array<string | null> | null;
       witness?: Array<string | null> | null;
+      totalValue?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordDeceasedId?: string | null;
@@ -1628,6 +1723,8 @@ export type OnDeleteProbateRecordSubscription = {
       description?: string | null;
       category: string;
       subcategory: string;
+      quantity?: number | null;
+      value?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
@@ -1635,6 +1732,7 @@ export type OnDeleteProbateRecordSubscription = {
     } | null>;
     nextToken?: string | null;
   } | null;
+  totalValue?: number | null;
   createdAt: string;
   updatedAt: string;
   probateRecordDeceasedId?: string | null;
@@ -1677,6 +1775,7 @@ export type OnCreateFilingSubscription = {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
+    totalValue?: number | null;
     createdAt: string;
     updatedAt: string;
     probateRecordDeceasedId?: string | null;
@@ -1723,6 +1822,7 @@ export type OnUpdateFilingSubscription = {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
+    totalValue?: number | null;
     createdAt: string;
     updatedAt: string;
     probateRecordDeceasedId?: string | null;
@@ -1769,6 +1869,7 @@ export type OnDeleteFilingSubscription = {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
+    totalValue?: number | null;
     createdAt: string;
     updatedAt: string;
     probateRecordDeceasedId?: string | null;
@@ -1840,6 +1941,7 @@ export type OnCreateLineItemSubscription = {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
+    totalValue?: number | null;
     createdAt: string;
     updatedAt: string;
     probateRecordDeceasedId?: string | null;
@@ -1847,6 +1949,8 @@ export type OnCreateLineItemSubscription = {
   };
   category: string;
   subcategory: string;
+  quantity?: number | null;
+  value?: number | null;
   rect: {
     __typename: "Rect";
     left: number;
@@ -1860,6 +1964,8 @@ export type OnCreateLineItemSubscription = {
       description?: string | null;
       category: string;
       subcategory: string;
+      quantity?: number | null;
+      value?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
@@ -1910,6 +2016,7 @@ export type OnUpdateLineItemSubscription = {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
+    totalValue?: number | null;
     createdAt: string;
     updatedAt: string;
     probateRecordDeceasedId?: string | null;
@@ -1917,6 +2024,8 @@ export type OnUpdateLineItemSubscription = {
   };
   category: string;
   subcategory: string;
+  quantity?: number | null;
+  value?: number | null;
   rect: {
     __typename: "Rect";
     left: number;
@@ -1930,6 +2039,8 @@ export type OnUpdateLineItemSubscription = {
       description?: string | null;
       category: string;
       subcategory: string;
+      quantity?: number | null;
+      value?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
@@ -1980,6 +2091,7 @@ export type OnDeleteLineItemSubscription = {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
+    totalValue?: number | null;
     createdAt: string;
     updatedAt: string;
     probateRecordDeceasedId?: string | null;
@@ -1987,6 +2099,8 @@ export type OnDeleteLineItemSubscription = {
   };
   category: string;
   subcategory: string;
+  quantity?: number | null;
+  value?: number | null;
   rect: {
     __typename: "Rect";
     left: number;
@@ -2000,6 +2114,8 @@ export type OnDeleteLineItemSubscription = {
       description?: string | null;
       category: string;
       subcategory: string;
+      quantity?: number | null;
+      value?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
@@ -2033,6 +2149,7 @@ export type OnCreateRectSubscription = {
       title?: string | null;
       appraiser?: Array<string | null> | null;
       witness?: Array<string | null> | null;
+      totalValue?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordDeceasedId?: string | null;
@@ -2040,6 +2157,8 @@ export type OnCreateRectSubscription = {
     };
     category: string;
     subcategory: string;
+    quantity?: number | null;
+    value?: number | null;
     rect: {
       __typename: "Rect";
       left: number;
@@ -2079,6 +2198,7 @@ export type OnUpdateRectSubscription = {
       title?: string | null;
       appraiser?: Array<string | null> | null;
       witness?: Array<string | null> | null;
+      totalValue?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordDeceasedId?: string | null;
@@ -2086,6 +2206,8 @@ export type OnUpdateRectSubscription = {
     };
     category: string;
     subcategory: string;
+    quantity?: number | null;
+    value?: number | null;
     rect: {
       __typename: "Rect";
       left: number;
@@ -2125,6 +2247,7 @@ export type OnDeleteRectSubscription = {
       title?: string | null;
       appraiser?: Array<string | null> | null;
       witness?: Array<string | null> | null;
+      totalValue?: number | null;
       createdAt: string;
       updatedAt: string;
       probateRecordDeceasedId?: string | null;
@@ -2132,6 +2255,8 @@ export type OnDeleteRectSubscription = {
     };
     category: string;
     subcategory: string;
+    quantity?: number | null;
+    value?: number | null;
     rect: {
       __typename: "Rect";
       left: number;
@@ -2188,6 +2313,7 @@ export class APIService {
               title
               appraiser
               witness
+              totalValue
               createdAt
               updatedAt
               probateRecordDeceasedId
@@ -2208,6 +2334,8 @@ export class APIService {
               description
               category
               subcategory
+              quantity
+              value
               createdAt
               updatedAt
               probateRecordItemsId
@@ -2215,6 +2343,7 @@ export class APIService {
             }
             nextToken
           }
+          totalValue
           createdAt
           updatedAt
           probateRecordDeceasedId
@@ -2262,6 +2391,7 @@ export class APIService {
               title
               appraiser
               witness
+              totalValue
               createdAt
               updatedAt
               probateRecordDeceasedId
@@ -2282,6 +2412,8 @@ export class APIService {
               description
               category
               subcategory
+              quantity
+              value
               createdAt
               updatedAt
               probateRecordItemsId
@@ -2289,6 +2421,7 @@ export class APIService {
             }
             nextToken
           }
+          totalValue
           createdAt
           updatedAt
           probateRecordDeceasedId
@@ -2336,6 +2469,7 @@ export class APIService {
               title
               appraiser
               witness
+              totalValue
               createdAt
               updatedAt
               probateRecordDeceasedId
@@ -2356,6 +2490,8 @@ export class APIService {
               description
               category
               subcategory
+              quantity
+              value
               createdAt
               updatedAt
               probateRecordItemsId
@@ -2363,6 +2499,7 @@ export class APIService {
             }
             nextToken
           }
+          totalValue
           createdAt
           updatedAt
           probateRecordDeceasedId
@@ -2421,6 +2558,7 @@ export class APIService {
               __typename
               nextToken
             }
+            totalValue
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -2483,6 +2621,7 @@ export class APIService {
               __typename
               nextToken
             }
+            totalValue
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -2545,6 +2684,7 @@ export class APIService {
               __typename
               nextToken
             }
+            totalValue
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -2680,6 +2820,7 @@ export class APIService {
               __typename
               nextToken
             }
+            totalValue
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -2687,6 +2828,8 @@ export class APIService {
           }
           category
           subcategory
+          quantity
+          value
           rect {
             __typename
             left
@@ -2700,6 +2843,8 @@ export class APIService {
               description
               category
               subcategory
+              quantity
+              value
               createdAt
               updatedAt
               probateRecordItemsId
@@ -2766,6 +2911,7 @@ export class APIService {
               __typename
               nextToken
             }
+            totalValue
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -2773,6 +2919,8 @@ export class APIService {
           }
           category
           subcategory
+          quantity
+          value
           rect {
             __typename
             left
@@ -2786,6 +2934,8 @@ export class APIService {
               description
               category
               subcategory
+              quantity
+              value
               createdAt
               updatedAt
               probateRecordItemsId
@@ -2852,6 +3002,7 @@ export class APIService {
               __typename
               nextToken
             }
+            totalValue
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -2859,6 +3010,8 @@ export class APIService {
           }
           category
           subcategory
+          quantity
+          value
           rect {
             __typename
             left
@@ -2872,6 +3025,8 @@ export class APIService {
               description
               category
               subcategory
+              quantity
+              value
               createdAt
               updatedAt
               probateRecordItemsId
@@ -2921,6 +3076,7 @@ export class APIService {
               title
               appraiser
               witness
+              totalValue
               createdAt
               updatedAt
               probateRecordDeceasedId
@@ -2928,6 +3084,8 @@ export class APIService {
             }
             category
             subcategory
+            quantity
+            value
             rect {
               __typename
               left
@@ -2983,6 +3141,7 @@ export class APIService {
               title
               appraiser
               witness
+              totalValue
               createdAt
               updatedAt
               probateRecordDeceasedId
@@ -2990,6 +3149,8 @@ export class APIService {
             }
             category
             subcategory
+            quantity
+            value
             rect {
               __typename
               left
@@ -3045,6 +3206,7 @@ export class APIService {
               title
               appraiser
               witness
+              totalValue
               createdAt
               updatedAt
               probateRecordDeceasedId
@@ -3052,6 +3214,8 @@ export class APIService {
             }
             category
             subcategory
+            quantity
+            value
             rect {
               __typename
               left
@@ -3112,6 +3276,7 @@ export class APIService {
               title
               appraiser
               witness
+              totalValue
               createdAt
               updatedAt
               probateRecordDeceasedId
@@ -3132,6 +3297,8 @@ export class APIService {
               description
               category
               subcategory
+              quantity
+              value
               createdAt
               updatedAt
               probateRecordItemsId
@@ -3139,6 +3306,7 @@ export class APIService {
             }
             nextToken
           }
+          totalValue
           createdAt
           updatedAt
           probateRecordDeceasedId
@@ -3190,6 +3358,7 @@ export class APIService {
               __typename
               nextToken
             }
+            totalValue
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -3251,6 +3420,7 @@ export class APIService {
               __typename
               nextToken
             }
+            totalValue
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -3290,6 +3460,7 @@ export class APIService {
               title
               appraiser
               witness
+              totalValue
               createdAt
               updatedAt
               probateRecordDeceasedId
@@ -3406,6 +3577,7 @@ export class APIService {
               __typename
               nextToken
             }
+            totalValue
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -3413,6 +3585,8 @@ export class APIService {
           }
           category
           subcategory
+          quantity
+          value
           rect {
             __typename
             left
@@ -3426,6 +3600,8 @@ export class APIService {
               description
               category
               subcategory
+              quantity
+              value
               createdAt
               updatedAt
               probateRecordItemsId
@@ -3469,6 +3645,7 @@ export class APIService {
               title
               appraiser
               witness
+              totalValue
               createdAt
               updatedAt
               probateRecordDeceasedId
@@ -3476,6 +3653,8 @@ export class APIService {
             }
             category
             subcategory
+            quantity
+            value
             rect {
               __typename
               left
@@ -3529,6 +3708,7 @@ export class APIService {
               title
               appraiser
               witness
+              totalValue
               createdAt
               updatedAt
               probateRecordDeceasedId
@@ -3536,6 +3716,8 @@ export class APIService {
             }
             category
             subcategory
+            quantity
+            value
             rect {
               __typename
               left
@@ -3587,6 +3769,8 @@ export class APIService {
               description
               category
               subcategory
+              quantity
+              value
               createdAt
               updatedAt
               probateRecordItemsId
@@ -3645,6 +3829,7 @@ export class APIService {
               title
               appraiser
               witness
+              totalValue
               createdAt
               updatedAt
               probateRecordDeceasedId
@@ -3665,6 +3850,8 @@ export class APIService {
               description
               category
               subcategory
+              quantity
+              value
               createdAt
               updatedAt
               probateRecordItemsId
@@ -3672,6 +3859,7 @@ export class APIService {
             }
             nextToken
           }
+          totalValue
           createdAt
           updatedAt
           probateRecordDeceasedId
@@ -3713,6 +3901,7 @@ export class APIService {
               title
               appraiser
               witness
+              totalValue
               createdAt
               updatedAt
               probateRecordDeceasedId
@@ -3733,6 +3922,8 @@ export class APIService {
               description
               category
               subcategory
+              quantity
+              value
               createdAt
               updatedAt
               probateRecordItemsId
@@ -3740,6 +3931,7 @@ export class APIService {
             }
             nextToken
           }
+          totalValue
           createdAt
           updatedAt
           probateRecordDeceasedId
@@ -3781,6 +3973,7 @@ export class APIService {
               title
               appraiser
               witness
+              totalValue
               createdAt
               updatedAt
               probateRecordDeceasedId
@@ -3801,6 +3994,8 @@ export class APIService {
               description
               category
               subcategory
+              quantity
+              value
               createdAt
               updatedAt
               probateRecordItemsId
@@ -3808,6 +4003,7 @@ export class APIService {
             }
             nextToken
           }
+          totalValue
           createdAt
           updatedAt
           probateRecordDeceasedId
@@ -3860,6 +4056,7 @@ export class APIService {
               __typename
               nextToken
             }
+            totalValue
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -3916,6 +4113,7 @@ export class APIService {
               __typename
               nextToken
             }
+            totalValue
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -3972,6 +4170,7 @@ export class APIService {
               __typename
               nextToken
             }
+            totalValue
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -4083,6 +4282,7 @@ export class APIService {
               __typename
               nextToken
             }
+            totalValue
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -4090,6 +4290,8 @@ export class APIService {
           }
           category
           subcategory
+          quantity
+          value
           rect {
             __typename
             left
@@ -4103,6 +4305,8 @@ export class APIService {
               description
               category
               subcategory
+              quantity
+              value
               createdAt
               updatedAt
               probateRecordItemsId
@@ -4163,6 +4367,7 @@ export class APIService {
               __typename
               nextToken
             }
+            totalValue
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -4170,6 +4375,8 @@ export class APIService {
           }
           category
           subcategory
+          quantity
+          value
           rect {
             __typename
             left
@@ -4183,6 +4390,8 @@ export class APIService {
               description
               category
               subcategory
+              quantity
+              value
               createdAt
               updatedAt
               probateRecordItemsId
@@ -4243,6 +4452,7 @@ export class APIService {
               __typename
               nextToken
             }
+            totalValue
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -4250,6 +4460,8 @@ export class APIService {
           }
           category
           subcategory
+          quantity
+          value
           rect {
             __typename
             left
@@ -4263,6 +4475,8 @@ export class APIService {
               description
               category
               subcategory
+              quantity
+              value
               createdAt
               updatedAt
               probateRecordItemsId
@@ -4306,6 +4520,7 @@ export class APIService {
               title
               appraiser
               witness
+              totalValue
               createdAt
               updatedAt
               probateRecordDeceasedId
@@ -4313,6 +4528,8 @@ export class APIService {
             }
             category
             subcategory
+            quantity
+            value
             rect {
               __typename
               left
@@ -4362,6 +4579,7 @@ export class APIService {
               title
               appraiser
               witness
+              totalValue
               createdAt
               updatedAt
               probateRecordDeceasedId
@@ -4369,6 +4587,8 @@ export class APIService {
             }
             category
             subcategory
+            quantity
+            value
             rect {
               __typename
               left
@@ -4418,6 +4638,7 @@ export class APIService {
               title
               appraiser
               witness
+              totalValue
               createdAt
               updatedAt
               probateRecordDeceasedId
@@ -4425,6 +4646,8 @@ export class APIService {
             }
             category
             subcategory
+            quantity
+            value
             rect {
               __typename
               left
