@@ -19,8 +19,12 @@ interface SubcategoryOptionValue {
 export class RecordDetailComponent implements OnInit {
   @Input() record?: ProbateRecord;
   @ViewChild('viewer') viewer!: ElementRef;  
-  private categoryMap: Map<string, Array<SubcategoryOptionValue>> = this.objToStrMap(data); //new Map(Object.entries(data));
+  private categoryMap: Map<string, Array<SubcategoryOptionValue>> = this.objToStrMap(data); 
   
+  osd?: dragon.Viewer;
+  constructor(private route: ActivatedRoute, private location: Location, private recordService: RecordService, private renderer: Renderer2) { 
+  }
+
   objToStrMap(obj: any) {
     let strMap = new Map();
     for (let k of Object.keys(obj)) {
@@ -31,10 +35,6 @@ export class RecordDetailComponent implements OnInit {
     return strMap;
   }
   
-
-  osd?: dragon.Viewer;
-  constructor(private route: ActivatedRoute, private location: Location, private recordService: RecordService, private renderer: Renderer2) { 
-  }
 
   populateSubcategory(lineIndex: number): void {
     const selectObject = document.getElementById("category-" + lineIndex) as HTMLInputElement;

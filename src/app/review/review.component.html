@@ -1,1 +1,54 @@
-<p>review works!</p>
+<meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
+<div class="container">
+    <div id="seadragon-viewer" class="split top" #viewer></div>
+
+    <div id="review-form" class="split bottom">
+        <h1> Enter your corrections below </h1>
+        <table>
+        <tr>
+            <th>Line Number</th>
+            <th>Text</th>
+            <th>Category</th>
+            <th>Subcategory</th>
+            <th>Quantity</th>
+            <th>Value</th>
+        </tr>
+        <tr *ngFor="let line of record?.lines; let i = index">
+            <td>{{ i }}</td>
+            <td><input id="line{{i}}" value="{{line.text}}" (focus)='highlightText(i)'/></td>     
+            <td>
+                <select id="category-{{ i }}" name="category-{{ i }}" (change)="populateSubcategory(i)">
+                    <option value="n-a">N/A</option>
+                    <option value="identity">Identity</option>
+                    <option value="furniture">Furniture</option>
+                    <option value="kitchen">Kitchen</option>
+                    <option value="farm">Farm/Business Implements</option>
+                    <option value="clothing">Clothing</option>
+                    <option value="people">Enslaved People</option>
+                    <option value="real-estate">Real Estate</option>
+                    <option value="financial-instrument">Financial Instrument</option>
+                    <option value="personal-items">Personal Items</option>
+                    <option value="firearms">Firearms</option>
+                    <option value="transportation">Transportation</option>
+                    <option value="foodstuffs">Foodstuffs</option>
+                    <option value="alcohol">Alcohol</option>
+                    <option value="agricultural-commodities">Agricultural Commodities</option>
+                    <option value="livestock-animals">Livestock and Animals</option>
+                </select>               
+            </td>
+            <td>
+                <select id="subcategory-{{ i }}" name="subcategory-{{ i }}">              
+                    <option value="n-a">N/A</option>
+                </select>
+            </td>
+            <td>
+                <input id="quantity-{{ i }}" name="quantity-{{ i }}" type="number"/>
+            </td>
+            <td>
+                <input id="total-value-{{ i }}" name="total-value-{{ i }}" min="0.01" step=".01" type="number"/>
+            </td>
+        </tr>
+        </table>
+        <button mat-raised-button class="submit-button" onclick="alert('submit form!')">Submit</button>
+    </div>
+</div>
