@@ -42,6 +42,7 @@ query GetProbateRecord($id: ID!) {
         createdAt
         updatedAt
         probateRecordItemsId
+        lineItemRectId
       }
       nextToken
     }
@@ -223,9 +224,31 @@ query GetLineItem($id: ID!) {
     }
     category
     subcategory
+    rect {
+      left
+      top
+      width
+      height
+      line {
+        id
+        title
+        description
+        category
+        subcategory
+        createdAt
+        updatedAt
+        probateRecordItemsId
+        lineItemRectId
+      }
+      id
+      createdAt
+      updatedAt
+      rectLineId
+    }
     createdAt
     updatedAt
     probateRecordItemsId
+    lineItemRectId
   }
 }
 query ListLineItems(
@@ -250,9 +273,93 @@ query ListLineItems(
       }
       category
       subcategory
+      rect {
+        left
+        top
+        width
+        height
+        id
+        createdAt
+        updatedAt
+        rectLineId
+      }
       createdAt
       updatedAt
       probateRecordItemsId
+      lineItemRectId
+    }
+    nextToken
+  }
+}
+query GetRect($id: ID!) {
+  getRect(id: $id) {
+    left
+    top
+    width
+    height
+    line {
+      id
+      title
+      description
+      probate {
+        id
+        title
+        appraiser
+        witness
+        createdAt
+        updatedAt
+        probateRecordDeceasedId
+        probateRecordFilingId
+      }
+      category
+      subcategory
+      rect {
+        left
+        top
+        width
+        height
+        id
+        createdAt
+        updatedAt
+        rectLineId
+      }
+      createdAt
+      updatedAt
+      probateRecordItemsId
+      lineItemRectId
+    }
+    id
+    createdAt
+    updatedAt
+    rectLineId
+  }
+}
+query ListRects(
+  $filter: ModelRectFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listRects(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      left
+      top
+      width
+      height
+      line {
+        id
+        title
+        description
+        category
+        subcategory
+        createdAt
+        updatedAt
+        probateRecordItemsId
+        lineItemRectId
+      }
+      id
+      createdAt
+      updatedAt
+      rectLineId
     }
     nextToken
   }

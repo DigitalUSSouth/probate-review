@@ -34,4 +34,13 @@ type LineItem @model {
   probate: ProbateRecord! @belongsTo
   category: String!
   subcategory: String!
+  rect: Rect! @hasOne
+}
+
+type Rect @model {
+  left: Float!
+  top: Float!
+  width: Float!
+  height: Float!
+  line: LineItem @belongsTo
 }

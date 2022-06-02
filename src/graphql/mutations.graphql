@@ -45,6 +45,7 @@ mutation CreateProbateRecord(
         createdAt
         updatedAt
         probateRecordItemsId
+        lineItemRectId
       }
       nextToken
     }
@@ -100,6 +101,7 @@ mutation UpdateProbateRecord(
         createdAt
         updatedAt
         probateRecordItemsId
+        lineItemRectId
       }
       nextToken
     }
@@ -155,6 +157,7 @@ mutation DeleteProbateRecord(
         createdAt
         updatedAt
         probateRecordItemsId
+        lineItemRectId
       }
       nextToken
     }
@@ -375,9 +378,31 @@ mutation CreateLineItem(
     }
     category
     subcategory
+    rect {
+      left
+      top
+      width
+      height
+      line {
+        id
+        title
+        description
+        category
+        subcategory
+        createdAt
+        updatedAt
+        probateRecordItemsId
+        lineItemRectId
+      }
+      id
+      createdAt
+      updatedAt
+      rectLineId
+    }
     createdAt
     updatedAt
     probateRecordItemsId
+    lineItemRectId
   }
 }
 mutation UpdateLineItem(
@@ -420,9 +445,31 @@ mutation UpdateLineItem(
     }
     category
     subcategory
+    rect {
+      left
+      top
+      width
+      height
+      line {
+        id
+        title
+        description
+        category
+        subcategory
+        createdAt
+        updatedAt
+        probateRecordItemsId
+        lineItemRectId
+      }
+      id
+      createdAt
+      updatedAt
+      rectLineId
+    }
     createdAt
     updatedAt
     probateRecordItemsId
+    lineItemRectId
   }
 }
 mutation DeleteLineItem(
@@ -465,8 +512,168 @@ mutation DeleteLineItem(
     }
     category
     subcategory
+    rect {
+      left
+      top
+      width
+      height
+      line {
+        id
+        title
+        description
+        category
+        subcategory
+        createdAt
+        updatedAt
+        probateRecordItemsId
+        lineItemRectId
+      }
+      id
+      createdAt
+      updatedAt
+      rectLineId
+    }
     createdAt
     updatedAt
     probateRecordItemsId
+    lineItemRectId
+  }
+}
+mutation CreateRect(
+  $input: CreateRectInput!
+  $condition: ModelRectConditionInput
+) {
+  createRect(input: $input, condition: $condition) {
+    left
+    top
+    width
+    height
+    line {
+      id
+      title
+      description
+      probate {
+        id
+        title
+        appraiser
+        witness
+        createdAt
+        updatedAt
+        probateRecordDeceasedId
+        probateRecordFilingId
+      }
+      category
+      subcategory
+      rect {
+        left
+        top
+        width
+        height
+        id
+        createdAt
+        updatedAt
+        rectLineId
+      }
+      createdAt
+      updatedAt
+      probateRecordItemsId
+      lineItemRectId
+    }
+    id
+    createdAt
+    updatedAt
+    rectLineId
+  }
+}
+mutation UpdateRect(
+  $input: UpdateRectInput!
+  $condition: ModelRectConditionInput
+) {
+  updateRect(input: $input, condition: $condition) {
+    left
+    top
+    width
+    height
+    line {
+      id
+      title
+      description
+      probate {
+        id
+        title
+        appraiser
+        witness
+        createdAt
+        updatedAt
+        probateRecordDeceasedId
+        probateRecordFilingId
+      }
+      category
+      subcategory
+      rect {
+        left
+        top
+        width
+        height
+        id
+        createdAt
+        updatedAt
+        rectLineId
+      }
+      createdAt
+      updatedAt
+      probateRecordItemsId
+      lineItemRectId
+    }
+    id
+    createdAt
+    updatedAt
+    rectLineId
+  }
+}
+mutation DeleteRect(
+  $input: DeleteRectInput!
+  $condition: ModelRectConditionInput
+) {
+  deleteRect(input: $input, condition: $condition) {
+    left
+    top
+    width
+    height
+    line {
+      id
+      title
+      description
+      probate {
+        id
+        title
+        appraiser
+        witness
+        createdAt
+        updatedAt
+        probateRecordDeceasedId
+        probateRecordFilingId
+      }
+      category
+      subcategory
+      rect {
+        left
+        top
+        width
+        height
+        id
+        createdAt
+        updatedAt
+        rectLineId
+      }
+      createdAt
+      updatedAt
+      probateRecordItemsId
+      lineItemRectId
+    }
+    id
+    createdAt
+    updatedAt
+    rectLineId
   }
 }

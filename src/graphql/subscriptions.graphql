@@ -42,6 +42,7 @@ subscription OnCreateProbateRecord {
         createdAt
         updatedAt
         probateRecordItemsId
+        lineItemRectId
       }
       nextToken
     }
@@ -94,6 +95,7 @@ subscription OnUpdateProbateRecord {
         createdAt
         updatedAt
         probateRecordItemsId
+        lineItemRectId
       }
       nextToken
     }
@@ -146,6 +148,7 @@ subscription OnDeleteProbateRecord {
         createdAt
         updatedAt
         probateRecordItemsId
+        lineItemRectId
       }
       nextToken
     }
@@ -345,9 +348,31 @@ subscription OnCreateLineItem {
     }
     category
     subcategory
+    rect {
+      left
+      top
+      width
+      height
+      line {
+        id
+        title
+        description
+        category
+        subcategory
+        createdAt
+        updatedAt
+        probateRecordItemsId
+        lineItemRectId
+      }
+      id
+      createdAt
+      updatedAt
+      rectLineId
+    }
     createdAt
     updatedAt
     probateRecordItemsId
+    lineItemRectId
   }
 }
 subscription OnUpdateLineItem {
@@ -387,9 +412,31 @@ subscription OnUpdateLineItem {
     }
     category
     subcategory
+    rect {
+      left
+      top
+      width
+      height
+      line {
+        id
+        title
+        description
+        category
+        subcategory
+        createdAt
+        updatedAt
+        probateRecordItemsId
+        lineItemRectId
+      }
+      id
+      createdAt
+      updatedAt
+      rectLineId
+    }
     createdAt
     updatedAt
     probateRecordItemsId
+    lineItemRectId
   }
 }
 subscription OnDeleteLineItem {
@@ -429,8 +476,159 @@ subscription OnDeleteLineItem {
     }
     category
     subcategory
+    rect {
+      left
+      top
+      width
+      height
+      line {
+        id
+        title
+        description
+        category
+        subcategory
+        createdAt
+        updatedAt
+        probateRecordItemsId
+        lineItemRectId
+      }
+      id
+      createdAt
+      updatedAt
+      rectLineId
+    }
     createdAt
     updatedAt
     probateRecordItemsId
+    lineItemRectId
+  }
+}
+subscription OnCreateRect {
+  onCreateRect {
+    left
+    top
+    width
+    height
+    line {
+      id
+      title
+      description
+      probate {
+        id
+        title
+        appraiser
+        witness
+        createdAt
+        updatedAt
+        probateRecordDeceasedId
+        probateRecordFilingId
+      }
+      category
+      subcategory
+      rect {
+        left
+        top
+        width
+        height
+        id
+        createdAt
+        updatedAt
+        rectLineId
+      }
+      createdAt
+      updatedAt
+      probateRecordItemsId
+      lineItemRectId
+    }
+    id
+    createdAt
+    updatedAt
+    rectLineId
+  }
+}
+subscription OnUpdateRect {
+  onUpdateRect {
+    left
+    top
+    width
+    height
+    line {
+      id
+      title
+      description
+      probate {
+        id
+        title
+        appraiser
+        witness
+        createdAt
+        updatedAt
+        probateRecordDeceasedId
+        probateRecordFilingId
+      }
+      category
+      subcategory
+      rect {
+        left
+        top
+        width
+        height
+        id
+        createdAt
+        updatedAt
+        rectLineId
+      }
+      createdAt
+      updatedAt
+      probateRecordItemsId
+      lineItemRectId
+    }
+    id
+    createdAt
+    updatedAt
+    rectLineId
+  }
+}
+subscription OnDeleteRect {
+  onDeleteRect {
+    left
+    top
+    width
+    height
+    line {
+      id
+      title
+      description
+      probate {
+        id
+        title
+        appraiser
+        witness
+        createdAt
+        updatedAt
+        probateRecordDeceasedId
+        probateRecordFilingId
+      }
+      category
+      subcategory
+      rect {
+        left
+        top
+        width
+        height
+        id
+        createdAt
+        updatedAt
+        rectLineId
+      }
+      createdAt
+      updatedAt
+      probateRecordItemsId
+      lineItemRectId
+    }
+    id
+    createdAt
+    updatedAt
+    rectLineId
   }
 }

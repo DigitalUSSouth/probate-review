@@ -22,6 +22,9 @@ export type __SubscriptionContainer = {
   onCreateLineItem: OnCreateLineItemSubscription;
   onUpdateLineItem: OnUpdateLineItemSubscription;
   onDeleteLineItem: OnDeleteLineItemSubscription;
+  onCreateRect: OnCreateRectSubscription;
+  onUpdateRect: OnUpdateRectSubscription;
+  onDeleteRect: OnDeleteRectSubscription;
 };
 
 export type CreateProbateRecordInput = {
@@ -150,9 +153,24 @@ export type LineItem = {
   probate: ProbateRecord;
   category: string;
   subcategory: string;
+  rect: Rect;
   createdAt: string;
   updatedAt: string;
   probateRecordItemsId?: string | null;
+  lineItemRectId: string;
+};
+
+export type Rect = {
+  __typename: "Rect";
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  line?: LineItem | null;
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  rectLineId?: string | null;
 };
 
 export type UpdateProbateRecordInput = {
@@ -232,6 +250,7 @@ export type CreateLineItemInput = {
   category: string;
   subcategory: string;
   probateRecordItemsId?: string | null;
+  lineItemRectId: string;
 };
 
 export type ModelLineItemConditionInput = {
@@ -243,6 +262,7 @@ export type ModelLineItemConditionInput = {
   or?: Array<ModelLineItemConditionInput | null> | null;
   not?: ModelLineItemConditionInput | null;
   probateRecordItemsId?: ModelIDInput | null;
+  lineItemRectId?: ModelIDInput | null;
 };
 
 export type UpdateLineItemInput = {
@@ -252,9 +272,55 @@ export type UpdateLineItemInput = {
   category?: string | null;
   subcategory?: string | null;
   probateRecordItemsId?: string | null;
+  lineItemRectId?: string | null;
 };
 
 export type DeleteLineItemInput = {
+  id: string;
+};
+
+export type CreateRectInput = {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  id?: string | null;
+  rectLineId?: string | null;
+};
+
+export type ModelRectConditionInput = {
+  left?: ModelFloatInput | null;
+  top?: ModelFloatInput | null;
+  width?: ModelFloatInput | null;
+  height?: ModelFloatInput | null;
+  and?: Array<ModelRectConditionInput | null> | null;
+  or?: Array<ModelRectConditionInput | null> | null;
+  not?: ModelRectConditionInput | null;
+  rectLineId?: ModelIDInput | null;
+};
+
+export type ModelFloatInput = {
+  ne?: number | null;
+  eq?: number | null;
+  le?: number | null;
+  lt?: number | null;
+  ge?: number | null;
+  gt?: number | null;
+  between?: Array<number | null> | null;
+  attributeExists?: boolean | null;
+  attributeType?: ModelAttributeTypes | null;
+};
+
+export type UpdateRectInput = {
+  left?: number | null;
+  top?: number | null;
+  width?: number | null;
+  height?: number | null;
+  id: string;
+  rectLineId?: string | null;
+};
+
+export type DeleteRectInput = {
   id: string;
 };
 
@@ -319,6 +385,24 @@ export type ModelLineItemFilterInput = {
   or?: Array<ModelLineItemFilterInput | null> | null;
   not?: ModelLineItemFilterInput | null;
   probateRecordItemsId?: ModelIDInput | null;
+  lineItemRectId?: ModelIDInput | null;
+};
+
+export type ModelRectFilterInput = {
+  left?: ModelFloatInput | null;
+  top?: ModelFloatInput | null;
+  width?: ModelFloatInput | null;
+  height?: ModelFloatInput | null;
+  and?: Array<ModelRectFilterInput | null> | null;
+  or?: Array<ModelRectFilterInput | null> | null;
+  not?: ModelRectFilterInput | null;
+  rectLineId?: ModelIDInput | null;
+};
+
+export type ModelRectConnection = {
+  __typename: "ModelRectConnection";
+  items: Array<Rect | null>;
+  nextToken?: string | null;
 };
 
 export type CreateProbateRecordMutation = {
@@ -369,6 +453,7 @@ export type CreateProbateRecordMutation = {
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
+      lineItemRectId: string;
     } | null>;
     nextToken?: string | null;
   } | null;
@@ -426,6 +511,7 @@ export type UpdateProbateRecordMutation = {
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
+      lineItemRectId: string;
     } | null>;
     nextToken?: string | null;
   } | null;
@@ -483,6 +569,7 @@ export type DeleteProbateRecordMutation = {
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
+      lineItemRectId: string;
     } | null>;
     nextToken?: string | null;
   } | null;
@@ -698,9 +785,33 @@ export type CreateLineItemMutation = {
   };
   category: string;
   subcategory: string;
+  rect: {
+    __typename: "Rect";
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    line?: {
+      __typename: "LineItem";
+      id: string;
+      title: string;
+      description?: string | null;
+      category: string;
+      subcategory: string;
+      createdAt: string;
+      updatedAt: string;
+      probateRecordItemsId?: string | null;
+      lineItemRectId: string;
+    } | null;
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    rectLineId?: string | null;
+  };
   createdAt: string;
   updatedAt: string;
   probateRecordItemsId?: string | null;
+  lineItemRectId: string;
 };
 
 export type UpdateLineItemMutation = {
@@ -744,9 +855,33 @@ export type UpdateLineItemMutation = {
   };
   category: string;
   subcategory: string;
+  rect: {
+    __typename: "Rect";
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    line?: {
+      __typename: "LineItem";
+      id: string;
+      title: string;
+      description?: string | null;
+      category: string;
+      subcategory: string;
+      createdAt: string;
+      updatedAt: string;
+      probateRecordItemsId?: string | null;
+      lineItemRectId: string;
+    } | null;
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    rectLineId?: string | null;
+  };
   createdAt: string;
   updatedAt: string;
   probateRecordItemsId?: string | null;
+  lineItemRectId: string;
 };
 
 export type DeleteLineItemMutation = {
@@ -790,9 +925,171 @@ export type DeleteLineItemMutation = {
   };
   category: string;
   subcategory: string;
+  rect: {
+    __typename: "Rect";
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    line?: {
+      __typename: "LineItem";
+      id: string;
+      title: string;
+      description?: string | null;
+      category: string;
+      subcategory: string;
+      createdAt: string;
+      updatedAt: string;
+      probateRecordItemsId?: string | null;
+      lineItemRectId: string;
+    } | null;
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    rectLineId?: string | null;
+  };
   createdAt: string;
   updatedAt: string;
   probateRecordItemsId?: string | null;
+  lineItemRectId: string;
+};
+
+export type CreateRectMutation = {
+  __typename: "Rect";
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  line?: {
+    __typename: "LineItem";
+    id: string;
+    title: string;
+    description?: string | null;
+    probate: {
+      __typename: "ProbateRecord";
+      id: string;
+      title?: string | null;
+      appraiser?: Array<string | null> | null;
+      witness?: Array<string | null> | null;
+      createdAt: string;
+      updatedAt: string;
+      probateRecordDeceasedId?: string | null;
+      probateRecordFilingId?: string | null;
+    };
+    category: string;
+    subcategory: string;
+    rect: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+      rectLineId?: string | null;
+    };
+    createdAt: string;
+    updatedAt: string;
+    probateRecordItemsId?: string | null;
+    lineItemRectId: string;
+  } | null;
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  rectLineId?: string | null;
+};
+
+export type UpdateRectMutation = {
+  __typename: "Rect";
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  line?: {
+    __typename: "LineItem";
+    id: string;
+    title: string;
+    description?: string | null;
+    probate: {
+      __typename: "ProbateRecord";
+      id: string;
+      title?: string | null;
+      appraiser?: Array<string | null> | null;
+      witness?: Array<string | null> | null;
+      createdAt: string;
+      updatedAt: string;
+      probateRecordDeceasedId?: string | null;
+      probateRecordFilingId?: string | null;
+    };
+    category: string;
+    subcategory: string;
+    rect: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+      rectLineId?: string | null;
+    };
+    createdAt: string;
+    updatedAt: string;
+    probateRecordItemsId?: string | null;
+    lineItemRectId: string;
+  } | null;
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  rectLineId?: string | null;
+};
+
+export type DeleteRectMutation = {
+  __typename: "Rect";
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  line?: {
+    __typename: "LineItem";
+    id: string;
+    title: string;
+    description?: string | null;
+    probate: {
+      __typename: "ProbateRecord";
+      id: string;
+      title?: string | null;
+      appraiser?: Array<string | null> | null;
+      witness?: Array<string | null> | null;
+      createdAt: string;
+      updatedAt: string;
+      probateRecordDeceasedId?: string | null;
+      probateRecordFilingId?: string | null;
+    };
+    category: string;
+    subcategory: string;
+    rect: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+      rectLineId?: string | null;
+    };
+    createdAt: string;
+    updatedAt: string;
+    probateRecordItemsId?: string | null;
+    lineItemRectId: string;
+  } | null;
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  rectLineId?: string | null;
 };
 
 export type GetProbateRecordQuery = {
@@ -843,6 +1140,7 @@ export type GetProbateRecordQuery = {
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
+      lineItemRectId: string;
     } | null>;
     nextToken?: string | null;
   } | null;
@@ -1027,9 +1325,33 @@ export type GetLineItemQuery = {
   };
   category: string;
   subcategory: string;
+  rect: {
+    __typename: "Rect";
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    line?: {
+      __typename: "LineItem";
+      id: string;
+      title: string;
+      description?: string | null;
+      category: string;
+      subcategory: string;
+      createdAt: string;
+      updatedAt: string;
+      probateRecordItemsId?: string | null;
+      lineItemRectId: string;
+    } | null;
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    rectLineId?: string | null;
+  };
   createdAt: string;
   updatedAt: string;
   probateRecordItemsId?: string | null;
+  lineItemRectId: string;
 };
 
 export type ListLineItemsQuery = {
@@ -1052,9 +1374,95 @@ export type ListLineItemsQuery = {
     };
     category: string;
     subcategory: string;
+    rect: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+      rectLineId?: string | null;
+    };
     createdAt: string;
     updatedAt: string;
     probateRecordItemsId?: string | null;
+    lineItemRectId: string;
+  } | null>;
+  nextToken?: string | null;
+};
+
+export type GetRectQuery = {
+  __typename: "Rect";
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  line?: {
+    __typename: "LineItem";
+    id: string;
+    title: string;
+    description?: string | null;
+    probate: {
+      __typename: "ProbateRecord";
+      id: string;
+      title?: string | null;
+      appraiser?: Array<string | null> | null;
+      witness?: Array<string | null> | null;
+      createdAt: string;
+      updatedAt: string;
+      probateRecordDeceasedId?: string | null;
+      probateRecordFilingId?: string | null;
+    };
+    category: string;
+    subcategory: string;
+    rect: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+      rectLineId?: string | null;
+    };
+    createdAt: string;
+    updatedAt: string;
+    probateRecordItemsId?: string | null;
+    lineItemRectId: string;
+  } | null;
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  rectLineId?: string | null;
+};
+
+export type ListRectsQuery = {
+  __typename: "ModelRectConnection";
+  items: Array<{
+    __typename: "Rect";
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    line?: {
+      __typename: "LineItem";
+      id: string;
+      title: string;
+      description?: string | null;
+      category: string;
+      subcategory: string;
+      createdAt: string;
+      updatedAt: string;
+      probateRecordItemsId?: string | null;
+      lineItemRectId: string;
+    } | null;
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    rectLineId?: string | null;
   } | null>;
   nextToken?: string | null;
 };
@@ -1107,6 +1515,7 @@ export type OnCreateProbateRecordSubscription = {
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
+      lineItemRectId: string;
     } | null>;
     nextToken?: string | null;
   } | null;
@@ -1164,6 +1573,7 @@ export type OnUpdateProbateRecordSubscription = {
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
+      lineItemRectId: string;
     } | null>;
     nextToken?: string | null;
   } | null;
@@ -1221,6 +1631,7 @@ export type OnDeleteProbateRecordSubscription = {
       createdAt: string;
       updatedAt: string;
       probateRecordItemsId?: string | null;
+      lineItemRectId: string;
     } | null>;
     nextToken?: string | null;
   } | null;
@@ -1436,9 +1847,33 @@ export type OnCreateLineItemSubscription = {
   };
   category: string;
   subcategory: string;
+  rect: {
+    __typename: "Rect";
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    line?: {
+      __typename: "LineItem";
+      id: string;
+      title: string;
+      description?: string | null;
+      category: string;
+      subcategory: string;
+      createdAt: string;
+      updatedAt: string;
+      probateRecordItemsId?: string | null;
+      lineItemRectId: string;
+    } | null;
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    rectLineId?: string | null;
+  };
   createdAt: string;
   updatedAt: string;
   probateRecordItemsId?: string | null;
+  lineItemRectId: string;
 };
 
 export type OnUpdateLineItemSubscription = {
@@ -1482,9 +1917,33 @@ export type OnUpdateLineItemSubscription = {
   };
   category: string;
   subcategory: string;
+  rect: {
+    __typename: "Rect";
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    line?: {
+      __typename: "LineItem";
+      id: string;
+      title: string;
+      description?: string | null;
+      category: string;
+      subcategory: string;
+      createdAt: string;
+      updatedAt: string;
+      probateRecordItemsId?: string | null;
+      lineItemRectId: string;
+    } | null;
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    rectLineId?: string | null;
+  };
   createdAt: string;
   updatedAt: string;
   probateRecordItemsId?: string | null;
+  lineItemRectId: string;
 };
 
 export type OnDeleteLineItemSubscription = {
@@ -1528,9 +1987,171 @@ export type OnDeleteLineItemSubscription = {
   };
   category: string;
   subcategory: string;
+  rect: {
+    __typename: "Rect";
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    line?: {
+      __typename: "LineItem";
+      id: string;
+      title: string;
+      description?: string | null;
+      category: string;
+      subcategory: string;
+      createdAt: string;
+      updatedAt: string;
+      probateRecordItemsId?: string | null;
+      lineItemRectId: string;
+    } | null;
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    rectLineId?: string | null;
+  };
   createdAt: string;
   updatedAt: string;
   probateRecordItemsId?: string | null;
+  lineItemRectId: string;
+};
+
+export type OnCreateRectSubscription = {
+  __typename: "Rect";
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  line?: {
+    __typename: "LineItem";
+    id: string;
+    title: string;
+    description?: string | null;
+    probate: {
+      __typename: "ProbateRecord";
+      id: string;
+      title?: string | null;
+      appraiser?: Array<string | null> | null;
+      witness?: Array<string | null> | null;
+      createdAt: string;
+      updatedAt: string;
+      probateRecordDeceasedId?: string | null;
+      probateRecordFilingId?: string | null;
+    };
+    category: string;
+    subcategory: string;
+    rect: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+      rectLineId?: string | null;
+    };
+    createdAt: string;
+    updatedAt: string;
+    probateRecordItemsId?: string | null;
+    lineItemRectId: string;
+  } | null;
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  rectLineId?: string | null;
+};
+
+export type OnUpdateRectSubscription = {
+  __typename: "Rect";
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  line?: {
+    __typename: "LineItem";
+    id: string;
+    title: string;
+    description?: string | null;
+    probate: {
+      __typename: "ProbateRecord";
+      id: string;
+      title?: string | null;
+      appraiser?: Array<string | null> | null;
+      witness?: Array<string | null> | null;
+      createdAt: string;
+      updatedAt: string;
+      probateRecordDeceasedId?: string | null;
+      probateRecordFilingId?: string | null;
+    };
+    category: string;
+    subcategory: string;
+    rect: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+      rectLineId?: string | null;
+    };
+    createdAt: string;
+    updatedAt: string;
+    probateRecordItemsId?: string | null;
+    lineItemRectId: string;
+  } | null;
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  rectLineId?: string | null;
+};
+
+export type OnDeleteRectSubscription = {
+  __typename: "Rect";
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  line?: {
+    __typename: "LineItem";
+    id: string;
+    title: string;
+    description?: string | null;
+    probate: {
+      __typename: "ProbateRecord";
+      id: string;
+      title?: string | null;
+      appraiser?: Array<string | null> | null;
+      witness?: Array<string | null> | null;
+      createdAt: string;
+      updatedAt: string;
+      probateRecordDeceasedId?: string | null;
+      probateRecordFilingId?: string | null;
+    };
+    category: string;
+    subcategory: string;
+    rect: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+      rectLineId?: string | null;
+    };
+    createdAt: string;
+    updatedAt: string;
+    probateRecordItemsId?: string | null;
+    lineItemRectId: string;
+  } | null;
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  rectLineId?: string | null;
 };
 
 @Injectable({
@@ -1590,6 +2211,7 @@ export class APIService {
               createdAt
               updatedAt
               probateRecordItemsId
+              lineItemRectId
             }
             nextToken
           }
@@ -1663,6 +2285,7 @@ export class APIService {
               createdAt
               updatedAt
               probateRecordItemsId
+              lineItemRectId
             }
             nextToken
           }
@@ -1736,6 +2359,7 @@ export class APIService {
               createdAt
               updatedAt
               probateRecordItemsId
+              lineItemRectId
             }
             nextToken
           }
@@ -2063,9 +2687,33 @@ export class APIService {
           }
           category
           subcategory
+          rect {
+            __typename
+            left
+            top
+            width
+            height
+            line {
+              __typename
+              id
+              title
+              description
+              category
+              subcategory
+              createdAt
+              updatedAt
+              probateRecordItemsId
+              lineItemRectId
+            }
+            id
+            createdAt
+            updatedAt
+            rectLineId
+          }
           createdAt
           updatedAt
           probateRecordItemsId
+          lineItemRectId
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -2125,9 +2773,33 @@ export class APIService {
           }
           category
           subcategory
+          rect {
+            __typename
+            left
+            top
+            width
+            height
+            line {
+              __typename
+              id
+              title
+              description
+              category
+              subcategory
+              createdAt
+              updatedAt
+              probateRecordItemsId
+              lineItemRectId
+            }
+            id
+            createdAt
+            updatedAt
+            rectLineId
+          }
           createdAt
           updatedAt
           probateRecordItemsId
+          lineItemRectId
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -2187,9 +2859,33 @@ export class APIService {
           }
           category
           subcategory
+          rect {
+            __typename
+            left
+            top
+            width
+            height
+            line {
+              __typename
+              id
+              title
+              description
+              category
+              subcategory
+              createdAt
+              updatedAt
+              probateRecordItemsId
+              lineItemRectId
+            }
+            id
+            createdAt
+            updatedAt
+            rectLineId
+          }
           createdAt
           updatedAt
           probateRecordItemsId
+          lineItemRectId
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -2202,6 +2898,192 @@ export class APIService {
       graphqlOperation(statement, gqlAPIServiceArguments)
     )) as any;
     return <DeleteLineItemMutation>response.data.deleteLineItem;
+  }
+  async CreateRect(
+    input: CreateRectInput,
+    condition?: ModelRectConditionInput
+  ): Promise<CreateRectMutation> {
+    const statement = `mutation CreateRect($input: CreateRectInput!, $condition: ModelRectConditionInput) {
+        createRect(input: $input, condition: $condition) {
+          __typename
+          left
+          top
+          width
+          height
+          line {
+            __typename
+            id
+            title
+            description
+            probate {
+              __typename
+              id
+              title
+              appraiser
+              witness
+              createdAt
+              updatedAt
+              probateRecordDeceasedId
+              probateRecordFilingId
+            }
+            category
+            subcategory
+            rect {
+              __typename
+              left
+              top
+              width
+              height
+              id
+              createdAt
+              updatedAt
+              rectLineId
+            }
+            createdAt
+            updatedAt
+            probateRecordItemsId
+            lineItemRectId
+          }
+          id
+          createdAt
+          updatedAt
+          rectLineId
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <CreateRectMutation>response.data.createRect;
+  }
+  async UpdateRect(
+    input: UpdateRectInput,
+    condition?: ModelRectConditionInput
+  ): Promise<UpdateRectMutation> {
+    const statement = `mutation UpdateRect($input: UpdateRectInput!, $condition: ModelRectConditionInput) {
+        updateRect(input: $input, condition: $condition) {
+          __typename
+          left
+          top
+          width
+          height
+          line {
+            __typename
+            id
+            title
+            description
+            probate {
+              __typename
+              id
+              title
+              appraiser
+              witness
+              createdAt
+              updatedAt
+              probateRecordDeceasedId
+              probateRecordFilingId
+            }
+            category
+            subcategory
+            rect {
+              __typename
+              left
+              top
+              width
+              height
+              id
+              createdAt
+              updatedAt
+              rectLineId
+            }
+            createdAt
+            updatedAt
+            probateRecordItemsId
+            lineItemRectId
+          }
+          id
+          createdAt
+          updatedAt
+          rectLineId
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <UpdateRectMutation>response.data.updateRect;
+  }
+  async DeleteRect(
+    input: DeleteRectInput,
+    condition?: ModelRectConditionInput
+  ): Promise<DeleteRectMutation> {
+    const statement = `mutation DeleteRect($input: DeleteRectInput!, $condition: ModelRectConditionInput) {
+        deleteRect(input: $input, condition: $condition) {
+          __typename
+          left
+          top
+          width
+          height
+          line {
+            __typename
+            id
+            title
+            description
+            probate {
+              __typename
+              id
+              title
+              appraiser
+              witness
+              createdAt
+              updatedAt
+              probateRecordDeceasedId
+              probateRecordFilingId
+            }
+            category
+            subcategory
+            rect {
+              __typename
+              left
+              top
+              width
+              height
+              id
+              createdAt
+              updatedAt
+              rectLineId
+            }
+            createdAt
+            updatedAt
+            probateRecordItemsId
+            lineItemRectId
+          }
+          id
+          createdAt
+          updatedAt
+          rectLineId
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <DeleteRectMutation>response.data.deleteRect;
   }
   async GetProbateRecord(id: string): Promise<GetProbateRecordQuery> {
     const statement = `query GetProbateRecord($id: ID!) {
@@ -2253,6 +3135,7 @@ export class APIService {
               createdAt
               updatedAt
               probateRecordItemsId
+              lineItemRectId
             }
             nextToken
           }
@@ -2530,9 +3413,33 @@ export class APIService {
           }
           category
           subcategory
+          rect {
+            __typename
+            left
+            top
+            width
+            height
+            line {
+              __typename
+              id
+              title
+              description
+              category
+              subcategory
+              createdAt
+              updatedAt
+              probateRecordItemsId
+              lineItemRectId
+            }
+            id
+            createdAt
+            updatedAt
+            rectLineId
+          }
           createdAt
           updatedAt
           probateRecordItemsId
+          lineItemRectId
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -2569,9 +3476,21 @@ export class APIService {
             }
             category
             subcategory
+            rect {
+              __typename
+              left
+              top
+              width
+              height
+              id
+              createdAt
+              updatedAt
+              rectLineId
+            }
             createdAt
             updatedAt
             probateRecordItemsId
+            lineItemRectId
           }
           nextToken
         }
@@ -2590,6 +3509,111 @@ export class APIService {
       graphqlOperation(statement, gqlAPIServiceArguments)
     )) as any;
     return <ListLineItemsQuery>response.data.listLineItems;
+  }
+  async GetRect(id: string): Promise<GetRectQuery> {
+    const statement = `query GetRect($id: ID!) {
+        getRect(id: $id) {
+          __typename
+          left
+          top
+          width
+          height
+          line {
+            __typename
+            id
+            title
+            description
+            probate {
+              __typename
+              id
+              title
+              appraiser
+              witness
+              createdAt
+              updatedAt
+              probateRecordDeceasedId
+              probateRecordFilingId
+            }
+            category
+            subcategory
+            rect {
+              __typename
+              left
+              top
+              width
+              height
+              id
+              createdAt
+              updatedAt
+              rectLineId
+            }
+            createdAt
+            updatedAt
+            probateRecordItemsId
+            lineItemRectId
+          }
+          id
+          createdAt
+          updatedAt
+          rectLineId
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      id
+    };
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <GetRectQuery>response.data.getRect;
+  }
+  async ListRects(
+    filter?: ModelRectFilterInput,
+    limit?: number,
+    nextToken?: string
+  ): Promise<ListRectsQuery> {
+    const statement = `query ListRects($filter: ModelRectFilterInput, $limit: Int, $nextToken: String) {
+        listRects(filter: $filter, limit: $limit, nextToken: $nextToken) {
+          __typename
+          items {
+            __typename
+            left
+            top
+            width
+            height
+            line {
+              __typename
+              id
+              title
+              description
+              category
+              subcategory
+              createdAt
+              updatedAt
+              probateRecordItemsId
+              lineItemRectId
+            }
+            id
+            createdAt
+            updatedAt
+            rectLineId
+          }
+          nextToken
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    if (limit) {
+      gqlAPIServiceArguments.limit = limit;
+    }
+    if (nextToken) {
+      gqlAPIServiceArguments.nextToken = nextToken;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <ListRectsQuery>response.data.listRects;
   }
   OnCreateProbateRecordListener: Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateProbateRecord">>
@@ -2644,6 +3668,7 @@ export class APIService {
               createdAt
               updatedAt
               probateRecordItemsId
+              lineItemRectId
             }
             nextToken
           }
@@ -2711,6 +3736,7 @@ export class APIService {
               createdAt
               updatedAt
               probateRecordItemsId
+              lineItemRectId
             }
             nextToken
           }
@@ -2778,6 +3804,7 @@ export class APIService {
               createdAt
               updatedAt
               probateRecordItemsId
+              lineItemRectId
             }
             nextToken
           }
@@ -3063,9 +4090,33 @@ export class APIService {
           }
           category
           subcategory
+          rect {
+            __typename
+            left
+            top
+            width
+            height
+            line {
+              __typename
+              id
+              title
+              description
+              category
+              subcategory
+              createdAt
+              updatedAt
+              probateRecordItemsId
+              lineItemRectId
+            }
+            id
+            createdAt
+            updatedAt
+            rectLineId
+          }
           createdAt
           updatedAt
           probateRecordItemsId
+          lineItemRectId
         }
       }`
     )
@@ -3119,9 +4170,33 @@ export class APIService {
           }
           category
           subcategory
+          rect {
+            __typename
+            left
+            top
+            width
+            height
+            line {
+              __typename
+              id
+              title
+              description
+              category
+              subcategory
+              createdAt
+              updatedAt
+              probateRecordItemsId
+              lineItemRectId
+            }
+            id
+            createdAt
+            updatedAt
+            rectLineId
+          }
           createdAt
           updatedAt
           probateRecordItemsId
+          lineItemRectId
         }
       }`
     )
@@ -3175,13 +4250,205 @@ export class APIService {
           }
           category
           subcategory
+          rect {
+            __typename
+            left
+            top
+            width
+            height
+            line {
+              __typename
+              id
+              title
+              description
+              category
+              subcategory
+              createdAt
+              updatedAt
+              probateRecordItemsId
+              lineItemRectId
+            }
+            id
+            createdAt
+            updatedAt
+            rectLineId
+          }
           createdAt
           updatedAt
           probateRecordItemsId
+          lineItemRectId
         }
       }`
     )
   ) as Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteLineItem">>
+  >;
+
+  OnCreateRectListener: Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateRect">>
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnCreateRect {
+        onCreateRect {
+          __typename
+          left
+          top
+          width
+          height
+          line {
+            __typename
+            id
+            title
+            description
+            probate {
+              __typename
+              id
+              title
+              appraiser
+              witness
+              createdAt
+              updatedAt
+              probateRecordDeceasedId
+              probateRecordFilingId
+            }
+            category
+            subcategory
+            rect {
+              __typename
+              left
+              top
+              width
+              height
+              id
+              createdAt
+              updatedAt
+              rectLineId
+            }
+            createdAt
+            updatedAt
+            probateRecordItemsId
+            lineItemRectId
+          }
+          id
+          createdAt
+          updatedAt
+          rectLineId
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateRect">>
+  >;
+
+  OnUpdateRectListener: Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateRect">>
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnUpdateRect {
+        onUpdateRect {
+          __typename
+          left
+          top
+          width
+          height
+          line {
+            __typename
+            id
+            title
+            description
+            probate {
+              __typename
+              id
+              title
+              appraiser
+              witness
+              createdAt
+              updatedAt
+              probateRecordDeceasedId
+              probateRecordFilingId
+            }
+            category
+            subcategory
+            rect {
+              __typename
+              left
+              top
+              width
+              height
+              id
+              createdAt
+              updatedAt
+              rectLineId
+            }
+            createdAt
+            updatedAt
+            probateRecordItemsId
+            lineItemRectId
+          }
+          id
+          createdAt
+          updatedAt
+          rectLineId
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateRect">>
+  >;
+
+  OnDeleteRectListener: Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteRect">>
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnDeleteRect {
+        onDeleteRect {
+          __typename
+          left
+          top
+          width
+          height
+          line {
+            __typename
+            id
+            title
+            description
+            probate {
+              __typename
+              id
+              title
+              appraiser
+              witness
+              createdAt
+              updatedAt
+              probateRecordDeceasedId
+              probateRecordFilingId
+            }
+            category
+            subcategory
+            rect {
+              __typename
+              left
+              top
+              width
+              height
+              id
+              createdAt
+              updatedAt
+              rectLineId
+            }
+            createdAt
+            updatedAt
+            probateRecordItemsId
+            lineItemRectId
+          }
+          id
+          createdAt
+          updatedAt
+          rectLineId
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteRect">>
   >;
 }
