@@ -235,27 +235,13 @@ query GetLineItem($id: ID!) {
     quantity
     value
     rect {
+      id
       left
       top
       width
       height
-      line {
-        id
-        title
-        description
-        category
-        subcategory
-        quantity
-        value
-        createdAt
-        updatedAt
-        probateRecordItemsId
-        lineItemRectId
-      }
-      id
       createdAt
       updatedAt
-      rectLineId
     }
     createdAt
     updatedAt
@@ -289,14 +275,13 @@ query ListLineItems(
       quantity
       value
       rect {
+        id
         left
         top
         width
         height
-        id
         createdAt
         updatedAt
-        rectLineId
       }
       createdAt
       updatedAt
@@ -308,48 +293,13 @@ query ListLineItems(
 }
 query GetRect($id: ID!) {
   getRect(id: $id) {
+    id
     left
     top
     width
     height
-    line {
-      id
-      title
-      description
-      probate {
-        id
-        title
-        appraiser
-        witness
-        totalValue
-        createdAt
-        updatedAt
-        probateRecordDeceasedId
-        probateRecordFilingId
-      }
-      category
-      subcategory
-      quantity
-      value
-      rect {
-        left
-        top
-        width
-        height
-        id
-        createdAt
-        updatedAt
-        rectLineId
-      }
-      createdAt
-      updatedAt
-      probateRecordItemsId
-      lineItemRectId
-    }
-    id
     createdAt
     updatedAt
-    rectLineId
   }
 }
 query ListRects(
@@ -359,27 +309,13 @@ query ListRects(
 ) {
   listRects(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
+      id
       left
       top
       width
       height
-      line {
-        id
-        title
-        description
-        category
-        subcategory
-        quantity
-        value
-        createdAt
-        updatedAt
-        probateRecordItemsId
-        lineItemRectId
-      }
-      id
       createdAt
       updatedAt
-      rectLineId
     }
     nextToken
   }

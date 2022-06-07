@@ -397,27 +397,13 @@ mutation CreateLineItem(
     quantity
     value
     rect {
+      id
       left
       top
       width
       height
-      line {
-        id
-        title
-        description
-        category
-        subcategory
-        quantity
-        value
-        createdAt
-        updatedAt
-        probateRecordItemsId
-        lineItemRectId
-      }
-      id
       createdAt
       updatedAt
-      rectLineId
     }
     createdAt
     updatedAt
@@ -469,27 +455,13 @@ mutation UpdateLineItem(
     quantity
     value
     rect {
+      id
       left
       top
       width
       height
-      line {
-        id
-        title
-        description
-        category
-        subcategory
-        quantity
-        value
-        createdAt
-        updatedAt
-        probateRecordItemsId
-        lineItemRectId
-      }
-      id
       createdAt
       updatedAt
-      rectLineId
     }
     createdAt
     updatedAt
@@ -541,27 +513,13 @@ mutation DeleteLineItem(
     quantity
     value
     rect {
+      id
       left
       top
       width
       height
-      line {
-        id
-        title
-        description
-        category
-        subcategory
-        quantity
-        value
-        createdAt
-        updatedAt
-        probateRecordItemsId
-        lineItemRectId
-      }
-      id
       createdAt
       updatedAt
-      rectLineId
     }
     createdAt
     updatedAt
@@ -574,48 +532,13 @@ mutation CreateRect(
   $condition: ModelRectConditionInput
 ) {
   createRect(input: $input, condition: $condition) {
+    id
     left
     top
     width
     height
-    line {
-      id
-      title
-      description
-      probate {
-        id
-        title
-        appraiser
-        witness
-        totalValue
-        createdAt
-        updatedAt
-        probateRecordDeceasedId
-        probateRecordFilingId
-      }
-      category
-      subcategory
-      quantity
-      value
-      rect {
-        left
-        top
-        width
-        height
-        id
-        createdAt
-        updatedAt
-        rectLineId
-      }
-      createdAt
-      updatedAt
-      probateRecordItemsId
-      lineItemRectId
-    }
-    id
     createdAt
     updatedAt
-    rectLineId
   }
 }
 mutation UpdateRect(
@@ -623,48 +546,13 @@ mutation UpdateRect(
   $condition: ModelRectConditionInput
 ) {
   updateRect(input: $input, condition: $condition) {
+    id
     left
     top
     width
     height
-    line {
-      id
-      title
-      description
-      probate {
-        id
-        title
-        appraiser
-        witness
-        totalValue
-        createdAt
-        updatedAt
-        probateRecordDeceasedId
-        probateRecordFilingId
-      }
-      category
-      subcategory
-      quantity
-      value
-      rect {
-        left
-        top
-        width
-        height
-        id
-        createdAt
-        updatedAt
-        rectLineId
-      }
-      createdAt
-      updatedAt
-      probateRecordItemsId
-      lineItemRectId
-    }
-    id
     createdAt
     updatedAt
-    rectLineId
   }
 }
 mutation DeleteRect(
@@ -672,47 +560,12 @@ mutation DeleteRect(
   $condition: ModelRectConditionInput
 ) {
   deleteRect(input: $input, condition: $condition) {
+    id
     left
     top
     width
     height
-    line {
-      id
-      title
-      description
-      probate {
-        id
-        title
-        appraiser
-        witness
-        totalValue
-        createdAt
-        updatedAt
-        probateRecordDeceasedId
-        probateRecordFilingId
-      }
-      category
-      subcategory
-      quantity
-      value
-      rect {
-        left
-        top
-        width
-        height
-        id
-        createdAt
-        updatedAt
-        rectLineId
-      }
-      createdAt
-      updatedAt
-      probateRecordItemsId
-      lineItemRectId
-    }
-    id
     createdAt
     updatedAt
-    rectLineId
   }
 }

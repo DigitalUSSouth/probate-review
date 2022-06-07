@@ -367,27 +367,13 @@ subscription OnCreateLineItem {
     quantity
     value
     rect {
+      id
       left
       top
       width
       height
-      line {
-        id
-        title
-        description
-        category
-        subcategory
-        quantity
-        value
-        createdAt
-        updatedAt
-        probateRecordItemsId
-        lineItemRectId
-      }
-      id
       createdAt
       updatedAt
-      rectLineId
     }
     createdAt
     updatedAt
@@ -436,27 +422,13 @@ subscription OnUpdateLineItem {
     quantity
     value
     rect {
+      id
       left
       top
       width
       height
-      line {
-        id
-        title
-        description
-        category
-        subcategory
-        quantity
-        value
-        createdAt
-        updatedAt
-        probateRecordItemsId
-        lineItemRectId
-      }
-      id
       createdAt
       updatedAt
-      rectLineId
     }
     createdAt
     updatedAt
@@ -505,27 +477,13 @@ subscription OnDeleteLineItem {
     quantity
     value
     rect {
+      id
       left
       top
       width
       height
-      line {
-        id
-        title
-        description
-        category
-        subcategory
-        quantity
-        value
-        createdAt
-        updatedAt
-        probateRecordItemsId
-        lineItemRectId
-      }
-      id
       createdAt
       updatedAt
-      rectLineId
     }
     createdAt
     updatedAt
@@ -535,139 +493,34 @@ subscription OnDeleteLineItem {
 }
 subscription OnCreateRect {
   onCreateRect {
+    id
     left
     top
     width
     height
-    line {
-      id
-      title
-      description
-      probate {
-        id
-        title
-        appraiser
-        witness
-        totalValue
-        createdAt
-        updatedAt
-        probateRecordDeceasedId
-        probateRecordFilingId
-      }
-      category
-      subcategory
-      quantity
-      value
-      rect {
-        left
-        top
-        width
-        height
-        id
-        createdAt
-        updatedAt
-        rectLineId
-      }
-      createdAt
-      updatedAt
-      probateRecordItemsId
-      lineItemRectId
-    }
-    id
     createdAt
     updatedAt
-    rectLineId
   }
 }
 subscription OnUpdateRect {
   onUpdateRect {
+    id
     left
     top
     width
     height
-    line {
-      id
-      title
-      description
-      probate {
-        id
-        title
-        appraiser
-        witness
-        totalValue
-        createdAt
-        updatedAt
-        probateRecordDeceasedId
-        probateRecordFilingId
-      }
-      category
-      subcategory
-      quantity
-      value
-      rect {
-        left
-        top
-        width
-        height
-        id
-        createdAt
-        updatedAt
-        rectLineId
-      }
-      createdAt
-      updatedAt
-      probateRecordItemsId
-      lineItemRectId
-    }
-    id
     createdAt
     updatedAt
-    rectLineId
   }
 }
 subscription OnDeleteRect {
   onDeleteRect {
+    id
     left
     top
     width
     height
-    line {
-      id
-      title
-      description
-      probate {
-        id
-        title
-        appraiser
-        witness
-        totalValue
-        createdAt
-        updatedAt
-        probateRecordDeceasedId
-        probateRecordFilingId
-      }
-      category
-      subcategory
-      quantity
-      value
-      rect {
-        left
-        top
-        width
-        height
-        id
-        createdAt
-        updatedAt
-        rectLineId
-      }
-      createdAt
-      updatedAt
-      probateRecordItemsId
-      lineItemRectId
-    }
-    id
     createdAt
     updatedAt
-    rectLineId
   }
 }

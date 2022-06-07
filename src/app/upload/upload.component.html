@@ -1,0 +1,7 @@
+<div id="drop-area" (drop)="dropHandler($event);" (dragover)="dragOverHandler($event);">
+    <form class="my-form">
+        <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
+        <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)">
+        <label class="button" for="fileElem">Select file(s)</label>
+    </form>
+</div>

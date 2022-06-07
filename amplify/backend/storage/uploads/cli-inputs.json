@@ -1,0 +1,13 @@
+{
+  "resourceName": "uploads",
+  "policyUUID": "16b03482",
+  "bucketName": "probate-uploads",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ"
+  ],
+  "triggerFunction": "S3Triggera1b411c2",
+  "groupAccess": {}
+}

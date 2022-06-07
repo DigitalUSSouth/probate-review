@@ -8,6 +8,12 @@ export type AmplifyDependentResourcesAttributes = {
         },
         "probatereviewawsclient": {
             "Arn": "string"
+        },
+        "S3Triggera1b411c2": {
+            "Name": "string",
+            "Arn": "string",
+            "Region": "string",
+            "LambdaExecutionRole": "string"
         }
     },
     "api": {
@@ -43,6 +49,12 @@ export type AmplifyDependentResourcesAttributes = {
             "UserPoolName": "string",
             "AppClientIDWeb": "string",
             "AppClientID": "string"
+        }
+    },
+    "storage": {
+        "uploads": {
+            "BucketName": "string",
+            "Region": "string"
         }
     }
 }

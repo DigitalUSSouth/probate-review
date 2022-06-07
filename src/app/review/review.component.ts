@@ -80,12 +80,14 @@ export class ReviewComponent implements OnInit {
     this.renderer.setProperty(overlay, 'className', 'highlight');
     this.renderer.appendChild(document.body, overlay);
     const rect = new dragon.Rect(boundingBox?.Left, boundingBox?.Top, boundingBox?.Width, boundingBox?.Height);
+    console.log(rect);
     rect.y /= 2;
     rect.height /= 2;
+    console.log(rect);
     this.osd?.addOverlay({element: overlay!, location: rect});
     // this.osd?.viewport.panTo(new dragon.Point(rect.x + rect.width / 2, rect.y - rect.height / 2));
     this.osd?.viewport.fitBoundsWithConstraints(rect);
-    console.log('zoom is ' + this.osd?.viewport.getZoom());
+    // console.log('zoom is ' + this.osd?.viewport.getZoom());
   }
 
   async getRecord(id: string): Promise<void> {

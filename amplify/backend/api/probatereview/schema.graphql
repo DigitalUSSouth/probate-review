@@ -41,6 +41,7 @@ type LineItem @model {
 }
 
 type Rect @model {
+  id: ID!
   left: Float!
   top: Float!
   width: Float!
