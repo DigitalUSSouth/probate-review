@@ -3,6 +3,7 @@ import { Storage } from 'aws-amplify';
 import {v4 as uuidv4} from 'uuid';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
 import { RecordService } from '../record.service';
+import { interval } from 'rxjs';
 
 @Component({
   selector: 'app-upload',
@@ -12,7 +13,43 @@ import { RecordService } from '../record.service';
 export class UploadComponent implements OnInit {
   // @ViewChild("fileDropRef", { static: false }) fileDropEl?: ElementRef;
   // files: any[] = [];
-  constructor(public authenticator: AuthenticatorService, private recordService: RecordService){}
+  filesInProcessing = Array<string>();
+  checkFileProcessedInterval = interval(1000);
+  constructor(public authenticator: AuthenticatorService, private recordService: RecordService){
+    let timer = this.checkFileProcessedInterval.subscribe(async () => {
+      if(this.filesInProcessing.length > 0) {
+        for(let i = 0; i < this.filesInProcessing.length; i++) {
+          const docid = this.filesInProcessing[i];
+          // try {
+          // let docIsProcessed = await this.recordService.doesRecordExist(docid);
+          //   if(docIsProcessed) {
+          //     this.filesInProcessing.splice(i, 1);
+          //     console.log(`${docid} has been processed`);
+          //   }
+          // }
+          // catch(error) {
+          //   console.log(error);
+          //   this.filesInProcessing.splice(i, 1);
+          // }
+          try {
+            // this.recordService.doesRecordExist(docid).subscribe(docExists => {
+            //   console.log(docExists);
+              
+            // });
+            let docIsProcessed = await this.recordService.doesProbateRecordExist(docid);
+            console.log(`doc is processed: ${docIsProcessed}`);
+          }
+          catch(error) {
+              console.log(error);
+              // this.filesInProcessing = this.filesInProcessing.filter(id => id != docid);
+              timer.unsubscribe();
+              break;
+          }
+          this.filesInProcessing = this.filesInProcessing.filter(id => id != docid);
+        }
+      }
+    })
+  }
 
   ngOnInit(): void {
   }
@@ -41,6 +78,7 @@ export class UploadComponent implements OnInit {
             docid,
             uploader: this.authenticator.user.username!
           };
+          this.filesInProcessing.push(docid);
           Storage.put(file.name, file, {metadata});
         }
       }

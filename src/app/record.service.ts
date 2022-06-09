@@ -5,7 +5,7 @@ import { Observable, of, from } from 'rxjs';
 
 
 const apiName = 'probatemetadataapi';
-const path = '/record/176f1ee9-a864-4dea-9598-9c48bb84192e';
+const path = '/record/';
 // const path = '/records';
 const myInit = { // OPTIONAL
   headers: {}, // OPTIONAL
@@ -21,12 +21,25 @@ export class RecordService {
   }
 
   async getProbateRecord(id: string): Promise<ProbateRecord> {
-    const data = await API.get(apiName, path, {});
+    const data = await API.get(apiName, `${path}${id}`, {});
     return {id: id, ...data};
   }
 
   getRecord(id: string): Observable<ProbateRecord> {
     return from(API.get(apiName, `/record/${id}`, {}));
+  }
+
+  async doesProbateRecordExist(id: string): Promise<boolean> {
+    let response = await API.head(apiName, `/record/${id}`, {});
+    return response.body === 'true';
+  }
+
+  doesRecordExist(id: string): Observable<boolean> {
+    console.log(`calling does record exist with ${id}`);
+    return from(API.head(apiName, `/record/${id}`, {}));
+    // console.log(response);
+    // return response.body === 'true';
+    
   }
 
   async getProbateRecords(): Promise<ProbateRecord[]> {

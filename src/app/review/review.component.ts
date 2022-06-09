@@ -21,7 +21,8 @@ export class ReviewComponent implements OnInit {
   @ViewChild('viewer') viewer!: ElementRef;  
   osd?: dragon.Viewer;  
   categoryMap: Map<string, Array<SubcategoryOptionValue>> = this.objToStrMap(data); 
-
+  imageSize?: dragon.Point;
+  aspectRatio = 1.0;
   constructor(private route: ActivatedRoute, private location: Location, private recordService: RecordService, private renderer: Renderer2) { 
   }
 
@@ -65,6 +66,10 @@ export class ReviewComponent implements OnInit {
   }
 
   highlightText(index: number): void {
+    this.imageSize = this.osd!.world.getItemAt(0).getContentSize();
+
+    this.aspectRatio = this.imageSize!.x / this.imageSize!.y;
+    console.log(`aspect ratio is ${this.aspectRatio}`);
     console.log(`line ${index} highlighted`);
     const OVERLAY_ID = 'highlighted-line';
     const boundingBox = this.record?.lines[index].boundingBox;
@@ -79,12 +84,13 @@ export class ReviewComponent implements OnInit {
     this.renderer.setProperty(overlay, 'id', OVERLAY_ID);
     this.renderer.setProperty(overlay, 'className', 'highlight');
     this.renderer.appendChild(document.body, overlay);
+    const point = new dragon.Point(boundingBox?.Left, boundingBox?.Top);
     const rect = new dragon.Rect(boundingBox?.Left, boundingBox?.Top, boundingBox?.Width, boundingBox?.Height);
     console.log(rect);
-    rect.y /= 2;
-    rect.height /= 2;
-    console.log(rect);
+    rect.y /= this.aspectRatio;
+    rect.height /= this.aspectRatio;
     this.osd?.addOverlay({element: overlay!, location: rect});
+    // width: boundingBox?.Width, height: boundingBox?.Height, checkResize: true
     // this.osd?.viewport.panTo(new dragon.Point(rect.x + rect.width / 2, rect.y - rect.height / 2));
     this.osd?.viewport.fitBoundsWithConstraints(rect);
     // console.log('zoom is ' + this.osd?.viewport.getZoom());
@@ -97,17 +103,27 @@ export class ReviewComponent implements OnInit {
       this.record = {id, ...record};
       // console.log(record);
       const infoUrl = `https://d2ai2qpooo3jtj.cloudfront.net/iiif/2/${id}/info.json`;
+     
       this.osd = new dragon.Viewer({
         element: this.viewer.nativeElement,
         showRotationControl: true,
         // Enable touch rotation on tactile devices
         gestureSettingsTouch: {
             pinchToZoom: true,            
-        },
+        },        
         maxZoomLevel: 5.0,
         prefixUrl: "//openseadragon.github.io/openseadragon/images/",
         tileSources: infoUrl
       });
+      // this.osd.world.getItemAt(0).addHandler('fully-loaded-change', (loadedImage) => {
+      //   console.log('image loaded');
+      //   if(loadedImage.fullyLoaded) {
+      //     let tiledImage = loadedImage.eventSource as dragon.TiledImage;
+      //     this.imageSize = tiledImage.getContentSize();
+      //     this.aspectRatio = this.imageSize.x / this.imageSize.y;
+      //   }
+      // });
+      
     });
 
     console.log('records received');
