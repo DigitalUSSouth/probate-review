@@ -12,7 +12,7 @@ exports.handler = async (event) => {
     const PATH = '/record/';
     const key = event.path.substring(PATH.length) + '.json';
     console.log('key is ' + key);
-    
+    let statusCode = 200;
     // https://github.com/aws/aws-sdk-js-v3/issues/1877
     const streamToString = (stream) =>
     new Promise((resolve, reject) => {
@@ -23,12 +23,22 @@ exports.handler = async (event) => {
     });
 
     const command = new GetObjectCommand({Bucket: METADATABUCKET, Key: key, ResponseContentType: 'application/json'});
+    try {
     const { Body } = await client.send(command);
     const bodyContents = await streamToString(Body);
     console.log(bodyContents);
+    }
+    catch(error) {
+        if (error.name === 'NotFound') {
+            statusCode = 404;
+        }
+        else {
+            statusCode = 500;
+        }
+    }
     
     return {
-        statusCode: 200,
+        statusCode,
     //  Uncomment below to enable CORS requests
         headers: {
             "Access-Control-Allow-Origin": "*",

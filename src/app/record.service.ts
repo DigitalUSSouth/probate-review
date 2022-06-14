@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { API, Auth } from 'aws-amplify';
 import { ProbateRecord } from './probate-record';
 import { Observable, of, from } from 'rxjs';
+import axios, {AxiosError} from 'axios';
 
 
 const apiName = 'probatemetadataapi';
@@ -29,9 +30,29 @@ export class RecordService {
     return from(API.get(apiName, `/record/${id}`, {}));
   }
 
+  async getProbateRecordStatus(id: string): Promise<number> {
+    let statusCode = 200;
+    try {
+      await API.head(apiName, `/record/${id}`, {});
+    }
+    catch(error) {
+      const httpError = error as AxiosError;
+      console.log(httpError);
+      statusCode = httpError.response!.status;
+    }
+    return statusCode;
+  }
+
   async doesProbateRecordExist(id: string): Promise<boolean> {
-    let response = await API.head(apiName, `/record/${id}`, {});
-    return response.body === 'true';
+    let statusCode = 200;
+    try {
+      await API.head(apiName, `/record/${id}`, {});
+    }
+    catch(error) {
+      console.log(error);
+      statusCode = 500;
+    }
+    return statusCode === 200;
   }
 
   doesRecordExist(id: string): Observable<boolean> {

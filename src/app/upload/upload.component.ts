@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Storage } from 'aws-amplify';
 import {v4 as uuidv4} from 'uuid';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
@@ -7,12 +7,13 @@ import { interval } from 'rxjs';
 
 @Component({
   selector: 'app-upload',
+  encapsulation: ViewEncapsulation.None, // https://stackoverflow.com/questions/43631587/angular-4-css-on-document-createelement
   templateUrl: './upload.component.html',
   styleUrls: ['./upload.component.sass']
 })
 export class UploadComponent implements OnInit {
   // @ViewChild("fileDropRef", { static: false }) fileDropEl?: ElementRef;
-  // files: any[] = [];
+  fileMap = new Map<string, File>();
   filesInProcessing = Array<string>();
   checkFileProcessedInterval = interval(1000);
   constructor(public authenticator: AuthenticatorService, private recordService: RecordService){
@@ -36,8 +37,29 @@ export class UploadComponent implements OnInit {
             //   console.log(docExists);
               
             // });
-            let docIsProcessed = await this.recordService.doesProbateRecordExist(docid);
-            console.log(`doc is processed: ${docIsProcessed}`);
+            let recordStatus = await this.recordService.getProbateRecordStatus(docid);
+            
+            console.log(`recordStatus: ${recordStatus}`);
+            switch(recordStatus) {
+              case 200:
+                console.log('record has been processed');
+                // remove looking for file
+                this.filesInProcessing = this.filesInProcessing.filter(id => id != docid);
+                let anchorElement = document.getElementById(`a-${docid}`) as HTMLAnchorElement;
+                if(anchorElement) {
+                  anchorElement.className = 'processed';
+                  anchorElement.href = `review/${docid}`;
+
+                }
+                break;
+              case 404:
+                console.log('record has not been processed');
+                break;
+              default:
+                console.log('there was a problem processing the record');
+                this.filesInProcessing = this.filesInProcessing.filter(id => id != docid);
+                break;
+            }
           }
           catch(error) {
               console.log(error);
@@ -45,7 +67,7 @@ export class UploadComponent implements OnInit {
               timer.unsubscribe();
               break;
           }
-          this.filesInProcessing = this.filesInProcessing.filter(id => id != docid);
+          // this.filesInProcessing = this.filesInProcessing.filter(id => id != docid);
         }
       }
     })
@@ -65,21 +87,27 @@ export class UploadComponent implements OnInit {
       const length = dragEvent.dataTransfer.items.length;
       console.log('length is ' + length);
       console.log(dragEvent.dataTransfer?.items);
+      let listElement = document.getElementById('filesToBeUploaded');
       for(let i = 0; i < length; i++) {
         const item = dragEvent.dataTransfer.items[i]; 
         // console.log(item);
         const file = dragEvent.dataTransfer.items[i].getAsFile();
         if(file) {
           // console.log(file);
-          let re = new RegExp(/(?:\.([^.]+))?$/);
-          let ext = re.exec(file.name);
           let docid = uuidv4() as string;
-          let metadata = {
-            docid,
-            uploader: this.authenticator.user.username!
-          };
-          this.filesInProcessing.push(docid);
-          Storage.put(file.name, file, {metadata});
+          this.fileMap.set(docid, file);
+          // add it to the UI
+          let fileElement = document.createElement('li');
+          fileElement.id = `li-${docid}`;
+          let anchorElement = document.createElement('a');
+          anchorElement.id = `a-${docid}`;
+          anchorElement.innerText = 'unprocessed';
+          anchorElement.className = 'unprocessed';
+
+          fileElement.innerHTML = `${file.name}&nbsp;`;
+          fileElement.appendChild(anchorElement);
+          listElement!.appendChild(fileElement);
+
         }
       }
     }
@@ -97,6 +125,20 @@ export class UploadComponent implements OnInit {
     }
   }
 
- 
+  uploadFiles() {
+    for(const docid of this.fileMap.keys()) {
+      
+      let file = this.fileMap.get(docid);
+      console.log(`uploading file ${file!.name}`);
+      // let re = new RegExp(/(?:\.([^.]+))?$/);
+      // let ext = re.exec(file!.name);
+      let metadata = {
+        docid,
+        uploader: this.authenticator.user.username!
+      };
+      this.filesInProcessing.push(docid);
+      Storage.put(file!.name, file, {metadata});
+    }
+  }
 
 }

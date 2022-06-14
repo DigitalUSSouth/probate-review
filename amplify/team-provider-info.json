@@ -15,7 +15,7 @@
       "function": {
         "getProbateMetadata": {
           "deploymentBucketName": "amplify-probatereview-staging-142826-deployment",
-          "s3Key": "amplify-builds/getProbateMetadata-3970576841553550754f-build.zip"
+          "s3Key": "amplify-builds/getProbateMetadata-3837792b376c48365450-build.zip"
         },
         "probatereviewawsclient": {
           "deploymentBucketName": "amplify-probatereview-staging-142826-deployment",
