@@ -49,6 +49,7 @@ export class UploadComponent implements OnInit {
                 if(anchorElement) {
                   anchorElement.className = 'processed';
                   anchorElement.href = `review/${docid}`;
+                  anchorElement.target = '_blank';
 
                 }
                 break;
