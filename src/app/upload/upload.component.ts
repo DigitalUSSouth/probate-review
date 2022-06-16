@@ -48,16 +48,17 @@ export class UploadComponent implements OnInit {
                 let anchorElement = document.getElementById(`a-${docid}`) as HTMLAnchorElement;
                 if(anchorElement) {
                   anchorElement.className = 'processed';
+                  anchorElement.innerHTML = 'review';
                   anchorElement.href = `review/${docid}`;
                   anchorElement.target = '_blank';
 
                 }
                 break;
               case 404:
-                console.log('record has not been processed');
+                // console.log('record has not been processed');
                 break;
               default:
-                console.log('there was a problem processing the record');
+                // console.log('there was a problem processing the record');
                 this.filesInProcessing = this.filesInProcessing.filter(id => id != docid);
                 break;
             }
@@ -102,7 +103,7 @@ export class UploadComponent implements OnInit {
           fileElement.id = `li-${docid}`;
           let anchorElement = document.createElement('a');
           anchorElement.id = `a-${docid}`;
-          anchorElement.innerText = 'unprocessed';
+          anchorElement.innerText = 'ready to upload';
           anchorElement.className = 'unprocessed';
 
           fileElement.innerHTML = `${file.name}&nbsp;`;
@@ -126,9 +127,13 @@ export class UploadComponent implements OnInit {
     }
   }
 
-  uploadFiles() {
+  async uploadFiles() {
     for(const docid of this.fileMap.keys()) {
-      
+      let anchorElement = document.getElementById(`a-${docid}`) as HTMLAnchorElement;
+      if(anchorElement) {
+        anchorElement.innerText = 'uploading';
+
+      }
       let file = this.fileMap.get(docid);
       console.log(`uploading file ${file!.name}`);
       // let re = new RegExp(/(?:\.([^.]+))?$/);
@@ -138,7 +143,8 @@ export class UploadComponent implements OnInit {
         uploader: this.authenticator.user.username!
       };
       this.filesInProcessing.push(docid);
-      Storage.put(file!.name, file, {metadata});
+      await Storage.put(file!.name, file, {metadata});
+      anchorElement.innerText = 'processing';
     }
   }
 
