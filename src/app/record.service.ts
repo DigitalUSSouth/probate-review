@@ -75,10 +75,10 @@ export class RecordService {
         lines: [
           {
             boundingBox: {
-              Height: 10,
-              Width: 10,
-              Left: 0,
-              Top: 100
+              height: 10,
+              width: 10,
+              left: 0,
+              top: 100
             },
             text: 'line 1',            
           }

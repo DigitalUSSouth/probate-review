@@ -45,11 +45,23 @@ query GetProbateRecord($id: ID!) {
         createdAt
         updatedAt
         probateRecordItemsId
-        lineItemRectId
+        lineItemLineId
       }
       nextToken
     }
     totalValue
+    document {
+      id
+      lines {
+        id
+        text
+        createdAt
+        updatedAt
+        lineBoundingBoxId
+      }
+      createdAt
+      updatedAt
+    }
     createdAt
     updatedAt
     probateRecordDeceasedId
@@ -88,6 +100,11 @@ query ListProbateRecords(
         nextToken
       }
       totalValue
+      document {
+        id
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -129,6 +146,11 @@ query GetFiling($id: ID!) {
         nextToken
       }
       totalValue
+      document {
+        id
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -225,6 +247,11 @@ query GetLineItem($id: ID!) {
         nextToken
       }
       totalValue
+      document {
+        id
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -234,19 +261,29 @@ query GetLineItem($id: ID!) {
     subcategory
     quantity
     value
-    rect {
+    line {
       id
-      left
-      top
-      width
-      height
+      text
+      words {
+        nextToken
+      }
+      boundingBox {
+        id
+        left
+        top
+        width
+        height
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
+      lineBoundingBoxId
     }
     createdAt
     updatedAt
     probateRecordItemsId
-    lineItemRectId
+    lineItemLineId
   }
 }
 query ListLineItems(
@@ -274,19 +311,17 @@ query ListLineItems(
       subcategory
       quantity
       value
-      rect {
+      line {
         id
-        left
-        top
-        width
-        height
+        text
         createdAt
         updatedAt
+        lineBoundingBoxId
       }
       createdAt
       updatedAt
       probateRecordItemsId
-      lineItemRectId
+      lineItemLineId
     }
     nextToken
   }
@@ -316,6 +351,155 @@ query ListRects(
       height
       createdAt
       updatedAt
+    }
+    nextToken
+  }
+}
+query GetDocument($id: ID!) {
+  getDocument(id: $id) {
+    id
+    lines {
+      id
+      text
+      words {
+        nextToken
+      }
+      boundingBox {
+        id
+        left
+        top
+        width
+        height
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+      lineBoundingBoxId
+    }
+    createdAt
+    updatedAt
+  }
+}
+query ListDocuments(
+  $filter: ModelDocumentFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listDocuments(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      lines {
+        id
+        text
+        createdAt
+        updatedAt
+        lineBoundingBoxId
+      }
+      createdAt
+      updatedAt
+    }
+    nextToken
+  }
+}
+query GetLine($id: ID!) {
+  getLine(id: $id) {
+    id
+    text
+    words {
+      items {
+        id
+        text
+        createdAt
+        updatedAt
+        lineWordsId
+        wordBoundingBoxId
+      }
+      nextToken
+    }
+    boundingBox {
+      id
+      left
+      top
+      width
+      height
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+    lineBoundingBoxId
+  }
+}
+query ListLines(
+  $filter: ModelLineFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listLines(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      text
+      words {
+        nextToken
+      }
+      boundingBox {
+        id
+        left
+        top
+        width
+        height
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+      lineBoundingBoxId
+    }
+    nextToken
+  }
+}
+query GetWord($id: ID!) {
+  getWord(id: $id) {
+    id
+    text
+    boundingBox {
+      id
+      left
+      top
+      width
+      height
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+    lineWordsId
+    wordBoundingBoxId
+  }
+}
+query ListWords(
+  $filter: ModelWordFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listWords(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      text
+      boundingBox {
+        id
+        left
+        top
+        width
+        height
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+      lineWordsId
+      wordBoundingBoxId
     }
     nextToken
   }

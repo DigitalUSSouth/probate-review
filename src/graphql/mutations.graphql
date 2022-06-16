@@ -48,11 +48,23 @@ mutation CreateProbateRecord(
         createdAt
         updatedAt
         probateRecordItemsId
-        lineItemRectId
+        lineItemLineId
       }
       nextToken
     }
     totalValue
+    document {
+      id
+      lines {
+        id
+        text
+        createdAt
+        updatedAt
+        lineBoundingBoxId
+      }
+      createdAt
+      updatedAt
+    }
     createdAt
     updatedAt
     probateRecordDeceasedId
@@ -108,11 +120,23 @@ mutation UpdateProbateRecord(
         createdAt
         updatedAt
         probateRecordItemsId
-        lineItemRectId
+        lineItemLineId
       }
       nextToken
     }
     totalValue
+    document {
+      id
+      lines {
+        id
+        text
+        createdAt
+        updatedAt
+        lineBoundingBoxId
+      }
+      createdAt
+      updatedAt
+    }
     createdAt
     updatedAt
     probateRecordDeceasedId
@@ -168,11 +192,23 @@ mutation DeleteProbateRecord(
         createdAt
         updatedAt
         probateRecordItemsId
-        lineItemRectId
+        lineItemLineId
       }
       nextToken
     }
     totalValue
+    document {
+      id
+      lines {
+        id
+        text
+        createdAt
+        updatedAt
+        lineBoundingBoxId
+      }
+      createdAt
+      updatedAt
+    }
     createdAt
     updatedAt
     probateRecordDeceasedId
@@ -215,6 +251,11 @@ mutation CreateFiling(
         nextToken
       }
       totalValue
+      document {
+        id
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -261,6 +302,11 @@ mutation UpdateFiling(
         nextToken
       }
       totalValue
+      document {
+        id
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -307,6 +353,11 @@ mutation DeleteFiling(
         nextToken
       }
       totalValue
+      document {
+        id
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -387,6 +438,11 @@ mutation CreateLineItem(
         nextToken
       }
       totalValue
+      document {
+        id
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -396,19 +452,29 @@ mutation CreateLineItem(
     subcategory
     quantity
     value
-    rect {
+    line {
       id
-      left
-      top
-      width
-      height
+      text
+      words {
+        nextToken
+      }
+      boundingBox {
+        id
+        left
+        top
+        width
+        height
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
+      lineBoundingBoxId
     }
     createdAt
     updatedAt
     probateRecordItemsId
-    lineItemRectId
+    lineItemLineId
   }
 }
 mutation UpdateLineItem(
@@ -445,6 +511,11 @@ mutation UpdateLineItem(
         nextToken
       }
       totalValue
+      document {
+        id
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -454,19 +525,29 @@ mutation UpdateLineItem(
     subcategory
     quantity
     value
-    rect {
+    line {
       id
-      left
-      top
-      width
-      height
+      text
+      words {
+        nextToken
+      }
+      boundingBox {
+        id
+        left
+        top
+        width
+        height
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
+      lineBoundingBoxId
     }
     createdAt
     updatedAt
     probateRecordItemsId
-    lineItemRectId
+    lineItemLineId
   }
 }
 mutation DeleteLineItem(
@@ -503,6 +584,11 @@ mutation DeleteLineItem(
         nextToken
       }
       totalValue
+      document {
+        id
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -512,19 +598,29 @@ mutation DeleteLineItem(
     subcategory
     quantity
     value
-    rect {
+    line {
       id
-      left
-      top
-      width
-      height
+      text
+      words {
+        nextToken
+      }
+      boundingBox {
+        id
+        left
+        top
+        width
+        height
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
+      lineBoundingBoxId
     }
     createdAt
     updatedAt
     probateRecordItemsId
-    lineItemRectId
+    lineItemLineId
   }
 }
 mutation CreateRect(
@@ -567,5 +663,254 @@ mutation DeleteRect(
     height
     createdAt
     updatedAt
+  }
+}
+mutation CreateDocument(
+  $input: CreateDocumentInput!
+  $condition: ModelDocumentConditionInput
+) {
+  createDocument(input: $input, condition: $condition) {
+    id
+    lines {
+      id
+      text
+      words {
+        nextToken
+      }
+      boundingBox {
+        id
+        left
+        top
+        width
+        height
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+      lineBoundingBoxId
+    }
+    createdAt
+    updatedAt
+  }
+}
+mutation UpdateDocument(
+  $input: UpdateDocumentInput!
+  $condition: ModelDocumentConditionInput
+) {
+  updateDocument(input: $input, condition: $condition) {
+    id
+    lines {
+      id
+      text
+      words {
+        nextToken
+      }
+      boundingBox {
+        id
+        left
+        top
+        width
+        height
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+      lineBoundingBoxId
+    }
+    createdAt
+    updatedAt
+  }
+}
+mutation DeleteDocument(
+  $input: DeleteDocumentInput!
+  $condition: ModelDocumentConditionInput
+) {
+  deleteDocument(input: $input, condition: $condition) {
+    id
+    lines {
+      id
+      text
+      words {
+        nextToken
+      }
+      boundingBox {
+        id
+        left
+        top
+        width
+        height
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+      lineBoundingBoxId
+    }
+    createdAt
+    updatedAt
+  }
+}
+mutation CreateLine(
+  $input: CreateLineInput!
+  $condition: ModelLineConditionInput
+) {
+  createLine(input: $input, condition: $condition) {
+    id
+    text
+    words {
+      items {
+        id
+        text
+        createdAt
+        updatedAt
+        lineWordsId
+        wordBoundingBoxId
+      }
+      nextToken
+    }
+    boundingBox {
+      id
+      left
+      top
+      width
+      height
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+    lineBoundingBoxId
+  }
+}
+mutation UpdateLine(
+  $input: UpdateLineInput!
+  $condition: ModelLineConditionInput
+) {
+  updateLine(input: $input, condition: $condition) {
+    id
+    text
+    words {
+      items {
+        id
+        text
+        createdAt
+        updatedAt
+        lineWordsId
+        wordBoundingBoxId
+      }
+      nextToken
+    }
+    boundingBox {
+      id
+      left
+      top
+      width
+      height
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+    lineBoundingBoxId
+  }
+}
+mutation DeleteLine(
+  $input: DeleteLineInput!
+  $condition: ModelLineConditionInput
+) {
+  deleteLine(input: $input, condition: $condition) {
+    id
+    text
+    words {
+      items {
+        id
+        text
+        createdAt
+        updatedAt
+        lineWordsId
+        wordBoundingBoxId
+      }
+      nextToken
+    }
+    boundingBox {
+      id
+      left
+      top
+      width
+      height
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+    lineBoundingBoxId
+  }
+}
+mutation CreateWord(
+  $input: CreateWordInput!
+  $condition: ModelWordConditionInput
+) {
+  createWord(input: $input, condition: $condition) {
+    id
+    text
+    boundingBox {
+      id
+      left
+      top
+      width
+      height
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+    lineWordsId
+    wordBoundingBoxId
+  }
+}
+mutation UpdateWord(
+  $input: UpdateWordInput!
+  $condition: ModelWordConditionInput
+) {
+  updateWord(input: $input, condition: $condition) {
+    id
+    text
+    boundingBox {
+      id
+      left
+      top
+      width
+      height
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+    lineWordsId
+    wordBoundingBoxId
+  }
+}
+mutation DeleteWord(
+  $input: DeleteWordInput!
+  $condition: ModelWordConditionInput
+) {
+  deleteWord(input: $input, condition: $condition) {
+    id
+    text
+    boundingBox {
+      id
+      left
+      top
+      width
+      height
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+    lineWordsId
+    wordBoundingBoxId
   }
 }

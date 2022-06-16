@@ -25,16 +25,25 @@ export type __SubscriptionContainer = {
   onCreateRect: OnCreateRectSubscription;
   onUpdateRect: OnUpdateRectSubscription;
   onDeleteRect: OnDeleteRectSubscription;
+  onCreateDocument: OnCreateDocumentSubscription;
+  onUpdateDocument: OnUpdateDocumentSubscription;
+  onDeleteDocument: OnDeleteDocumentSubscription;
+  onCreateLine: OnCreateLineSubscription;
+  onUpdateLine: OnUpdateLineSubscription;
+  onDeleteLine: OnDeleteLineSubscription;
+  onCreateWord: OnCreateWordSubscription;
+  onUpdateWord: OnUpdateWordSubscription;
+  onDeleteWord: OnDeleteWordSubscription;
 };
 
 export type CreateProbateRecordInput = {
   id?: string | null;
-  title?: string | null;
-  appraiser?: Array<string | null> | null;
-  witness?: Array<string | null> | null;
-  totalValue?: number | null;
-  probateRecordDeceasedId?: string | null;
-  probateRecordFilingId?: string | null;
+  title: string;
+  appraiser: Array<string | null>;
+  witness: Array<string | null>;
+  totalValue: number;
+  probateRecordDeceasedId: string;
+  probateRecordFilingId: string;
 };
 
 export type ModelProbateRecordConditionInput = {
@@ -119,24 +128,25 @@ export type ModelIDInput = {
 export type ProbateRecord = {
   __typename: "ProbateRecord";
   id: string;
-  title?: string | null;
-  deceased?: Deceased | null;
-  filing?: Filing | null;
-  appraiser?: Array<string | null> | null;
-  witness?: Array<string | null> | null;
+  title: string;
+  deceased: Deceased;
+  filing: Filing;
+  appraiser: Array<string | null>;
+  witness: Array<string | null>;
   items?: ModelLineItemConnection | null;
-  totalValue?: number | null;
+  totalValue: number;
+  document: Document;
   createdAt: string;
   updatedAt: string;
-  probateRecordDeceasedId?: string | null;
-  probateRecordFilingId?: string | null;
+  probateRecordDeceasedId: string;
+  probateRecordFilingId: string;
 };
 
 export type Deceased = {
   __typename: "Deceased";
   id: string;
   name: string;
-  gender?: string | null;
+  gender: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -144,10 +154,10 @@ export type Deceased = {
 export type Filing = {
   __typename: "Filing";
   id: string;
-  state?: string | null;
-  county?: string | null;
-  date?: string | null;
-  filer?: string | null;
+  state: string;
+  county: string;
+  date: string;
+  filer: string;
   probate: ProbateRecord;
   createdAt: string;
   updatedAt: string;
@@ -164,17 +174,45 @@ export type LineItem = {
   __typename: "LineItem";
   id: string;
   title: string;
-  description?: string | null;
+  description: string;
   probate: ProbateRecord;
   category: string;
   subcategory: string;
-  quantity?: number | null;
-  value?: number | null;
-  rect: Rect;
+  quantity: number;
+  value: number;
+  line: Line;
   createdAt: string;
   updatedAt: string;
-  probateRecordItemsId?: string | null;
-  lineItemRectId: string;
+  probateRecordItemsId: string;
+  lineItemLineId: string;
+};
+
+export type Line = {
+  __typename: "Line";
+  id: string;
+  text: string;
+  words?: ModelWordConnection | null;
+  boundingBox: Rect;
+  createdAt: string;
+  updatedAt: string;
+  lineBoundingBoxId: string;
+};
+
+export type ModelWordConnection = {
+  __typename: "ModelWordConnection";
+  items: Array<Word | null>;
+  nextToken?: string | null;
+};
+
+export type Word = {
+  __typename: "Word";
+  id: string;
+  text: string;
+  boundingBox: Rect;
+  createdAt: string;
+  updatedAt: string;
+  lineWordsId: string;
+  wordBoundingBoxId: string;
 };
 
 export type Rect = {
@@ -184,6 +222,14 @@ export type Rect = {
   top: number;
   width: number;
   height: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Document = {
+  __typename: "Document";
+  id: string;
+  lines: Array<Line | null>;
   createdAt: string;
   updatedAt: string;
 };
@@ -204,10 +250,10 @@ export type DeleteProbateRecordInput = {
 
 export type CreateFilingInput = {
   id?: string | null;
-  state?: string | null;
-  county?: string | null;
-  date?: string | null;
-  filer?: string | null;
+  state: string;
+  county: string;
+  date: string;
+  filer: string;
   filingProbateId: string;
 };
 
@@ -238,7 +284,7 @@ export type DeleteFilingInput = {
 export type CreateDeceasedInput = {
   id?: string | null;
   name: string;
-  gender?: string | null;
+  gender: string;
 };
 
 export type ModelDeceasedConditionInput = {
@@ -262,13 +308,13 @@ export type DeleteDeceasedInput = {
 export type CreateLineItemInput = {
   id?: string | null;
   title: string;
-  description?: string | null;
+  description: string;
   category: string;
   subcategory: string;
-  quantity?: number | null;
-  value?: number | null;
-  probateRecordItemsId?: string | null;
-  lineItemRectId: string;
+  quantity: number;
+  value: number;
+  probateRecordItemsId: string;
+  lineItemLineId: string;
 };
 
 export type ModelLineItemConditionInput = {
@@ -282,7 +328,7 @@ export type ModelLineItemConditionInput = {
   or?: Array<ModelLineItemConditionInput | null> | null;
   not?: ModelLineItemConditionInput | null;
   probateRecordItemsId?: ModelIDInput | null;
-  lineItemRectId?: ModelIDInput | null;
+  lineItemLineId?: ModelIDInput | null;
 };
 
 export type ModelIntInput = {
@@ -306,7 +352,7 @@ export type UpdateLineItemInput = {
   quantity?: number | null;
   value?: number | null;
   probateRecordItemsId?: string | null;
-  lineItemRectId?: string | null;
+  lineItemLineId?: string | null;
 };
 
 export type DeleteLineItemInput = {
@@ -340,6 +386,75 @@ export type UpdateRectInput = {
 };
 
 export type DeleteRectInput = {
+  id: string;
+};
+
+export type CreateDocumentInput = {
+  id?: string | null;
+};
+
+export type ModelDocumentConditionInput = {
+  and?: Array<ModelDocumentConditionInput | null> | null;
+  or?: Array<ModelDocumentConditionInput | null> | null;
+  not?: ModelDocumentConditionInput | null;
+};
+
+export type UpdateDocumentInput = {
+  id: string;
+};
+
+export type DeleteDocumentInput = {
+  id: string;
+};
+
+export type CreateLineInput = {
+  id?: string | null;
+  text: string;
+  lineBoundingBoxId: string;
+};
+
+export type ModelLineConditionInput = {
+  text?: ModelStringInput | null;
+  and?: Array<ModelLineConditionInput | null> | null;
+  or?: Array<ModelLineConditionInput | null> | null;
+  not?: ModelLineConditionInput | null;
+  lineBoundingBoxId?: ModelIDInput | null;
+};
+
+export type UpdateLineInput = {
+  id: string;
+  text?: string | null;
+  lineBoundingBoxId?: string | null;
+};
+
+export type DeleteLineInput = {
+  id: string;
+};
+
+export type CreateWordInput = {
+  id?: string | null;
+  text: string;
+  lineWordsId: string;
+  wordBoundingBoxId: string;
+};
+
+export type ModelWordConditionInput = {
+  text?: ModelStringInput | null;
+  and?: Array<ModelWordConditionInput | null> | null;
+  or?: Array<ModelWordConditionInput | null> | null;
+  not?: ModelWordConditionInput | null;
+  lineWordsId?: ModelIDInput | null;
+  wordBoundingBoxId?: ModelIDInput | null;
+};
+
+export type UpdateWordInput = {
+  id: string;
+  text?: string | null;
+  lineWordsId?: string | null;
+  wordBoundingBoxId?: string | null;
+};
+
+export type DeleteWordInput = {
   id: string;
 };
 
@@ -407,7 +522,7 @@ export type ModelLineItemFilterInput = {
   or?: Array<ModelLineItemFilterInput | null> | null;
   not?: ModelLineItemFilterInput | null;
   probateRecordItemsId?: ModelIDInput | null;
-  lineItemRectId?: ModelIDInput | null;
+  lineItemLineId?: ModelIDInput | null;
 };
 
 export type ModelRectFilterInput = {
@@ -427,233 +542,319 @@ export type ModelRectConnection = {
   nextToken?: string | null;
 };
 
+export type ModelDocumentFilterInput = {
+  id?: ModelIDInput | null;
+  and?: Array<ModelDocumentFilterInput | null> | null;
+  or?: Array<ModelDocumentFilterInput | null> | null;
+  not?: ModelDocumentFilterInput | null;
+};
+
+export type ModelDocumentConnection = {
+  __typename: "ModelDocumentConnection";
+  items: Array<Document | null>;
+  nextToken?: string | null;
+};
+
+export type ModelLineFilterInput = {
+  id?: ModelIDInput | null;
+  text?: ModelStringInput | null;
+  and?: Array<ModelLineFilterInput | null> | null;
+  or?: Array<ModelLineFilterInput | null> | null;
+  not?: ModelLineFilterInput | null;
+  lineBoundingBoxId?: ModelIDInput | null;
+};
+
+export type ModelLineConnection = {
+  __typename: "ModelLineConnection";
+  items: Array<Line | null>;
+  nextToken?: string | null;
+};
+
+export type ModelWordFilterInput = {
+  id?: ModelIDInput | null;
+  text?: ModelStringInput | null;
+  and?: Array<ModelWordFilterInput | null> | null;
+  or?: Array<ModelWordFilterInput | null> | null;
+  not?: ModelWordFilterInput | null;
+  lineWordsId?: ModelIDInput | null;
+  wordBoundingBoxId?: ModelIDInput | null;
+};
+
 export type CreateProbateRecordMutation = {
   __typename: "ProbateRecord";
   id: string;
-  title?: string | null;
-  deceased?: {
+  title: string;
+  deceased: {
     __typename: "Deceased";
     id: string;
     name: string;
-    gender?: string | null;
+    gender: string;
     createdAt: string;
     updatedAt: string;
-  } | null;
-  filing?: {
+  };
+  filing: {
     __typename: "Filing";
     id: string;
-    state?: string | null;
-    county?: string | null;
-    date?: string | null;
-    filer?: string | null;
+    state: string;
+    county: string;
+    date: string;
+    filer: string;
     probate: {
       __typename: "ProbateRecord";
       id: string;
-      title?: string | null;
-      appraiser?: Array<string | null> | null;
-      witness?: Array<string | null> | null;
-      totalValue?: number | null;
+      title: string;
+      appraiser: Array<string | null>;
+      witness: Array<string | null>;
+      totalValue: number;
       createdAt: string;
       updatedAt: string;
-      probateRecordDeceasedId?: string | null;
-      probateRecordFilingId?: string | null;
+      probateRecordDeceasedId: string;
+      probateRecordFilingId: string;
     };
     createdAt: string;
     updatedAt: string;
     filingProbateId: string;
-  } | null;
-  appraiser?: Array<string | null> | null;
-  witness?: Array<string | null> | null;
+  };
+  appraiser: Array<string | null>;
+  witness: Array<string | null>;
   items?: {
     __typename: "ModelLineItemConnection";
     items: Array<{
       __typename: "LineItem";
       id: string;
       title: string;
-      description?: string | null;
+      description: string;
       category: string;
       subcategory: string;
-      quantity?: number | null;
-      value?: number | null;
+      quantity: number;
+      value: number;
       createdAt: string;
       updatedAt: string;
-      probateRecordItemsId?: string | null;
-      lineItemRectId: string;
+      probateRecordItemsId: string;
+      lineItemLineId: string;
     } | null>;
     nextToken?: string | null;
   } | null;
-  totalValue?: number | null;
+  totalValue: number;
+  document: {
+    __typename: "Document";
+    id: string;
+    lines: Array<{
+      __typename: "Line";
+      id: string;
+      text: string;
+      createdAt: string;
+      updatedAt: string;
+      lineBoundingBoxId: string;
+    } | null>;
+    createdAt: string;
+    updatedAt: string;
+  };
   createdAt: string;
   updatedAt: string;
-  probateRecordDeceasedId?: string | null;
-  probateRecordFilingId?: string | null;
+  probateRecordDeceasedId: string;
+  probateRecordFilingId: string;
 };
 
 export type UpdateProbateRecordMutation = {
   __typename: "ProbateRecord";
   id: string;
-  title?: string | null;
-  deceased?: {
+  title: string;
+  deceased: {
     __typename: "Deceased";
     id: string;
     name: string;
-    gender?: string | null;
+    gender: string;
     createdAt: string;
     updatedAt: string;
-  } | null;
-  filing?: {
+  };
+  filing: {
     __typename: "Filing";
     id: string;
-    state?: string | null;
-    county?: string | null;
-    date?: string | null;
-    filer?: string | null;
+    state: string;
+    county: string;
+    date: string;
+    filer: string;
     probate: {
       __typename: "ProbateRecord";
       id: string;
-      title?: string | null;
-      appraiser?: Array<string | null> | null;
-      witness?: Array<string | null> | null;
-      totalValue?: number | null;
+      title: string;
+      appraiser: Array<string | null>;
+      witness: Array<string | null>;
+      totalValue: number;
       createdAt: string;
       updatedAt: string;
-      probateRecordDeceasedId?: string | null;
-      probateRecordFilingId?: string | null;
+      probateRecordDeceasedId: string;
+      probateRecordFilingId: string;
     };
     createdAt: string;
     updatedAt: string;
     filingProbateId: string;
-  } | null;
-  appraiser?: Array<string | null> | null;
-  witness?: Array<string | null> | null;
+  };
+  appraiser: Array<string | null>;
+  witness: Array<string | null>;
   items?: {
     __typename: "ModelLineItemConnection";
     items: Array<{
       __typename: "LineItem";
       id: string;
       title: string;
-      description?: string | null;
+      description: string;
       category: string;
       subcategory: string;
-      quantity?: number | null;
-      value?: number | null;
+      quantity: number;
+      value: number;
       createdAt: string;
       updatedAt: string;
-      probateRecordItemsId?: string | null;
-      lineItemRectId: string;
+      probateRecordItemsId: string;
+      lineItemLineId: string;
     } | null>;
     nextToken?: string | null;
   } | null;
-  totalValue?: number | null;
+  totalValue: number;
+  document: {
+    __typename: "Document";
+    id: string;
+    lines: Array<{
+      __typename: "Line";
+      id: string;
+      text: string;
+      createdAt: string;
+      updatedAt: string;
+      lineBoundingBoxId: string;
+    } | null>;
+    createdAt: string;
+    updatedAt: string;
+  };
   createdAt: string;
   updatedAt: string;
-  probateRecordDeceasedId?: string | null;
-  probateRecordFilingId?: string | null;
+  probateRecordDeceasedId: string;
+  probateRecordFilingId: string;
 };
 
 export type DeleteProbateRecordMutation = {
   __typename: "ProbateRecord";
   id: string;
-  title?: string | null;
-  deceased?: {
+  title: string;
+  deceased: {
     __typename: "Deceased";
     id: string;
     name: string;
-    gender?: string | null;
+    gender: string;
     createdAt: string;
     updatedAt: string;
-  } | null;
-  filing?: {
+  };
+  filing: {
     __typename: "Filing";
     id: string;
-    state?: string | null;
-    county?: string | null;
-    date?: string | null;
-    filer?: string | null;
+    state: string;
+    county: string;
+    date: string;
+    filer: string;
     probate: {
       __typename: "ProbateRecord";
       id: string;
-      title?: string | null;
-      appraiser?: Array<string | null> | null;
-      witness?: Array<string | null> | null;
-      totalValue?: number | null;
+      title: string;
+      appraiser: Array<string | null>;
+      witness: Array<string | null>;
+      totalValue: number;
       createdAt: string;
       updatedAt: string;
-      probateRecordDeceasedId?: string | null;
-      probateRecordFilingId?: string | null;
+      probateRecordDeceasedId: string;
+      probateRecordFilingId: string;
     };
     createdAt: string;
     updatedAt: string;
     filingProbateId: string;
-  } | null;
-  appraiser?: Array<string | null> | null;
-  witness?: Array<string | null> | null;
+  };
+  appraiser: Array<string | null>;
+  witness: Array<string | null>;
   items?: {
     __typename: "ModelLineItemConnection";
     items: Array<{
       __typename: "LineItem";
       id: string;
       title: string;
-      description?: string | null;
+      description: string;
       category: string;
       subcategory: string;
-      quantity?: number | null;
-      value?: number | null;
+      quantity: number;
+      value: number;
       createdAt: string;
       updatedAt: string;
-      probateRecordItemsId?: string | null;
-      lineItemRectId: string;
+      probateRecordItemsId: string;
+      lineItemLineId: string;
     } | null>;
     nextToken?: string | null;
   } | null;
-  totalValue?: number | null;
+  totalValue: number;
+  document: {
+    __typename: "Document";
+    id: string;
+    lines: Array<{
+      __typename: "Line";
+      id: string;
+      text: string;
+      createdAt: string;
+      updatedAt: string;
+      lineBoundingBoxId: string;
+    } | null>;
+    createdAt: string;
+    updatedAt: string;
+  };
   createdAt: string;
   updatedAt: string;
-  probateRecordDeceasedId?: string | null;
-  probateRecordFilingId?: string | null;
+  probateRecordDeceasedId: string;
+  probateRecordFilingId: string;
 };
 
 export type CreateFilingMutation = {
   __typename: "Filing";
   id: string;
-  state?: string | null;
-  county?: string | null;
-  date?: string | null;
-  filer?: string | null;
+  state: string;
+  county: string;
+  date: string;
+  filer: string;
   probate: {
     __typename: "ProbateRecord";
     id: string;
-    title?: string | null;
-    deceased?: {
+    title: string;
+    deceased: {
       __typename: "Deceased";
       id: string;
       name: string;
-      gender?: string | null;
+      gender: string;
       createdAt: string;
       updatedAt: string;
-    } | null;
-    filing?: {
+    };
+    filing: {
       __typename: "Filing";
       id: string;
-      state?: string | null;
-      county?: string | null;
-      date?: string | null;
-      filer?: string | null;
+      state: string;
+      county: string;
+      date: string;
+      filer: string;
       createdAt: string;
       updatedAt: string;
       filingProbateId: string;
-    } | null;
-    appraiser?: Array<string | null> | null;
-    witness?: Array<string | null> | null;
+    };
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
     items?: {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
-    totalValue?: number | null;
+    totalValue: number;
+    document: {
+      __typename: "Document";
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
-    probateRecordDeceasedId?: string | null;
-    probateRecordFilingId?: string | null;
+    probateRecordDeceasedId: string;
+    probateRecordFilingId: string;
   };
   createdAt: string;
   updatedAt: string;
@@ -663,44 +864,50 @@ export type CreateFilingMutation = {
 export type UpdateFilingMutation = {
   __typename: "Filing";
   id: string;
-  state?: string | null;
-  county?: string | null;
-  date?: string | null;
-  filer?: string | null;
+  state: string;
+  county: string;
+  date: string;
+  filer: string;
   probate: {
     __typename: "ProbateRecord";
     id: string;
-    title?: string | null;
-    deceased?: {
+    title: string;
+    deceased: {
       __typename: "Deceased";
       id: string;
       name: string;
-      gender?: string | null;
+      gender: string;
       createdAt: string;
       updatedAt: string;
-    } | null;
-    filing?: {
+    };
+    filing: {
       __typename: "Filing";
       id: string;
-      state?: string | null;
-      county?: string | null;
-      date?: string | null;
-      filer?: string | null;
+      state: string;
+      county: string;
+      date: string;
+      filer: string;
       createdAt: string;
       updatedAt: string;
       filingProbateId: string;
-    } | null;
-    appraiser?: Array<string | null> | null;
-    witness?: Array<string | null> | null;
+    };
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
     items?: {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
-    totalValue?: number | null;
+    totalValue: number;
+    document: {
+      __typename: "Document";
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
-    probateRecordDeceasedId?: string | null;
-    probateRecordFilingId?: string | null;
+    probateRecordDeceasedId: string;
+    probateRecordFilingId: string;
   };
   createdAt: string;
   updatedAt: string;
@@ -710,44 +917,50 @@ export type UpdateFilingMutation = {
 export type DeleteFilingMutation = {
   __typename: "Filing";
   id: string;
-  state?: string | null;
-  county?: string | null;
-  date?: string | null;
-  filer?: string | null;
+  state: string;
+  county: string;
+  date: string;
+  filer: string;
   probate: {
     __typename: "ProbateRecord";
     id: string;
-    title?: string | null;
-    deceased?: {
+    title: string;
+    deceased: {
       __typename: "Deceased";
       id: string;
       name: string;
-      gender?: string | null;
+      gender: string;
       createdAt: string;
       updatedAt: string;
-    } | null;
-    filing?: {
+    };
+    filing: {
       __typename: "Filing";
       id: string;
-      state?: string | null;
-      county?: string | null;
-      date?: string | null;
-      filer?: string | null;
+      state: string;
+      county: string;
+      date: string;
+      filer: string;
       createdAt: string;
       updatedAt: string;
       filingProbateId: string;
-    } | null;
-    appraiser?: Array<string | null> | null;
-    witness?: Array<string | null> | null;
+    };
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
     items?: {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
-    totalValue?: number | null;
+    totalValue: number;
+    document: {
+      __typename: "Document";
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
-    probateRecordDeceasedId?: string | null;
-    probateRecordFilingId?: string | null;
+    probateRecordDeceasedId: string;
+    probateRecordFilingId: string;
   };
   createdAt: string;
   updatedAt: string;
@@ -758,7 +971,7 @@ export type CreateDeceasedMutation = {
   __typename: "Deceased";
   id: string;
   name: string;
-  gender?: string | null;
+  gender: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -767,7 +980,7 @@ export type UpdateDeceasedMutation = {
   __typename: "Deceased";
   id: string;
   name: string;
-  gender?: string | null;
+  gender: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -776,7 +989,7 @@ export type DeleteDeceasedMutation = {
   __typename: "Deceased";
   id: string;
   name: string;
-  gender?: string | null;
+  gender: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -785,180 +998,234 @@ export type CreateLineItemMutation = {
   __typename: "LineItem";
   id: string;
   title: string;
-  description?: string | null;
+  description: string;
   probate: {
     __typename: "ProbateRecord";
     id: string;
-    title?: string | null;
-    deceased?: {
+    title: string;
+    deceased: {
       __typename: "Deceased";
       id: string;
       name: string;
-      gender?: string | null;
+      gender: string;
       createdAt: string;
       updatedAt: string;
-    } | null;
-    filing?: {
+    };
+    filing: {
       __typename: "Filing";
       id: string;
-      state?: string | null;
-      county?: string | null;
-      date?: string | null;
-      filer?: string | null;
+      state: string;
+      county: string;
+      date: string;
+      filer: string;
       createdAt: string;
       updatedAt: string;
       filingProbateId: string;
-    } | null;
-    appraiser?: Array<string | null> | null;
-    witness?: Array<string | null> | null;
+    };
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
     items?: {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
-    totalValue?: number | null;
+    totalValue: number;
+    document: {
+      __typename: "Document";
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
-    probateRecordDeceasedId?: string | null;
-    probateRecordFilingId?: string | null;
+    probateRecordDeceasedId: string;
+    probateRecordFilingId: string;
   };
   category: string;
   subcategory: string;
-  quantity?: number | null;
-  value?: number | null;
-  rect: {
-    __typename: "Rect";
+  quantity: number;
+  value: number;
+  line: {
+    __typename: "Line";
     id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
+    text: string;
+    words?: {
+      __typename: "ModelWordConnection";
+      nextToken?: string | null;
+    } | null;
+    boundingBox: {
+      __typename: "Rect";
+      id: string;
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
+    lineBoundingBoxId: string;
   };
   createdAt: string;
   updatedAt: string;
-  probateRecordItemsId?: string | null;
-  lineItemRectId: string;
+  probateRecordItemsId: string;
+  lineItemLineId: string;
 };
 
 export type UpdateLineItemMutation = {
   __typename: "LineItem";
   id: string;
   title: string;
-  description?: string | null;
+  description: string;
   probate: {
     __typename: "ProbateRecord";
     id: string;
-    title?: string | null;
-    deceased?: {
+    title: string;
+    deceased: {
       __typename: "Deceased";
       id: string;
       name: string;
-      gender?: string | null;
+      gender: string;
       createdAt: string;
       updatedAt: string;
-    } | null;
-    filing?: {
+    };
+    filing: {
       __typename: "Filing";
       id: string;
-      state?: string | null;
-      county?: string | null;
-      date?: string | null;
-      filer?: string | null;
+      state: string;
+      county: string;
+      date: string;
+      filer: string;
       createdAt: string;
       updatedAt: string;
       filingProbateId: string;
-    } | null;
-    appraiser?: Array<string | null> | null;
-    witness?: Array<string | null> | null;
+    };
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
     items?: {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
-    totalValue?: number | null;
+    totalValue: number;
+    document: {
+      __typename: "Document";
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
-    probateRecordDeceasedId?: string | null;
-    probateRecordFilingId?: string | null;
+    probateRecordDeceasedId: string;
+    probateRecordFilingId: string;
   };
   category: string;
   subcategory: string;
-  quantity?: number | null;
-  value?: number | null;
-  rect: {
-    __typename: "Rect";
+  quantity: number;
+  value: number;
+  line: {
+    __typename: "Line";
     id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
+    text: string;
+    words?: {
+      __typename: "ModelWordConnection";
+      nextToken?: string | null;
+    } | null;
+    boundingBox: {
+      __typename: "Rect";
+      id: string;
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
+    lineBoundingBoxId: string;
   };
   createdAt: string;
   updatedAt: string;
-  probateRecordItemsId?: string | null;
-  lineItemRectId: string;
+  probateRecordItemsId: string;
+  lineItemLineId: string;
 };
 
 export type DeleteLineItemMutation = {
   __typename: "LineItem";
   id: string;
   title: string;
-  description?: string | null;
+  description: string;
   probate: {
     __typename: "ProbateRecord";
     id: string;
-    title?: string | null;
-    deceased?: {
+    title: string;
+    deceased: {
       __typename: "Deceased";
       id: string;
       name: string;
-      gender?: string | null;
+      gender: string;
       createdAt: string;
       updatedAt: string;
-    } | null;
-    filing?: {
+    };
+    filing: {
       __typename: "Filing";
       id: string;
-      state?: string | null;
-      county?: string | null;
-      date?: string | null;
-      filer?: string | null;
+      state: string;
+      county: string;
+      date: string;
+      filer: string;
       createdAt: string;
       updatedAt: string;
       filingProbateId: string;
-    } | null;
-    appraiser?: Array<string | null> | null;
-    witness?: Array<string | null> | null;
+    };
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
     items?: {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
-    totalValue?: number | null;
+    totalValue: number;
+    document: {
+      __typename: "Document";
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
-    probateRecordDeceasedId?: string | null;
-    probateRecordFilingId?: string | null;
+    probateRecordDeceasedId: string;
+    probateRecordFilingId: string;
   };
   category: string;
   subcategory: string;
-  quantity?: number | null;
-  value?: number | null;
-  rect: {
-    __typename: "Rect";
+  quantity: number;
+  value: number;
+  line: {
+    __typename: "Line";
     id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
+    text: string;
+    words?: {
+      __typename: "ModelWordConnection";
+      nextToken?: string | null;
+    } | null;
+    boundingBox: {
+      __typename: "Rect";
+      id: string;
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
+    lineBoundingBoxId: string;
   };
   createdAt: string;
   updatedAt: string;
-  probateRecordItemsId?: string | null;
-  lineItemRectId: string;
+  probateRecordItemsId: string;
+  lineItemLineId: string;
 };
 
 export type CreateRectMutation = {
@@ -994,66 +1261,323 @@ export type DeleteRectMutation = {
   updatedAt: string;
 };
 
+export type CreateDocumentMutation = {
+  __typename: "Document";
+  id: string;
+  lines: Array<{
+    __typename: "Line";
+    id: string;
+    text: string;
+    words?: {
+      __typename: "ModelWordConnection";
+      nextToken?: string | null;
+    } | null;
+    boundingBox: {
+      __typename: "Rect";
+      id: string;
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      createdAt: string;
+      updatedAt: string;
+    };
+    createdAt: string;
+    updatedAt: string;
+    lineBoundingBoxId: string;
+  } | null>;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UpdateDocumentMutation = {
+  __typename: "Document";
+  id: string;
+  lines: Array<{
+    __typename: "Line";
+    id: string;
+    text: string;
+    words?: {
+      __typename: "ModelWordConnection";
+      nextToken?: string | null;
+    } | null;
+    boundingBox: {
+      __typename: "Rect";
+      id: string;
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      createdAt: string;
+      updatedAt: string;
+    };
+    createdAt: string;
+    updatedAt: string;
+    lineBoundingBoxId: string;
+  } | null>;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type DeleteDocumentMutation = {
+  __typename: "Document";
+  id: string;
+  lines: Array<{
+    __typename: "Line";
+    id: string;
+    text: string;
+    words?: {
+      __typename: "ModelWordConnection";
+      nextToken?: string | null;
+    } | null;
+    boundingBox: {
+      __typename: "Rect";
+      id: string;
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      createdAt: string;
+      updatedAt: string;
+    };
+    createdAt: string;
+    updatedAt: string;
+    lineBoundingBoxId: string;
+  } | null>;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CreateLineMutation = {
+  __typename: "Line";
+  id: string;
+  text: string;
+  words?: {
+    __typename: "ModelWordConnection";
+    items: Array<{
+      __typename: "Word";
+      id: string;
+      text: string;
+      createdAt: string;
+      updatedAt: string;
+      lineWordsId: string;
+      wordBoundingBoxId: string;
+    } | null>;
+    nextToken?: string | null;
+  } | null;
+  boundingBox: {
+    __typename: "Rect";
+    id: string;
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  lineBoundingBoxId: string;
+};
+
+export type UpdateLineMutation = {
+  __typename: "Line";
+  id: string;
+  text: string;
+  words?: {
+    __typename: "ModelWordConnection";
+    items: Array<{
+      __typename: "Word";
+      id: string;
+      text: string;
+      createdAt: string;
+      updatedAt: string;
+      lineWordsId: string;
+      wordBoundingBoxId: string;
+    } | null>;
+    nextToken?: string | null;
+  } | null;
+  boundingBox: {
+    __typename: "Rect";
+    id: string;
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  lineBoundingBoxId: string;
+};
+
+export type DeleteLineMutation = {
+  __typename: "Line";
+  id: string;
+  text: string;
+  words?: {
+    __typename: "ModelWordConnection";
+    items: Array<{
+      __typename: "Word";
+      id: string;
+      text: string;
+      createdAt: string;
+      updatedAt: string;
+      lineWordsId: string;
+      wordBoundingBoxId: string;
+    } | null>;
+    nextToken?: string | null;
+  } | null;
+  boundingBox: {
+    __typename: "Rect";
+    id: string;
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  lineBoundingBoxId: string;
+};
+
+export type CreateWordMutation = {
+  __typename: "Word";
+  id: string;
+  text: string;
+  boundingBox: {
+    __typename: "Rect";
+    id: string;
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  lineWordsId: string;
+  wordBoundingBoxId: string;
+};
+
+export type UpdateWordMutation = {
+  __typename: "Word";
+  id: string;
+  text: string;
+  boundingBox: {
+    __typename: "Rect";
+    id: string;
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  lineWordsId: string;
+  wordBoundingBoxId: string;
+};
+
+export type DeleteWordMutation = {
+  __typename: "Word";
+  id: string;
+  text: string;
+  boundingBox: {
+    __typename: "Rect";
+    id: string;
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  lineWordsId: string;
+  wordBoundingBoxId: string;
+};
+
 export type GetProbateRecordQuery = {
   __typename: "ProbateRecord";
   id: string;
-  title?: string | null;
-  deceased?: {
+  title: string;
+  deceased: {
     __typename: "Deceased";
     id: string;
     name: string;
-    gender?: string | null;
+    gender: string;
     createdAt: string;
     updatedAt: string;
-  } | null;
-  filing?: {
+  };
+  filing: {
     __typename: "Filing";
     id: string;
-    state?: string | null;
-    county?: string | null;
-    date?: string | null;
-    filer?: string | null;
+    state: string;
+    county: string;
+    date: string;
+    filer: string;
     probate: {
       __typename: "ProbateRecord";
       id: string;
-      title?: string | null;
-      appraiser?: Array<string | null> | null;
-      witness?: Array<string | null> | null;
-      totalValue?: number | null;
+      title: string;
+      appraiser: Array<string | null>;
+      witness: Array<string | null>;
+      totalValue: number;
       createdAt: string;
       updatedAt: string;
-      probateRecordDeceasedId?: string | null;
-      probateRecordFilingId?: string | null;
+      probateRecordDeceasedId: string;
+      probateRecordFilingId: string;
     };
     createdAt: string;
     updatedAt: string;
     filingProbateId: string;
-  } | null;
-  appraiser?: Array<string | null> | null;
-  witness?: Array<string | null> | null;
+  };
+  appraiser: Array<string | null>;
+  witness: Array<string | null>;
   items?: {
     __typename: "ModelLineItemConnection";
     items: Array<{
       __typename: "LineItem";
       id: string;
       title: string;
-      description?: string | null;
+      description: string;
       category: string;
       subcategory: string;
-      quantity?: number | null;
-      value?: number | null;
+      quantity: number;
+      value: number;
       createdAt: string;
       updatedAt: string;
-      probateRecordItemsId?: string | null;
-      lineItemRectId: string;
+      probateRecordItemsId: string;
+      lineItemLineId: string;
     } | null>;
     nextToken?: string | null;
   } | null;
-  totalValue?: number | null;
+  totalValue: number;
+  document: {
+    __typename: "Document";
+    id: string;
+    lines: Array<{
+      __typename: "Line";
+      id: string;
+      text: string;
+      createdAt: string;
+      updatedAt: string;
+      lineBoundingBoxId: string;
+    } | null>;
+    createdAt: string;
+    updatedAt: string;
+  };
   createdAt: string;
   updatedAt: string;
-  probateRecordDeceasedId?: string | null;
-  probateRecordFilingId?: string | null;
+  probateRecordDeceasedId: string;
+  probateRecordFilingId: string;
 };
 
 export type ListProbateRecordsQuery = {
@@ -1061,37 +1585,43 @@ export type ListProbateRecordsQuery = {
   items: Array<{
     __typename: "ProbateRecord";
     id: string;
-    title?: string | null;
-    deceased?: {
+    title: string;
+    deceased: {
       __typename: "Deceased";
       id: string;
       name: string;
-      gender?: string | null;
+      gender: string;
       createdAt: string;
       updatedAt: string;
-    } | null;
-    filing?: {
+    };
+    filing: {
       __typename: "Filing";
       id: string;
-      state?: string | null;
-      county?: string | null;
-      date?: string | null;
-      filer?: string | null;
+      state: string;
+      county: string;
+      date: string;
+      filer: string;
       createdAt: string;
       updatedAt: string;
       filingProbateId: string;
-    } | null;
-    appraiser?: Array<string | null> | null;
-    witness?: Array<string | null> | null;
+    };
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
     items?: {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
-    totalValue?: number | null;
+    totalValue: number;
+    document: {
+      __typename: "Document";
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
-    probateRecordDeceasedId?: string | null;
-    probateRecordFilingId?: string | null;
+    probateRecordDeceasedId: string;
+    probateRecordFilingId: string;
   } | null>;
   nextToken?: string | null;
 };
@@ -1099,44 +1629,50 @@ export type ListProbateRecordsQuery = {
 export type GetFilingQuery = {
   __typename: "Filing";
   id: string;
-  state?: string | null;
-  county?: string | null;
-  date?: string | null;
-  filer?: string | null;
+  state: string;
+  county: string;
+  date: string;
+  filer: string;
   probate: {
     __typename: "ProbateRecord";
     id: string;
-    title?: string | null;
-    deceased?: {
+    title: string;
+    deceased: {
       __typename: "Deceased";
       id: string;
       name: string;
-      gender?: string | null;
+      gender: string;
       createdAt: string;
       updatedAt: string;
-    } | null;
-    filing?: {
+    };
+    filing: {
       __typename: "Filing";
       id: string;
-      state?: string | null;
-      county?: string | null;
-      date?: string | null;
-      filer?: string | null;
+      state: string;
+      county: string;
+      date: string;
+      filer: string;
       createdAt: string;
       updatedAt: string;
       filingProbateId: string;
-    } | null;
-    appraiser?: Array<string | null> | null;
-    witness?: Array<string | null> | null;
+    };
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
     items?: {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
-    totalValue?: number | null;
+    totalValue: number;
+    document: {
+      __typename: "Document";
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
-    probateRecordDeceasedId?: string | null;
-    probateRecordFilingId?: string | null;
+    probateRecordDeceasedId: string;
+    probateRecordFilingId: string;
   };
   createdAt: string;
   updatedAt: string;
@@ -1148,21 +1684,21 @@ export type ListFilingsQuery = {
   items: Array<{
     __typename: "Filing";
     id: string;
-    state?: string | null;
-    county?: string | null;
-    date?: string | null;
-    filer?: string | null;
+    state: string;
+    county: string;
+    date: string;
+    filer: string;
     probate: {
       __typename: "ProbateRecord";
       id: string;
-      title?: string | null;
-      appraiser?: Array<string | null> | null;
-      witness?: Array<string | null> | null;
-      totalValue?: number | null;
+      title: string;
+      appraiser: Array<string | null>;
+      witness: Array<string | null>;
+      totalValue: number;
       createdAt: string;
       updatedAt: string;
-      probateRecordDeceasedId?: string | null;
-      probateRecordFilingId?: string | null;
+      probateRecordDeceasedId: string;
+      probateRecordFilingId: string;
     };
     createdAt: string;
     updatedAt: string;
@@ -1175,7 +1711,7 @@ export type GetDeceasedQuery = {
   __typename: "Deceased";
   id: string;
   name: string;
-  gender?: string | null;
+  gender: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -1186,7 +1722,7 @@ export type ListDeceasedsQuery = {
     __typename: "Deceased";
     id: string;
     name: string;
-    gender?: string | null;
+    gender: string;
     createdAt: string;
     updatedAt: string;
   } | null>;
@@ -1197,86 +1733,61 @@ export type GetLineItemQuery = {
   __typename: "LineItem";
   id: string;
   title: string;
-  description?: string | null;
+  description: string;
   probate: {
     __typename: "ProbateRecord";
     id: string;
-    title?: string | null;
-    deceased?: {
+    title: string;
+    deceased: {
       __typename: "Deceased";
       id: string;
       name: string;
-      gender?: string | null;
+      gender: string;
       createdAt: string;
       updatedAt: string;
-    } | null;
-    filing?: {
+    };
+    filing: {
       __typename: "Filing";
       id: string;
-      state?: string | null;
-      county?: string | null;
-      date?: string | null;
-      filer?: string | null;
+      state: string;
+      county: string;
+      date: string;
+      filer: string;
       createdAt: string;
       updatedAt: string;
       filingProbateId: string;
-    } | null;
-    appraiser?: Array<string | null> | null;
-    witness?: Array<string | null> | null;
+    };
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
     items?: {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
-    totalValue?: number | null;
+    totalValue: number;
+    document: {
+      __typename: "Document";
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
-    probateRecordDeceasedId?: string | null;
-    probateRecordFilingId?: string | null;
+    probateRecordDeceasedId: string;
+    probateRecordFilingId: string;
   };
   category: string;
   subcategory: string;
-  quantity?: number | null;
-  value?: number | null;
-  rect: {
-    __typename: "Rect";
+  quantity: number;
+  value: number;
+  line: {
+    __typename: "Line";
     id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-  probateRecordItemsId?: string | null;
-  lineItemRectId: string;
-};
-
-export type ListLineItemsQuery = {
-  __typename: "ModelLineItemConnection";
-  items: Array<{
-    __typename: "LineItem";
-    id: string;
-    title: string;
-    description?: string | null;
-    probate: {
-      __typename: "ProbateRecord";
-      id: string;
-      title?: string | null;
-      appraiser?: Array<string | null> | null;
-      witness?: Array<string | null> | null;
-      totalValue?: number | null;
-      createdAt: string;
-      updatedAt: string;
-      probateRecordDeceasedId?: string | null;
-      probateRecordFilingId?: string | null;
-    };
-    category: string;
-    subcategory: string;
-    quantity?: number | null;
-    value?: number | null;
-    rect: {
+    text: string;
+    words?: {
+      __typename: "ModelWordConnection";
+      nextToken?: string | null;
+    } | null;
+    boundingBox: {
       __typename: "Rect";
       id: string;
       left: number;
@@ -1288,8 +1799,49 @@ export type ListLineItemsQuery = {
     };
     createdAt: string;
     updatedAt: string;
-    probateRecordItemsId?: string | null;
-    lineItemRectId: string;
+    lineBoundingBoxId: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  probateRecordItemsId: string;
+  lineItemLineId: string;
+};
+
+export type ListLineItemsQuery = {
+  __typename: "ModelLineItemConnection";
+  items: Array<{
+    __typename: "LineItem";
+    id: string;
+    title: string;
+    description: string;
+    probate: {
+      __typename: "ProbateRecord";
+      id: string;
+      title: string;
+      appraiser: Array<string | null>;
+      witness: Array<string | null>;
+      totalValue: number;
+      createdAt: string;
+      updatedAt: string;
+      probateRecordDeceasedId: string;
+      probateRecordFilingId: string;
+    };
+    category: string;
+    subcategory: string;
+    quantity: number;
+    value: number;
+    line: {
+      __typename: "Line";
+      id: string;
+      text: string;
+      createdAt: string;
+      updatedAt: string;
+      lineBoundingBoxId: string;
+    };
+    createdAt: string;
+    updatedAt: string;
+    probateRecordItemsId: string;
+    lineItemLineId: string;
   } | null>;
   nextToken?: string | null;
 };
@@ -1320,233 +1872,432 @@ export type ListRectsQuery = {
   nextToken?: string | null;
 };
 
+export type GetDocumentQuery = {
+  __typename: "Document";
+  id: string;
+  lines: Array<{
+    __typename: "Line";
+    id: string;
+    text: string;
+    words?: {
+      __typename: "ModelWordConnection";
+      nextToken?: string | null;
+    } | null;
+    boundingBox: {
+      __typename: "Rect";
+      id: string;
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      createdAt: string;
+      updatedAt: string;
+    };
+    createdAt: string;
+    updatedAt: string;
+    lineBoundingBoxId: string;
+  } | null>;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ListDocumentsQuery = {
+  __typename: "ModelDocumentConnection";
+  items: Array<{
+    __typename: "Document";
+    id: string;
+    lines: Array<{
+      __typename: "Line";
+      id: string;
+      text: string;
+      createdAt: string;
+      updatedAt: string;
+      lineBoundingBoxId: string;
+    } | null>;
+    createdAt: string;
+    updatedAt: string;
+  } | null>;
+  nextToken?: string | null;
+};
+
+export type GetLineQuery = {
+  __typename: "Line";
+  id: string;
+  text: string;
+  words?: {
+    __typename: "ModelWordConnection";
+    items: Array<{
+      __typename: "Word";
+      id: string;
+      text: string;
+      createdAt: string;
+      updatedAt: string;
+      lineWordsId: string;
+      wordBoundingBoxId: string;
+    } | null>;
+    nextToken?: string | null;
+  } | null;
+  boundingBox: {
+    __typename: "Rect";
+    id: string;
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  lineBoundingBoxId: string;
+};
+
+export type ListLinesQuery = {
+  __typename: "ModelLineConnection";
+  items: Array<{
+    __typename: "Line";
+    id: string;
+    text: string;
+    words?: {
+      __typename: "ModelWordConnection";
+      nextToken?: string | null;
+    } | null;
+    boundingBox: {
+      __typename: "Rect";
+      id: string;
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      createdAt: string;
+      updatedAt: string;
+    };
+    createdAt: string;
+    updatedAt: string;
+    lineBoundingBoxId: string;
+  } | null>;
+  nextToken?: string | null;
+};
+
+export type GetWordQuery = {
+  __typename: "Word";
+  id: string;
+  text: string;
+  boundingBox: {
+    __typename: "Rect";
+    id: string;
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  lineWordsId: string;
+  wordBoundingBoxId: string;
+};
+
+export type ListWordsQuery = {
+  __typename: "ModelWordConnection";
+  items: Array<{
+    __typename: "Word";
+    id: string;
+    text: string;
+    boundingBox: {
+      __typename: "Rect";
+      id: string;
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      createdAt: string;
+      updatedAt: string;
+    };
+    createdAt: string;
+    updatedAt: string;
+    lineWordsId: string;
+    wordBoundingBoxId: string;
+  } | null>;
+  nextToken?: string | null;
+};
+
 export type OnCreateProbateRecordSubscription = {
   __typename: "ProbateRecord";
   id: string;
-  title?: string | null;
-  deceased?: {
+  title: string;
+  deceased: {
     __typename: "Deceased";
     id: string;
     name: string;
-    gender?: string | null;
+    gender: string;
     createdAt: string;
     updatedAt: string;
-  } | null;
-  filing?: {
+  };
+  filing: {
     __typename: "Filing";
     id: string;
-    state?: string | null;
-    county?: string | null;
-    date?: string | null;
-    filer?: string | null;
+    state: string;
+    county: string;
+    date: string;
+    filer: string;
     probate: {
       __typename: "ProbateRecord";
       id: string;
-      title?: string | null;
-      appraiser?: Array<string | null> | null;
-      witness?: Array<string | null> | null;
-      totalValue?: number | null;
+      title: string;
+      appraiser: Array<string | null>;
+      witness: Array<string | null>;
+      totalValue: number;
       createdAt: string;
       updatedAt: string;
-      probateRecordDeceasedId?: string | null;
-      probateRecordFilingId?: string | null;
+      probateRecordDeceasedId: string;
+      probateRecordFilingId: string;
     };
     createdAt: string;
     updatedAt: string;
     filingProbateId: string;
-  } | null;
-  appraiser?: Array<string | null> | null;
-  witness?: Array<string | null> | null;
+  };
+  appraiser: Array<string | null>;
+  witness: Array<string | null>;
   items?: {
     __typename: "ModelLineItemConnection";
     items: Array<{
       __typename: "LineItem";
       id: string;
       title: string;
-      description?: string | null;
+      description: string;
       category: string;
       subcategory: string;
-      quantity?: number | null;
-      value?: number | null;
+      quantity: number;
+      value: number;
       createdAt: string;
       updatedAt: string;
-      probateRecordItemsId?: string | null;
-      lineItemRectId: string;
+      probateRecordItemsId: string;
+      lineItemLineId: string;
     } | null>;
     nextToken?: string | null;
   } | null;
-  totalValue?: number | null;
+  totalValue: number;
+  document: {
+    __typename: "Document";
+    id: string;
+    lines: Array<{
+      __typename: "Line";
+      id: string;
+      text: string;
+      createdAt: string;
+      updatedAt: string;
+      lineBoundingBoxId: string;
+    } | null>;
+    createdAt: string;
+    updatedAt: string;
+  };
   createdAt: string;
   updatedAt: string;
-  probateRecordDeceasedId?: string | null;
-  probateRecordFilingId?: string | null;
+  probateRecordDeceasedId: string;
+  probateRecordFilingId: string;
 };
 
 export type OnUpdateProbateRecordSubscription = {
   __typename: "ProbateRecord";
   id: string;
-  title?: string | null;
-  deceased?: {
+  title: string;
+  deceased: {
     __typename: "Deceased";
     id: string;
     name: string;
-    gender?: string | null;
+    gender: string;
     createdAt: string;
     updatedAt: string;
-  } | null;
-  filing?: {
+  };
+  filing: {
     __typename: "Filing";
     id: string;
-    state?: string | null;
-    county?: string | null;
-    date?: string | null;
-    filer?: string | null;
+    state: string;
+    county: string;
+    date: string;
+    filer: string;
     probate: {
       __typename: "ProbateRecord";
       id: string;
-      title?: string | null;
-      appraiser?: Array<string | null> | null;
-      witness?: Array<string | null> | null;
-      totalValue?: number | null;
+      title: string;
+      appraiser: Array<string | null>;
+      witness: Array<string | null>;
+      totalValue: number;
       createdAt: string;
       updatedAt: string;
-      probateRecordDeceasedId?: string | null;
-      probateRecordFilingId?: string | null;
+      probateRecordDeceasedId: string;
+      probateRecordFilingId: string;
     };
     createdAt: string;
     updatedAt: string;
     filingProbateId: string;
-  } | null;
-  appraiser?: Array<string | null> | null;
-  witness?: Array<string | null> | null;
+  };
+  appraiser: Array<string | null>;
+  witness: Array<string | null>;
   items?: {
     __typename: "ModelLineItemConnection";
     items: Array<{
       __typename: "LineItem";
       id: string;
       title: string;
-      description?: string | null;
+      description: string;
       category: string;
       subcategory: string;
-      quantity?: number | null;
-      value?: number | null;
+      quantity: number;
+      value: number;
       createdAt: string;
       updatedAt: string;
-      probateRecordItemsId?: string | null;
-      lineItemRectId: string;
+      probateRecordItemsId: string;
+      lineItemLineId: string;
     } | null>;
     nextToken?: string | null;
   } | null;
-  totalValue?: number | null;
+  totalValue: number;
+  document: {
+    __typename: "Document";
+    id: string;
+    lines: Array<{
+      __typename: "Line";
+      id: string;
+      text: string;
+      createdAt: string;
+      updatedAt: string;
+      lineBoundingBoxId: string;
+    } | null>;
+    createdAt: string;
+    updatedAt: string;
+  };
   createdAt: string;
   updatedAt: string;
-  probateRecordDeceasedId?: string | null;
-  probateRecordFilingId?: string | null;
+  probateRecordDeceasedId: string;
+  probateRecordFilingId: string;
 };
 
 export type OnDeleteProbateRecordSubscription = {
   __typename: "ProbateRecord";
   id: string;
-  title?: string | null;
-  deceased?: {
+  title: string;
+  deceased: {
     __typename: "Deceased";
     id: string;
     name: string;
-    gender?: string | null;
+    gender: string;
     createdAt: string;
     updatedAt: string;
-  } | null;
-  filing?: {
+  };
+  filing: {
     __typename: "Filing";
     id: string;
-    state?: string | null;
-    county?: string | null;
-    date?: string | null;
-    filer?: string | null;
+    state: string;
+    county: string;
+    date: string;
+    filer: string;
     probate: {
       __typename: "ProbateRecord";
       id: string;
-      title?: string | null;
-      appraiser?: Array<string | null> | null;
-      witness?: Array<string | null> | null;
-      totalValue?: number | null;
+      title: string;
+      appraiser: Array<string | null>;
+      witness: Array<string | null>;
+      totalValue: number;
       createdAt: string;
       updatedAt: string;
-      probateRecordDeceasedId?: string | null;
-      probateRecordFilingId?: string | null;
+      probateRecordDeceasedId: string;
+      probateRecordFilingId: string;
     };
     createdAt: string;
     updatedAt: string;
     filingProbateId: string;
-  } | null;
-  appraiser?: Array<string | null> | null;
-  witness?: Array<string | null> | null;
+  };
+  appraiser: Array<string | null>;
+  witness: Array<string | null>;
   items?: {
     __typename: "ModelLineItemConnection";
     items: Array<{
       __typename: "LineItem";
       id: string;
       title: string;
-      description?: string | null;
+      description: string;
       category: string;
       subcategory: string;
-      quantity?: number | null;
-      value?: number | null;
+      quantity: number;
+      value: number;
       createdAt: string;
       updatedAt: string;
-      probateRecordItemsId?: string | null;
-      lineItemRectId: string;
+      probateRecordItemsId: string;
+      lineItemLineId: string;
     } | null>;
     nextToken?: string | null;
   } | null;
-  totalValue?: number | null;
+  totalValue: number;
+  document: {
+    __typename: "Document";
+    id: string;
+    lines: Array<{
+      __typename: "Line";
+      id: string;
+      text: string;
+      createdAt: string;
+      updatedAt: string;
+      lineBoundingBoxId: string;
+    } | null>;
+    createdAt: string;
+    updatedAt: string;
+  };
   createdAt: string;
   updatedAt: string;
-  probateRecordDeceasedId?: string | null;
-  probateRecordFilingId?: string | null;
+  probateRecordDeceasedId: string;
+  probateRecordFilingId: string;
 };
 
 export type OnCreateFilingSubscription = {
   __typename: "Filing";
   id: string;
-  state?: string | null;
-  county?: string | null;
-  date?: string | null;
-  filer?: string | null;
+  state: string;
+  county: string;
+  date: string;
+  filer: string;
   probate: {
     __typename: "ProbateRecord";
     id: string;
-    title?: string | null;
-    deceased?: {
+    title: string;
+    deceased: {
       __typename: "Deceased";
       id: string;
       name: string;
-      gender?: string | null;
+      gender: string;
       createdAt: string;
       updatedAt: string;
-    } | null;
-    filing?: {
+    };
+    filing: {
       __typename: "Filing";
       id: string;
-      state?: string | null;
-      county?: string | null;
-      date?: string | null;
-      filer?: string | null;
+      state: string;
+      county: string;
+      date: string;
+      filer: string;
       createdAt: string;
       updatedAt: string;
       filingProbateId: string;
-    } | null;
-    appraiser?: Array<string | null> | null;
-    witness?: Array<string | null> | null;
+    };
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
     items?: {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
-    totalValue?: number | null;
+    totalValue: number;
+    document: {
+      __typename: "Document";
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
-    probateRecordDeceasedId?: string | null;
-    probateRecordFilingId?: string | null;
+    probateRecordDeceasedId: string;
+    probateRecordFilingId: string;
   };
   createdAt: string;
   updatedAt: string;
@@ -1556,44 +2307,50 @@ export type OnCreateFilingSubscription = {
 export type OnUpdateFilingSubscription = {
   __typename: "Filing";
   id: string;
-  state?: string | null;
-  county?: string | null;
-  date?: string | null;
-  filer?: string | null;
+  state: string;
+  county: string;
+  date: string;
+  filer: string;
   probate: {
     __typename: "ProbateRecord";
     id: string;
-    title?: string | null;
-    deceased?: {
+    title: string;
+    deceased: {
       __typename: "Deceased";
       id: string;
       name: string;
-      gender?: string | null;
+      gender: string;
       createdAt: string;
       updatedAt: string;
-    } | null;
-    filing?: {
+    };
+    filing: {
       __typename: "Filing";
       id: string;
-      state?: string | null;
-      county?: string | null;
-      date?: string | null;
-      filer?: string | null;
+      state: string;
+      county: string;
+      date: string;
+      filer: string;
       createdAt: string;
       updatedAt: string;
       filingProbateId: string;
-    } | null;
-    appraiser?: Array<string | null> | null;
-    witness?: Array<string | null> | null;
+    };
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
     items?: {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
-    totalValue?: number | null;
+    totalValue: number;
+    document: {
+      __typename: "Document";
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
-    probateRecordDeceasedId?: string | null;
-    probateRecordFilingId?: string | null;
+    probateRecordDeceasedId: string;
+    probateRecordFilingId: string;
   };
   createdAt: string;
   updatedAt: string;
@@ -1603,44 +2360,50 @@ export type OnUpdateFilingSubscription = {
 export type OnDeleteFilingSubscription = {
   __typename: "Filing";
   id: string;
-  state?: string | null;
-  county?: string | null;
-  date?: string | null;
-  filer?: string | null;
+  state: string;
+  county: string;
+  date: string;
+  filer: string;
   probate: {
     __typename: "ProbateRecord";
     id: string;
-    title?: string | null;
-    deceased?: {
+    title: string;
+    deceased: {
       __typename: "Deceased";
       id: string;
       name: string;
-      gender?: string | null;
+      gender: string;
       createdAt: string;
       updatedAt: string;
-    } | null;
-    filing?: {
+    };
+    filing: {
       __typename: "Filing";
       id: string;
-      state?: string | null;
-      county?: string | null;
-      date?: string | null;
-      filer?: string | null;
+      state: string;
+      county: string;
+      date: string;
+      filer: string;
       createdAt: string;
       updatedAt: string;
       filingProbateId: string;
-    } | null;
-    appraiser?: Array<string | null> | null;
-    witness?: Array<string | null> | null;
+    };
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
     items?: {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
-    totalValue?: number | null;
+    totalValue: number;
+    document: {
+      __typename: "Document";
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
-    probateRecordDeceasedId?: string | null;
-    probateRecordFilingId?: string | null;
+    probateRecordDeceasedId: string;
+    probateRecordFilingId: string;
   };
   createdAt: string;
   updatedAt: string;
@@ -1651,7 +2414,7 @@ export type OnCreateDeceasedSubscription = {
   __typename: "Deceased";
   id: string;
   name: string;
-  gender?: string | null;
+  gender: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -1660,7 +2423,7 @@ export type OnUpdateDeceasedSubscription = {
   __typename: "Deceased";
   id: string;
   name: string;
-  gender?: string | null;
+  gender: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -1669,7 +2432,7 @@ export type OnDeleteDeceasedSubscription = {
   __typename: "Deceased";
   id: string;
   name: string;
-  gender?: string | null;
+  gender: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -1678,180 +2441,234 @@ export type OnCreateLineItemSubscription = {
   __typename: "LineItem";
   id: string;
   title: string;
-  description?: string | null;
+  description: string;
   probate: {
     __typename: "ProbateRecord";
     id: string;
-    title?: string | null;
-    deceased?: {
+    title: string;
+    deceased: {
       __typename: "Deceased";
       id: string;
       name: string;
-      gender?: string | null;
+      gender: string;
       createdAt: string;
       updatedAt: string;
-    } | null;
-    filing?: {
+    };
+    filing: {
       __typename: "Filing";
       id: string;
-      state?: string | null;
-      county?: string | null;
-      date?: string | null;
-      filer?: string | null;
+      state: string;
+      county: string;
+      date: string;
+      filer: string;
       createdAt: string;
       updatedAt: string;
       filingProbateId: string;
-    } | null;
-    appraiser?: Array<string | null> | null;
-    witness?: Array<string | null> | null;
+    };
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
     items?: {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
-    totalValue?: number | null;
+    totalValue: number;
+    document: {
+      __typename: "Document";
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
-    probateRecordDeceasedId?: string | null;
-    probateRecordFilingId?: string | null;
+    probateRecordDeceasedId: string;
+    probateRecordFilingId: string;
   };
   category: string;
   subcategory: string;
-  quantity?: number | null;
-  value?: number | null;
-  rect: {
-    __typename: "Rect";
+  quantity: number;
+  value: number;
+  line: {
+    __typename: "Line";
     id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
+    text: string;
+    words?: {
+      __typename: "ModelWordConnection";
+      nextToken?: string | null;
+    } | null;
+    boundingBox: {
+      __typename: "Rect";
+      id: string;
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
+    lineBoundingBoxId: string;
   };
   createdAt: string;
   updatedAt: string;
-  probateRecordItemsId?: string | null;
-  lineItemRectId: string;
+  probateRecordItemsId: string;
+  lineItemLineId: string;
 };
 
 export type OnUpdateLineItemSubscription = {
   __typename: "LineItem";
   id: string;
   title: string;
-  description?: string | null;
+  description: string;
   probate: {
     __typename: "ProbateRecord";
     id: string;
-    title?: string | null;
-    deceased?: {
+    title: string;
+    deceased: {
       __typename: "Deceased";
       id: string;
       name: string;
-      gender?: string | null;
+      gender: string;
       createdAt: string;
       updatedAt: string;
-    } | null;
-    filing?: {
+    };
+    filing: {
       __typename: "Filing";
       id: string;
-      state?: string | null;
-      county?: string | null;
-      date?: string | null;
-      filer?: string | null;
+      state: string;
+      county: string;
+      date: string;
+      filer: string;
       createdAt: string;
       updatedAt: string;
       filingProbateId: string;
-    } | null;
-    appraiser?: Array<string | null> | null;
-    witness?: Array<string | null> | null;
+    };
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
     items?: {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
-    totalValue?: number | null;
+    totalValue: number;
+    document: {
+      __typename: "Document";
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
-    probateRecordDeceasedId?: string | null;
-    probateRecordFilingId?: string | null;
+    probateRecordDeceasedId: string;
+    probateRecordFilingId: string;
   };
   category: string;
   subcategory: string;
-  quantity?: number | null;
-  value?: number | null;
-  rect: {
-    __typename: "Rect";
+  quantity: number;
+  value: number;
+  line: {
+    __typename: "Line";
     id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
+    text: string;
+    words?: {
+      __typename: "ModelWordConnection";
+      nextToken?: string | null;
+    } | null;
+    boundingBox: {
+      __typename: "Rect";
+      id: string;
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
+    lineBoundingBoxId: string;
   };
   createdAt: string;
   updatedAt: string;
-  probateRecordItemsId?: string | null;
-  lineItemRectId: string;
+  probateRecordItemsId: string;
+  lineItemLineId: string;
 };
 
 export type OnDeleteLineItemSubscription = {
   __typename: "LineItem";
   id: string;
   title: string;
-  description?: string | null;
+  description: string;
   probate: {
     __typename: "ProbateRecord";
     id: string;
-    title?: string | null;
-    deceased?: {
+    title: string;
+    deceased: {
       __typename: "Deceased";
       id: string;
       name: string;
-      gender?: string | null;
+      gender: string;
       createdAt: string;
       updatedAt: string;
-    } | null;
-    filing?: {
+    };
+    filing: {
       __typename: "Filing";
       id: string;
-      state?: string | null;
-      county?: string | null;
-      date?: string | null;
-      filer?: string | null;
+      state: string;
+      county: string;
+      date: string;
+      filer: string;
       createdAt: string;
       updatedAt: string;
       filingProbateId: string;
-    } | null;
-    appraiser?: Array<string | null> | null;
-    witness?: Array<string | null> | null;
+    };
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
     items?: {
       __typename: "ModelLineItemConnection";
       nextToken?: string | null;
     } | null;
-    totalValue?: number | null;
+    totalValue: number;
+    document: {
+      __typename: "Document";
+      id: string;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
-    probateRecordDeceasedId?: string | null;
-    probateRecordFilingId?: string | null;
+    probateRecordDeceasedId: string;
+    probateRecordFilingId: string;
   };
   category: string;
   subcategory: string;
-  quantity?: number | null;
-  value?: number | null;
-  rect: {
-    __typename: "Rect";
+  quantity: number;
+  value: number;
+  line: {
+    __typename: "Line";
     id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
+    text: string;
+    words?: {
+      __typename: "ModelWordConnection";
+      nextToken?: string | null;
+    } | null;
+    boundingBox: {
+      __typename: "Rect";
+      id: string;
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
+    lineBoundingBoxId: string;
   };
   createdAt: string;
   updatedAt: string;
-  probateRecordItemsId?: string | null;
-  lineItemRectId: string;
+  probateRecordItemsId: string;
+  lineItemLineId: string;
 };
 
 export type OnCreateRectSubscription = {
@@ -1885,6 +2702,249 @@ export type OnDeleteRectSubscription = {
   height: number;
   createdAt: string;
   updatedAt: string;
+};
+
+export type OnCreateDocumentSubscription = {
+  __typename: "Document";
+  id: string;
+  lines: Array<{
+    __typename: "Line";
+    id: string;
+    text: string;
+    words?: {
+      __typename: "ModelWordConnection";
+      nextToken?: string | null;
+    } | null;
+    boundingBox: {
+      __typename: "Rect";
+      id: string;
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      createdAt: string;
+      updatedAt: string;
+    };
+    createdAt: string;
+    updatedAt: string;
+    lineBoundingBoxId: string;
+  } | null>;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type OnUpdateDocumentSubscription = {
+  __typename: "Document";
+  id: string;
+  lines: Array<{
+    __typename: "Line";
+    id: string;
+    text: string;
+    words?: {
+      __typename: "ModelWordConnection";
+      nextToken?: string | null;
+    } | null;
+    boundingBox: {
+      __typename: "Rect";
+      id: string;
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      createdAt: string;
+      updatedAt: string;
+    };
+    createdAt: string;
+    updatedAt: string;
+    lineBoundingBoxId: string;
+  } | null>;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type OnDeleteDocumentSubscription = {
+  __typename: "Document";
+  id: string;
+  lines: Array<{
+    __typename: "Line";
+    id: string;
+    text: string;
+    words?: {
+      __typename: "ModelWordConnection";
+      nextToken?: string | null;
+    } | null;
+    boundingBox: {
+      __typename: "Rect";
+      id: string;
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      createdAt: string;
+      updatedAt: string;
+    };
+    createdAt: string;
+    updatedAt: string;
+    lineBoundingBoxId: string;
+  } | null>;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type OnCreateLineSubscription = {
+  __typename: "Line";
+  id: string;
+  text: string;
+  words?: {
+    __typename: "ModelWordConnection";
+    items: Array<{
+      __typename: "Word";
+      id: string;
+      text: string;
+      createdAt: string;
+      updatedAt: string;
+      lineWordsId: string;
+      wordBoundingBoxId: string;
+    } | null>;
+    nextToken?: string | null;
+  } | null;
+  boundingBox: {
+    __typename: "Rect";
+    id: string;
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  lineBoundingBoxId: string;
+};
+
+export type OnUpdateLineSubscription = {
+  __typename: "Line";
+  id: string;
+  text: string;
+  words?: {
+    __typename: "ModelWordConnection";
+    items: Array<{
+      __typename: "Word";
+      id: string;
+      text: string;
+      createdAt: string;
+      updatedAt: string;
+      lineWordsId: string;
+      wordBoundingBoxId: string;
+    } | null>;
+    nextToken?: string | null;
+  } | null;
+  boundingBox: {
+    __typename: "Rect";
+    id: string;
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  lineBoundingBoxId: string;
+};
+
+export type OnDeleteLineSubscription = {
+  __typename: "Line";
+  id: string;
+  text: string;
+  words?: {
+    __typename: "ModelWordConnection";
+    items: Array<{
+      __typename: "Word";
+      id: string;
+      text: string;
+      createdAt: string;
+      updatedAt: string;
+      lineWordsId: string;
+      wordBoundingBoxId: string;
+    } | null>;
+    nextToken?: string | null;
+  } | null;
+  boundingBox: {
+    __typename: "Rect";
+    id: string;
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  lineBoundingBoxId: string;
+};
+
+export type OnCreateWordSubscription = {
+  __typename: "Word";
+  id: string;
+  text: string;
+  boundingBox: {
+    __typename: "Rect";
+    id: string;
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  lineWordsId: string;
+  wordBoundingBoxId: string;
+};
+
+export type OnUpdateWordSubscription = {
+  __typename: "Word";
+  id: string;
+  text: string;
+  boundingBox: {
+    __typename: "Rect";
+    id: string;
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  lineWordsId: string;
+  wordBoundingBoxId: string;
+};
+
+export type OnDeleteWordSubscription = {
+  __typename: "Word";
+  id: string;
+  text: string;
+  boundingBox: {
+    __typename: "Rect";
+    id: string;
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  lineWordsId: string;
+  wordBoundingBoxId: string;
 };
 
 @Injectable({
@@ -1947,11 +3007,25 @@ export class APIService {
               createdAt
               updatedAt
               probateRecordItemsId
-              lineItemRectId
+              lineItemLineId
             }
             nextToken
           }
           totalValue
+          document {
+            __typename
+            id
+            lines {
+              __typename
+              id
+              text
+              createdAt
+              updatedAt
+              lineBoundingBoxId
+            }
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
           probateRecordDeceasedId
@@ -2025,11 +3099,25 @@ export class APIService {
               createdAt
               updatedAt
               probateRecordItemsId
-              lineItemRectId
+              lineItemLineId
             }
             nextToken
           }
           totalValue
+          document {
+            __typename
+            id
+            lines {
+              __typename
+              id
+              text
+              createdAt
+              updatedAt
+              lineBoundingBoxId
+            }
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
           probateRecordDeceasedId
@@ -2103,11 +3191,25 @@ export class APIService {
               createdAt
               updatedAt
               probateRecordItemsId
-              lineItemRectId
+              lineItemLineId
             }
             nextToken
           }
           totalValue
+          document {
+            __typename
+            id
+            lines {
+              __typename
+              id
+              text
+              createdAt
+              updatedAt
+              lineBoundingBoxId
+            }
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
           probateRecordDeceasedId
@@ -2167,6 +3269,12 @@ export class APIService {
               nextToken
             }
             totalValue
+            document {
+              __typename
+              id
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -2230,6 +3338,12 @@ export class APIService {
               nextToken
             }
             totalValue
+            document {
+              __typename
+              id
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -2293,6 +3407,12 @@ export class APIService {
               nextToken
             }
             totalValue
+            document {
+              __typename
+              id
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -2429,6 +3549,12 @@ export class APIService {
               nextToken
             }
             totalValue
+            document {
+              __typename
+              id
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -2438,20 +3564,32 @@ export class APIService {
           subcategory
           quantity
           value
-          rect {
+          line {
             __typename
             id
-            left
-            top
-            width
-            height
+            text
+            words {
+              __typename
+              nextToken
+            }
+            boundingBox {
+              __typename
+              id
+              left
+              top
+              width
+              height
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
+            lineBoundingBoxId
           }
           createdAt
           updatedAt
           probateRecordItemsId
-          lineItemRectId
+          lineItemLineId
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -2505,6 +3643,12 @@ export class APIService {
               nextToken
             }
             totalValue
+            document {
+              __typename
+              id
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -2514,20 +3658,32 @@ export class APIService {
           subcategory
           quantity
           value
-          rect {
+          line {
             __typename
             id
-            left
-            top
-            width
-            height
+            text
+            words {
+              __typename
+              nextToken
+            }
+            boundingBox {
+              __typename
+              id
+              left
+              top
+              width
+              height
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
+            lineBoundingBoxId
           }
           createdAt
           updatedAt
           probateRecordItemsId
-          lineItemRectId
+          lineItemLineId
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -2581,6 +3737,12 @@ export class APIService {
               nextToken
             }
             totalValue
+            document {
+              __typename
+              id
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -2590,20 +3752,32 @@ export class APIService {
           subcategory
           quantity
           value
-          rect {
+          line {
             __typename
             id
-            left
-            top
-            width
-            height
+            text
+            words {
+              __typename
+              nextToken
+            }
+            boundingBox {
+              __typename
+              id
+              left
+              top
+              width
+              height
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
+            lineBoundingBoxId
           }
           createdAt
           updatedAt
           probateRecordItemsId
-          lineItemRectId
+          lineItemLineId
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -2698,6 +3872,393 @@ export class APIService {
     )) as any;
     return <DeleteRectMutation>response.data.deleteRect;
   }
+  async CreateDocument(
+    input: CreateDocumentInput,
+    condition?: ModelDocumentConditionInput
+  ): Promise<CreateDocumentMutation> {
+    const statement = `mutation CreateDocument($input: CreateDocumentInput!, $condition: ModelDocumentConditionInput) {
+        createDocument(input: $input, condition: $condition) {
+          __typename
+          id
+          lines {
+            __typename
+            id
+            text
+            words {
+              __typename
+              nextToken
+            }
+            boundingBox {
+              __typename
+              id
+              left
+              top
+              width
+              height
+              createdAt
+              updatedAt
+            }
+            createdAt
+            updatedAt
+            lineBoundingBoxId
+          }
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <CreateDocumentMutation>response.data.createDocument;
+  }
+  async UpdateDocument(
+    input: UpdateDocumentInput,
+    condition?: ModelDocumentConditionInput
+  ): Promise<UpdateDocumentMutation> {
+    const statement = `mutation UpdateDocument($input: UpdateDocumentInput!, $condition: ModelDocumentConditionInput) {
+        updateDocument(input: $input, condition: $condition) {
+          __typename
+          id
+          lines {
+            __typename
+            id
+            text
+            words {
+              __typename
+              nextToken
+            }
+            boundingBox {
+              __typename
+              id
+              left
+              top
+              width
+              height
+              createdAt
+              updatedAt
+            }
+            createdAt
+            updatedAt
+            lineBoundingBoxId
+          }
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <UpdateDocumentMutation>response.data.updateDocument;
+  }
+  async DeleteDocument(
+    input: DeleteDocumentInput,
+    condition?: ModelDocumentConditionInput
+  ): Promise<DeleteDocumentMutation> {
+    const statement = `mutation DeleteDocument($input: DeleteDocumentInput!, $condition: ModelDocumentConditionInput) {
+        deleteDocument(input: $input, condition: $condition) {
+          __typename
+          id
+          lines {
+            __typename
+            id
+            text
+            words {
+              __typename
+              nextToken
+            }
+            boundingBox {
+              __typename
+              id
+              left
+              top
+              width
+              height
+              createdAt
+              updatedAt
+            }
+            createdAt
+            updatedAt
+            lineBoundingBoxId
+          }
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <DeleteDocumentMutation>response.data.deleteDocument;
+  }
+  async CreateLine(
+    input: CreateLineInput,
+    condition?: ModelLineConditionInput
+  ): Promise<CreateLineMutation> {
+    const statement = `mutation CreateLine($input: CreateLineInput!, $condition: ModelLineConditionInput) {
+        createLine(input: $input, condition: $condition) {
+          __typename
+          id
+          text
+          words {
+            __typename
+            items {
+              __typename
+              id
+              text
+              createdAt
+              updatedAt
+              lineWordsId
+              wordBoundingBoxId
+            }
+            nextToken
+          }
+          boundingBox {
+            __typename
+            id
+            left
+            top
+            width
+            height
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+          lineBoundingBoxId
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <CreateLineMutation>response.data.createLine;
+  }
+  async UpdateLine(
+    input: UpdateLineInput,
+    condition?: ModelLineConditionInput
+  ): Promise<UpdateLineMutation> {
+    const statement = `mutation UpdateLine($input: UpdateLineInput!, $condition: ModelLineConditionInput) {
+        updateLine(input: $input, condition: $condition) {
+          __typename
+          id
+          text
+          words {
+            __typename
+            items {
+              __typename
+              id
+              text
+              createdAt
+              updatedAt
+              lineWordsId
+              wordBoundingBoxId
+            }
+            nextToken
+          }
+          boundingBox {
+            __typename
+            id
+            left
+            top
+            width
+            height
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+          lineBoundingBoxId
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <UpdateLineMutation>response.data.updateLine;
+  }
+  async DeleteLine(
+    input: DeleteLineInput,
+    condition?: ModelLineConditionInput
+  ): Promise<DeleteLineMutation> {
+    const statement = `mutation DeleteLine($input: DeleteLineInput!, $condition: ModelLineConditionInput) {
+        deleteLine(input: $input, condition: $condition) {
+          __typename
+          id
+          text
+          words {
+            __typename
+            items {
+              __typename
+              id
+              text
+              createdAt
+              updatedAt
+              lineWordsId
+              wordBoundingBoxId
+            }
+            nextToken
+          }
+          boundingBox {
+            __typename
+            id
+            left
+            top
+            width
+            height
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+          lineBoundingBoxId
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <DeleteLineMutation>response.data.deleteLine;
+  }
+  async CreateWord(
+    input: CreateWordInput,
+    condition?: ModelWordConditionInput
+  ): Promise<CreateWordMutation> {
+    const statement = `mutation CreateWord($input: CreateWordInput!, $condition: ModelWordConditionInput) {
+        createWord(input: $input, condition: $condition) {
+          __typename
+          id
+          text
+          boundingBox {
+            __typename
+            id
+            left
+            top
+            width
+            height
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+          lineWordsId
+          wordBoundingBoxId
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <CreateWordMutation>response.data.createWord;
+  }
+  async UpdateWord(
+    input: UpdateWordInput,
+    condition?: ModelWordConditionInput
+  ): Promise<UpdateWordMutation> {
+    const statement = `mutation UpdateWord($input: UpdateWordInput!, $condition: ModelWordConditionInput) {
+        updateWord(input: $input, condition: $condition) {
+          __typename
+          id
+          text
+          boundingBox {
+            __typename
+            id
+            left
+            top
+            width
+            height
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+          lineWordsId
+          wordBoundingBoxId
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <UpdateWordMutation>response.data.updateWord;
+  }
+  async DeleteWord(
+    input: DeleteWordInput,
+    condition?: ModelWordConditionInput
+  ): Promise<DeleteWordMutation> {
+    const statement = `mutation DeleteWord($input: DeleteWordInput!, $condition: ModelWordConditionInput) {
+        deleteWord(input: $input, condition: $condition) {
+          __typename
+          id
+          text
+          boundingBox {
+            __typename
+            id
+            left
+            top
+            width
+            height
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+          lineWordsId
+          wordBoundingBoxId
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <DeleteWordMutation>response.data.deleteWord;
+  }
   async GetProbateRecord(id: string): Promise<GetProbateRecordQuery> {
     const statement = `query GetProbateRecord($id: ID!) {
         getProbateRecord(id: $id) {
@@ -2751,11 +4312,25 @@ export class APIService {
               createdAt
               updatedAt
               probateRecordItemsId
-              lineItemRectId
+              lineItemLineId
             }
             nextToken
           }
           totalValue
+          document {
+            __typename
+            id
+            lines {
+              __typename
+              id
+              text
+              createdAt
+              updatedAt
+              lineBoundingBoxId
+            }
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
           probateRecordDeceasedId
@@ -2808,6 +4383,12 @@ export class APIService {
               nextToken
             }
             totalValue
+            document {
+              __typename
+              id
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -2870,6 +4451,12 @@ export class APIService {
               nextToken
             }
             totalValue
+            document {
+              __typename
+              id
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -3027,6 +4614,12 @@ export class APIService {
               nextToken
             }
             totalValue
+            document {
+              __typename
+              id
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -3036,20 +4629,32 @@ export class APIService {
           subcategory
           quantity
           value
-          rect {
+          line {
             __typename
             id
-            left
-            top
-            width
-            height
+            text
+            words {
+              __typename
+              nextToken
+            }
+            boundingBox {
+              __typename
+              id
+              left
+              top
+              width
+              height
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
+            lineBoundingBoxId
           }
           createdAt
           updatedAt
           probateRecordItemsId
-          lineItemRectId
+          lineItemLineId
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -3089,20 +4694,18 @@ export class APIService {
             subcategory
             quantity
             value
-            rect {
+            line {
               __typename
               id
-              left
-              top
-              width
-              height
+              text
               createdAt
               updatedAt
+              lineBoundingBoxId
             }
             createdAt
             updatedAt
             probateRecordItemsId
-            lineItemRectId
+            lineItemLineId
           }
           nextToken
         }
@@ -3179,6 +4782,250 @@ export class APIService {
     )) as any;
     return <ListRectsQuery>response.data.listRects;
   }
+  async GetDocument(id: string): Promise<GetDocumentQuery> {
+    const statement = `query GetDocument($id: ID!) {
+        getDocument(id: $id) {
+          __typename
+          id
+          lines {
+            __typename
+            id
+            text
+            words {
+              __typename
+              nextToken
+            }
+            boundingBox {
+              __typename
+              id
+              left
+              top
+              width
+              height
+              createdAt
+              updatedAt
+            }
+            createdAt
+            updatedAt
+            lineBoundingBoxId
+          }
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      id
+    };
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <GetDocumentQuery>response.data.getDocument;
+  }
+  async ListDocuments(
+    filter?: ModelDocumentFilterInput,
+    limit?: number,
+    nextToken?: string
+  ): Promise<ListDocumentsQuery> {
+    const statement = `query ListDocuments($filter: ModelDocumentFilterInput, $limit: Int, $nextToken: String) {
+        listDocuments(filter: $filter, limit: $limit, nextToken: $nextToken) {
+          __typename
+          items {
+            __typename
+            id
+            lines {
+              __typename
+              id
+              text
+              createdAt
+              updatedAt
+              lineBoundingBoxId
+            }
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    if (limit) {
+      gqlAPIServiceArguments.limit = limit;
+    }
+    if (nextToken) {
+      gqlAPIServiceArguments.nextToken = nextToken;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <ListDocumentsQuery>response.data.listDocuments;
+  }
+  async GetLine(id: string): Promise<GetLineQuery> {
+    const statement = `query GetLine($id: ID!) {
+        getLine(id: $id) {
+          __typename
+          id
+          text
+          words {
+            __typename
+            items {
+              __typename
+              id
+              text
+              createdAt
+              updatedAt
+              lineWordsId
+              wordBoundingBoxId
+            }
+            nextToken
+          }
+          boundingBox {
+            __typename
+            id
+            left
+            top
+            width
+            height
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+          lineBoundingBoxId
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      id
+    };
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <GetLineQuery>response.data.getLine;
+  }
+  async ListLines(
+    filter?: ModelLineFilterInput,
+    limit?: number,
+    nextToken?: string
+  ): Promise<ListLinesQuery> {
+    const statement = `query ListLines($filter: ModelLineFilterInput, $limit: Int, $nextToken: String) {
+        listLines(filter: $filter, limit: $limit, nextToken: $nextToken) {
+          __typename
+          items {
+            __typename
+            id
+            text
+            words {
+              __typename
+              nextToken
+            }
+            boundingBox {
+              __typename
+              id
+              left
+              top
+              width
+              height
+              createdAt
+              updatedAt
+            }
+            createdAt
+            updatedAt
+            lineBoundingBoxId
+          }
+          nextToken
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    if (limit) {
+      gqlAPIServiceArguments.limit = limit;
+    }
+    if (nextToken) {
+      gqlAPIServiceArguments.nextToken = nextToken;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <ListLinesQuery>response.data.listLines;
+  }
+  async GetWord(id: string): Promise<GetWordQuery> {
+    const statement = `query GetWord($id: ID!) {
+        getWord(id: $id) {
+          __typename
+          id
+          text
+          boundingBox {
+            __typename
+            id
+            left
+            top
+            width
+            height
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+          lineWordsId
+          wordBoundingBoxId
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      id
+    };
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <GetWordQuery>response.data.getWord;
+  }
+  async ListWords(
+    filter?: ModelWordFilterInput,
+    limit?: number,
+    nextToken?: string
+  ): Promise<ListWordsQuery> {
+    const statement = `query ListWords($filter: ModelWordFilterInput, $limit: Int, $nextToken: String) {
+        listWords(filter: $filter, limit: $limit, nextToken: $nextToken) {
+          __typename
+          items {
+            __typename
+            id
+            text
+            boundingBox {
+              __typename
+              id
+              left
+              top
+              width
+              height
+              createdAt
+              updatedAt
+            }
+            createdAt
+            updatedAt
+            lineWordsId
+            wordBoundingBoxId
+          }
+          nextToken
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    if (limit) {
+      gqlAPIServiceArguments.limit = limit;
+    }
+    if (nextToken) {
+      gqlAPIServiceArguments.nextToken = nextToken;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <ListWordsQuery>response.data.listWords;
+  }
   OnCreateProbateRecordListener: Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateProbateRecord">>
   > = API.graphql(
@@ -3235,11 +5082,25 @@ export class APIService {
               createdAt
               updatedAt
               probateRecordItemsId
-              lineItemRectId
+              lineItemLineId
             }
             nextToken
           }
           totalValue
+          document {
+            __typename
+            id
+            lines {
+              __typename
+              id
+              text
+              createdAt
+              updatedAt
+              lineBoundingBoxId
+            }
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
           probateRecordDeceasedId
@@ -3307,11 +5168,25 @@ export class APIService {
               createdAt
               updatedAt
               probateRecordItemsId
-              lineItemRectId
+              lineItemLineId
             }
             nextToken
           }
           totalValue
+          document {
+            __typename
+            id
+            lines {
+              __typename
+              id
+              text
+              createdAt
+              updatedAt
+              lineBoundingBoxId
+            }
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
           probateRecordDeceasedId
@@ -3379,11 +5254,25 @@ export class APIService {
               createdAt
               updatedAt
               probateRecordItemsId
-              lineItemRectId
+              lineItemLineId
             }
             nextToken
           }
           totalValue
+          document {
+            __typename
+            id
+            lines {
+              __typename
+              id
+              text
+              createdAt
+              updatedAt
+              lineBoundingBoxId
+            }
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
           probateRecordDeceasedId
@@ -3437,6 +5326,12 @@ export class APIService {
               nextToken
             }
             totalValue
+            document {
+              __typename
+              id
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -3494,6 +5389,12 @@ export class APIService {
               nextToken
             }
             totalValue
+            document {
+              __typename
+              id
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -3551,6 +5452,12 @@ export class APIService {
               nextToken
             }
             totalValue
+            document {
+              __typename
+              id
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -3663,6 +5570,12 @@ export class APIService {
               nextToken
             }
             totalValue
+            document {
+              __typename
+              id
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -3672,20 +5585,32 @@ export class APIService {
           subcategory
           quantity
           value
-          rect {
+          line {
             __typename
             id
-            left
-            top
-            width
-            height
+            text
+            words {
+              __typename
+              nextToken
+            }
+            boundingBox {
+              __typename
+              id
+              left
+              top
+              width
+              height
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
+            lineBoundingBoxId
           }
           createdAt
           updatedAt
           probateRecordItemsId
-          lineItemRectId
+          lineItemLineId
         }
       }`
     )
@@ -3733,6 +5658,12 @@ export class APIService {
               nextToken
             }
             totalValue
+            document {
+              __typename
+              id
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -3742,20 +5673,32 @@ export class APIService {
           subcategory
           quantity
           value
-          rect {
+          line {
             __typename
             id
-            left
-            top
-            width
-            height
+            text
+            words {
+              __typename
+              nextToken
+            }
+            boundingBox {
+              __typename
+              id
+              left
+              top
+              width
+              height
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
+            lineBoundingBoxId
           }
           createdAt
           updatedAt
           probateRecordItemsId
-          lineItemRectId
+          lineItemLineId
         }
       }`
     )
@@ -3803,6 +5746,12 @@ export class APIService {
               nextToken
             }
             totalValue
+            document {
+              __typename
+              id
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
             probateRecordDeceasedId
@@ -3812,20 +5761,32 @@ export class APIService {
           subcategory
           quantity
           value
-          rect {
+          line {
             __typename
             id
-            left
-            top
-            width
-            height
+            text
+            words {
+              __typename
+              nextToken
+            }
+            boundingBox {
+              __typename
+              id
+              left
+              top
+              width
+              height
+              createdAt
+              updatedAt
+            }
             createdAt
             updatedAt
+            lineBoundingBoxId
           }
           createdAt
           updatedAt
           probateRecordItemsId
-          lineItemRectId
+          lineItemLineId
         }
       }`
     )
@@ -3894,5 +5855,338 @@ export class APIService {
     )
   ) as Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteRect">>
+  >;
+
+  OnCreateDocumentListener: Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateDocument">>
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnCreateDocument {
+        onCreateDocument {
+          __typename
+          id
+          lines {
+            __typename
+            id
+            text
+            words {
+              __typename
+              nextToken
+            }
+            boundingBox {
+              __typename
+              id
+              left
+              top
+              width
+              height
+              createdAt
+              updatedAt
+            }
+            createdAt
+            updatedAt
+            lineBoundingBoxId
+          }
+          createdAt
+          updatedAt
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateDocument">>
+  >;
+
+  OnUpdateDocumentListener: Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateDocument">>
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnUpdateDocument {
+        onUpdateDocument {
+          __typename
+          id
+          lines {
+            __typename
+            id
+            text
+            words {
+              __typename
+              nextToken
+            }
+            boundingBox {
+              __typename
+              id
+              left
+              top
+              width
+              height
+              createdAt
+              updatedAt
+            }
+            createdAt
+            updatedAt
+            lineBoundingBoxId
+          }
+          createdAt
+          updatedAt
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateDocument">>
+  >;
+
+  OnDeleteDocumentListener: Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteDocument">>
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnDeleteDocument {
+        onDeleteDocument {
+          __typename
+          id
+          lines {
+            __typename
+            id
+            text
+            words {
+              __typename
+              nextToken
+            }
+            boundingBox {
+              __typename
+              id
+              left
+              top
+              width
+              height
+              createdAt
+              updatedAt
+            }
+            createdAt
+            updatedAt
+            lineBoundingBoxId
+          }
+          createdAt
+          updatedAt
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteDocument">>
+  >;
+
+  OnCreateLineListener: Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateLine">>
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnCreateLine {
+        onCreateLine {
+          __typename
+          id
+          text
+          words {
+            __typename
+            items {
+              __typename
+              id
+              text
+              createdAt
+              updatedAt
+              lineWordsId
+              wordBoundingBoxId
+            }
+            nextToken
+          }
+          boundingBox {
+            __typename
+            id
+            left
+            top
+            width
+            height
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+          lineBoundingBoxId
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateLine">>
+  >;
+
+  OnUpdateLineListener: Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateLine">>
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnUpdateLine {
+        onUpdateLine {
+          __typename
+          id
+          text
+          words {
+            __typename
+            items {
+              __typename
+              id
+              text
+              createdAt
+              updatedAt
+              lineWordsId
+              wordBoundingBoxId
+            }
+            nextToken
+          }
+          boundingBox {
+            __typename
+            id
+            left
+            top
+            width
+            height
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+          lineBoundingBoxId
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateLine">>
+  >;
+
+  OnDeleteLineListener: Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteLine">>
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnDeleteLine {
+        onDeleteLine {
+          __typename
+          id
+          text
+          words {
+            __typename
+            items {
+              __typename
+              id
+              text
+              createdAt
+              updatedAt
+              lineWordsId
+              wordBoundingBoxId
+            }
+            nextToken
+          }
+          boundingBox {
+            __typename
+            id
+            left
+            top
+            width
+            height
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+          lineBoundingBoxId
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteLine">>
+  >;
+
+  OnCreateWordListener: Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateWord">>
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnCreateWord {
+        onCreateWord {
+          __typename
+          id
+          text
+          boundingBox {
+            __typename
+            id
+            left
+            top
+            width
+            height
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+          lineWordsId
+          wordBoundingBoxId
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateWord">>
+  >;
+
+  OnUpdateWordListener: Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateWord">>
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnUpdateWord {
+        onUpdateWord {
+          __typename
+          id
+          text
+          boundingBox {
+            __typename
+            id
+            left
+            top
+            width
+            height
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+          lineWordsId
+          wordBoundingBoxId
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateWord">>
+  >;
+
+  OnDeleteWordListener: Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteWord">>
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnDeleteWord {
+        onDeleteWord {
+          __typename
+          id
+          text
+          boundingBox {
+            __typename
+            id
+            left
+            top
+            width
+            height
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+          lineWordsId
+          wordBoundingBoxId
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteWord">>
   >;
 }

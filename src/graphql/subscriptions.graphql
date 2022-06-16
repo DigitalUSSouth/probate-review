@@ -45,11 +45,23 @@ subscription OnCreateProbateRecord {
         createdAt
         updatedAt
         probateRecordItemsId
-        lineItemRectId
+        lineItemLineId
       }
       nextToken
     }
     totalValue
+    document {
+      id
+      lines {
+        id
+        text
+        createdAt
+        updatedAt
+        lineBoundingBoxId
+      }
+      createdAt
+      updatedAt
+    }
     createdAt
     updatedAt
     probateRecordDeceasedId
@@ -102,11 +114,23 @@ subscription OnUpdateProbateRecord {
         createdAt
         updatedAt
         probateRecordItemsId
-        lineItemRectId
+        lineItemLineId
       }
       nextToken
     }
     totalValue
+    document {
+      id
+      lines {
+        id
+        text
+        createdAt
+        updatedAt
+        lineBoundingBoxId
+      }
+      createdAt
+      updatedAt
+    }
     createdAt
     updatedAt
     probateRecordDeceasedId
@@ -159,11 +183,23 @@ subscription OnDeleteProbateRecord {
         createdAt
         updatedAt
         probateRecordItemsId
-        lineItemRectId
+        lineItemLineId
       }
       nextToken
     }
     totalValue
+    document {
+      id
+      lines {
+        id
+        text
+        createdAt
+        updatedAt
+        lineBoundingBoxId
+      }
+      createdAt
+      updatedAt
+    }
     createdAt
     updatedAt
     probateRecordDeceasedId
@@ -203,6 +239,11 @@ subscription OnCreateFiling {
         nextToken
       }
       totalValue
+      document {
+        id
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -246,6 +287,11 @@ subscription OnUpdateFiling {
         nextToken
       }
       totalValue
+      document {
+        id
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -289,6 +335,11 @@ subscription OnDeleteFiling {
         nextToken
       }
       totalValue
+      document {
+        id
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -357,6 +408,11 @@ subscription OnCreateLineItem {
         nextToken
       }
       totalValue
+      document {
+        id
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -366,19 +422,29 @@ subscription OnCreateLineItem {
     subcategory
     quantity
     value
-    rect {
+    line {
       id
-      left
-      top
-      width
-      height
+      text
+      words {
+        nextToken
+      }
+      boundingBox {
+        id
+        left
+        top
+        width
+        height
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
+      lineBoundingBoxId
     }
     createdAt
     updatedAt
     probateRecordItemsId
-    lineItemRectId
+    lineItemLineId
   }
 }
 subscription OnUpdateLineItem {
@@ -412,6 +478,11 @@ subscription OnUpdateLineItem {
         nextToken
       }
       totalValue
+      document {
+        id
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -421,19 +492,29 @@ subscription OnUpdateLineItem {
     subcategory
     quantity
     value
-    rect {
+    line {
       id
-      left
-      top
-      width
-      height
+      text
+      words {
+        nextToken
+      }
+      boundingBox {
+        id
+        left
+        top
+        width
+        height
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
+      lineBoundingBoxId
     }
     createdAt
     updatedAt
     probateRecordItemsId
-    lineItemRectId
+    lineItemLineId
   }
 }
 subscription OnDeleteLineItem {
@@ -467,6 +548,11 @@ subscription OnDeleteLineItem {
         nextToken
       }
       totalValue
+      document {
+        id
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
       probateRecordDeceasedId
@@ -476,19 +562,29 @@ subscription OnDeleteLineItem {
     subcategory
     quantity
     value
-    rect {
+    line {
       id
-      left
-      top
-      width
-      height
+      text
+      words {
+        nextToken
+      }
+      boundingBox {
+        id
+        left
+        top
+        width
+        height
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
+      lineBoundingBoxId
     }
     createdAt
     updatedAt
     probateRecordItemsId
-    lineItemRectId
+    lineItemLineId
   }
 }
 subscription OnCreateRect {
@@ -522,5 +618,227 @@ subscription OnDeleteRect {
     height
     createdAt
     updatedAt
+  }
+}
+subscription OnCreateDocument {
+  onCreateDocument {
+    id
+    lines {
+      id
+      text
+      words {
+        nextToken
+      }
+      boundingBox {
+        id
+        left
+        top
+        width
+        height
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+      lineBoundingBoxId
+    }
+    createdAt
+    updatedAt
+  }
+}
+subscription OnUpdateDocument {
+  onUpdateDocument {
+    id
+    lines {
+      id
+      text
+      words {
+        nextToken
+      }
+      boundingBox {
+        id
+        left
+        top
+        width
+        height
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+      lineBoundingBoxId
+    }
+    createdAt
+    updatedAt
+  }
+}
+subscription OnDeleteDocument {
+  onDeleteDocument {
+    id
+    lines {
+      id
+      text
+      words {
+        nextToken
+      }
+      boundingBox {
+        id
+        left
+        top
+        width
+        height
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+      lineBoundingBoxId
+    }
+    createdAt
+    updatedAt
+  }
+}
+subscription OnCreateLine {
+  onCreateLine {
+    id
+    text
+    words {
+      items {
+        id
+        text
+        createdAt
+        updatedAt
+        lineWordsId
+        wordBoundingBoxId
+      }
+      nextToken
+    }
+    boundingBox {
+      id
+      left
+      top
+      width
+      height
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+    lineBoundingBoxId
+  }
+}
+subscription OnUpdateLine {
+  onUpdateLine {
+    id
+    text
+    words {
+      items {
+        id
+        text
+        createdAt
+        updatedAt
+        lineWordsId
+        wordBoundingBoxId
+      }
+      nextToken
+    }
+    boundingBox {
+      id
+      left
+      top
+      width
+      height
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+    lineBoundingBoxId
+  }
+}
+subscription OnDeleteLine {
+  onDeleteLine {
+    id
+    text
+    words {
+      items {
+        id
+        text
+        createdAt
+        updatedAt
+        lineWordsId
+        wordBoundingBoxId
+      }
+      nextToken
+    }
+    boundingBox {
+      id
+      left
+      top
+      width
+      height
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+    lineBoundingBoxId
+  }
+}
+subscription OnCreateWord {
+  onCreateWord {
+    id
+    text
+    boundingBox {
+      id
+      left
+      top
+      width
+      height
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+    lineWordsId
+    wordBoundingBoxId
+  }
+}
+subscription OnUpdateWord {
+  onUpdateWord {
+    id
+    text
+    boundingBox {
+      id
+      left
+      top
+      width
+      height
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+    lineWordsId
+    wordBoundingBoxId
+  }
+}
+subscription OnDeleteWord {
+  onDeleteWord {
+    id
+    text
+    boundingBox {
+      id
+      left
+      top
+      width
+      height
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+    lineWordsId
+    wordBoundingBoxId
   }
 }

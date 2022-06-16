@@ -84,8 +84,8 @@ export class ReviewComponent implements OnInit {
     this.renderer.setProperty(overlay, 'id', OVERLAY_ID);
     this.renderer.setProperty(overlay, 'className', 'highlight');
     this.renderer.appendChild(document.body, overlay);
-    const point = new dragon.Point(boundingBox?.Left, boundingBox?.Top);
-    const rect = new dragon.Rect(boundingBox?.Left, boundingBox?.Top, boundingBox?.Width, boundingBox?.Height);
+    const point = new dragon.Point(boundingBox?.left, boundingBox?.top);
+    const rect = new dragon.Rect(boundingBox?.left, boundingBox?.top, boundingBox?.width, boundingBox?.height);
     console.log(rect);
     rect.y /= this.aspectRatio;
     rect.height /= this.aspectRatio;
