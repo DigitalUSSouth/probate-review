@@ -20,23 +20,8 @@ export class UploadComponent implements OnInit {
     let timer = this.checkFileProcessedInterval.subscribe(async () => {
       if(this.filesInProcessing.length > 0) {
         for(let i = 0; i < this.filesInProcessing.length; i++) {
-          const docid = this.filesInProcessing[i];
-          // try {
-          // let docIsProcessed = await this.recordService.doesRecordExist(docid);
-          //   if(docIsProcessed) {
-          //     this.filesInProcessing.splice(i, 1);
-          //     console.log(`${docid} has been processed`);
-          //   }
-          // }
-          // catch(error) {
-          //   console.log(error);
-          //   this.filesInProcessing.splice(i, 1);
-          // }
-          try {
-            // this.recordService.doesRecordExist(docid).subscribe(docExists => {
-            //   console.log(docExists);
-              
-            // });
+          const docid = this.filesInProcessing[i];          
+          try {            
             let recordStatus = await this.recordService.getProbateRecordStatus(docid);
             
             console.log(`recordStatus: ${recordStatus}`);
@@ -65,11 +50,10 @@ export class UploadComponent implements OnInit {
           }
           catch(error) {
               console.log(error);
-              // this.filesInProcessing = this.filesInProcessing.filter(id => id != docid);
+              this.filesInProcessing = this.filesInProcessing.filter(id => id != docid);
               timer.unsubscribe();
               break;
           }
-          // this.filesInProcessing = this.filesInProcessing.filter(id => id != docid);
         }
       }
     })
