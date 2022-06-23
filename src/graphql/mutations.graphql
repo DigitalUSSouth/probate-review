@@ -6,69 +6,14 @@ mutation CreateProbateRecord(
   createProbateRecord(input: $input, condition: $condition) {
     id
     title
-    deceased {
-      id
-      name
-      gender
-      createdAt
-      updatedAt
-    }
-    filing {
-      id
-      state
-      county
-      date
-      filer
-      probate {
-        id
-        title
-        appraiser
-        witness
-        totalValue
-        createdAt
-        updatedAt
-        probateRecordDeceasedId
-        probateRecordFilingId
-      }
-      createdAt
-      updatedAt
-      filingProbateId
-    }
+    deceasedId
+    filingId
     appraiser
     witness
-    items {
-      items {
-        id
-        title
-        description
-        category
-        subcategory
-        quantity
-        value
-        createdAt
-        updatedAt
-        probateRecordItemsId
-        lineItemLineId
-      }
-      nextToken
-    }
+    lineItemIds
     totalValue
-    document {
-      id
-      lines {
-        id
-        text
-        createdAt
-        updatedAt
-        lineBoundingBoxId
-      }
-      createdAt
-      updatedAt
-    }
     createdAt
     updatedAt
-    probateRecordDeceasedId
-    probateRecordFilingId
   }
 }
 mutation UpdateProbateRecord(
@@ -78,69 +23,14 @@ mutation UpdateProbateRecord(
   updateProbateRecord(input: $input, condition: $condition) {
     id
     title
-    deceased {
-      id
-      name
-      gender
-      createdAt
-      updatedAt
-    }
-    filing {
-      id
-      state
-      county
-      date
-      filer
-      probate {
-        id
-        title
-        appraiser
-        witness
-        totalValue
-        createdAt
-        updatedAt
-        probateRecordDeceasedId
-        probateRecordFilingId
-      }
-      createdAt
-      updatedAt
-      filingProbateId
-    }
+    deceasedId
+    filingId
     appraiser
     witness
-    items {
-      items {
-        id
-        title
-        description
-        category
-        subcategory
-        quantity
-        value
-        createdAt
-        updatedAt
-        probateRecordItemsId
-        lineItemLineId
-      }
-      nextToken
-    }
+    lineItemIds
     totalValue
-    document {
-      id
-      lines {
-        id
-        text
-        createdAt
-        updatedAt
-        lineBoundingBoxId
-      }
-      createdAt
-      updatedAt
-    }
     createdAt
     updatedAt
-    probateRecordDeceasedId
-    probateRecordFilingId
   }
 }
 mutation DeleteProbateRecord(
@@ -150,69 +40,14 @@ mutation DeleteProbateRecord(
   deleteProbateRecord(input: $input, condition: $condition) {
     id
     title
-    deceased {
-      id
-      name
-      gender
-      createdAt
-      updatedAt
-    }
-    filing {
-      id
-      state
-      county
-      date
-      filer
-      probate {
-        id
-        title
-        appraiser
-        witness
-        totalValue
-        createdAt
-        updatedAt
-        probateRecordDeceasedId
-        probateRecordFilingId
-      }
-      createdAt
-      updatedAt
-      filingProbateId
-    }
+    deceasedId
+    filingId
     appraiser
     witness
-    items {
-      items {
-        id
-        title
-        description
-        category
-        subcategory
-        quantity
-        value
-        createdAt
-        updatedAt
-        probateRecordItemsId
-        lineItemLineId
-      }
-      nextToken
-    }
+    lineItemIds
     totalValue
-    document {
-      id
-      lines {
-        id
-        text
-        createdAt
-        updatedAt
-        lineBoundingBoxId
-      }
-      createdAt
-      updatedAt
-    }
     createdAt
     updatedAt
-    probateRecordDeceasedId
-    probateRecordFilingId
   }
 }
 mutation CreateFiling(
@@ -225,45 +60,8 @@ mutation CreateFiling(
     county
     date
     filer
-    probate {
-      id
-      title
-      deceased {
-        id
-        name
-        gender
-        createdAt
-        updatedAt
-      }
-      filing {
-        id
-        state
-        county
-        date
-        filer
-        createdAt
-        updatedAt
-        filingProbateId
-      }
-      appraiser
-      witness
-      items {
-        nextToken
-      }
-      totalValue
-      document {
-        id
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-      probateRecordDeceasedId
-      probateRecordFilingId
-    }
     createdAt
     updatedAt
-    filingProbateId
   }
 }
 mutation UpdateFiling(
@@ -276,45 +74,8 @@ mutation UpdateFiling(
     county
     date
     filer
-    probate {
-      id
-      title
-      deceased {
-        id
-        name
-        gender
-        createdAt
-        updatedAt
-      }
-      filing {
-        id
-        state
-        county
-        date
-        filer
-        createdAt
-        updatedAt
-        filingProbateId
-      }
-      appraiser
-      witness
-      items {
-        nextToken
-      }
-      totalValue
-      document {
-        id
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-      probateRecordDeceasedId
-      probateRecordFilingId
-    }
     createdAt
     updatedAt
-    filingProbateId
   }
 }
 mutation DeleteFiling(
@@ -327,45 +88,8 @@ mutation DeleteFiling(
     county
     date
     filer
-    probate {
-      id
-      title
-      deceased {
-        id
-        name
-        gender
-        createdAt
-        updatedAt
-      }
-      filing {
-        id
-        state
-        county
-        date
-        filer
-        createdAt
-        updatedAt
-        filingProbateId
-      }
-      appraiser
-      witness
-      items {
-        nextToken
-      }
-      totalValue
-      document {
-        id
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-      probateRecordDeceasedId
-      probateRecordFilingId
-    }
     createdAt
     updatedAt
-    filingProbateId
   }
 }
 mutation CreateDeceased(
@@ -402,225 +126,6 @@ mutation DeleteDeceased(
     gender
     createdAt
     updatedAt
-  }
-}
-mutation CreateLineItem(
-  $input: CreateLineItemInput!
-  $condition: ModelLineItemConditionInput
-) {
-  createLineItem(input: $input, condition: $condition) {
-    id
-    title
-    description
-    probate {
-      id
-      title
-      deceased {
-        id
-        name
-        gender
-        createdAt
-        updatedAt
-      }
-      filing {
-        id
-        state
-        county
-        date
-        filer
-        createdAt
-        updatedAt
-        filingProbateId
-      }
-      appraiser
-      witness
-      items {
-        nextToken
-      }
-      totalValue
-      document {
-        id
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-      probateRecordDeceasedId
-      probateRecordFilingId
-    }
-    category
-    subcategory
-    quantity
-    value
-    line {
-      id
-      text
-      words {
-        nextToken
-      }
-      boundingBox {
-        id
-        left
-        top
-        width
-        height
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-      lineBoundingBoxId
-    }
-    createdAt
-    updatedAt
-    probateRecordItemsId
-    lineItemLineId
-  }
-}
-mutation UpdateLineItem(
-  $input: UpdateLineItemInput!
-  $condition: ModelLineItemConditionInput
-) {
-  updateLineItem(input: $input, condition: $condition) {
-    id
-    title
-    description
-    probate {
-      id
-      title
-      deceased {
-        id
-        name
-        gender
-        createdAt
-        updatedAt
-      }
-      filing {
-        id
-        state
-        county
-        date
-        filer
-        createdAt
-        updatedAt
-        filingProbateId
-      }
-      appraiser
-      witness
-      items {
-        nextToken
-      }
-      totalValue
-      document {
-        id
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-      probateRecordDeceasedId
-      probateRecordFilingId
-    }
-    category
-    subcategory
-    quantity
-    value
-    line {
-      id
-      text
-      words {
-        nextToken
-      }
-      boundingBox {
-        id
-        left
-        top
-        width
-        height
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-      lineBoundingBoxId
-    }
-    createdAt
-    updatedAt
-    probateRecordItemsId
-    lineItemLineId
-  }
-}
-mutation DeleteLineItem(
-  $input: DeleteLineItemInput!
-  $condition: ModelLineItemConditionInput
-) {
-  deleteLineItem(input: $input, condition: $condition) {
-    id
-    title
-    description
-    probate {
-      id
-      title
-      deceased {
-        id
-        name
-        gender
-        createdAt
-        updatedAt
-      }
-      filing {
-        id
-        state
-        county
-        date
-        filer
-        createdAt
-        updatedAt
-        filingProbateId
-      }
-      appraiser
-      witness
-      items {
-        nextToken
-      }
-      totalValue
-      document {
-        id
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-      probateRecordDeceasedId
-      probateRecordFilingId
-    }
-    category
-    subcategory
-    quantity
-    value
-    line {
-      id
-      text
-      words {
-        nextToken
-      }
-      boundingBox {
-        id
-        left
-        top
-        width
-        height
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-      lineBoundingBoxId
-    }
-    createdAt
-    updatedAt
-    probateRecordItemsId
-    lineItemLineId
   }
 }
 mutation CreateRect(
@@ -665,31 +170,88 @@ mutation DeleteRect(
     updatedAt
   }
 }
+mutation CreateLineItem(
+  $input: CreateLineItemInput!
+  $condition: ModelLineItemConditionInput
+) {
+  createLineItem(input: $input, condition: $condition) {
+    id
+    title
+    description
+    category
+    subcategory
+    quantity
+    value
+    boundingBox {
+      id
+      left
+      top
+      width
+      height
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+mutation UpdateLineItem(
+  $input: UpdateLineItemInput!
+  $condition: ModelLineItemConditionInput
+) {
+  updateLineItem(input: $input, condition: $condition) {
+    id
+    title
+    description
+    category
+    subcategory
+    quantity
+    value
+    boundingBox {
+      id
+      left
+      top
+      width
+      height
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+mutation DeleteLineItem(
+  $input: DeleteLineItemInput!
+  $condition: ModelLineItemConditionInput
+) {
+  deleteLineItem(input: $input, condition: $condition) {
+    id
+    title
+    description
+    category
+    subcategory
+    quantity
+    value
+    boundingBox {
+      id
+      left
+      top
+      width
+      height
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
 mutation CreateDocument(
   $input: CreateDocumentInput!
   $condition: ModelDocumentConditionInput
 ) {
   createDocument(input: $input, condition: $condition) {
     id
-    lines {
-      id
-      text
-      words {
-        nextToken
-      }
-      boundingBox {
-        id
-        left
-        top
-        width
-        height
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-      lineBoundingBoxId
-    }
+    lineIds
     createdAt
     updatedAt
   }
@@ -700,25 +262,7 @@ mutation UpdateDocument(
 ) {
   updateDocument(input: $input, condition: $condition) {
     id
-    lines {
-      id
-      text
-      words {
-        nextToken
-      }
-      boundingBox {
-        id
-        left
-        top
-        width
-        height
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-      lineBoundingBoxId
-    }
+    lineIds
     createdAt
     updatedAt
   }
@@ -729,25 +273,7 @@ mutation DeleteDocument(
 ) {
   deleteDocument(input: $input, condition: $condition) {
     id
-    lines {
-      id
-      text
-      words {
-        nextToken
-      }
-      boundingBox {
-        id
-        left
-        top
-        width
-        height
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-      lineBoundingBoxId
-    }
+    lineIds
     createdAt
     updatedAt
   }
@@ -758,18 +284,7 @@ mutation CreateLine(
 ) {
   createLine(input: $input, condition: $condition) {
     id
-    text
-    words {
-      items {
-        id
-        text
-        createdAt
-        updatedAt
-        lineWordsId
-        wordBoundingBoxId
-      }
-      nextToken
-    }
+    wordIds
     boundingBox {
       id
       left
@@ -781,7 +296,6 @@ mutation CreateLine(
     }
     createdAt
     updatedAt
-    lineBoundingBoxId
   }
 }
 mutation UpdateLine(
@@ -790,18 +304,7 @@ mutation UpdateLine(
 ) {
   updateLine(input: $input, condition: $condition) {
     id
-    text
-    words {
-      items {
-        id
-        text
-        createdAt
-        updatedAt
-        lineWordsId
-        wordBoundingBoxId
-      }
-      nextToken
-    }
+    wordIds
     boundingBox {
       id
       left
@@ -813,7 +316,6 @@ mutation UpdateLine(
     }
     createdAt
     updatedAt
-    lineBoundingBoxId
   }
 }
 mutation DeleteLine(
@@ -822,18 +324,7 @@ mutation DeleteLine(
 ) {
   deleteLine(input: $input, condition: $condition) {
     id
-    text
-    words {
-      items {
-        id
-        text
-        createdAt
-        updatedAt
-        lineWordsId
-        wordBoundingBoxId
-      }
-      nextToken
-    }
+    wordIds
     boundingBox {
       id
       left
@@ -845,7 +336,6 @@ mutation DeleteLine(
     }
     createdAt
     updatedAt
-    lineBoundingBoxId
   }
 }
 mutation CreateWord(
@@ -866,8 +356,6 @@ mutation CreateWord(
     }
     createdAt
     updatedAt
-    lineWordsId
-    wordBoundingBoxId
   }
 }
 mutation UpdateWord(
@@ -888,8 +376,6 @@ mutation UpdateWord(
     }
     createdAt
     updatedAt
-    lineWordsId
-    wordBoundingBoxId
   }
 }
 mutation DeleteWord(
@@ -910,7 +396,5 @@ mutation DeleteWord(
     }
     createdAt
     updatedAt
-    lineWordsId
-    wordBoundingBoxId
   }
 }

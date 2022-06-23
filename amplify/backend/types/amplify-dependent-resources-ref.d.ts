@@ -23,7 +23,6 @@ export type AmplifyDependentResourcesAttributes = {
             "ApiId": "string"
         },
         "probatereview": {
-            "GraphQLAPIKeyOutput": "string",
             "GraphQLAPIIdOutput": "string",
             "GraphQLAPIEndpointOutput": "string"
         }

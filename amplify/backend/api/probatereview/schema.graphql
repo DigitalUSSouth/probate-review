@@ -5,13 +5,12 @@ input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONL
 type ProbateRecord @model {
   id: ID!
   title: String!
-  deceased: Deceased! @hasOne
-  filing: Filing! @hasOne
+  deceasedId: ID! 
+  filingId: ID! 
   appraiser: [String]!
   witness: [String]!
-  items: [LineItem]! @hasMany
+  lineItemIds: [ID]! 
   totalValue: Float!
-  document: Document!
 }
 
 type Filing @model {
@@ -20,25 +19,12 @@ type Filing @model {
   county: String!
   date: AWSDate!
   filer: String!
-  probate: ProbateRecord! @belongsTo
 }
 
 type Deceased @model {
   id: ID!
   name: String!
   gender: String!
-}
-
-type LineItem @model {
-  id: ID!
-  title: String!
-  description: String!
-  probate: ProbateRecord! @belongsTo
-  category: String!
-  subcategory: String!
-  quantity: Int!
-  value: Float!
-  line: Line! @hasOne
 }
 
 type Rect @model {
@@ -49,20 +35,31 @@ type Rect @model {
   height: Float!
 }
 
+type LineItem @model {
+  id: ID!
+  title: String!
+  description: String!
+  category: String!
+  subcategory: String!
+  quantity: Int!
+  value: Float!
+  boundingBox: Rect! 
+}
+
+
 type Document @model {
   id: ID!
-  lines: [Line]!
+  lineIds: [ID]!
 }
 
 type Line @model {
   id: ID!
-  text: String!
-  words: [Word]! @hasMany
-  boundingBox: Rect! @hasOne
+  wordIds: [ID]! 
+  boundingBox: Rect! 
 }
 
 type Word @model {
   id: ID!
   text: String!
-  boundingBox: Rect! @hasOne
+  boundingBox: Rect! 
 }

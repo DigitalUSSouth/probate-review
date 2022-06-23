@@ -3,69 +3,14 @@ query GetProbateRecord($id: ID!) {
   getProbateRecord(id: $id) {
     id
     title
-    deceased {
-      id
-      name
-      gender
-      createdAt
-      updatedAt
-    }
-    filing {
-      id
-      state
-      county
-      date
-      filer
-      probate {
-        id
-        title
-        appraiser
-        witness
-        totalValue
-        createdAt
-        updatedAt
-        probateRecordDeceasedId
-        probateRecordFilingId
-      }
-      createdAt
-      updatedAt
-      filingProbateId
-    }
+    deceasedId
+    filingId
     appraiser
     witness
-    items {
-      items {
-        id
-        title
-        description
-        category
-        subcategory
-        quantity
-        value
-        createdAt
-        updatedAt
-        probateRecordItemsId
-        lineItemLineId
-      }
-      nextToken
-    }
+    lineItemIds
     totalValue
-    document {
-      id
-      lines {
-        id
-        text
-        createdAt
-        updatedAt
-        lineBoundingBoxId
-      }
-      createdAt
-      updatedAt
-    }
     createdAt
     updatedAt
-    probateRecordDeceasedId
-    probateRecordFilingId
   }
 }
 query ListProbateRecords(
@@ -77,38 +22,14 @@ query ListProbateRecords(
     items {
       id
       title
-      deceased {
-        id
-        name
-        gender
-        createdAt
-        updatedAt
-      }
-      filing {
-        id
-        state
-        county
-        date
-        filer
-        createdAt
-        updatedAt
-        filingProbateId
-      }
+      deceasedId
+      filingId
       appraiser
       witness
-      items {
-        nextToken
-      }
+      lineItemIds
       totalValue
-      document {
-        id
-        createdAt
-        updatedAt
-      }
       createdAt
       updatedAt
-      probateRecordDeceasedId
-      probateRecordFilingId
     }
     nextToken
   }
@@ -120,45 +41,8 @@ query GetFiling($id: ID!) {
     county
     date
     filer
-    probate {
-      id
-      title
-      deceased {
-        id
-        name
-        gender
-        createdAt
-        updatedAt
-      }
-      filing {
-        id
-        state
-        county
-        date
-        filer
-        createdAt
-        updatedAt
-        filingProbateId
-      }
-      appraiser
-      witness
-      items {
-        nextToken
-      }
-      totalValue
-      document {
-        id
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-      probateRecordDeceasedId
-      probateRecordFilingId
-    }
     createdAt
     updatedAt
-    filingProbateId
   }
 }
 query ListFilings(
@@ -173,20 +57,8 @@ query ListFilings(
       county
       date
       filer
-      probate {
-        id
-        title
-        appraiser
-        witness
-        totalValue
-        createdAt
-        updatedAt
-        probateRecordDeceasedId
-        probateRecordFilingId
-      }
       createdAt
       updatedAt
-      filingProbateId
     }
     nextToken
   }
@@ -212,116 +84,6 @@ query ListDeceaseds(
       gender
       createdAt
       updatedAt
-    }
-    nextToken
-  }
-}
-query GetLineItem($id: ID!) {
-  getLineItem(id: $id) {
-    id
-    title
-    description
-    probate {
-      id
-      title
-      deceased {
-        id
-        name
-        gender
-        createdAt
-        updatedAt
-      }
-      filing {
-        id
-        state
-        county
-        date
-        filer
-        createdAt
-        updatedAt
-        filingProbateId
-      }
-      appraiser
-      witness
-      items {
-        nextToken
-      }
-      totalValue
-      document {
-        id
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-      probateRecordDeceasedId
-      probateRecordFilingId
-    }
-    category
-    subcategory
-    quantity
-    value
-    line {
-      id
-      text
-      words {
-        nextToken
-      }
-      boundingBox {
-        id
-        left
-        top
-        width
-        height
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-      lineBoundingBoxId
-    }
-    createdAt
-    updatedAt
-    probateRecordItemsId
-    lineItemLineId
-  }
-}
-query ListLineItems(
-  $filter: ModelLineItemFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listLineItems(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      id
-      title
-      description
-      probate {
-        id
-        title
-        appraiser
-        witness
-        totalValue
-        createdAt
-        updatedAt
-        probateRecordDeceasedId
-        probateRecordFilingId
-      }
-      category
-      subcategory
-      quantity
-      value
-      line {
-        id
-        text
-        createdAt
-        updatedAt
-        lineBoundingBoxId
-      }
-      createdAt
-      updatedAt
-      probateRecordItemsId
-      lineItemLineId
     }
     nextToken
   }
@@ -355,28 +117,52 @@ query ListRects(
     nextToken
   }
 }
+query GetLineItem($id: ID!) {
+  getLineItem(id: $id) {
+    id
+    title
+    description
+    category
+    subcategory
+    quantity
+    value
+    boundingBox {
+      id
+      left
+      top
+      width
+      height
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+query ListLineItems(
+  $filter: ModelLineItemFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listLineItems(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      title
+      description
+      category
+      subcategory
+      quantity
+      value
+      createdAt
+      updatedAt
+    }
+    nextToken
+  }
+}
 query GetDocument($id: ID!) {
   getDocument(id: $id) {
     id
-    lines {
-      id
-      text
-      words {
-        nextToken
-      }
-      boundingBox {
-        id
-        left
-        top
-        width
-        height
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-      lineBoundingBoxId
-    }
+    lineIds
     createdAt
     updatedAt
   }
@@ -389,13 +175,7 @@ query ListDocuments(
   listDocuments(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
-      lines {
-        id
-        text
-        createdAt
-        updatedAt
-        lineBoundingBoxId
-      }
+      lineIds
       createdAt
       updatedAt
     }
@@ -405,18 +185,7 @@ query ListDocuments(
 query GetLine($id: ID!) {
   getLine(id: $id) {
     id
-    text
-    words {
-      items {
-        id
-        text
-        createdAt
-        updatedAt
-        lineWordsId
-        wordBoundingBoxId
-      }
-      nextToken
-    }
+    wordIds
     boundingBox {
       id
       left
@@ -428,7 +197,6 @@ query GetLine($id: ID!) {
     }
     createdAt
     updatedAt
-    lineBoundingBoxId
   }
 }
 query ListLines(
@@ -439,22 +207,9 @@ query ListLines(
   listLines(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
-      text
-      words {
-        nextToken
-      }
-      boundingBox {
-        id
-        left
-        top
-        width
-        height
-        createdAt
-        updatedAt
-      }
+      wordIds
       createdAt
       updatedAt
-      lineBoundingBoxId
     }
     nextToken
   }
@@ -474,8 +229,6 @@ query GetWord($id: ID!) {
     }
     createdAt
     updatedAt
-    lineWordsId
-    wordBoundingBoxId
   }
 }
 query ListWords(
@@ -487,19 +240,8 @@ query ListWords(
     items {
       id
       text
-      boundingBox {
-        id
-        left
-        top
-        width
-        height
-        createdAt
-        updatedAt
-      }
       createdAt
       updatedAt
-      lineWordsId
-      wordBoundingBoxId
     }
     nextToken
   }
