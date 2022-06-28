@@ -7,10 +7,16 @@ query GetProbateRecord($id: ID!) {
     filingId
     appraiser
     witness
-    lineItemIds
+    lineItems {
+      nextToken
+      startedAt
+    }
     totalValue
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
   }
 }
 query ListProbateRecords(
@@ -26,12 +32,45 @@ query ListProbateRecords(
       filingId
       appraiser
       witness
-      lineItemIds
       totalValue
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
     }
     nextToken
+    startedAt
+  }
+}
+query SyncProbateRecords(
+  $filter: ModelProbateRecordFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncProbateRecords(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      title
+      deceasedId
+      filingId
+      appraiser
+      witness
+      totalValue
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+    }
+    nextToken
+    startedAt
   }
 }
 query GetFiling($id: ID!) {
@@ -43,6 +82,9 @@ query GetFiling($id: ID!) {
     filer
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
   }
 }
 query ListFilings(
@@ -59,8 +101,40 @@ query ListFilings(
       filer
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
     }
     nextToken
+    startedAt
+  }
+}
+query SyncFilings(
+  $filter: ModelFilingFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncFilings(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      state
+      county
+      date
+      filer
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+    }
+    nextToken
+    startedAt
   }
 }
 query GetDeceased($id: ID!) {
@@ -70,6 +144,9 @@ query GetDeceased($id: ID!) {
     gender
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
   }
 }
 query ListDeceaseds(
@@ -84,8 +161,38 @@ query ListDeceaseds(
       gender
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
     }
     nextToken
+    startedAt
+  }
+}
+query SyncDeceaseds(
+  $filter: ModelDeceasedFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncDeceaseds(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      name
+      gender
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+    }
+    nextToken
+    startedAt
   }
 }
 query GetRect($id: ID!) {
@@ -97,6 +204,9 @@ query GetRect($id: ID!) {
     height
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
   }
 }
 query ListRects(
@@ -113,8 +223,40 @@ query ListRects(
       height
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
     }
     nextToken
+    startedAt
+  }
+}
+query SyncRects(
+  $filter: ModelRectFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncRects(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      left
+      top
+      width
+      height
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+    }
+    nextToken
+    startedAt
   }
 }
 query GetLineItem($id: ID!) {
@@ -134,9 +276,17 @@ query GetLineItem($id: ID!) {
       height
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
     }
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    probateRecordLineItemsId
+    lineItemBoundingBoxId
   }
 }
 query ListLineItems(
@@ -155,16 +305,64 @@ query ListLineItems(
       value
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      probateRecordLineItemsId
+      lineItemBoundingBoxId
     }
     nextToken
+    startedAt
+  }
+}
+query SyncLineItems(
+  $filter: ModelLineItemFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncLineItems(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      title
+      description
+      category
+      subcategory
+      quantity
+      value
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      probateRecordLineItemsId
+      lineItemBoundingBoxId
+    }
+    nextToken
+    startedAt
   }
 }
 query GetDocument($id: ID!) {
   getDocument(id: $id) {
     id
-    lineIds
+    lines {
+      nextToken
+      startedAt
+    }
+    words {
+      nextToken
+      startedAt
+    }
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
   }
 }
 query ListDocuments(
@@ -175,11 +373,38 @@ query ListDocuments(
   listDocuments(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
-      lineIds
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
     }
     nextToken
+    startedAt
+  }
+}
+query SyncDocuments(
+  $filter: ModelDocumentFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncDocuments(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+    }
+    nextToken
+    startedAt
   }
 }
 query GetLine($id: ID!) {
@@ -194,9 +419,17 @@ query GetLine($id: ID!) {
       height
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
     }
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    documentLinesId
+    lineBoundingBoxId
   }
 }
 query ListLines(
@@ -210,8 +443,41 @@ query ListLines(
       wordIds
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      documentLinesId
+      lineBoundingBoxId
     }
     nextToken
+    startedAt
+  }
+}
+query SyncLines(
+  $filter: ModelLineFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncLines(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      wordIds
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      documentLinesId
+      lineBoundingBoxId
+    }
+    nextToken
+    startedAt
   }
 }
 query GetWord($id: ID!) {
@@ -226,9 +492,17 @@ query GetWord($id: ID!) {
       height
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
     }
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    documentWordsId
+    wordBoundingBoxId
   }
 }
 query ListWords(
@@ -242,7 +516,40 @@ query ListWords(
       text
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      documentWordsId
+      wordBoundingBoxId
     }
     nextToken
+    startedAt
+  }
+}
+query SyncWords(
+  $filter: ModelWordFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncWords(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      text
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      documentWordsId
+      wordBoundingBoxId
+    }
+    nextToken
+    startedAt
   }
 }

@@ -3,12 +3,20 @@
   "serviceConfiguration": {
     "apiName": "probatereview",
     "serviceName": "AppSync",
-    "gqlSchemaPath": "/home/cd/probate/apps/probate-review/amplify/backend/api/probatereview/schema.graphql",
+    "gqlSchemaPath": "/tmp/amplify-94793835-db86-4967-aac1-ed90452e571c/amplify/backend/api/probatereview/schema.graphql",
     "defaultAuthType": {
       "mode": "AMAZON_COGNITO_USER_POOLS",
       "cognitoUserPoolId": "authprobatereviewa3991353"
     },
-    "conflictResolution": {},
-    "additionalAuthTypes": []
+    "conflictResolution": {
+      "defaultResolutionStrategy": {
+        "type": "AUTOMERGE"
+      }
+    },
+    "additionalAuthTypes": [
+      {
+        "mode": "AWS_IAM"
+      }
+    ]
   }
 }

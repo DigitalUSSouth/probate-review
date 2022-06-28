@@ -60,7 +60,11 @@
               "userPoolId": "authprobatereviewa3991353"
             }
           },
-          "additionalAuthenticationProviders": []
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "AWS_IAM"
+            }
+          ]
         }
       }
     }

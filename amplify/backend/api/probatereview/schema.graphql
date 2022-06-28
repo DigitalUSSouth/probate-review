@@ -1,19 +1,15 @@
-# This "input" configures a global authorization rule to enable public access to
-# all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
-input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
-
-type ProbateRecord @model {
+type ProbateRecord @model @auth(rules: [{allow: private}]) {
   id: ID!
   title: String!
-  deceasedId: ID! 
-  filingId: ID! 
+  deceasedId: ID!
+  filingId: ID!
   appraiser: [String]!
   witness: [String]!
-  lineItemIds: [ID]! 
+  lineItems: [LineItem]! @hasMany
   totalValue: Float!
 }
 
-type Filing @model {
+type Filing @model @auth(rules: [{allow: private}]) {
   id: ID!
   state: String!
   county: String!
@@ -21,13 +17,13 @@ type Filing @model {
   filer: String!
 }
 
-type Deceased @model {
+type Deceased @model @auth(rules: [{allow: private}]) {
   id: ID!
   name: String!
   gender: String!
 }
 
-type Rect @model {
+type Rect @model @auth(rules: [{allow: private}]) {
   id: ID!
   left: Float!
   top: Float!
@@ -35,31 +31,33 @@ type Rect @model {
   height: Float!
 }
 
-type LineItem @model {
+type LineItem @model @auth(rules: [{allow: private}]) {
   id: ID!
+  lineItemId: ID!
   title: String!
   description: String!
   category: String!
   subcategory: String!
   quantity: Int!
   value: Float!
-  boundingBox: Rect! 
+  boundingBox: Rect! @hasOne
 }
 
-
-type Document @model {
+type Document @model @auth(rules: [{allow: private}]) {
   id: ID!
-  lineIds: [ID]!
+  lines: [Line]! @hasMany
+  words: [Word]! @hasMany
 }
 
-type Line @model {
+type Line @model @auth(rules: [{allow: private}]) {
   id: ID!
-  wordIds: [ID]! 
-  boundingBox: Rect! 
+  wordIds: [ID]!
+  boundingBox: Rect! @hasOne
 }
 
-type Word @model {
+type Word @model @auth(rules: [{allow: private}]) {
   id: ID!
   text: String!
-  boundingBox: Rect! 
+  boundingBox: Rect! @hasOne
 }
+ 

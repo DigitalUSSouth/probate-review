@@ -10,10 +10,16 @@ mutation CreateProbateRecord(
     filingId
     appraiser
     witness
-    lineItemIds
+    lineItems {
+      nextToken
+      startedAt
+    }
     totalValue
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
   }
 }
 mutation UpdateProbateRecord(
@@ -27,10 +33,16 @@ mutation UpdateProbateRecord(
     filingId
     appraiser
     witness
-    lineItemIds
+    lineItems {
+      nextToken
+      startedAt
+    }
     totalValue
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
   }
 }
 mutation DeleteProbateRecord(
@@ -44,10 +56,16 @@ mutation DeleteProbateRecord(
     filingId
     appraiser
     witness
-    lineItemIds
+    lineItems {
+      nextToken
+      startedAt
+    }
     totalValue
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
   }
 }
 mutation CreateFiling(
@@ -62,6 +80,9 @@ mutation CreateFiling(
     filer
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
   }
 }
 mutation UpdateFiling(
@@ -76,6 +97,9 @@ mutation UpdateFiling(
     filer
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
   }
 }
 mutation DeleteFiling(
@@ -90,6 +114,9 @@ mutation DeleteFiling(
     filer
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
   }
 }
 mutation CreateDeceased(
@@ -102,6 +129,9 @@ mutation CreateDeceased(
     gender
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
   }
 }
 mutation UpdateDeceased(
@@ -114,6 +144,9 @@ mutation UpdateDeceased(
     gender
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
   }
 }
 mutation DeleteDeceased(
@@ -126,6 +159,9 @@ mutation DeleteDeceased(
     gender
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
   }
 }
 mutation CreateRect(
@@ -140,6 +176,9 @@ mutation CreateRect(
     height
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
   }
 }
 mutation UpdateRect(
@@ -154,6 +193,9 @@ mutation UpdateRect(
     height
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
   }
 }
 mutation DeleteRect(
@@ -168,6 +210,9 @@ mutation DeleteRect(
     height
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
   }
 }
 mutation CreateLineItem(
@@ -190,9 +235,17 @@ mutation CreateLineItem(
       height
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
     }
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    probateRecordLineItemsId
+    lineItemBoundingBoxId
   }
 }
 mutation UpdateLineItem(
@@ -215,9 +268,17 @@ mutation UpdateLineItem(
       height
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
     }
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    probateRecordLineItemsId
+    lineItemBoundingBoxId
   }
 }
 mutation DeleteLineItem(
@@ -240,9 +301,17 @@ mutation DeleteLineItem(
       height
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
     }
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    probateRecordLineItemsId
+    lineItemBoundingBoxId
   }
 }
 mutation CreateDocument(
@@ -251,9 +320,19 @@ mutation CreateDocument(
 ) {
   createDocument(input: $input, condition: $condition) {
     id
-    lineIds
+    lines {
+      nextToken
+      startedAt
+    }
+    words {
+      nextToken
+      startedAt
+    }
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
   }
 }
 mutation UpdateDocument(
@@ -262,9 +341,19 @@ mutation UpdateDocument(
 ) {
   updateDocument(input: $input, condition: $condition) {
     id
-    lineIds
+    lines {
+      nextToken
+      startedAt
+    }
+    words {
+      nextToken
+      startedAt
+    }
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
   }
 }
 mutation DeleteDocument(
@@ -273,9 +362,19 @@ mutation DeleteDocument(
 ) {
   deleteDocument(input: $input, condition: $condition) {
     id
-    lineIds
+    lines {
+      nextToken
+      startedAt
+    }
+    words {
+      nextToken
+      startedAt
+    }
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
   }
 }
 mutation CreateLine(
@@ -293,9 +392,17 @@ mutation CreateLine(
       height
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
     }
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    documentLinesId
+    lineBoundingBoxId
   }
 }
 mutation UpdateLine(
@@ -313,9 +420,17 @@ mutation UpdateLine(
       height
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
     }
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    documentLinesId
+    lineBoundingBoxId
   }
 }
 mutation DeleteLine(
@@ -333,9 +448,17 @@ mutation DeleteLine(
       height
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
     }
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    documentLinesId
+    lineBoundingBoxId
   }
 }
 mutation CreateWord(
@@ -353,9 +476,17 @@ mutation CreateWord(
       height
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
     }
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    documentWordsId
+    wordBoundingBoxId
   }
 }
 mutation UpdateWord(
@@ -373,9 +504,17 @@ mutation UpdateWord(
       height
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
     }
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    documentWordsId
+    wordBoundingBoxId
   }
 }
 mutation DeleteWord(
@@ -393,8 +532,16 @@ mutation DeleteWord(
       height
       createdAt
       updatedAt
+      _version
+      _deleted
+      _lastChangedAt
     }
     createdAt
     updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    documentWordsId
+    wordBoundingBoxId
   }
 }

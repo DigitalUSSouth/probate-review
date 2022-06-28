@@ -5,6 +5,7 @@ import { RecordService } from '../record.service';
 import { ProbateRecord } from '../probate-record';
 import * as dragon from 'openseadragon'
 import data from './categories.json';
+import { Document, APIService, GetDocumentQuery} from '../API.service';
 
 interface SubcategoryOptionValue {
   value: string,
@@ -23,7 +24,7 @@ export class ReviewComponent implements OnInit {
   categoryMap: Map<string, Array<SubcategoryOptionValue>> = this.objToStrMap(data); 
   imageSize?: dragon.Point;
   aspectRatio = 1.0;
-  constructor(private route: ActivatedRoute, private location: Location, private recordService: RecordService, private renderer: Renderer2) { 
+  constructor(private route: ActivatedRoute, private location: Location, private recordService: RecordService, private probateRecordService: APIService, private renderer: Renderer2) { 
   }
 
   objToStrMap(obj: any) {
@@ -37,10 +38,18 @@ export class ReviewComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    
   }
 
   ngAfterViewInit(): void {
     const id = String(this.route.snapshot.paramMap.get('id'));
+    this.probateRecordService.GetDocument(id).then((documentQuery: GetDocumentQuery) => {
+      // if(recordsQuery.items) {
+      //   this.records = recordsQuery.items;
+      // }
+      console.log(documentQuery);
+
+    });
     this.getRecord(id);
   }
 
