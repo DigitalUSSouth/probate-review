@@ -7,6 +7,7 @@ type ProbateRecord @model @auth(rules: [{allow: private}]) {
   witness: [String]!
   lineItems: [LineItem]! @hasMany
   totalValue: Float!
+  reviewCount: Int!
 }
 
 type Filing @model @auth(rules: [{allow: private}]) {
