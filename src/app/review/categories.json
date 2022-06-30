@@ -361,6 +361,13 @@
                 {"value": "other", "text": "Other"
                 }
             ]
+        },
+        {
+            "item-attribute":
+            [
+                {"value": "value", "text": "Value"},
+                {"value": "quantity", "text": "Quantity"}
+            ]
         }
     ]
     

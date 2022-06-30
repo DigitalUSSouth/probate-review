@@ -13,27 +13,9 @@ export type __SubscriptionContainer = {
   onCreateProbateRecord: OnCreateProbateRecordSubscription;
   onUpdateProbateRecord: OnUpdateProbateRecordSubscription;
   onDeleteProbateRecord: OnDeleteProbateRecordSubscription;
-  onCreateFiling: OnCreateFilingSubscription;
-  onUpdateFiling: OnUpdateFilingSubscription;
-  onDeleteFiling: OnDeleteFilingSubscription;
-  onCreateDeceased: OnCreateDeceasedSubscription;
-  onUpdateDeceased: OnUpdateDeceasedSubscription;
-  onDeleteDeceased: OnDeleteDeceasedSubscription;
-  onCreateRect: OnCreateRectSubscription;
-  onUpdateRect: OnUpdateRectSubscription;
-  onDeleteRect: OnDeleteRectSubscription;
-  onCreateLineItem: OnCreateLineItemSubscription;
-  onUpdateLineItem: OnUpdateLineItemSubscription;
-  onDeleteLineItem: OnDeleteLineItemSubscription;
   onCreateDocument: OnCreateDocumentSubscription;
   onUpdateDocument: OnUpdateDocumentSubscription;
   onDeleteDocument: OnDeleteDocumentSubscription;
-  onCreateLine: OnCreateLineSubscription;
-  onUpdateLine: OnUpdateLineSubscription;
-  onDeleteLine: OnDeleteLineSubscription;
-  onCreateWord: OnCreateWordSubscription;
-  onUpdateWord: OnUpdateWordSubscription;
-  onDeleteWord: OnDeleteWordSubscription;
 };
 
 export type CreateProbateRecordInput = {
@@ -43,8 +25,37 @@ export type CreateProbateRecordInput = {
   filingId: string;
   appraiser: Array<string | null>;
   witness: Array<string | null>;
+  lineItems: Array<LineItemInput | null>;
+  words: Array<WordInput | null>;
   totalValue: number;
+  reviewCount: number;
   _version?: number | null;
+};
+
+export type LineItemInput = {
+  id?: string | null;
+  wordIds: Array<string | null>;
+  title: string;
+  description: string;
+  category: string;
+  subcategory: string;
+  quantity: number;
+  value: number;
+  boundingBox?: RectInput | null;
+  attributeForId: string;
+};
+
+export type RectInput = {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+};
+
+export type WordInput = {
+  id?: string | null;
+  text: string;
+  boundingBox?: RectInput | null;
 };
 
 export type ModelProbateRecordConditionInput = {
@@ -54,6 +65,7 @@ export type ModelProbateRecordConditionInput = {
   appraiser?: ModelStringInput | null;
   witness?: ModelStringInput | null;
   totalValue?: ModelFloatInput | null;
+  reviewCount?: ModelIntInput | null;
   and?: Array<ModelProbateRecordConditionInput | null> | null;
   or?: Array<ModelProbateRecordConditionInput | null> | null;
   not?: ModelProbateRecordConditionInput | null;
@@ -126,225 +138,6 @@ export type ModelFloatInput = {
   attributeType?: ModelAttributeTypes | null;
 };
 
-export type ProbateRecord = {
-  __typename: "ProbateRecord";
-  id: string;
-  title: string;
-  deceasedId: string;
-  filingId: string;
-  appraiser: Array<string | null>;
-  witness: Array<string | null>;
-  lineItems?: ModelLineItemConnection | null;
-  totalValue: number;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type ModelLineItemConnection = {
-  __typename: "ModelLineItemConnection";
-  items: Array<LineItem | null>;
-  nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type LineItem = {
-  __typename: "LineItem";
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  subcategory: string;
-  quantity: number;
-  value: number;
-  boundingBox: Rect;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  probateRecordLineItemsId: string;
-  lineItemBoundingBoxId: string;
-};
-
-export type Rect = {
-  __typename: "Rect";
-  id: string;
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type UpdateProbateRecordInput = {
-  id: string;
-  title?: string | null;
-  deceasedId?: string | null;
-  filingId?: string | null;
-  appraiser?: Array<string | null> | null;
-  witness?: Array<string | null> | null;
-  totalValue?: number | null;
-  _version?: number | null;
-};
-
-export type DeleteProbateRecordInput = {
-  id: string;
-  _version?: number | null;
-};
-
-export type CreateFilingInput = {
-  id?: string | null;
-  state: string;
-  county: string;
-  date: string;
-  filer: string;
-  _version?: number | null;
-};
-
-export type ModelFilingConditionInput = {
-  state?: ModelStringInput | null;
-  county?: ModelStringInput | null;
-  date?: ModelStringInput | null;
-  filer?: ModelStringInput | null;
-  and?: Array<ModelFilingConditionInput | null> | null;
-  or?: Array<ModelFilingConditionInput | null> | null;
-  not?: ModelFilingConditionInput | null;
-};
-
-export type Filing = {
-  __typename: "Filing";
-  id: string;
-  state: string;
-  county: string;
-  date: string;
-  filer: string;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type UpdateFilingInput = {
-  id: string;
-  state?: string | null;
-  county?: string | null;
-  date?: string | null;
-  filer?: string | null;
-  _version?: number | null;
-};
-
-export type DeleteFilingInput = {
-  id: string;
-  _version?: number | null;
-};
-
-export type CreateDeceasedInput = {
-  id?: string | null;
-  name: string;
-  gender: string;
-  _version?: number | null;
-};
-
-export type ModelDeceasedConditionInput = {
-  name?: ModelStringInput | null;
-  gender?: ModelStringInput | null;
-  and?: Array<ModelDeceasedConditionInput | null> | null;
-  or?: Array<ModelDeceasedConditionInput | null> | null;
-  not?: ModelDeceasedConditionInput | null;
-};
-
-export type Deceased = {
-  __typename: "Deceased";
-  id: string;
-  name: string;
-  gender: string;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type UpdateDeceasedInput = {
-  id: string;
-  name?: string | null;
-  gender?: string | null;
-  _version?: number | null;
-};
-
-export type DeleteDeceasedInput = {
-  id: string;
-  _version?: number | null;
-};
-
-export type CreateRectInput = {
-  id?: string | null;
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-  _version?: number | null;
-};
-
-export type ModelRectConditionInput = {
-  left?: ModelFloatInput | null;
-  top?: ModelFloatInput | null;
-  width?: ModelFloatInput | null;
-  height?: ModelFloatInput | null;
-  and?: Array<ModelRectConditionInput | null> | null;
-  or?: Array<ModelRectConditionInput | null> | null;
-  not?: ModelRectConditionInput | null;
-};
-
-export type UpdateRectInput = {
-  id: string;
-  left?: number | null;
-  top?: number | null;
-  width?: number | null;
-  height?: number | null;
-  _version?: number | null;
-};
-
-export type DeleteRectInput = {
-  id: string;
-  _version?: number | null;
-};
-
-export type CreateLineItemInput = {
-  id?: string | null;
-  title: string;
-  description: string;
-  category: string;
-  subcategory: string;
-  quantity: number;
-  value: number;
-  _version?: number | null;
-  probateRecordLineItemsId: string;
-  lineItemBoundingBoxId: string;
-};
-
-export type ModelLineItemConditionInput = {
-  title?: ModelStringInput | null;
-  description?: ModelStringInput | null;
-  category?: ModelStringInput | null;
-  subcategory?: ModelStringInput | null;
-  quantity?: ModelIntInput | null;
-  value?: ModelFloatInput | null;
-  and?: Array<ModelLineItemConditionInput | null> | null;
-  or?: Array<ModelLineItemConditionInput | null> | null;
-  not?: ModelLineItemConditionInput | null;
-  probateRecordLineItemsId?: ModelIDInput | null;
-  lineItemBoundingBoxId?: ModelIDInput | null;
-};
-
 export type ModelIntInput = {
   ne?: number | null;
   eq?: number | null;
@@ -357,27 +150,84 @@ export type ModelIntInput = {
   attributeType?: ModelAttributeTypes | null;
 };
 
-export type UpdateLineItemInput = {
+export type ProbateRecord = {
+  __typename: "ProbateRecord";
   id: string;
-  title?: string | null;
-  description?: string | null;
-  category?: string | null;
-  subcategory?: string | null;
-  quantity?: number | null;
-  value?: number | null;
-  _version?: number | null;
-  probateRecordLineItemsId?: string | null;
-  lineItemBoundingBoxId?: string | null;
+  title: string;
+  deceasedId: string;
+  filingId: string;
+  appraiser: Array<string | null>;
+  witness: Array<string | null>;
+  lineItems: Array<LineItem | null>;
+  words: Array<Word | null>;
+  totalValue: number;
+  reviewCount: number;
+  createdAt: string;
+  updatedAt: string;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
 };
 
-export type DeleteLineItemInput = {
+export type LineItem = {
+  __typename: "LineItem";
+  id: string;
+  wordIds: Array<string | null>;
+  title: string;
+  description: string;
+  category: string;
+  subcategory: string;
+  quantity: number;
+  value: number;
+  boundingBox?: Rect | null;
+  attributeForId: string;
+};
+
+export type Rect = {
+  __typename: "Rect";
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+};
+
+export type Word = {
+  __typename: "Word";
+  id: string;
+  text: string;
+  boundingBox?: Rect | null;
+};
+
+export type UpdateProbateRecordInput = {
+  id: string;
+  title?: string | null;
+  deceasedId?: string | null;
+  filingId?: string | null;
+  appraiser?: Array<string | null> | null;
+  witness?: Array<string | null> | null;
+  lineItems?: Array<LineItemInput | null> | null;
+  words?: Array<WordInput | null> | null;
+  totalValue?: number | null;
+  reviewCount?: number | null;
+  _version?: number | null;
+};
+
+export type DeleteProbateRecordInput = {
   id: string;
   _version?: number | null;
 };
 
 export type CreateDocumentInput = {
   id?: string | null;
+  lines: Array<LineInput | null>;
+  words: Array<WordInput | null>;
   _version?: number | null;
+};
+
+export type LineInput = {
+  id?: string | null;
+  wordIds: Array<string | null>;
+  boundingBox: RectInput;
 };
 
 export type ModelDocumentConditionInput = {
@@ -389,20 +239,13 @@ export type ModelDocumentConditionInput = {
 export type Document = {
   __typename: "Document";
   id: string;
-  lines?: ModelLineConnection | null;
-  words?: ModelWordConnection | null;
+  lines: Array<Line | null>;
+  words: Array<Word | null>;
   createdAt: string;
   updatedAt: string;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
-};
-
-export type ModelLineConnection = {
-  __typename: "ModelLineConnection";
-  items: Array<Line | null>;
-  nextToken?: string | null;
-  startedAt?: number | null;
 };
 
 export type Line = {
@@ -410,102 +253,16 @@ export type Line = {
   id: string;
   wordIds: Array<string | null>;
   boundingBox: Rect;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  documentLinesId: string;
-  lineBoundingBoxId: string;
-};
-
-export type ModelWordConnection = {
-  __typename: "ModelWordConnection";
-  items: Array<Word | null>;
-  nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type Word = {
-  __typename: "Word";
-  id: string;
-  text: string;
-  boundingBox: Rect;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  documentWordsId: string;
-  wordBoundingBoxId: string;
 };
 
 export type UpdateDocumentInput = {
   id: string;
+  lines?: Array<LineInput | null> | null;
+  words?: Array<WordInput | null> | null;
   _version?: number | null;
 };
 
 export type DeleteDocumentInput = {
-  id: string;
-  _version?: number | null;
-};
-
-export type CreateLineInput = {
-  id?: string | null;
-  wordIds: Array<string | null>;
-  _version?: number | null;
-  documentLinesId: string;
-  lineBoundingBoxId: string;
-};
-
-export type ModelLineConditionInput = {
-  wordIds?: ModelIDInput | null;
-  and?: Array<ModelLineConditionInput | null> | null;
-  or?: Array<ModelLineConditionInput | null> | null;
-  not?: ModelLineConditionInput | null;
-  documentLinesId?: ModelIDInput | null;
-  lineBoundingBoxId?: ModelIDInput | null;
-};
-
-export type UpdateLineInput = {
-  id: string;
-  wordIds?: Array<string | null> | null;
-  _version?: number | null;
-  documentLinesId?: string | null;
-  lineBoundingBoxId?: string | null;
-};
-
-export type DeleteLineInput = {
-  id: string;
-  _version?: number | null;
-};
-
-export type CreateWordInput = {
-  id?: string | null;
-  text: string;
-  _version?: number | null;
-  documentWordsId: string;
-  wordBoundingBoxId: string;
-};
-
-export type ModelWordConditionInput = {
-  text?: ModelStringInput | null;
-  and?: Array<ModelWordConditionInput | null> | null;
-  or?: Array<ModelWordConditionInput | null> | null;
-  not?: ModelWordConditionInput | null;
-  documentWordsId?: ModelIDInput | null;
-  wordBoundingBoxId?: ModelIDInput | null;
-};
-
-export type UpdateWordInput = {
-  id: string;
-  text?: string | null;
-  _version?: number | null;
-  documentWordsId?: string | null;
-  wordBoundingBoxId?: string | null;
-};
-
-export type DeleteWordInput = {
   id: string;
   _version?: number | null;
 };
@@ -518,6 +275,7 @@ export type ModelProbateRecordFilterInput = {
   appraiser?: ModelStringInput | null;
   witness?: ModelStringInput | null;
   totalValue?: ModelFloatInput | null;
+  reviewCount?: ModelIntInput | null;
   and?: Array<ModelProbateRecordFilterInput | null> | null;
   or?: Array<ModelProbateRecordFilterInput | null> | null;
   not?: ModelProbateRecordFilterInput | null;
@@ -528,73 +286,6 @@ export type ModelProbateRecordConnection = {
   items: Array<ProbateRecord | null>;
   nextToken?: string | null;
   startedAt?: number | null;
-};
-
-export type ModelFilingFilterInput = {
-  id?: ModelIDInput | null;
-  state?: ModelStringInput | null;
-  county?: ModelStringInput | null;
-  date?: ModelStringInput | null;
-  filer?: ModelStringInput | null;
-  and?: Array<ModelFilingFilterInput | null> | null;
-  or?: Array<ModelFilingFilterInput | null> | null;
-  not?: ModelFilingFilterInput | null;
-};
-
-export type ModelFilingConnection = {
-  __typename: "ModelFilingConnection";
-  items: Array<Filing | null>;
-  nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type ModelDeceasedFilterInput = {
-  id?: ModelIDInput | null;
-  name?: ModelStringInput | null;
-  gender?: ModelStringInput | null;
-  and?: Array<ModelDeceasedFilterInput | null> | null;
-  or?: Array<ModelDeceasedFilterInput | null> | null;
-  not?: ModelDeceasedFilterInput | null;
-};
-
-export type ModelDeceasedConnection = {
-  __typename: "ModelDeceasedConnection";
-  items: Array<Deceased | null>;
-  nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type ModelRectFilterInput = {
-  id?: ModelIDInput | null;
-  left?: ModelFloatInput | null;
-  top?: ModelFloatInput | null;
-  width?: ModelFloatInput | null;
-  height?: ModelFloatInput | null;
-  and?: Array<ModelRectFilterInput | null> | null;
-  or?: Array<ModelRectFilterInput | null> | null;
-  not?: ModelRectFilterInput | null;
-};
-
-export type ModelRectConnection = {
-  __typename: "ModelRectConnection";
-  items: Array<Rect | null>;
-  nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type ModelLineItemFilterInput = {
-  id?: ModelIDInput | null;
-  title?: ModelStringInput | null;
-  description?: ModelStringInput | null;
-  category?: ModelStringInput | null;
-  subcategory?: ModelStringInput | null;
-  quantity?: ModelIntInput | null;
-  value?: ModelFloatInput | null;
-  and?: Array<ModelLineItemFilterInput | null> | null;
-  or?: Array<ModelLineItemFilterInput | null> | null;
-  not?: ModelLineItemFilterInput | null;
-  probateRecordLineItemsId?: ModelIDInput | null;
-  lineItemBoundingBoxId?: ModelIDInput | null;
 };
 
 export type ModelDocumentFilterInput = {
@@ -611,26 +302,6 @@ export type ModelDocumentConnection = {
   startedAt?: number | null;
 };
 
-export type ModelLineFilterInput = {
-  id?: ModelIDInput | null;
-  wordIds?: ModelIDInput | null;
-  and?: Array<ModelLineFilterInput | null> | null;
-  or?: Array<ModelLineFilterInput | null> | null;
-  not?: ModelLineFilterInput | null;
-  documentLinesId?: ModelIDInput | null;
-  lineBoundingBoxId?: ModelIDInput | null;
-};
-
-export type ModelWordFilterInput = {
-  id?: ModelIDInput | null;
-  text?: ModelStringInput | null;
-  and?: Array<ModelWordFilterInput | null> | null;
-  or?: Array<ModelWordFilterInput | null> | null;
-  not?: ModelWordFilterInput | null;
-  documentWordsId?: ModelIDInput | null;
-  wordBoundingBoxId?: ModelIDInput | null;
-};
-
 export type CreateProbateRecordMutation = {
   __typename: "ProbateRecord";
   id: string;
@@ -639,12 +310,39 @@ export type CreateProbateRecordMutation = {
   filingId: string;
   appraiser: Array<string | null>;
   witness: Array<string | null>;
-  lineItems?: {
-    __typename: "ModelLineItemConnection";
-    nextToken?: string | null;
-    startedAt?: number | null;
-  } | null;
+  lineItems: Array<{
+    __typename: "LineItem";
+    id: string;
+    wordIds: Array<string | null>;
+    title: string;
+    description: string;
+    category: string;
+    subcategory: string;
+    quantity: number;
+    value: number;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+    attributeForId: string;
+  } | null>;
+  words: Array<{
+    __typename: "Word";
+    id: string;
+    text: string;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+  } | null>;
   totalValue: number;
+  reviewCount: number;
   createdAt: string;
   updatedAt: string;
   _version: number;
@@ -660,12 +358,39 @@ export type UpdateProbateRecordMutation = {
   filingId: string;
   appraiser: Array<string | null>;
   witness: Array<string | null>;
-  lineItems?: {
-    __typename: "ModelLineItemConnection";
-    nextToken?: string | null;
-    startedAt?: number | null;
-  } | null;
+  lineItems: Array<{
+    __typename: "LineItem";
+    id: string;
+    wordIds: Array<string | null>;
+    title: string;
+    description: string;
+    category: string;
+    subcategory: string;
+    quantity: number;
+    value: number;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+    attributeForId: string;
+  } | null>;
+  words: Array<{
+    __typename: "Word";
+    id: string;
+    text: string;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+  } | null>;
   totalValue: number;
+  reviewCount: number;
   createdAt: string;
   updatedAt: string;
   _version: number;
@@ -681,245 +406,73 @@ export type DeleteProbateRecordMutation = {
   filingId: string;
   appraiser: Array<string | null>;
   witness: Array<string | null>;
-  lineItems?: {
-    __typename: "ModelLineItemConnection";
-    nextToken?: string | null;
-    startedAt?: number | null;
-  } | null;
+  lineItems: Array<{
+    __typename: "LineItem";
+    id: string;
+    wordIds: Array<string | null>;
+    title: string;
+    description: string;
+    category: string;
+    subcategory: string;
+    quantity: number;
+    value: number;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+    attributeForId: string;
+  } | null>;
+  words: Array<{
+    __typename: "Word";
+    id: string;
+    text: string;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+  } | null>;
   totalValue: number;
+  reviewCount: number;
   createdAt: string;
   updatedAt: string;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
-};
-
-export type CreateFilingMutation = {
-  __typename: "Filing";
-  id: string;
-  state: string;
-  county: string;
-  date: string;
-  filer: string;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type UpdateFilingMutation = {
-  __typename: "Filing";
-  id: string;
-  state: string;
-  county: string;
-  date: string;
-  filer: string;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type DeleteFilingMutation = {
-  __typename: "Filing";
-  id: string;
-  state: string;
-  county: string;
-  date: string;
-  filer: string;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type CreateDeceasedMutation = {
-  __typename: "Deceased";
-  id: string;
-  name: string;
-  gender: string;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type UpdateDeceasedMutation = {
-  __typename: "Deceased";
-  id: string;
-  name: string;
-  gender: string;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type DeleteDeceasedMutation = {
-  __typename: "Deceased";
-  id: string;
-  name: string;
-  gender: string;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type CreateRectMutation = {
-  __typename: "Rect";
-  id: string;
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type UpdateRectMutation = {
-  __typename: "Rect";
-  id: string;
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type DeleteRectMutation = {
-  __typename: "Rect";
-  id: string;
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type CreateLineItemMutation = {
-  __typename: "LineItem";
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  subcategory: string;
-  quantity: number;
-  value: number;
-  boundingBox: {
-    __typename: "Rect";
-    id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  probateRecordLineItemsId: string;
-  lineItemBoundingBoxId: string;
-};
-
-export type UpdateLineItemMutation = {
-  __typename: "LineItem";
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  subcategory: string;
-  quantity: number;
-  value: number;
-  boundingBox: {
-    __typename: "Rect";
-    id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  probateRecordLineItemsId: string;
-  lineItemBoundingBoxId: string;
-};
-
-export type DeleteLineItemMutation = {
-  __typename: "LineItem";
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  subcategory: string;
-  quantity: number;
-  value: number;
-  boundingBox: {
-    __typename: "Rect";
-    id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  probateRecordLineItemsId: string;
-  lineItemBoundingBoxId: string;
 };
 
 export type CreateDocumentMutation = {
   __typename: "Document";
   id: string;
-  lines?: {
-    __typename: "ModelLineConnection";
-    nextToken?: string | null;
-    startedAt?: number | null;
-  } | null;
-  words?: {
-    __typename: "ModelWordConnection";
-    nextToken?: string | null;
-    startedAt?: number | null;
-  } | null;
+  lines: Array<{
+    __typename: "Line";
+    id: string;
+    wordIds: Array<string | null>;
+    boundingBox: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    };
+  } | null>;
+  words: Array<{
+    __typename: "Word";
+    id: string;
+    text: string;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+  } | null>;
   createdAt: string;
   updatedAt: string;
   _version: number;
@@ -930,16 +483,30 @@ export type CreateDocumentMutation = {
 export type UpdateDocumentMutation = {
   __typename: "Document";
   id: string;
-  lines?: {
-    __typename: "ModelLineConnection";
-    nextToken?: string | null;
-    startedAt?: number | null;
-  } | null;
-  words?: {
-    __typename: "ModelWordConnection";
-    nextToken?: string | null;
-    startedAt?: number | null;
-  } | null;
+  lines: Array<{
+    __typename: "Line";
+    id: string;
+    wordIds: Array<string | null>;
+    boundingBox: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    };
+  } | null>;
+  words: Array<{
+    __typename: "Word";
+    id: string;
+    text: string;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+  } | null>;
   createdAt: string;
   updatedAt: string;
   _version: number;
@@ -950,177 +517,35 @@ export type UpdateDocumentMutation = {
 export type DeleteDocumentMutation = {
   __typename: "Document";
   id: string;
-  lines?: {
-    __typename: "ModelLineConnection";
-    nextToken?: string | null;
-    startedAt?: number | null;
-  } | null;
-  words?: {
-    __typename: "ModelWordConnection";
-    nextToken?: string | null;
-    startedAt?: number | null;
-  } | null;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type CreateLineMutation = {
-  __typename: "Line";
-  id: string;
-  wordIds: Array<string | null>;
-  boundingBox: {
-    __typename: "Rect";
+  lines: Array<{
+    __typename: "Line";
     id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  documentLinesId: string;
-  lineBoundingBoxId: string;
-};
-
-export type UpdateLineMutation = {
-  __typename: "Line";
-  id: string;
-  wordIds: Array<string | null>;
-  boundingBox: {
-    __typename: "Rect";
+    wordIds: Array<string | null>;
+    boundingBox: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    };
+  } | null>;
+  words: Array<{
+    __typename: "Word";
     id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  };
+    text: string;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+  } | null>;
   createdAt: string;
   updatedAt: string;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
-  documentLinesId: string;
-  lineBoundingBoxId: string;
-};
-
-export type DeleteLineMutation = {
-  __typename: "Line";
-  id: string;
-  wordIds: Array<string | null>;
-  boundingBox: {
-    __typename: "Rect";
-    id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  documentLinesId: string;
-  lineBoundingBoxId: string;
-};
-
-export type CreateWordMutation = {
-  __typename: "Word";
-  id: string;
-  text: string;
-  boundingBox: {
-    __typename: "Rect";
-    id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  documentWordsId: string;
-  wordBoundingBoxId: string;
-};
-
-export type UpdateWordMutation = {
-  __typename: "Word";
-  id: string;
-  text: string;
-  boundingBox: {
-    __typename: "Rect";
-    id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  documentWordsId: string;
-  wordBoundingBoxId: string;
-};
-
-export type DeleteWordMutation = {
-  __typename: "Word";
-  id: string;
-  text: string;
-  boundingBox: {
-    __typename: "Rect";
-    id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  documentWordsId: string;
-  wordBoundingBoxId: string;
 };
 
 export type GetProbateRecordQuery = {
@@ -1131,12 +556,39 @@ export type GetProbateRecordQuery = {
   filingId: string;
   appraiser: Array<string | null>;
   witness: Array<string | null>;
-  lineItems?: {
-    __typename: "ModelLineItemConnection";
-    nextToken?: string | null;
-    startedAt?: number | null;
-  } | null;
+  lineItems: Array<{
+    __typename: "LineItem";
+    id: string;
+    wordIds: Array<string | null>;
+    title: string;
+    description: string;
+    category: string;
+    subcategory: string;
+    quantity: number;
+    value: number;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+    attributeForId: string;
+  } | null>;
+  words: Array<{
+    __typename: "Word";
+    id: string;
+    text: string;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+  } | null>;
   totalValue: number;
+  reviewCount: number;
   createdAt: string;
   updatedAt: string;
   _version: number;
@@ -1154,7 +606,39 @@ export type ListProbateRecordsQuery = {
     filingId: string;
     appraiser: Array<string | null>;
     witness: Array<string | null>;
+    lineItems: Array<{
+      __typename: "LineItem";
+      id: string;
+      wordIds: Array<string | null>;
+      title: string;
+      description: string;
+      category: string;
+      subcategory: string;
+      quantity: number;
+      value: number;
+      boundingBox?: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      } | null;
+      attributeForId: string;
+    } | null>;
+    words: Array<{
+      __typename: "Word";
+      id: string;
+      text: string;
+      boundingBox?: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      } | null;
+    } | null>;
     totalValue: number;
+    reviewCount: number;
     createdAt: string;
     updatedAt: string;
     _version: number;
@@ -1175,239 +659,44 @@ export type SyncProbateRecordsQuery = {
     filingId: string;
     appraiser: Array<string | null>;
     witness: Array<string | null>;
+    lineItems: Array<{
+      __typename: "LineItem";
+      id: string;
+      wordIds: Array<string | null>;
+      title: string;
+      description: string;
+      category: string;
+      subcategory: string;
+      quantity: number;
+      value: number;
+      boundingBox?: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      } | null;
+      attributeForId: string;
+    } | null>;
+    words: Array<{
+      __typename: "Word";
+      id: string;
+      text: string;
+      boundingBox?: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      } | null;
+    } | null>;
     totalValue: number;
+    reviewCount: number;
     createdAt: string;
     updatedAt: string;
     _version: number;
     _deleted?: boolean | null;
     _lastChangedAt: number;
-  } | null>;
-  nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type GetFilingQuery = {
-  __typename: "Filing";
-  id: string;
-  state: string;
-  county: string;
-  date: string;
-  filer: string;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type ListFilingsQuery = {
-  __typename: "ModelFilingConnection";
-  items: Array<{
-    __typename: "Filing";
-    id: string;
-    state: string;
-    county: string;
-    date: string;
-    filer: string;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  } | null>;
-  nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type SyncFilingsQuery = {
-  __typename: "ModelFilingConnection";
-  items: Array<{
-    __typename: "Filing";
-    id: string;
-    state: string;
-    county: string;
-    date: string;
-    filer: string;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  } | null>;
-  nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type GetDeceasedQuery = {
-  __typename: "Deceased";
-  id: string;
-  name: string;
-  gender: string;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type ListDeceasedsQuery = {
-  __typename: "ModelDeceasedConnection";
-  items: Array<{
-    __typename: "Deceased";
-    id: string;
-    name: string;
-    gender: string;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  } | null>;
-  nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type SyncDeceasedsQuery = {
-  __typename: "ModelDeceasedConnection";
-  items: Array<{
-    __typename: "Deceased";
-    id: string;
-    name: string;
-    gender: string;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  } | null>;
-  nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type GetRectQuery = {
-  __typename: "Rect";
-  id: string;
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type ListRectsQuery = {
-  __typename: "ModelRectConnection";
-  items: Array<{
-    __typename: "Rect";
-    id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  } | null>;
-  nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type SyncRectsQuery = {
-  __typename: "ModelRectConnection";
-  items: Array<{
-    __typename: "Rect";
-    id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  } | null>;
-  nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type GetLineItemQuery = {
-  __typename: "LineItem";
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  subcategory: string;
-  quantity: number;
-  value: number;
-  boundingBox: {
-    __typename: "Rect";
-    id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  probateRecordLineItemsId: string;
-  lineItemBoundingBoxId: string;
-};
-
-export type ListLineItemsQuery = {
-  __typename: "ModelLineItemConnection";
-  items: Array<{
-    __typename: "LineItem";
-    id: string;
-    title: string;
-    description: string;
-    category: string;
-    subcategory: string;
-    quantity: number;
-    value: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-    probateRecordLineItemsId: string;
-    lineItemBoundingBoxId: string;
-  } | null>;
-  nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type SyncLineItemsQuery = {
-  __typename: "ModelLineItemConnection";
-  items: Array<{
-    __typename: "LineItem";
-    id: string;
-    title: string;
-    description: string;
-    category: string;
-    subcategory: string;
-    quantity: number;
-    value: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-    probateRecordLineItemsId: string;
-    lineItemBoundingBoxId: string;
   } | null>;
   nextToken?: string | null;
   startedAt?: number | null;
@@ -1416,16 +705,30 @@ export type SyncLineItemsQuery = {
 export type GetDocumentQuery = {
   __typename: "Document";
   id: string;
-  lines?: {
-    __typename: "ModelLineConnection";
-    nextToken?: string | null;
-    startedAt?: number | null;
-  } | null;
-  words?: {
-    __typename: "ModelWordConnection";
-    nextToken?: string | null;
-    startedAt?: number | null;
-  } | null;
+  lines: Array<{
+    __typename: "Line";
+    id: string;
+    wordIds: Array<string | null>;
+    boundingBox: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    };
+  } | null>;
+  words: Array<{
+    __typename: "Word";
+    id: string;
+    text: string;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+  } | null>;
   createdAt: string;
   updatedAt: string;
   _version: number;
@@ -1438,6 +741,30 @@ export type ListDocumentsQuery = {
   items: Array<{
     __typename: "Document";
     id: string;
+    lines: Array<{
+      __typename: "Line";
+      id: string;
+      wordIds: Array<string | null>;
+      boundingBox: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      };
+    } | null>;
+    words: Array<{
+      __typename: "Word";
+      id: string;
+      text: string;
+      boundingBox?: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      } | null;
+    } | null>;
     createdAt: string;
     updatedAt: string;
     _version: number;
@@ -1453,135 +780,35 @@ export type SyncDocumentsQuery = {
   items: Array<{
     __typename: "Document";
     id: string;
+    lines: Array<{
+      __typename: "Line";
+      id: string;
+      wordIds: Array<string | null>;
+      boundingBox: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      };
+    } | null>;
+    words: Array<{
+      __typename: "Word";
+      id: string;
+      text: string;
+      boundingBox?: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      } | null;
+    } | null>;
     createdAt: string;
     updatedAt: string;
     _version: number;
     _deleted?: boolean | null;
     _lastChangedAt: number;
-  } | null>;
-  nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type GetLineQuery = {
-  __typename: "Line";
-  id: string;
-  wordIds: Array<string | null>;
-  boundingBox: {
-    __typename: "Rect";
-    id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  documentLinesId: string;
-  lineBoundingBoxId: string;
-};
-
-export type ListLinesQuery = {
-  __typename: "ModelLineConnection";
-  items: Array<{
-    __typename: "Line";
-    id: string;
-    wordIds: Array<string | null>;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-    documentLinesId: string;
-    lineBoundingBoxId: string;
-  } | null>;
-  nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type SyncLinesQuery = {
-  __typename: "ModelLineConnection";
-  items: Array<{
-    __typename: "Line";
-    id: string;
-    wordIds: Array<string | null>;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-    documentLinesId: string;
-    lineBoundingBoxId: string;
-  } | null>;
-  nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type GetWordQuery = {
-  __typename: "Word";
-  id: string;
-  text: string;
-  boundingBox: {
-    __typename: "Rect";
-    id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  documentWordsId: string;
-  wordBoundingBoxId: string;
-};
-
-export type ListWordsQuery = {
-  __typename: "ModelWordConnection";
-  items: Array<{
-    __typename: "Word";
-    id: string;
-    text: string;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-    documentWordsId: string;
-    wordBoundingBoxId: string;
-  } | null>;
-  nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type SyncWordsQuery = {
-  __typename: "ModelWordConnection";
-  items: Array<{
-    __typename: "Word";
-    id: string;
-    text: string;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-    documentWordsId: string;
-    wordBoundingBoxId: string;
   } | null>;
   nextToken?: string | null;
   startedAt?: number | null;
@@ -1595,12 +822,39 @@ export type OnCreateProbateRecordSubscription = {
   filingId: string;
   appraiser: Array<string | null>;
   witness: Array<string | null>;
-  lineItems?: {
-    __typename: "ModelLineItemConnection";
-    nextToken?: string | null;
-    startedAt?: number | null;
-  } | null;
+  lineItems: Array<{
+    __typename: "LineItem";
+    id: string;
+    wordIds: Array<string | null>;
+    title: string;
+    description: string;
+    category: string;
+    subcategory: string;
+    quantity: number;
+    value: number;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+    attributeForId: string;
+  } | null>;
+  words: Array<{
+    __typename: "Word";
+    id: string;
+    text: string;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+  } | null>;
   totalValue: number;
+  reviewCount: number;
   createdAt: string;
   updatedAt: string;
   _version: number;
@@ -1616,12 +870,39 @@ export type OnUpdateProbateRecordSubscription = {
   filingId: string;
   appraiser: Array<string | null>;
   witness: Array<string | null>;
-  lineItems?: {
-    __typename: "ModelLineItemConnection";
-    nextToken?: string | null;
-    startedAt?: number | null;
-  } | null;
+  lineItems: Array<{
+    __typename: "LineItem";
+    id: string;
+    wordIds: Array<string | null>;
+    title: string;
+    description: string;
+    category: string;
+    subcategory: string;
+    quantity: number;
+    value: number;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+    attributeForId: string;
+  } | null>;
+  words: Array<{
+    __typename: "Word";
+    id: string;
+    text: string;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+  } | null>;
   totalValue: number;
+  reviewCount: number;
   createdAt: string;
   updatedAt: string;
   _version: number;
@@ -1637,245 +918,73 @@ export type OnDeleteProbateRecordSubscription = {
   filingId: string;
   appraiser: Array<string | null>;
   witness: Array<string | null>;
-  lineItems?: {
-    __typename: "ModelLineItemConnection";
-    nextToken?: string | null;
-    startedAt?: number | null;
-  } | null;
+  lineItems: Array<{
+    __typename: "LineItem";
+    id: string;
+    wordIds: Array<string | null>;
+    title: string;
+    description: string;
+    category: string;
+    subcategory: string;
+    quantity: number;
+    value: number;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+    attributeForId: string;
+  } | null>;
+  words: Array<{
+    __typename: "Word";
+    id: string;
+    text: string;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+  } | null>;
   totalValue: number;
+  reviewCount: number;
   createdAt: string;
   updatedAt: string;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
-};
-
-export type OnCreateFilingSubscription = {
-  __typename: "Filing";
-  id: string;
-  state: string;
-  county: string;
-  date: string;
-  filer: string;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type OnUpdateFilingSubscription = {
-  __typename: "Filing";
-  id: string;
-  state: string;
-  county: string;
-  date: string;
-  filer: string;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type OnDeleteFilingSubscription = {
-  __typename: "Filing";
-  id: string;
-  state: string;
-  county: string;
-  date: string;
-  filer: string;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type OnCreateDeceasedSubscription = {
-  __typename: "Deceased";
-  id: string;
-  name: string;
-  gender: string;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type OnUpdateDeceasedSubscription = {
-  __typename: "Deceased";
-  id: string;
-  name: string;
-  gender: string;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type OnDeleteDeceasedSubscription = {
-  __typename: "Deceased";
-  id: string;
-  name: string;
-  gender: string;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type OnCreateRectSubscription = {
-  __typename: "Rect";
-  id: string;
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type OnUpdateRectSubscription = {
-  __typename: "Rect";
-  id: string;
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type OnDeleteRectSubscription = {
-  __typename: "Rect";
-  id: string;
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type OnCreateLineItemSubscription = {
-  __typename: "LineItem";
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  subcategory: string;
-  quantity: number;
-  value: number;
-  boundingBox: {
-    __typename: "Rect";
-    id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  probateRecordLineItemsId: string;
-  lineItemBoundingBoxId: string;
-};
-
-export type OnUpdateLineItemSubscription = {
-  __typename: "LineItem";
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  subcategory: string;
-  quantity: number;
-  value: number;
-  boundingBox: {
-    __typename: "Rect";
-    id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  probateRecordLineItemsId: string;
-  lineItemBoundingBoxId: string;
-};
-
-export type OnDeleteLineItemSubscription = {
-  __typename: "LineItem";
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  subcategory: string;
-  quantity: number;
-  value: number;
-  boundingBox: {
-    __typename: "Rect";
-    id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  probateRecordLineItemsId: string;
-  lineItemBoundingBoxId: string;
 };
 
 export type OnCreateDocumentSubscription = {
   __typename: "Document";
   id: string;
-  lines?: {
-    __typename: "ModelLineConnection";
-    nextToken?: string | null;
-    startedAt?: number | null;
-  } | null;
-  words?: {
-    __typename: "ModelWordConnection";
-    nextToken?: string | null;
-    startedAt?: number | null;
-  } | null;
+  lines: Array<{
+    __typename: "Line";
+    id: string;
+    wordIds: Array<string | null>;
+    boundingBox: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    };
+  } | null>;
+  words: Array<{
+    __typename: "Word";
+    id: string;
+    text: string;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+  } | null>;
   createdAt: string;
   updatedAt: string;
   _version: number;
@@ -1886,16 +995,30 @@ export type OnCreateDocumentSubscription = {
 export type OnUpdateDocumentSubscription = {
   __typename: "Document";
   id: string;
-  lines?: {
-    __typename: "ModelLineConnection";
-    nextToken?: string | null;
-    startedAt?: number | null;
-  } | null;
-  words?: {
-    __typename: "ModelWordConnection";
-    nextToken?: string | null;
-    startedAt?: number | null;
-  } | null;
+  lines: Array<{
+    __typename: "Line";
+    id: string;
+    wordIds: Array<string | null>;
+    boundingBox: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    };
+  } | null>;
+  words: Array<{
+    __typename: "Word";
+    id: string;
+    text: string;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+  } | null>;
   createdAt: string;
   updatedAt: string;
   _version: number;
@@ -1906,177 +1029,35 @@ export type OnUpdateDocumentSubscription = {
 export type OnDeleteDocumentSubscription = {
   __typename: "Document";
   id: string;
-  lines?: {
-    __typename: "ModelLineConnection";
-    nextToken?: string | null;
-    startedAt?: number | null;
-  } | null;
-  words?: {
-    __typename: "ModelWordConnection";
-    nextToken?: string | null;
-    startedAt?: number | null;
-  } | null;
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-};
-
-export type OnCreateLineSubscription = {
-  __typename: "Line";
-  id: string;
-  wordIds: Array<string | null>;
-  boundingBox: {
-    __typename: "Rect";
+  lines: Array<{
+    __typename: "Line";
     id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  documentLinesId: string;
-  lineBoundingBoxId: string;
-};
-
-export type OnUpdateLineSubscription = {
-  __typename: "Line";
-  id: string;
-  wordIds: Array<string | null>;
-  boundingBox: {
-    __typename: "Rect";
+    wordIds: Array<string | null>;
+    boundingBox: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    };
+  } | null>;
+  words: Array<{
+    __typename: "Word";
     id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  };
+    text: string;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+  } | null>;
   createdAt: string;
   updatedAt: string;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
-  documentLinesId: string;
-  lineBoundingBoxId: string;
-};
-
-export type OnDeleteLineSubscription = {
-  __typename: "Line";
-  id: string;
-  wordIds: Array<string | null>;
-  boundingBox: {
-    __typename: "Rect";
-    id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  documentLinesId: string;
-  lineBoundingBoxId: string;
-};
-
-export type OnCreateWordSubscription = {
-  __typename: "Word";
-  id: string;
-  text: string;
-  boundingBox: {
-    __typename: "Rect";
-    id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  documentWordsId: string;
-  wordBoundingBoxId: string;
-};
-
-export type OnUpdateWordSubscription = {
-  __typename: "Word";
-  id: string;
-  text: string;
-  boundingBox: {
-    __typename: "Rect";
-    id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  documentWordsId: string;
-  wordBoundingBoxId: string;
-};
-
-export type OnDeleteWordSubscription = {
-  __typename: "Word";
-  id: string;
-  text: string;
-  boundingBox: {
-    __typename: "Rect";
-    id: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  documentWordsId: string;
-  wordBoundingBoxId: string;
 };
 
 @Injectable({
@@ -2098,10 +1079,37 @@ export class APIService {
           witness
           lineItems {
             __typename
-            nextToken
-            startedAt
+            id
+            wordIds
+            title
+            description
+            category
+            subcategory
+            quantity
+            value
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
+            attributeForId
+          }
+          words {
+            __typename
+            id
+            text
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
           }
           totalValue
+          reviewCount
           createdAt
           updatedAt
           _version
@@ -2135,10 +1143,37 @@ export class APIService {
           witness
           lineItems {
             __typename
-            nextToken
-            startedAt
+            id
+            wordIds
+            title
+            description
+            category
+            subcategory
+            quantity
+            value
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
+            attributeForId
+          }
+          words {
+            __typename
+            id
+            text
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
           }
           totalValue
+          reviewCount
           createdAt
           updatedAt
           _version
@@ -2172,10 +1207,37 @@ export class APIService {
           witness
           lineItems {
             __typename
-            nextToken
-            startedAt
+            id
+            wordIds
+            title
+            description
+            category
+            subcategory
+            quantity
+            value
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
+            attributeForId
+          }
+          words {
+            __typename
+            id
+            text
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
           }
           totalValue
+          reviewCount
           createdAt
           updatedAt
           _version
@@ -2194,411 +1256,6 @@ export class APIService {
     )) as any;
     return <DeleteProbateRecordMutation>response.data.deleteProbateRecord;
   }
-  async CreateFiling(
-    input: CreateFilingInput,
-    condition?: ModelFilingConditionInput
-  ): Promise<CreateFilingMutation> {
-    const statement = `mutation CreateFiling($input: CreateFilingInput!, $condition: ModelFilingConditionInput) {
-        createFiling(input: $input, condition: $condition) {
-          __typename
-          id
-          state
-          county
-          date
-          filer
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      input
-    };
-    if (condition) {
-      gqlAPIServiceArguments.condition = condition;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <CreateFilingMutation>response.data.createFiling;
-  }
-  async UpdateFiling(
-    input: UpdateFilingInput,
-    condition?: ModelFilingConditionInput
-  ): Promise<UpdateFilingMutation> {
-    const statement = `mutation UpdateFiling($input: UpdateFilingInput!, $condition: ModelFilingConditionInput) {
-        updateFiling(input: $input, condition: $condition) {
-          __typename
-          id
-          state
-          county
-          date
-          filer
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      input
-    };
-    if (condition) {
-      gqlAPIServiceArguments.condition = condition;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <UpdateFilingMutation>response.data.updateFiling;
-  }
-  async DeleteFiling(
-    input: DeleteFilingInput,
-    condition?: ModelFilingConditionInput
-  ): Promise<DeleteFilingMutation> {
-    const statement = `mutation DeleteFiling($input: DeleteFilingInput!, $condition: ModelFilingConditionInput) {
-        deleteFiling(input: $input, condition: $condition) {
-          __typename
-          id
-          state
-          county
-          date
-          filer
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      input
-    };
-    if (condition) {
-      gqlAPIServiceArguments.condition = condition;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <DeleteFilingMutation>response.data.deleteFiling;
-  }
-  async CreateDeceased(
-    input: CreateDeceasedInput,
-    condition?: ModelDeceasedConditionInput
-  ): Promise<CreateDeceasedMutation> {
-    const statement = `mutation CreateDeceased($input: CreateDeceasedInput!, $condition: ModelDeceasedConditionInput) {
-        createDeceased(input: $input, condition: $condition) {
-          __typename
-          id
-          name
-          gender
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      input
-    };
-    if (condition) {
-      gqlAPIServiceArguments.condition = condition;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <CreateDeceasedMutation>response.data.createDeceased;
-  }
-  async UpdateDeceased(
-    input: UpdateDeceasedInput,
-    condition?: ModelDeceasedConditionInput
-  ): Promise<UpdateDeceasedMutation> {
-    const statement = `mutation UpdateDeceased($input: UpdateDeceasedInput!, $condition: ModelDeceasedConditionInput) {
-        updateDeceased(input: $input, condition: $condition) {
-          __typename
-          id
-          name
-          gender
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      input
-    };
-    if (condition) {
-      gqlAPIServiceArguments.condition = condition;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <UpdateDeceasedMutation>response.data.updateDeceased;
-  }
-  async DeleteDeceased(
-    input: DeleteDeceasedInput,
-    condition?: ModelDeceasedConditionInput
-  ): Promise<DeleteDeceasedMutation> {
-    const statement = `mutation DeleteDeceased($input: DeleteDeceasedInput!, $condition: ModelDeceasedConditionInput) {
-        deleteDeceased(input: $input, condition: $condition) {
-          __typename
-          id
-          name
-          gender
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      input
-    };
-    if (condition) {
-      gqlAPIServiceArguments.condition = condition;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <DeleteDeceasedMutation>response.data.deleteDeceased;
-  }
-  async CreateRect(
-    input: CreateRectInput,
-    condition?: ModelRectConditionInput
-  ): Promise<CreateRectMutation> {
-    const statement = `mutation CreateRect($input: CreateRectInput!, $condition: ModelRectConditionInput) {
-        createRect(input: $input, condition: $condition) {
-          __typename
-          id
-          left
-          top
-          width
-          height
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      input
-    };
-    if (condition) {
-      gqlAPIServiceArguments.condition = condition;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <CreateRectMutation>response.data.createRect;
-  }
-  async UpdateRect(
-    input: UpdateRectInput,
-    condition?: ModelRectConditionInput
-  ): Promise<UpdateRectMutation> {
-    const statement = `mutation UpdateRect($input: UpdateRectInput!, $condition: ModelRectConditionInput) {
-        updateRect(input: $input, condition: $condition) {
-          __typename
-          id
-          left
-          top
-          width
-          height
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      input
-    };
-    if (condition) {
-      gqlAPIServiceArguments.condition = condition;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <UpdateRectMutation>response.data.updateRect;
-  }
-  async DeleteRect(
-    input: DeleteRectInput,
-    condition?: ModelRectConditionInput
-  ): Promise<DeleteRectMutation> {
-    const statement = `mutation DeleteRect($input: DeleteRectInput!, $condition: ModelRectConditionInput) {
-        deleteRect(input: $input, condition: $condition) {
-          __typename
-          id
-          left
-          top
-          width
-          height
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      input
-    };
-    if (condition) {
-      gqlAPIServiceArguments.condition = condition;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <DeleteRectMutation>response.data.deleteRect;
-  }
-  async CreateLineItem(
-    input: CreateLineItemInput,
-    condition?: ModelLineItemConditionInput
-  ): Promise<CreateLineItemMutation> {
-    const statement = `mutation CreateLineItem($input: CreateLineItemInput!, $condition: ModelLineItemConditionInput) {
-        createLineItem(input: $input, condition: $condition) {
-          __typename
-          id
-          title
-          description
-          category
-          subcategory
-          quantity
-          value
-          boundingBox {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-          probateRecordLineItemsId
-          lineItemBoundingBoxId
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      input
-    };
-    if (condition) {
-      gqlAPIServiceArguments.condition = condition;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <CreateLineItemMutation>response.data.createLineItem;
-  }
-  async UpdateLineItem(
-    input: UpdateLineItemInput,
-    condition?: ModelLineItemConditionInput
-  ): Promise<UpdateLineItemMutation> {
-    const statement = `mutation UpdateLineItem($input: UpdateLineItemInput!, $condition: ModelLineItemConditionInput) {
-        updateLineItem(input: $input, condition: $condition) {
-          __typename
-          id
-          title
-          description
-          category
-          subcategory
-          quantity
-          value
-          boundingBox {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-          probateRecordLineItemsId
-          lineItemBoundingBoxId
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      input
-    };
-    if (condition) {
-      gqlAPIServiceArguments.condition = condition;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <UpdateLineItemMutation>response.data.updateLineItem;
-  }
-  async DeleteLineItem(
-    input: DeleteLineItemInput,
-    condition?: ModelLineItemConditionInput
-  ): Promise<DeleteLineItemMutation> {
-    const statement = `mutation DeleteLineItem($input: DeleteLineItemInput!, $condition: ModelLineItemConditionInput) {
-        deleteLineItem(input: $input, condition: $condition) {
-          __typename
-          id
-          title
-          description
-          category
-          subcategory
-          quantity
-          value
-          boundingBox {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-          probateRecordLineItemsId
-          lineItemBoundingBoxId
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      input
-    };
-    if (condition) {
-      gqlAPIServiceArguments.condition = condition;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <DeleteLineItemMutation>response.data.deleteLineItem;
-  }
   async CreateDocument(
     input: CreateDocumentInput,
     condition?: ModelDocumentConditionInput
@@ -2609,13 +1266,27 @@ export class APIService {
           id
           lines {
             __typename
-            nextToken
-            startedAt
+            id
+            wordIds
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
           }
           words {
             __typename
-            nextToken
-            startedAt
+            id
+            text
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
           }
           createdAt
           updatedAt
@@ -2645,13 +1316,27 @@ export class APIService {
           id
           lines {
             __typename
-            nextToken
-            startedAt
+            id
+            wordIds
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
           }
           words {
             __typename
-            nextToken
-            startedAt
+            id
+            text
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
           }
           createdAt
           updatedAt
@@ -2681,13 +1366,27 @@ export class APIService {
           id
           lines {
             __typename
-            nextToken
-            startedAt
+            id
+            wordIds
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
           }
           words {
             __typename
-            nextToken
-            startedAt
+            id
+            text
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
           }
           createdAt
           updatedAt
@@ -2707,258 +1406,6 @@ export class APIService {
     )) as any;
     return <DeleteDocumentMutation>response.data.deleteDocument;
   }
-  async CreateLine(
-    input: CreateLineInput,
-    condition?: ModelLineConditionInput
-  ): Promise<CreateLineMutation> {
-    const statement = `mutation CreateLine($input: CreateLineInput!, $condition: ModelLineConditionInput) {
-        createLine(input: $input, condition: $condition) {
-          __typename
-          id
-          wordIds
-          boundingBox {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-          documentLinesId
-          lineBoundingBoxId
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      input
-    };
-    if (condition) {
-      gqlAPIServiceArguments.condition = condition;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <CreateLineMutation>response.data.createLine;
-  }
-  async UpdateLine(
-    input: UpdateLineInput,
-    condition?: ModelLineConditionInput
-  ): Promise<UpdateLineMutation> {
-    const statement = `mutation UpdateLine($input: UpdateLineInput!, $condition: ModelLineConditionInput) {
-        updateLine(input: $input, condition: $condition) {
-          __typename
-          id
-          wordIds
-          boundingBox {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-          documentLinesId
-          lineBoundingBoxId
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      input
-    };
-    if (condition) {
-      gqlAPIServiceArguments.condition = condition;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <UpdateLineMutation>response.data.updateLine;
-  }
-  async DeleteLine(
-    input: DeleteLineInput,
-    condition?: ModelLineConditionInput
-  ): Promise<DeleteLineMutation> {
-    const statement = `mutation DeleteLine($input: DeleteLineInput!, $condition: ModelLineConditionInput) {
-        deleteLine(input: $input, condition: $condition) {
-          __typename
-          id
-          wordIds
-          boundingBox {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-          documentLinesId
-          lineBoundingBoxId
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      input
-    };
-    if (condition) {
-      gqlAPIServiceArguments.condition = condition;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <DeleteLineMutation>response.data.deleteLine;
-  }
-  async CreateWord(
-    input: CreateWordInput,
-    condition?: ModelWordConditionInput
-  ): Promise<CreateWordMutation> {
-    const statement = `mutation CreateWord($input: CreateWordInput!, $condition: ModelWordConditionInput) {
-        createWord(input: $input, condition: $condition) {
-          __typename
-          id
-          text
-          boundingBox {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-          documentWordsId
-          wordBoundingBoxId
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      input
-    };
-    if (condition) {
-      gqlAPIServiceArguments.condition = condition;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <CreateWordMutation>response.data.createWord;
-  }
-  async UpdateWord(
-    input: UpdateWordInput,
-    condition?: ModelWordConditionInput
-  ): Promise<UpdateWordMutation> {
-    const statement = `mutation UpdateWord($input: UpdateWordInput!, $condition: ModelWordConditionInput) {
-        updateWord(input: $input, condition: $condition) {
-          __typename
-          id
-          text
-          boundingBox {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-          documentWordsId
-          wordBoundingBoxId
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      input
-    };
-    if (condition) {
-      gqlAPIServiceArguments.condition = condition;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <UpdateWordMutation>response.data.updateWord;
-  }
-  async DeleteWord(
-    input: DeleteWordInput,
-    condition?: ModelWordConditionInput
-  ): Promise<DeleteWordMutation> {
-    const statement = `mutation DeleteWord($input: DeleteWordInput!, $condition: ModelWordConditionInput) {
-        deleteWord(input: $input, condition: $condition) {
-          __typename
-          id
-          text
-          boundingBox {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-          documentWordsId
-          wordBoundingBoxId
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      input
-    };
-    if (condition) {
-      gqlAPIServiceArguments.condition = condition;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <DeleteWordMutation>response.data.deleteWord;
-  }
   async GetProbateRecord(id: string): Promise<GetProbateRecordQuery> {
     const statement = `query GetProbateRecord($id: ID!) {
         getProbateRecord(id: $id) {
@@ -2971,10 +1418,37 @@ export class APIService {
           witness
           lineItems {
             __typename
-            nextToken
-            startedAt
+            id
+            wordIds
+            title
+            description
+            category
+            subcategory
+            quantity
+            value
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
+            attributeForId
+          }
+          words {
+            __typename
+            id
+            text
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
           }
           totalValue
+          reviewCount
           createdAt
           updatedAt
           _version
@@ -3006,7 +1480,39 @@ export class APIService {
             filingId
             appraiser
             witness
+            lineItems {
+              __typename
+              id
+              wordIds
+              title
+              description
+              category
+              subcategory
+              quantity
+              value
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+              attributeForId
+            }
+            words {
+              __typename
+              id
+              text
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+            }
             totalValue
+            reviewCount
             createdAt
             updatedAt
             _version
@@ -3049,7 +1555,39 @@ export class APIService {
             filingId
             appraiser
             witness
+            lineItems {
+              __typename
+              id
+              wordIds
+              title
+              description
+              category
+              subcategory
+              quantity
+              value
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+              attributeForId
+            }
+            words {
+              __typename
+              id
+              text
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+            }
             totalValue
+            reviewCount
             createdAt
             updatedAt
             _version
@@ -3078,457 +1616,6 @@ export class APIService {
     )) as any;
     return <SyncProbateRecordsQuery>response.data.syncProbateRecords;
   }
-  async GetFiling(id: string): Promise<GetFilingQuery> {
-    const statement = `query GetFiling($id: ID!) {
-        getFiling(id: $id) {
-          __typename
-          id
-          state
-          county
-          date
-          filer
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      id
-    };
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <GetFilingQuery>response.data.getFiling;
-  }
-  async ListFilings(
-    filter?: ModelFilingFilterInput,
-    limit?: number,
-    nextToken?: string
-  ): Promise<ListFilingsQuery> {
-    const statement = `query ListFilings($filter: ModelFilingFilterInput, $limit: Int, $nextToken: String) {
-        listFilings(filter: $filter, limit: $limit, nextToken: $nextToken) {
-          __typename
-          items {
-            __typename
-            id
-            state
-            county
-            date
-            filer
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          nextToken
-          startedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {};
-    if (filter) {
-      gqlAPIServiceArguments.filter = filter;
-    }
-    if (limit) {
-      gqlAPIServiceArguments.limit = limit;
-    }
-    if (nextToken) {
-      gqlAPIServiceArguments.nextToken = nextToken;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <ListFilingsQuery>response.data.listFilings;
-  }
-  async SyncFilings(
-    filter?: ModelFilingFilterInput,
-    limit?: number,
-    nextToken?: string,
-    lastSync?: number
-  ): Promise<SyncFilingsQuery> {
-    const statement = `query SyncFilings($filter: ModelFilingFilterInput, $limit: Int, $nextToken: String, $lastSync: AWSTimestamp) {
-        syncFilings(filter: $filter, limit: $limit, nextToken: $nextToken, lastSync: $lastSync) {
-          __typename
-          items {
-            __typename
-            id
-            state
-            county
-            date
-            filer
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          nextToken
-          startedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {};
-    if (filter) {
-      gqlAPIServiceArguments.filter = filter;
-    }
-    if (limit) {
-      gqlAPIServiceArguments.limit = limit;
-    }
-    if (nextToken) {
-      gqlAPIServiceArguments.nextToken = nextToken;
-    }
-    if (lastSync) {
-      gqlAPIServiceArguments.lastSync = lastSync;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <SyncFilingsQuery>response.data.syncFilings;
-  }
-  async GetDeceased(id: string): Promise<GetDeceasedQuery> {
-    const statement = `query GetDeceased($id: ID!) {
-        getDeceased(id: $id) {
-          __typename
-          id
-          name
-          gender
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      id
-    };
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <GetDeceasedQuery>response.data.getDeceased;
-  }
-  async ListDeceaseds(
-    filter?: ModelDeceasedFilterInput,
-    limit?: number,
-    nextToken?: string
-  ): Promise<ListDeceasedsQuery> {
-    const statement = `query ListDeceaseds($filter: ModelDeceasedFilterInput, $limit: Int, $nextToken: String) {
-        listDeceaseds(filter: $filter, limit: $limit, nextToken: $nextToken) {
-          __typename
-          items {
-            __typename
-            id
-            name
-            gender
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          nextToken
-          startedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {};
-    if (filter) {
-      gqlAPIServiceArguments.filter = filter;
-    }
-    if (limit) {
-      gqlAPIServiceArguments.limit = limit;
-    }
-    if (nextToken) {
-      gqlAPIServiceArguments.nextToken = nextToken;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <ListDeceasedsQuery>response.data.listDeceaseds;
-  }
-  async SyncDeceaseds(
-    filter?: ModelDeceasedFilterInput,
-    limit?: number,
-    nextToken?: string,
-    lastSync?: number
-  ): Promise<SyncDeceasedsQuery> {
-    const statement = `query SyncDeceaseds($filter: ModelDeceasedFilterInput, $limit: Int, $nextToken: String, $lastSync: AWSTimestamp) {
-        syncDeceaseds(filter: $filter, limit: $limit, nextToken: $nextToken, lastSync: $lastSync) {
-          __typename
-          items {
-            __typename
-            id
-            name
-            gender
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          nextToken
-          startedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {};
-    if (filter) {
-      gqlAPIServiceArguments.filter = filter;
-    }
-    if (limit) {
-      gqlAPIServiceArguments.limit = limit;
-    }
-    if (nextToken) {
-      gqlAPIServiceArguments.nextToken = nextToken;
-    }
-    if (lastSync) {
-      gqlAPIServiceArguments.lastSync = lastSync;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <SyncDeceasedsQuery>response.data.syncDeceaseds;
-  }
-  async GetRect(id: string): Promise<GetRectQuery> {
-    const statement = `query GetRect($id: ID!) {
-        getRect(id: $id) {
-          __typename
-          id
-          left
-          top
-          width
-          height
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      id
-    };
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <GetRectQuery>response.data.getRect;
-  }
-  async ListRects(
-    filter?: ModelRectFilterInput,
-    limit?: number,
-    nextToken?: string
-  ): Promise<ListRectsQuery> {
-    const statement = `query ListRects($filter: ModelRectFilterInput, $limit: Int, $nextToken: String) {
-        listRects(filter: $filter, limit: $limit, nextToken: $nextToken) {
-          __typename
-          items {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          nextToken
-          startedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {};
-    if (filter) {
-      gqlAPIServiceArguments.filter = filter;
-    }
-    if (limit) {
-      gqlAPIServiceArguments.limit = limit;
-    }
-    if (nextToken) {
-      gqlAPIServiceArguments.nextToken = nextToken;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <ListRectsQuery>response.data.listRects;
-  }
-  async SyncRects(
-    filter?: ModelRectFilterInput,
-    limit?: number,
-    nextToken?: string,
-    lastSync?: number
-  ): Promise<SyncRectsQuery> {
-    const statement = `query SyncRects($filter: ModelRectFilterInput, $limit: Int, $nextToken: String, $lastSync: AWSTimestamp) {
-        syncRects(filter: $filter, limit: $limit, nextToken: $nextToken, lastSync: $lastSync) {
-          __typename
-          items {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          nextToken
-          startedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {};
-    if (filter) {
-      gqlAPIServiceArguments.filter = filter;
-    }
-    if (limit) {
-      gqlAPIServiceArguments.limit = limit;
-    }
-    if (nextToken) {
-      gqlAPIServiceArguments.nextToken = nextToken;
-    }
-    if (lastSync) {
-      gqlAPIServiceArguments.lastSync = lastSync;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <SyncRectsQuery>response.data.syncRects;
-  }
-  async GetLineItem(id: string): Promise<GetLineItemQuery> {
-    const statement = `query GetLineItem($id: ID!) {
-        getLineItem(id: $id) {
-          __typename
-          id
-          title
-          description
-          category
-          subcategory
-          quantity
-          value
-          boundingBox {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-          probateRecordLineItemsId
-          lineItemBoundingBoxId
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      id
-    };
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <GetLineItemQuery>response.data.getLineItem;
-  }
-  async ListLineItems(
-    filter?: ModelLineItemFilterInput,
-    limit?: number,
-    nextToken?: string
-  ): Promise<ListLineItemsQuery> {
-    const statement = `query ListLineItems($filter: ModelLineItemFilterInput, $limit: Int, $nextToken: String) {
-        listLineItems(filter: $filter, limit: $limit, nextToken: $nextToken) {
-          __typename
-          items {
-            __typename
-            id
-            title
-            description
-            category
-            subcategory
-            quantity
-            value
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-            probateRecordLineItemsId
-            lineItemBoundingBoxId
-          }
-          nextToken
-          startedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {};
-    if (filter) {
-      gqlAPIServiceArguments.filter = filter;
-    }
-    if (limit) {
-      gqlAPIServiceArguments.limit = limit;
-    }
-    if (nextToken) {
-      gqlAPIServiceArguments.nextToken = nextToken;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <ListLineItemsQuery>response.data.listLineItems;
-  }
-  async SyncLineItems(
-    filter?: ModelLineItemFilterInput,
-    limit?: number,
-    nextToken?: string,
-    lastSync?: number
-  ): Promise<SyncLineItemsQuery> {
-    const statement = `query SyncLineItems($filter: ModelLineItemFilterInput, $limit: Int, $nextToken: String, $lastSync: AWSTimestamp) {
-        syncLineItems(filter: $filter, limit: $limit, nextToken: $nextToken, lastSync: $lastSync) {
-          __typename
-          items {
-            __typename
-            id
-            title
-            description
-            category
-            subcategory
-            quantity
-            value
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-            probateRecordLineItemsId
-            lineItemBoundingBoxId
-          }
-          nextToken
-          startedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {};
-    if (filter) {
-      gqlAPIServiceArguments.filter = filter;
-    }
-    if (limit) {
-      gqlAPIServiceArguments.limit = limit;
-    }
-    if (nextToken) {
-      gqlAPIServiceArguments.nextToken = nextToken;
-    }
-    if (lastSync) {
-      gqlAPIServiceArguments.lastSync = lastSync;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <SyncLineItemsQuery>response.data.syncLineItems;
-  }
   async GetDocument(id: string): Promise<GetDocumentQuery> {
     const statement = `query GetDocument($id: ID!) {
         getDocument(id: $id) {
@@ -3536,13 +1623,27 @@ export class APIService {
           id
           lines {
             __typename
-            nextToken
-            startedAt
+            id
+            wordIds
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
           }
           words {
             __typename
-            nextToken
-            startedAt
+            id
+            text
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
           }
           createdAt
           updatedAt
@@ -3570,6 +1671,30 @@ export class APIService {
           items {
             __typename
             id
+            lines {
+              __typename
+              id
+              wordIds
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+            }
+            words {
+              __typename
+              id
+              text
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+            }
             createdAt
             updatedAt
             _version
@@ -3607,6 +1732,30 @@ export class APIService {
           items {
             __typename
             id
+            lines {
+              __typename
+              id
+              wordIds
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+            }
+            words {
+              __typename
+              id
+              text
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+            }
             createdAt
             updatedAt
             _version
@@ -3635,242 +1784,6 @@ export class APIService {
     )) as any;
     return <SyncDocumentsQuery>response.data.syncDocuments;
   }
-  async GetLine(id: string): Promise<GetLineQuery> {
-    const statement = `query GetLine($id: ID!) {
-        getLine(id: $id) {
-          __typename
-          id
-          wordIds
-          boundingBox {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-          documentLinesId
-          lineBoundingBoxId
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      id
-    };
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <GetLineQuery>response.data.getLine;
-  }
-  async ListLines(
-    filter?: ModelLineFilterInput,
-    limit?: number,
-    nextToken?: string
-  ): Promise<ListLinesQuery> {
-    const statement = `query ListLines($filter: ModelLineFilterInput, $limit: Int, $nextToken: String) {
-        listLines(filter: $filter, limit: $limit, nextToken: $nextToken) {
-          __typename
-          items {
-            __typename
-            id
-            wordIds
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-            documentLinesId
-            lineBoundingBoxId
-          }
-          nextToken
-          startedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {};
-    if (filter) {
-      gqlAPIServiceArguments.filter = filter;
-    }
-    if (limit) {
-      gqlAPIServiceArguments.limit = limit;
-    }
-    if (nextToken) {
-      gqlAPIServiceArguments.nextToken = nextToken;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <ListLinesQuery>response.data.listLines;
-  }
-  async SyncLines(
-    filter?: ModelLineFilterInput,
-    limit?: number,
-    nextToken?: string,
-    lastSync?: number
-  ): Promise<SyncLinesQuery> {
-    const statement = `query SyncLines($filter: ModelLineFilterInput, $limit: Int, $nextToken: String, $lastSync: AWSTimestamp) {
-        syncLines(filter: $filter, limit: $limit, nextToken: $nextToken, lastSync: $lastSync) {
-          __typename
-          items {
-            __typename
-            id
-            wordIds
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-            documentLinesId
-            lineBoundingBoxId
-          }
-          nextToken
-          startedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {};
-    if (filter) {
-      gqlAPIServiceArguments.filter = filter;
-    }
-    if (limit) {
-      gqlAPIServiceArguments.limit = limit;
-    }
-    if (nextToken) {
-      gqlAPIServiceArguments.nextToken = nextToken;
-    }
-    if (lastSync) {
-      gqlAPIServiceArguments.lastSync = lastSync;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <SyncLinesQuery>response.data.syncLines;
-  }
-  async GetWord(id: string): Promise<GetWordQuery> {
-    const statement = `query GetWord($id: ID!) {
-        getWord(id: $id) {
-          __typename
-          id
-          text
-          boundingBox {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-          documentWordsId
-          wordBoundingBoxId
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      id
-    };
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <GetWordQuery>response.data.getWord;
-  }
-  async ListWords(
-    filter?: ModelWordFilterInput,
-    limit?: number,
-    nextToken?: string
-  ): Promise<ListWordsQuery> {
-    const statement = `query ListWords($filter: ModelWordFilterInput, $limit: Int, $nextToken: String) {
-        listWords(filter: $filter, limit: $limit, nextToken: $nextToken) {
-          __typename
-          items {
-            __typename
-            id
-            text
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-            documentWordsId
-            wordBoundingBoxId
-          }
-          nextToken
-          startedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {};
-    if (filter) {
-      gqlAPIServiceArguments.filter = filter;
-    }
-    if (limit) {
-      gqlAPIServiceArguments.limit = limit;
-    }
-    if (nextToken) {
-      gqlAPIServiceArguments.nextToken = nextToken;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <ListWordsQuery>response.data.listWords;
-  }
-  async SyncWords(
-    filter?: ModelWordFilterInput,
-    limit?: number,
-    nextToken?: string,
-    lastSync?: number
-  ): Promise<SyncWordsQuery> {
-    const statement = `query SyncWords($filter: ModelWordFilterInput, $limit: Int, $nextToken: String, $lastSync: AWSTimestamp) {
-        syncWords(filter: $filter, limit: $limit, nextToken: $nextToken, lastSync: $lastSync) {
-          __typename
-          items {
-            __typename
-            id
-            text
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-            documentWordsId
-            wordBoundingBoxId
-          }
-          nextToken
-          startedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {};
-    if (filter) {
-      gqlAPIServiceArguments.filter = filter;
-    }
-    if (limit) {
-      gqlAPIServiceArguments.limit = limit;
-    }
-    if (nextToken) {
-      gqlAPIServiceArguments.nextToken = nextToken;
-    }
-    if (lastSync) {
-      gqlAPIServiceArguments.lastSync = lastSync;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <SyncWordsQuery>response.data.syncWords;
-  }
   OnCreateProbateRecordListener: Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateProbateRecord">>
   > = API.graphql(
@@ -3886,10 +1799,37 @@ export class APIService {
           witness
           lineItems {
             __typename
-            nextToken
-            startedAt
+            id
+            wordIds
+            title
+            description
+            category
+            subcategory
+            quantity
+            value
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
+            attributeForId
+          }
+          words {
+            __typename
+            id
+            text
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
           }
           totalValue
+          reviewCount
           createdAt
           updatedAt
           _version
@@ -3917,10 +1857,37 @@ export class APIService {
           witness
           lineItems {
             __typename
-            nextToken
-            startedAt
+            id
+            wordIds
+            title
+            description
+            category
+            subcategory
+            quantity
+            value
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
+            attributeForId
+          }
+          words {
+            __typename
+            id
+            text
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
           }
           totalValue
+          reviewCount
           createdAt
           updatedAt
           _version
@@ -3948,10 +1915,37 @@ export class APIService {
           witness
           lineItems {
             __typename
-            nextToken
-            startedAt
+            id
+            wordIds
+            title
+            description
+            category
+            subcategory
+            quantity
+            value
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
+            attributeForId
+          }
+          words {
+            __typename
+            id
+            text
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
           }
           totalValue
+          reviewCount
           createdAt
           updatedAt
           _version
@@ -3964,339 +1958,6 @@ export class APIService {
     SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteProbateRecord">>
   >;
 
-  OnCreateFilingListener: Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateFiling">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnCreateFiling {
-        onCreateFiling {
-          __typename
-          id
-          state
-          county
-          date
-          filer
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateFiling">>
-  >;
-
-  OnUpdateFilingListener: Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateFiling">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnUpdateFiling {
-        onUpdateFiling {
-          __typename
-          id
-          state
-          county
-          date
-          filer
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateFiling">>
-  >;
-
-  OnDeleteFilingListener: Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteFiling">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnDeleteFiling {
-        onDeleteFiling {
-          __typename
-          id
-          state
-          county
-          date
-          filer
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteFiling">>
-  >;
-
-  OnCreateDeceasedListener: Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateDeceased">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnCreateDeceased {
-        onCreateDeceased {
-          __typename
-          id
-          name
-          gender
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateDeceased">>
-  >;
-
-  OnUpdateDeceasedListener: Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateDeceased">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnUpdateDeceased {
-        onUpdateDeceased {
-          __typename
-          id
-          name
-          gender
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateDeceased">>
-  >;
-
-  OnDeleteDeceasedListener: Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteDeceased">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnDeleteDeceased {
-        onDeleteDeceased {
-          __typename
-          id
-          name
-          gender
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteDeceased">>
-  >;
-
-  OnCreateRectListener: Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateRect">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnCreateRect {
-        onCreateRect {
-          __typename
-          id
-          left
-          top
-          width
-          height
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateRect">>
-  >;
-
-  OnUpdateRectListener: Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateRect">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnUpdateRect {
-        onUpdateRect {
-          __typename
-          id
-          left
-          top
-          width
-          height
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateRect">>
-  >;
-
-  OnDeleteRectListener: Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteRect">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnDeleteRect {
-        onDeleteRect {
-          __typename
-          id
-          left
-          top
-          width
-          height
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteRect">>
-  >;
-
-  OnCreateLineItemListener: Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateLineItem">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnCreateLineItem {
-        onCreateLineItem {
-          __typename
-          id
-          title
-          description
-          category
-          subcategory
-          quantity
-          value
-          boundingBox {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-          probateRecordLineItemsId
-          lineItemBoundingBoxId
-        }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateLineItem">>
-  >;
-
-  OnUpdateLineItemListener: Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateLineItem">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnUpdateLineItem {
-        onUpdateLineItem {
-          __typename
-          id
-          title
-          description
-          category
-          subcategory
-          quantity
-          value
-          boundingBox {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-          probateRecordLineItemsId
-          lineItemBoundingBoxId
-        }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateLineItem">>
-  >;
-
-  OnDeleteLineItemListener: Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteLineItem">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnDeleteLineItem {
-        onDeleteLineItem {
-          __typename
-          id
-          title
-          description
-          category
-          subcategory
-          quantity
-          value
-          boundingBox {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-          probateRecordLineItemsId
-          lineItemBoundingBoxId
-        }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteLineItem">>
-  >;
-
   OnCreateDocumentListener: Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateDocument">>
   > = API.graphql(
@@ -4307,13 +1968,27 @@ export class APIService {
           id
           lines {
             __typename
-            nextToken
-            startedAt
+            id
+            wordIds
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
           }
           words {
             __typename
-            nextToken
-            startedAt
+            id
+            text
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
           }
           createdAt
           updatedAt
@@ -4337,13 +2012,27 @@ export class APIService {
           id
           lines {
             __typename
-            nextToken
-            startedAt
+            id
+            wordIds
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
           }
           words {
             __typename
-            nextToken
-            startedAt
+            id
+            text
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
           }
           createdAt
           updatedAt
@@ -4367,13 +2056,27 @@ export class APIService {
           id
           lines {
             __typename
-            nextToken
-            startedAt
+            id
+            wordIds
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
           }
           words {
             __typename
-            nextToken
-            startedAt
+            id
+            text
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
           }
           createdAt
           updatedAt
@@ -4385,221 +2088,5 @@ export class APIService {
     )
   ) as Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteDocument">>
-  >;
-
-  OnCreateLineListener: Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateLine">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnCreateLine {
-        onCreateLine {
-          __typename
-          id
-          wordIds
-          boundingBox {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-          documentLinesId
-          lineBoundingBoxId
-        }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateLine">>
-  >;
-
-  OnUpdateLineListener: Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateLine">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnUpdateLine {
-        onUpdateLine {
-          __typename
-          id
-          wordIds
-          boundingBox {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-          documentLinesId
-          lineBoundingBoxId
-        }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateLine">>
-  >;
-
-  OnDeleteLineListener: Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteLine">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnDeleteLine {
-        onDeleteLine {
-          __typename
-          id
-          wordIds
-          boundingBox {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-          documentLinesId
-          lineBoundingBoxId
-        }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteLine">>
-  >;
-
-  OnCreateWordListener: Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateWord">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnCreateWord {
-        onCreateWord {
-          __typename
-          id
-          text
-          boundingBox {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-          documentWordsId
-          wordBoundingBoxId
-        }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateWord">>
-  >;
-
-  OnUpdateWordListener: Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateWord">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnUpdateWord {
-        onUpdateWord {
-          __typename
-          id
-          text
-          boundingBox {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-          documentWordsId
-          wordBoundingBoxId
-        }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateWord">>
-  >;
-
-  OnDeleteWordListener: Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteWord">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnDeleteWord {
-        onDeleteWord {
-          __typename
-          id
-          text
-          boundingBox {
-            __typename
-            id
-            left
-            top
-            width
-            height
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-          documentWordsId
-          wordBoundingBoxId
-        }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteWord">>
   >;
 }

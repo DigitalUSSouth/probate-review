@@ -11,10 +11,34 @@ mutation CreateProbateRecord(
     appraiser
     witness
     lineItems {
-      nextToken
-      startedAt
+      id
+      wordIds
+      title
+      description
+      category
+      subcategory
+      quantity
+      value
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
+      attributeForId
+    }
+    words {
+      id
+      text
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
     }
     totalValue
+    reviewCount
     createdAt
     updatedAt
     _version
@@ -34,10 +58,34 @@ mutation UpdateProbateRecord(
     appraiser
     witness
     lineItems {
-      nextToken
-      startedAt
+      id
+      wordIds
+      title
+      description
+      category
+      subcategory
+      quantity
+      value
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
+      attributeForId
+    }
+    words {
+      id
+      text
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
     }
     totalValue
+    reviewCount
     createdAt
     updatedAt
     _version
@@ -57,261 +105,39 @@ mutation DeleteProbateRecord(
     appraiser
     witness
     lineItems {
-      nextToken
-      startedAt
+      id
+      wordIds
+      title
+      description
+      category
+      subcategory
+      quantity
+      value
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
+      attributeForId
+    }
+    words {
+      id
+      text
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
     }
     totalValue
+    reviewCount
     createdAt
     updatedAt
     _version
     _deleted
     _lastChangedAt
-  }
-}
-mutation CreateFiling(
-  $input: CreateFilingInput!
-  $condition: ModelFilingConditionInput
-) {
-  createFiling(input: $input, condition: $condition) {
-    id
-    state
-    county
-    date
-    filer
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-  }
-}
-mutation UpdateFiling(
-  $input: UpdateFilingInput!
-  $condition: ModelFilingConditionInput
-) {
-  updateFiling(input: $input, condition: $condition) {
-    id
-    state
-    county
-    date
-    filer
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-  }
-}
-mutation DeleteFiling(
-  $input: DeleteFilingInput!
-  $condition: ModelFilingConditionInput
-) {
-  deleteFiling(input: $input, condition: $condition) {
-    id
-    state
-    county
-    date
-    filer
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-  }
-}
-mutation CreateDeceased(
-  $input: CreateDeceasedInput!
-  $condition: ModelDeceasedConditionInput
-) {
-  createDeceased(input: $input, condition: $condition) {
-    id
-    name
-    gender
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-  }
-}
-mutation UpdateDeceased(
-  $input: UpdateDeceasedInput!
-  $condition: ModelDeceasedConditionInput
-) {
-  updateDeceased(input: $input, condition: $condition) {
-    id
-    name
-    gender
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-  }
-}
-mutation DeleteDeceased(
-  $input: DeleteDeceasedInput!
-  $condition: ModelDeceasedConditionInput
-) {
-  deleteDeceased(input: $input, condition: $condition) {
-    id
-    name
-    gender
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-  }
-}
-mutation CreateRect(
-  $input: CreateRectInput!
-  $condition: ModelRectConditionInput
-) {
-  createRect(input: $input, condition: $condition) {
-    id
-    left
-    top
-    width
-    height
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-  }
-}
-mutation UpdateRect(
-  $input: UpdateRectInput!
-  $condition: ModelRectConditionInput
-) {
-  updateRect(input: $input, condition: $condition) {
-    id
-    left
-    top
-    width
-    height
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-  }
-}
-mutation DeleteRect(
-  $input: DeleteRectInput!
-  $condition: ModelRectConditionInput
-) {
-  deleteRect(input: $input, condition: $condition) {
-    id
-    left
-    top
-    width
-    height
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-  }
-}
-mutation CreateLineItem(
-  $input: CreateLineItemInput!
-  $condition: ModelLineItemConditionInput
-) {
-  createLineItem(input: $input, condition: $condition) {
-    id
-    title
-    description
-    category
-    subcategory
-    quantity
-    value
-    boundingBox {
-      id
-      left
-      top
-      width
-      height
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-    probateRecordLineItemsId
-    lineItemBoundingBoxId
-  }
-}
-mutation UpdateLineItem(
-  $input: UpdateLineItemInput!
-  $condition: ModelLineItemConditionInput
-) {
-  updateLineItem(input: $input, condition: $condition) {
-    id
-    title
-    description
-    category
-    subcategory
-    quantity
-    value
-    boundingBox {
-      id
-      left
-      top
-      width
-      height
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-    probateRecordLineItemsId
-    lineItemBoundingBoxId
-  }
-}
-mutation DeleteLineItem(
-  $input: DeleteLineItemInput!
-  $condition: ModelLineItemConditionInput
-) {
-  deleteLineItem(input: $input, condition: $condition) {
-    id
-    title
-    description
-    category
-    subcategory
-    quantity
-    value
-    boundingBox {
-      id
-      left
-      top
-      width
-      height
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-    probateRecordLineItemsId
-    lineItemBoundingBoxId
   }
 }
 mutation CreateDocument(
@@ -321,12 +147,24 @@ mutation CreateDocument(
   createDocument(input: $input, condition: $condition) {
     id
     lines {
-      nextToken
-      startedAt
+      id
+      wordIds
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
     }
     words {
-      nextToken
-      startedAt
+      id
+      text
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
     }
     createdAt
     updatedAt
@@ -342,12 +180,24 @@ mutation UpdateDocument(
   updateDocument(input: $input, condition: $condition) {
     id
     lines {
-      nextToken
-      startedAt
+      id
+      wordIds
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
     }
     words {
-      nextToken
-      startedAt
+      id
+      text
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
     }
     createdAt
     updatedAt
@@ -363,185 +213,29 @@ mutation DeleteDocument(
   deleteDocument(input: $input, condition: $condition) {
     id
     lines {
-      nextToken
-      startedAt
+      id
+      wordIds
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
     }
     words {
-      nextToken
-      startedAt
-    }
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-  }
-}
-mutation CreateLine(
-  $input: CreateLineInput!
-  $condition: ModelLineConditionInput
-) {
-  createLine(input: $input, condition: $condition) {
-    id
-    wordIds
-    boundingBox {
       id
-      left
-      top
-      width
-      height
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
+      text
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
     }
     createdAt
     updatedAt
     _version
     _deleted
     _lastChangedAt
-    documentLinesId
-    lineBoundingBoxId
-  }
-}
-mutation UpdateLine(
-  $input: UpdateLineInput!
-  $condition: ModelLineConditionInput
-) {
-  updateLine(input: $input, condition: $condition) {
-    id
-    wordIds
-    boundingBox {
-      id
-      left
-      top
-      width
-      height
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-    documentLinesId
-    lineBoundingBoxId
-  }
-}
-mutation DeleteLine(
-  $input: DeleteLineInput!
-  $condition: ModelLineConditionInput
-) {
-  deleteLine(input: $input, condition: $condition) {
-    id
-    wordIds
-    boundingBox {
-      id
-      left
-      top
-      width
-      height
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-    documentLinesId
-    lineBoundingBoxId
-  }
-}
-mutation CreateWord(
-  $input: CreateWordInput!
-  $condition: ModelWordConditionInput
-) {
-  createWord(input: $input, condition: $condition) {
-    id
-    text
-    boundingBox {
-      id
-      left
-      top
-      width
-      height
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-    documentWordsId
-    wordBoundingBoxId
-  }
-}
-mutation UpdateWord(
-  $input: UpdateWordInput!
-  $condition: ModelWordConditionInput
-) {
-  updateWord(input: $input, condition: $condition) {
-    id
-    text
-    boundingBox {
-      id
-      left
-      top
-      width
-      height
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-    documentWordsId
-    wordBoundingBoxId
-  }
-}
-mutation DeleteWord(
-  $input: DeleteWordInput!
-  $condition: ModelWordConditionInput
-) {
-  deleteWord(input: $input, condition: $condition) {
-    id
-    text
-    boundingBox {
-      id
-      left
-      top
-      width
-      height
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-    documentWordsId
-    wordBoundingBoxId
   }
 }

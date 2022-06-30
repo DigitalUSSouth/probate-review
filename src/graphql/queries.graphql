@@ -8,10 +8,34 @@ query GetProbateRecord($id: ID!) {
     appraiser
     witness
     lineItems {
-      nextToken
-      startedAt
+      id
+      wordIds
+      title
+      description
+      category
+      subcategory
+      quantity
+      value
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
+      attributeForId
+    }
+    words {
+      id
+      text
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
     }
     totalValue
+    reviewCount
     createdAt
     updatedAt
     _version
@@ -32,7 +56,35 @@ query ListProbateRecords(
       filingId
       appraiser
       witness
+      lineItems {
+        id
+        wordIds
+        title
+        description
+        category
+        subcategory
+        quantity
+        value
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+        attributeForId
+      }
+      words {
+        id
+        text
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+      }
       totalValue
+      reviewCount
       createdAt
       updatedAt
       _version
@@ -62,286 +114,40 @@ query SyncProbateRecords(
       filingId
       appraiser
       witness
+      lineItems {
+        id
+        wordIds
+        title
+        description
+        category
+        subcategory
+        quantity
+        value
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+        attributeForId
+      }
+      words {
+        id
+        text
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+      }
       totalValue
+      reviewCount
       createdAt
       updatedAt
       _version
       _deleted
       _lastChangedAt
-    }
-    nextToken
-    startedAt
-  }
-}
-query GetFiling($id: ID!) {
-  getFiling(id: $id) {
-    id
-    state
-    county
-    date
-    filer
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-  }
-}
-query ListFilings(
-  $filter: ModelFilingFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listFilings(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      id
-      state
-      county
-      date
-      filer
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-    nextToken
-    startedAt
-  }
-}
-query SyncFilings(
-  $filter: ModelFilingFilterInput
-  $limit: Int
-  $nextToken: String
-  $lastSync: AWSTimestamp
-) {
-  syncFilings(
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-    lastSync: $lastSync
-  ) {
-    items {
-      id
-      state
-      county
-      date
-      filer
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-    nextToken
-    startedAt
-  }
-}
-query GetDeceased($id: ID!) {
-  getDeceased(id: $id) {
-    id
-    name
-    gender
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-  }
-}
-query ListDeceaseds(
-  $filter: ModelDeceasedFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listDeceaseds(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      id
-      name
-      gender
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-    nextToken
-    startedAt
-  }
-}
-query SyncDeceaseds(
-  $filter: ModelDeceasedFilterInput
-  $limit: Int
-  $nextToken: String
-  $lastSync: AWSTimestamp
-) {
-  syncDeceaseds(
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-    lastSync: $lastSync
-  ) {
-    items {
-      id
-      name
-      gender
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-    nextToken
-    startedAt
-  }
-}
-query GetRect($id: ID!) {
-  getRect(id: $id) {
-    id
-    left
-    top
-    width
-    height
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-  }
-}
-query ListRects(
-  $filter: ModelRectFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listRects(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      id
-      left
-      top
-      width
-      height
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-    nextToken
-    startedAt
-  }
-}
-query SyncRects(
-  $filter: ModelRectFilterInput
-  $limit: Int
-  $nextToken: String
-  $lastSync: AWSTimestamp
-) {
-  syncRects(
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-    lastSync: $lastSync
-  ) {
-    items {
-      id
-      left
-      top
-      width
-      height
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-    nextToken
-    startedAt
-  }
-}
-query GetLineItem($id: ID!) {
-  getLineItem(id: $id) {
-    id
-    title
-    description
-    category
-    subcategory
-    quantity
-    value
-    boundingBox {
-      id
-      left
-      top
-      width
-      height
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-    probateRecordLineItemsId
-    lineItemBoundingBoxId
-  }
-}
-query ListLineItems(
-  $filter: ModelLineItemFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listLineItems(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      id
-      title
-      description
-      category
-      subcategory
-      quantity
-      value
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      probateRecordLineItemsId
-      lineItemBoundingBoxId
-    }
-    nextToken
-    startedAt
-  }
-}
-query SyncLineItems(
-  $filter: ModelLineItemFilterInput
-  $limit: Int
-  $nextToken: String
-  $lastSync: AWSTimestamp
-) {
-  syncLineItems(
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-    lastSync: $lastSync
-  ) {
-    items {
-      id
-      title
-      description
-      category
-      subcategory
-      quantity
-      value
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      probateRecordLineItemsId
-      lineItemBoundingBoxId
     }
     nextToken
     startedAt
@@ -351,12 +157,24 @@ query GetDocument($id: ID!) {
   getDocument(id: $id) {
     id
     lines {
-      nextToken
-      startedAt
+      id
+      wordIds
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
     }
     words {
-      nextToken
-      startedAt
+      id
+      text
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
     }
     createdAt
     updatedAt
@@ -373,6 +191,26 @@ query ListDocuments(
   listDocuments(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
+      lines {
+        id
+        wordIds
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+      }
+      words {
+        id
+        text
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+      }
       createdAt
       updatedAt
       _version
@@ -397,157 +235,31 @@ query SyncDocuments(
   ) {
     items {
       id
+      lines {
+        id
+        wordIds
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+      }
+      words {
+        id
+        text
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+      }
       createdAt
       updatedAt
       _version
       _deleted
       _lastChangedAt
-    }
-    nextToken
-    startedAt
-  }
-}
-query GetLine($id: ID!) {
-  getLine(id: $id) {
-    id
-    wordIds
-    boundingBox {
-      id
-      left
-      top
-      width
-      height
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-    documentLinesId
-    lineBoundingBoxId
-  }
-}
-query ListLines(
-  $filter: ModelLineFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listLines(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      id
-      wordIds
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      documentLinesId
-      lineBoundingBoxId
-    }
-    nextToken
-    startedAt
-  }
-}
-query SyncLines(
-  $filter: ModelLineFilterInput
-  $limit: Int
-  $nextToken: String
-  $lastSync: AWSTimestamp
-) {
-  syncLines(
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-    lastSync: $lastSync
-  ) {
-    items {
-      id
-      wordIds
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      documentLinesId
-      lineBoundingBoxId
-    }
-    nextToken
-    startedAt
-  }
-}
-query GetWord($id: ID!) {
-  getWord(id: $id) {
-    id
-    text
-    boundingBox {
-      id
-      left
-      top
-      width
-      height
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-    documentWordsId
-    wordBoundingBoxId
-  }
-}
-query ListWords(
-  $filter: ModelWordFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listWords(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      id
-      text
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      documentWordsId
-      wordBoundingBoxId
-    }
-    nextToken
-    startedAt
-  }
-}
-query SyncWords(
-  $filter: ModelWordFilterInput
-  $limit: Int
-  $nextToken: String
-  $lastSync: AWSTimestamp
-) {
-  syncWords(
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-    lastSync: $lastSync
-  ) {
-    items {
-      id
-      text
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      documentWordsId
-      wordBoundingBoxId
     }
     nextToken
     startedAt

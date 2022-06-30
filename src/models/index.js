@@ -4,15 +4,15 @@ import { schema } from './schema';
 
 
 
-const { ProbateRecord, LineItem, Rect, Filing, Deceased, Document, Line, Word } = initSchema(schema);
+const { ProbateRecord, Document, LineItem, Rect, Word, Filing, Deceased, Line } = initSchema(schema);
 
 export {
   ProbateRecord,
+  Document,
   LineItem,
   Rect,
+  Word,
   Filing,
   Deceased,
-  Document,
-  Line,
-  Word
+  Line
 };

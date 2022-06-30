@@ -5,12 +5,13 @@ type ProbateRecord @model @auth(rules: [{allow: private}]) {
   filingId: ID!
   appraiser: [String]!
   witness: [String]!
-  lineItems: [LineItem]! @hasMany
+  lineItems: [LineItem]!
+  words: [Word]!
   totalValue: Float!
   reviewCount: Int!
 }
 
-type Filing @model @auth(rules: [{allow: private}]) {
+type Filing {
   id: ID!
   state: String!
   county: String!
@@ -18,47 +19,47 @@ type Filing @model @auth(rules: [{allow: private}]) {
   filer: String!
 }
 
-type Deceased @model @auth(rules: [{allow: private}]) {
+type Deceased {
   id: ID!
   name: String!
   gender: String!
 }
 
-type Rect @model @auth(rules: [{allow: private}]) {
-  id: ID!
+type Rect {
   left: Float!
   top: Float!
   width: Float!
   height: Float!
 }
 
-type LineItem @model @auth(rules: [{allow: private}]) {
+type LineItem {
   id: ID!
-  lineItemId: ID!
+  wordIds: [ID]!
   title: String!
   description: String!
   category: String!
   subcategory: String!
   quantity: Int!
   value: Float!
-  boundingBox: Rect! @hasOne
+  boundingBox: Rect 
+  attributeForId: ID!
 }
 
 type Document @model @auth(rules: [{allow: private}]) {
   id: ID!
-  lines: [Line]! @hasMany
-  words: [Word]! @hasMany
+  lines: [Line]! 
+  words: [Word]! 
 }
 
-type Line @model @auth(rules: [{allow: private}]) {
+type Line {
   id: ID!
   wordIds: [ID]!
-  boundingBox: Rect! @hasOne
+  boundingBox: Rect!
 }
 
-type Word @model @auth(rules: [{allow: private}]) {
+type Word {
   id: ID!
   text: String!
-  boundingBox: Rect! @hasOne
+  boundingBox: Rect
 }
  

@@ -1,11 +1,12 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, Renderer2} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
-import { RecordService } from '../record.service';
-import { ProbateRecord } from '../probate-record';
+// import { RecordService } from '../record.service';
+// import { ProbateRecord } from '../probate-record';
 import * as dragon from 'openseadragon'
 import data from './categories.json';
-import { Document, APIService, GetDocumentQuery} from '../API.service';
+import { ProbateRecord, LineItemInput, APIService, GetProbateRecordQuery, UpdateProbateRecordInput, LineItem} from '../API.service';
+import { identifierName } from '@angular/compiler';
 
 interface SubcategoryOptionValue {
   value: string,
@@ -24,7 +25,9 @@ export class ReviewComponent implements OnInit {
   categoryMap: Map<string, Array<SubcategoryOptionValue>> = this.objToStrMap(data); 
   imageSize?: dragon.Point;
   aspectRatio = 1.0;
-  constructor(private route: ActivatedRoute, private location: Location, private recordService: RecordService, private probateRecordService: APIService, private renderer: Renderer2) { 
+  updatedLineItems = new Map<number, LineItemInput> ();
+  // private recordService: RecordService,
+  constructor(private route: ActivatedRoute, private location: Location, private probateRecordService: APIService, private renderer: Renderer2) { 
   }
 
   objToStrMap(obj: any) {
@@ -41,23 +44,52 @@ export class ReviewComponent implements OnInit {
     
   }
 
+  filterLineItems(lineItems: LineItem[]): Array<LineItem> {
+    let idMap = new Map<string, number>();
+    let filtered = new Array<LineItem>();
+    for(let i = 0; i < lineItems.length; i++) {
+      let item = lineItems[i];
+      if(idMap.has(item.id)) {
+        let index = idMap.get(item.id);
+        filtered[index!] = item
+      }
+      else {
+        idMap.set(item.id, i);
+        filtered[i] = item;
+      }
+    }
+
+    return filtered;
+  }
+
   ngAfterViewInit(): void {
     const id = String(this.route.snapshot.paramMap.get('id'));
-    this.probateRecordService.GetDocument(id).then((documentQuery: GetDocumentQuery) => {
-      // if(recordsQuery.items) {
-      //   this.records = recordsQuery.items;
-      // }
-      console.log(documentQuery);
+    // this.probateRecordService.GetDocument(id).then((documentQuery: GetDocumentQuery) => {
+    //   // if(recordsQuery.items) {
+    //   //   this.records = recordsQuery.items;
+    //   // }
+    //   console.log(documentQuery);
 
-    });
-    this.getRecord(id);
+    // });
+    // this.getRecord(id);
+    this.probateRecordService.GetProbateRecord(id).then((probateRecordQuery: GetProbateRecordQuery) => {
+      // console.log(probateRecordQuery);
+      if(probateRecordQuery) {
+        let filteredLineItems = this.filterLineItems(probateRecordQuery.lineItems as LineItem[]);
+        probateRecordQuery.lineItems = filteredLineItems;
+        this.record = probateRecordQuery as ProbateRecord;
+        console.log(this.record);
+        this.getRecord(id);
+      }
+    })
   }
 
   populateSubcategory(lineIndex: number): void {
     const selectObject = document.getElementById("category-" + lineIndex) as HTMLInputElement;
-    let subcategories = this.categoryMap.get(selectObject?.value);
+    const category = selectObject?.value;
+    let subcategories = this.categoryMap.get(category);
     console.log(subcategories);
-    let subcategorySelect = document.getElementById("subcategory-" + lineIndex);
+    let subcategorySelect = document.getElementById("subcategory-" + lineIndex) as HTMLInputElement;
     while(subcategorySelect?.firstChild) {
       subcategorySelect.removeChild(subcategorySelect.firstChild);
     }
@@ -72,6 +104,29 @@ export class ReviewComponent implements OnInit {
         subcategorySelect?.appendChild(optionElement);
       } 
     }
+    // update our object
+    if(this.record != undefined) {
+      let lineItem = this.record.lineItems[lineIndex]!;
+      let id = lineItem.id;
+      let lineItemInput = {
+        id,
+        category,
+        wordIds: lineItem.wordIds,
+        title: lineItem.title,
+        description: lineItem.description,
+        subcategory: subcategorySelect.value,
+        quantity: 1,
+        value: 0.00,
+        attributeForId: '',
+        boundingBox: {
+          left: lineItem.boundingBox!.left, 
+          top: lineItem.boundingBox!.top, 
+          width: lineItem.boundingBox!.width, 
+          height: lineItem.boundingBox!.height
+        }
+      }
+      this.updatedLineItems.set(lineIndex, lineItemInput);
+    }
   }
 
   highlightText(index: number): void {
@@ -81,7 +136,7 @@ export class ReviewComponent implements OnInit {
     console.log(`aspect ratio is ${this.aspectRatio}`);
     console.log(`line ${index} highlighted`);
     const OVERLAY_ID = 'highlighted-line';
-    const boundingBox = this.record?.lines[index].boundingBox;
+    const boundingBox = this.record!.lineItems[index]!.boundingBox;
     console.log(boundingBox);
     // check if overlay exists
     let overlay = document.getElementById(OVERLAY_ID);
@@ -107,35 +162,32 @@ export class ReviewComponent implements OnInit {
 
   async getRecord(id: string): Promise<void> {
     console.log('getting records');
-    // this.record = await this.recordService.getProbateRecord(id);
-    this.recordService.getRecord(id).subscribe(record => {
-      this.record = {id, ...record};
-      // console.log(record);
-      const infoUrl = `https://d2ai2qpooo3jtj.cloudfront.net/iiif/2/${id}/info.json`;
+    
+    const infoUrl = `https://d2ai2qpooo3jtj.cloudfront.net/iiif/2/${id}/info.json`;
      
-      this.osd = new dragon.Viewer({
-        element: this.viewer.nativeElement,
-        showRotationControl: true,
-        // Enable touch rotation on tactile devices
-        gestureSettingsTouch: {
-            pinchToZoom: true,            
-        },        
-        maxZoomLevel: 5.0,
-        prefixUrl: "//openseadragon.github.io/openseadragon/images/",
-        tileSources: infoUrl
-      });
-      // this.osd.world.getItemAt(0).addHandler('fully-loaded-change', (loadedImage) => {
-      //   console.log('image loaded');
-      //   if(loadedImage.fullyLoaded) {
-      //     let tiledImage = loadedImage.eventSource as dragon.TiledImage;
-      //     this.imageSize = tiledImage.getContentSize();
-      //     this.aspectRatio = this.imageSize.x / this.imageSize.y;
-      //   }
-      // });
-      
+    this.osd = new dragon.Viewer({
+      element: this.viewer.nativeElement,
+      showRotationControl: true,
+      // Enable touch rotation on tactile devices
+      gestureSettingsTouch: {
+          pinchToZoom: true,            
+      },        
+      maxZoomLevel: 5.0,
+      prefixUrl: "//openseadragon.github.io/openseadragon/images/",
+      tileSources: infoUrl
     });
-
     console.log('records received');
+  }
+
+  async updateRecord() {
+    let item = {id: this.record!.id, reviewCount: ++this.record!.reviewCount,  lineItems: Array.from(this.updatedLineItems.values())};
+    console.log(item);
+    let input:UpdateProbateRecordInput = item;
+    console.log(input);
+    let response = await this.probateRecordService.UpdateProbateRecord(input as unknown as UpdateProbateRecordInput);
+    console.log('response');
+    console.log(response);
+    alert('record updated');
   }
 
 }
