@@ -13,6 +13,9 @@ export type __SubscriptionContainer = {
   onCreateProbateRecord: OnCreateProbateRecordSubscription;
   onUpdateProbateRecord: OnUpdateProbateRecordSubscription;
   onDeleteProbateRecord: OnDeleteProbateRecordSubscription;
+  onCreateLineItem: OnCreateLineItemSubscription;
+  onUpdateLineItem: OnUpdateLineItemSubscription;
+  onDeleteLineItem: OnDeleteLineItemSubscription;
   onCreateDocument: OnCreateDocumentSubscription;
   onUpdateDocument: OnUpdateDocumentSubscription;
   onDeleteDocument: OnDeleteDocumentSubscription;
@@ -25,24 +28,16 @@ export type CreateProbateRecordInput = {
   filingId: string;
   appraiser: Array<string | null>;
   witness: Array<string | null>;
-  lineItems: Array<LineItemInput | null>;
   words: Array<WordInput | null>;
   totalValue: number;
   reviewCount: number;
   _version?: number | null;
 };
 
-export type LineItemInput = {
+export type WordInput = {
   id?: string | null;
-  wordIds: Array<string | null>;
-  title: string;
-  description: string;
-  category: string;
-  subcategory: string;
-  quantity: number;
-  value: number;
+  text: string;
   boundingBox?: RectInput | null;
-  attributeForId: string;
 };
 
 export type RectInput = {
@@ -50,12 +45,6 @@ export type RectInput = {
   top: number;
   width: number;
   height: number;
-};
-
-export type WordInput = {
-  id?: string | null;
-  text: string;
-  boundingBox?: RectInput | null;
 };
 
 export type ModelProbateRecordConditionInput = {
@@ -158,7 +147,7 @@ export type ProbateRecord = {
   filingId: string;
   appraiser: Array<string | null>;
   witness: Array<string | null>;
-  lineItems: Array<LineItem | null>;
+  lineItems?: ModelLineItemConnection | null;
   words: Array<Word | null>;
   totalValue: number;
   reviewCount: number;
@@ -169,9 +158,17 @@ export type ProbateRecord = {
   _lastChangedAt: number;
 };
 
+export type ModelLineItemConnection = {
+  __typename: "ModelLineItemConnection";
+  items: Array<LineItem | null>;
+  nextToken?: string | null;
+  startedAt?: number | null;
+};
+
 export type LineItem = {
   __typename: "LineItem";
   id: string;
+  probateId: string;
   wordIds: Array<string | null>;
   title: string;
   description: string;
@@ -181,6 +178,11 @@ export type LineItem = {
   value: number;
   boundingBox?: Rect | null;
   attributeForId: string;
+  createdAt: string;
+  updatedAt: string;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
 };
 
 export type Rect = {
@@ -205,7 +207,6 @@ export type UpdateProbateRecordInput = {
   filingId?: string | null;
   appraiser?: Array<string | null> | null;
   witness?: Array<string | null> | null;
-  lineItems?: Array<LineItemInput | null> | null;
   words?: Array<WordInput | null> | null;
   totalValue?: number | null;
   reviewCount?: number | null;
@@ -213,6 +214,56 @@ export type UpdateProbateRecordInput = {
 };
 
 export type DeleteProbateRecordInput = {
+  id: string;
+  _version?: number | null;
+};
+
+export type CreateLineItemInput = {
+  id?: string | null;
+  probateId: string;
+  wordIds: Array<string | null>;
+  title: string;
+  description: string;
+  category: string;
+  subcategory: string;
+  quantity: number;
+  value: number;
+  boundingBox?: RectInput | null;
+  attributeForId: string;
+  _version?: number | null;
+};
+
+export type ModelLineItemConditionInput = {
+  probateId?: ModelIDInput | null;
+  wordIds?: ModelIDInput | null;
+  title?: ModelStringInput | null;
+  description?: ModelStringInput | null;
+  category?: ModelStringInput | null;
+  subcategory?: ModelStringInput | null;
+  quantity?: ModelIntInput | null;
+  value?: ModelFloatInput | null;
+  attributeForId?: ModelIDInput | null;
+  and?: Array<ModelLineItemConditionInput | null> | null;
+  or?: Array<ModelLineItemConditionInput | null> | null;
+  not?: ModelLineItemConditionInput | null;
+};
+
+export type UpdateLineItemInput = {
+  id: string;
+  probateId?: string | null;
+  wordIds?: Array<string | null> | null;
+  title?: string | null;
+  description?: string | null;
+  category?: string | null;
+  subcategory?: string | null;
+  quantity?: number | null;
+  value?: number | null;
+  boundingBox?: RectInput | null;
+  attributeForId?: string | null;
+  _version?: number | null;
+};
+
+export type DeleteLineItemInput = {
   id: string;
   _version?: number | null;
 };
@@ -281,11 +332,32 @@ export type ModelProbateRecordFilterInput = {
   not?: ModelProbateRecordFilterInput | null;
 };
 
+export enum ModelSortDirection {
+  ASC = "ASC",
+  DESC = "DESC"
+}
+
 export type ModelProbateRecordConnection = {
   __typename: "ModelProbateRecordConnection";
   items: Array<ProbateRecord | null>;
   nextToken?: string | null;
   startedAt?: number | null;
+};
+
+export type ModelLineItemFilterInput = {
+  id?: ModelIDInput | null;
+  probateId?: ModelIDInput | null;
+  wordIds?: ModelIDInput | null;
+  title?: ModelStringInput | null;
+  description?: ModelStringInput | null;
+  category?: ModelStringInput | null;
+  subcategory?: ModelStringInput | null;
+  quantity?: ModelIntInput | null;
+  value?: ModelFloatInput | null;
+  attributeForId?: ModelIDInput | null;
+  and?: Array<ModelLineItemFilterInput | null> | null;
+  or?: Array<ModelLineItemFilterInput | null> | null;
+  not?: ModelLineItemFilterInput | null;
 };
 
 export type ModelDocumentFilterInput = {
@@ -310,25 +382,36 @@ export type CreateProbateRecordMutation = {
   filingId: string;
   appraiser: Array<string | null>;
   witness: Array<string | null>;
-  lineItems: Array<{
-    __typename: "LineItem";
-    id: string;
-    wordIds: Array<string | null>;
-    title: string;
-    description: string;
-    category: string;
-    subcategory: string;
-    quantity: number;
-    value: number;
-    boundingBox?: {
-      __typename: "Rect";
-      left: number;
-      top: number;
-      width: number;
-      height: number;
-    } | null;
-    attributeForId: string;
-  } | null>;
+  lineItems?: {
+    __typename: "ModelLineItemConnection";
+    items: Array<{
+      __typename: "LineItem";
+      id: string;
+      probateId: string;
+      wordIds: Array<string | null>;
+      title: string;
+      description: string;
+      category: string;
+      subcategory: string;
+      quantity: number;
+      value: number;
+      boundingBox?: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      } | null;
+      attributeForId: string;
+      createdAt: string;
+      updatedAt: string;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+    } | null>;
+    nextToken?: string | null;
+    startedAt?: number | null;
+  } | null;
   words: Array<{
     __typename: "Word";
     id: string;
@@ -358,25 +441,36 @@ export type UpdateProbateRecordMutation = {
   filingId: string;
   appraiser: Array<string | null>;
   witness: Array<string | null>;
-  lineItems: Array<{
-    __typename: "LineItem";
-    id: string;
-    wordIds: Array<string | null>;
-    title: string;
-    description: string;
-    category: string;
-    subcategory: string;
-    quantity: number;
-    value: number;
-    boundingBox?: {
-      __typename: "Rect";
-      left: number;
-      top: number;
-      width: number;
-      height: number;
-    } | null;
-    attributeForId: string;
-  } | null>;
+  lineItems?: {
+    __typename: "ModelLineItemConnection";
+    items: Array<{
+      __typename: "LineItem";
+      id: string;
+      probateId: string;
+      wordIds: Array<string | null>;
+      title: string;
+      description: string;
+      category: string;
+      subcategory: string;
+      quantity: number;
+      value: number;
+      boundingBox?: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      } | null;
+      attributeForId: string;
+      createdAt: string;
+      updatedAt: string;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+    } | null>;
+    nextToken?: string | null;
+    startedAt?: number | null;
+  } | null;
   words: Array<{
     __typename: "Word";
     id: string;
@@ -406,25 +500,36 @@ export type DeleteProbateRecordMutation = {
   filingId: string;
   appraiser: Array<string | null>;
   witness: Array<string | null>;
-  lineItems: Array<{
-    __typename: "LineItem";
-    id: string;
-    wordIds: Array<string | null>;
-    title: string;
-    description: string;
-    category: string;
-    subcategory: string;
-    quantity: number;
-    value: number;
-    boundingBox?: {
-      __typename: "Rect";
-      left: number;
-      top: number;
-      width: number;
-      height: number;
-    } | null;
-    attributeForId: string;
-  } | null>;
+  lineItems?: {
+    __typename: "ModelLineItemConnection";
+    items: Array<{
+      __typename: "LineItem";
+      id: string;
+      probateId: string;
+      wordIds: Array<string | null>;
+      title: string;
+      description: string;
+      category: string;
+      subcategory: string;
+      quantity: number;
+      value: number;
+      boundingBox?: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      } | null;
+      attributeForId: string;
+      createdAt: string;
+      updatedAt: string;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+    } | null>;
+    nextToken?: string | null;
+    startedAt?: number | null;
+  } | null;
   words: Array<{
     __typename: "Word";
     id: string;
@@ -439,6 +544,84 @@ export type DeleteProbateRecordMutation = {
   } | null>;
   totalValue: number;
   reviewCount: number;
+  createdAt: string;
+  updatedAt: string;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+};
+
+export type CreateLineItemMutation = {
+  __typename: "LineItem";
+  id: string;
+  probateId: string;
+  wordIds: Array<string | null>;
+  title: string;
+  description: string;
+  category: string;
+  subcategory: string;
+  quantity: number;
+  value: number;
+  boundingBox?: {
+    __typename: "Rect";
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null;
+  attributeForId: string;
+  createdAt: string;
+  updatedAt: string;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+};
+
+export type UpdateLineItemMutation = {
+  __typename: "LineItem";
+  id: string;
+  probateId: string;
+  wordIds: Array<string | null>;
+  title: string;
+  description: string;
+  category: string;
+  subcategory: string;
+  quantity: number;
+  value: number;
+  boundingBox?: {
+    __typename: "Rect";
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null;
+  attributeForId: string;
+  createdAt: string;
+  updatedAt: string;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+};
+
+export type DeleteLineItemMutation = {
+  __typename: "LineItem";
+  id: string;
+  probateId: string;
+  wordIds: Array<string | null>;
+  title: string;
+  description: string;
+  category: string;
+  subcategory: string;
+  quantity: number;
+  value: number;
+  boundingBox?: {
+    __typename: "Rect";
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null;
+  attributeForId: string;
   createdAt: string;
   updatedAt: string;
   _version: number;
@@ -556,25 +739,36 @@ export type GetProbateRecordQuery = {
   filingId: string;
   appraiser: Array<string | null>;
   witness: Array<string | null>;
-  lineItems: Array<{
-    __typename: "LineItem";
-    id: string;
-    wordIds: Array<string | null>;
-    title: string;
-    description: string;
-    category: string;
-    subcategory: string;
-    quantity: number;
-    value: number;
-    boundingBox?: {
-      __typename: "Rect";
-      left: number;
-      top: number;
-      width: number;
-      height: number;
-    } | null;
-    attributeForId: string;
-  } | null>;
+  lineItems?: {
+    __typename: "ModelLineItemConnection";
+    items: Array<{
+      __typename: "LineItem";
+      id: string;
+      probateId: string;
+      wordIds: Array<string | null>;
+      title: string;
+      description: string;
+      category: string;
+      subcategory: string;
+      quantity: number;
+      value: number;
+      boundingBox?: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      } | null;
+      attributeForId: string;
+      createdAt: string;
+      updatedAt: string;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+    } | null>;
+    nextToken?: string | null;
+    startedAt?: number | null;
+  } | null;
   words: Array<{
     __typename: "Word";
     id: string;
@@ -606,25 +800,36 @@ export type ListProbateRecordsQuery = {
     filingId: string;
     appraiser: Array<string | null>;
     witness: Array<string | null>;
-    lineItems: Array<{
-      __typename: "LineItem";
-      id: string;
-      wordIds: Array<string | null>;
-      title: string;
-      description: string;
-      category: string;
-      subcategory: string;
-      quantity: number;
-      value: number;
-      boundingBox?: {
-        __typename: "Rect";
-        left: number;
-        top: number;
-        width: number;
-        height: number;
-      } | null;
-      attributeForId: string;
-    } | null>;
+    lineItems?: {
+      __typename: "ModelLineItemConnection";
+      items: Array<{
+        __typename: "LineItem";
+        id: string;
+        probateId: string;
+        wordIds: Array<string | null>;
+        title: string;
+        description: string;
+        category: string;
+        subcategory: string;
+        quantity: number;
+        value: number;
+        boundingBox?: {
+          __typename: "Rect";
+          left: number;
+          top: number;
+          width: number;
+          height: number;
+        } | null;
+        attributeForId: string;
+        createdAt: string;
+        updatedAt: string;
+        _version: number;
+        _deleted?: boolean | null;
+        _lastChangedAt: number;
+      } | null>;
+      nextToken?: string | null;
+      startedAt?: number | null;
+    } | null;
     words: Array<{
       __typename: "Word";
       id: string;
@@ -659,25 +864,36 @@ export type SyncProbateRecordsQuery = {
     filingId: string;
     appraiser: Array<string | null>;
     witness: Array<string | null>;
-    lineItems: Array<{
-      __typename: "LineItem";
-      id: string;
-      wordIds: Array<string | null>;
-      title: string;
-      description: string;
-      category: string;
-      subcategory: string;
-      quantity: number;
-      value: number;
-      boundingBox?: {
-        __typename: "Rect";
-        left: number;
-        top: number;
-        width: number;
-        height: number;
-      } | null;
-      attributeForId: string;
-    } | null>;
+    lineItems?: {
+      __typename: "ModelLineItemConnection";
+      items: Array<{
+        __typename: "LineItem";
+        id: string;
+        probateId: string;
+        wordIds: Array<string | null>;
+        title: string;
+        description: string;
+        category: string;
+        subcategory: string;
+        quantity: number;
+        value: number;
+        boundingBox?: {
+          __typename: "Rect";
+          left: number;
+          top: number;
+          width: number;
+          height: number;
+        } | null;
+        attributeForId: string;
+        createdAt: string;
+        updatedAt: string;
+        _version: number;
+        _deleted?: boolean | null;
+        _lastChangedAt: number;
+      } | null>;
+      nextToken?: string | null;
+      startedAt?: number | null;
+    } | null;
     words: Array<{
       __typename: "Word";
       id: string;
@@ -692,6 +908,125 @@ export type SyncProbateRecordsQuery = {
     } | null>;
     totalValue: number;
     reviewCount: number;
+    createdAt: string;
+    updatedAt: string;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+  } | null>;
+  nextToken?: string | null;
+  startedAt?: number | null;
+};
+
+export type GetLineItemQuery = {
+  __typename: "LineItem";
+  id: string;
+  probateId: string;
+  wordIds: Array<string | null>;
+  title: string;
+  description: string;
+  category: string;
+  subcategory: string;
+  quantity: number;
+  value: number;
+  boundingBox?: {
+    __typename: "Rect";
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null;
+  attributeForId: string;
+  createdAt: string;
+  updatedAt: string;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+};
+
+export type ListLineItemsQuery = {
+  __typename: "ModelLineItemConnection";
+  items: Array<{
+    __typename: "LineItem";
+    id: string;
+    probateId: string;
+    wordIds: Array<string | null>;
+    title: string;
+    description: string;
+    category: string;
+    subcategory: string;
+    quantity: number;
+    value: number;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+    attributeForId: string;
+    createdAt: string;
+    updatedAt: string;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+  } | null>;
+  nextToken?: string | null;
+  startedAt?: number | null;
+};
+
+export type SyncLineItemsQuery = {
+  __typename: "ModelLineItemConnection";
+  items: Array<{
+    __typename: "LineItem";
+    id: string;
+    probateId: string;
+    wordIds: Array<string | null>;
+    title: string;
+    description: string;
+    category: string;
+    subcategory: string;
+    quantity: number;
+    value: number;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+    attributeForId: string;
+    createdAt: string;
+    updatedAt: string;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+  } | null>;
+  nextToken?: string | null;
+  startedAt?: number | null;
+};
+
+export type LineItemByProbateRecordQuery = {
+  __typename: "ModelLineItemConnection";
+  items: Array<{
+    __typename: "LineItem";
+    id: string;
+    probateId: string;
+    wordIds: Array<string | null>;
+    title: string;
+    description: string;
+    category: string;
+    subcategory: string;
+    quantity: number;
+    value: number;
+    boundingBox?: {
+      __typename: "Rect";
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null;
+    attributeForId: string;
     createdAt: string;
     updatedAt: string;
     _version: number;
@@ -822,25 +1157,36 @@ export type OnCreateProbateRecordSubscription = {
   filingId: string;
   appraiser: Array<string | null>;
   witness: Array<string | null>;
-  lineItems: Array<{
-    __typename: "LineItem";
-    id: string;
-    wordIds: Array<string | null>;
-    title: string;
-    description: string;
-    category: string;
-    subcategory: string;
-    quantity: number;
-    value: number;
-    boundingBox?: {
-      __typename: "Rect";
-      left: number;
-      top: number;
-      width: number;
-      height: number;
-    } | null;
-    attributeForId: string;
-  } | null>;
+  lineItems?: {
+    __typename: "ModelLineItemConnection";
+    items: Array<{
+      __typename: "LineItem";
+      id: string;
+      probateId: string;
+      wordIds: Array<string | null>;
+      title: string;
+      description: string;
+      category: string;
+      subcategory: string;
+      quantity: number;
+      value: number;
+      boundingBox?: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      } | null;
+      attributeForId: string;
+      createdAt: string;
+      updatedAt: string;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+    } | null>;
+    nextToken?: string | null;
+    startedAt?: number | null;
+  } | null;
   words: Array<{
     __typename: "Word";
     id: string;
@@ -870,25 +1216,36 @@ export type OnUpdateProbateRecordSubscription = {
   filingId: string;
   appraiser: Array<string | null>;
   witness: Array<string | null>;
-  lineItems: Array<{
-    __typename: "LineItem";
-    id: string;
-    wordIds: Array<string | null>;
-    title: string;
-    description: string;
-    category: string;
-    subcategory: string;
-    quantity: number;
-    value: number;
-    boundingBox?: {
-      __typename: "Rect";
-      left: number;
-      top: number;
-      width: number;
-      height: number;
-    } | null;
-    attributeForId: string;
-  } | null>;
+  lineItems?: {
+    __typename: "ModelLineItemConnection";
+    items: Array<{
+      __typename: "LineItem";
+      id: string;
+      probateId: string;
+      wordIds: Array<string | null>;
+      title: string;
+      description: string;
+      category: string;
+      subcategory: string;
+      quantity: number;
+      value: number;
+      boundingBox?: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      } | null;
+      attributeForId: string;
+      createdAt: string;
+      updatedAt: string;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+    } | null>;
+    nextToken?: string | null;
+    startedAt?: number | null;
+  } | null;
   words: Array<{
     __typename: "Word";
     id: string;
@@ -918,25 +1275,36 @@ export type OnDeleteProbateRecordSubscription = {
   filingId: string;
   appraiser: Array<string | null>;
   witness: Array<string | null>;
-  lineItems: Array<{
-    __typename: "LineItem";
-    id: string;
-    wordIds: Array<string | null>;
-    title: string;
-    description: string;
-    category: string;
-    subcategory: string;
-    quantity: number;
-    value: number;
-    boundingBox?: {
-      __typename: "Rect";
-      left: number;
-      top: number;
-      width: number;
-      height: number;
-    } | null;
-    attributeForId: string;
-  } | null>;
+  lineItems?: {
+    __typename: "ModelLineItemConnection";
+    items: Array<{
+      __typename: "LineItem";
+      id: string;
+      probateId: string;
+      wordIds: Array<string | null>;
+      title: string;
+      description: string;
+      category: string;
+      subcategory: string;
+      quantity: number;
+      value: number;
+      boundingBox?: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      } | null;
+      attributeForId: string;
+      createdAt: string;
+      updatedAt: string;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+    } | null>;
+    nextToken?: string | null;
+    startedAt?: number | null;
+  } | null;
   words: Array<{
     __typename: "Word";
     id: string;
@@ -951,6 +1319,84 @@ export type OnDeleteProbateRecordSubscription = {
   } | null>;
   totalValue: number;
   reviewCount: number;
+  createdAt: string;
+  updatedAt: string;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+};
+
+export type OnCreateLineItemSubscription = {
+  __typename: "LineItem";
+  id: string;
+  probateId: string;
+  wordIds: Array<string | null>;
+  title: string;
+  description: string;
+  category: string;
+  subcategory: string;
+  quantity: number;
+  value: number;
+  boundingBox?: {
+    __typename: "Rect";
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null;
+  attributeForId: string;
+  createdAt: string;
+  updatedAt: string;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+};
+
+export type OnUpdateLineItemSubscription = {
+  __typename: "LineItem";
+  id: string;
+  probateId: string;
+  wordIds: Array<string | null>;
+  title: string;
+  description: string;
+  category: string;
+  subcategory: string;
+  quantity: number;
+  value: number;
+  boundingBox?: {
+    __typename: "Rect";
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null;
+  attributeForId: string;
+  createdAt: string;
+  updatedAt: string;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+};
+
+export type OnDeleteLineItemSubscription = {
+  __typename: "LineItem";
+  id: string;
+  probateId: string;
+  wordIds: Array<string | null>;
+  title: string;
+  description: string;
+  category: string;
+  subcategory: string;
+  quantity: number;
+  value: number;
+  boundingBox?: {
+    __typename: "Rect";
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null;
+  attributeForId: string;
   createdAt: string;
   updatedAt: string;
   _version: number;
@@ -1079,22 +1525,33 @@ export class APIService {
           witness
           lineItems {
             __typename
-            id
-            wordIds
-            title
-            description
-            category
-            subcategory
-            quantity
-            value
-            boundingBox {
+            items {
               __typename
-              left
-              top
-              width
-              height
+              id
+              probateId
+              wordIds
+              title
+              description
+              category
+              subcategory
+              quantity
+              value
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+              attributeForId
+              createdAt
+              updatedAt
+              _version
+              _deleted
+              _lastChangedAt
             }
-            attributeForId
+            nextToken
+            startedAt
           }
           words {
             __typename
@@ -1143,22 +1600,33 @@ export class APIService {
           witness
           lineItems {
             __typename
-            id
-            wordIds
-            title
-            description
-            category
-            subcategory
-            quantity
-            value
-            boundingBox {
+            items {
               __typename
-              left
-              top
-              width
-              height
+              id
+              probateId
+              wordIds
+              title
+              description
+              category
+              subcategory
+              quantity
+              value
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+              attributeForId
+              createdAt
+              updatedAt
+              _version
+              _deleted
+              _lastChangedAt
             }
-            attributeForId
+            nextToken
+            startedAt
           }
           words {
             __typename
@@ -1207,22 +1675,33 @@ export class APIService {
           witness
           lineItems {
             __typename
-            id
-            wordIds
-            title
-            description
-            category
-            subcategory
-            quantity
-            value
-            boundingBox {
+            items {
               __typename
-              left
-              top
-              width
-              height
+              id
+              probateId
+              wordIds
+              title
+              description
+              category
+              subcategory
+              quantity
+              value
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+              attributeForId
+              createdAt
+              updatedAt
+              _version
+              _deleted
+              _lastChangedAt
             }
-            attributeForId
+            nextToken
+            startedAt
           }
           words {
             __typename
@@ -1255,6 +1734,132 @@ export class APIService {
       graphqlOperation(statement, gqlAPIServiceArguments)
     )) as any;
     return <DeleteProbateRecordMutation>response.data.deleteProbateRecord;
+  }
+  async CreateLineItem(
+    input: CreateLineItemInput,
+    condition?: ModelLineItemConditionInput
+  ): Promise<CreateLineItemMutation> {
+    const statement = `mutation CreateLineItem($input: CreateLineItemInput!, $condition: ModelLineItemConditionInput) {
+        createLineItem(input: $input, condition: $condition) {
+          __typename
+          id
+          probateId
+          wordIds
+          title
+          description
+          category
+          subcategory
+          quantity
+          value
+          boundingBox {
+            __typename
+            left
+            top
+            width
+            height
+          }
+          attributeForId
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <CreateLineItemMutation>response.data.createLineItem;
+  }
+  async UpdateLineItem(
+    input: UpdateLineItemInput,
+    condition?: ModelLineItemConditionInput
+  ): Promise<UpdateLineItemMutation> {
+    const statement = `mutation UpdateLineItem($input: UpdateLineItemInput!, $condition: ModelLineItemConditionInput) {
+        updateLineItem(input: $input, condition: $condition) {
+          __typename
+          id
+          probateId
+          wordIds
+          title
+          description
+          category
+          subcategory
+          quantity
+          value
+          boundingBox {
+            __typename
+            left
+            top
+            width
+            height
+          }
+          attributeForId
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <UpdateLineItemMutation>response.data.updateLineItem;
+  }
+  async DeleteLineItem(
+    input: DeleteLineItemInput,
+    condition?: ModelLineItemConditionInput
+  ): Promise<DeleteLineItemMutation> {
+    const statement = `mutation DeleteLineItem($input: DeleteLineItemInput!, $condition: ModelLineItemConditionInput) {
+        deleteLineItem(input: $input, condition: $condition) {
+          __typename
+          id
+          probateId
+          wordIds
+          title
+          description
+          category
+          subcategory
+          quantity
+          value
+          boundingBox {
+            __typename
+            left
+            top
+            width
+            height
+          }
+          attributeForId
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <DeleteLineItemMutation>response.data.deleteLineItem;
   }
   async CreateDocument(
     input: CreateDocumentInput,
@@ -1418,22 +2023,33 @@ export class APIService {
           witness
           lineItems {
             __typename
-            id
-            wordIds
-            title
-            description
-            category
-            subcategory
-            quantity
-            value
-            boundingBox {
+            items {
               __typename
-              left
-              top
-              width
-              height
+              id
+              probateId
+              wordIds
+              title
+              description
+              category
+              subcategory
+              quantity
+              value
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+              attributeForId
+              createdAt
+              updatedAt
+              _version
+              _deleted
+              _lastChangedAt
             }
-            attributeForId
+            nextToken
+            startedAt
           }
           words {
             __typename
@@ -1465,12 +2081,14 @@ export class APIService {
     return <GetProbateRecordQuery>response.data.getProbateRecord;
   }
   async ListProbateRecords(
+    id?: string,
     filter?: ModelProbateRecordFilterInput,
     limit?: number,
-    nextToken?: string
+    nextToken?: string,
+    sortDirection?: ModelSortDirection
   ): Promise<ListProbateRecordsQuery> {
-    const statement = `query ListProbateRecords($filter: ModelProbateRecordFilterInput, $limit: Int, $nextToken: String) {
-        listProbateRecords(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    const statement = `query ListProbateRecords($id: ID, $filter: ModelProbateRecordFilterInput, $limit: Int, $nextToken: String, $sortDirection: ModelSortDirection) {
+        listProbateRecords(id: $id, filter: $filter, limit: $limit, nextToken: $nextToken, sortDirection: $sortDirection) {
           __typename
           items {
             __typename
@@ -1482,22 +2100,33 @@ export class APIService {
             witness
             lineItems {
               __typename
-              id
-              wordIds
-              title
-              description
-              category
-              subcategory
-              quantity
-              value
-              boundingBox {
+              items {
                 __typename
-                left
-                top
-                width
-                height
+                id
+                probateId
+                wordIds
+                title
+                description
+                category
+                subcategory
+                quantity
+                value
+                boundingBox {
+                  __typename
+                  left
+                  top
+                  width
+                  height
+                }
+                attributeForId
+                createdAt
+                updatedAt
+                _version
+                _deleted
+                _lastChangedAt
               }
-              attributeForId
+              nextToken
+              startedAt
             }
             words {
               __typename
@@ -1524,6 +2153,9 @@ export class APIService {
         }
       }`;
     const gqlAPIServiceArguments: any = {};
+    if (id) {
+      gqlAPIServiceArguments.id = id;
+    }
     if (filter) {
       gqlAPIServiceArguments.filter = filter;
     }
@@ -1532,6 +2164,9 @@ export class APIService {
     }
     if (nextToken) {
       gqlAPIServiceArguments.nextToken = nextToken;
+    }
+    if (sortDirection) {
+      gqlAPIServiceArguments.sortDirection = sortDirection;
     }
     const response = (await API.graphql(
       graphqlOperation(statement, gqlAPIServiceArguments)
@@ -1557,22 +2192,33 @@ export class APIService {
             witness
             lineItems {
               __typename
-              id
-              wordIds
-              title
-              description
-              category
-              subcategory
-              quantity
-              value
-              boundingBox {
+              items {
                 __typename
-                left
-                top
-                width
-                height
+                id
+                probateId
+                wordIds
+                title
+                description
+                category
+                subcategory
+                quantity
+                value
+                boundingBox {
+                  __typename
+                  left
+                  top
+                  width
+                  height
+                }
+                attributeForId
+                createdAt
+                updatedAt
+                _version
+                _deleted
+                _lastChangedAt
               }
-              attributeForId
+              nextToken
+              startedAt
             }
             words {
               __typename
@@ -1615,6 +2261,209 @@ export class APIService {
       graphqlOperation(statement, gqlAPIServiceArguments)
     )) as any;
     return <SyncProbateRecordsQuery>response.data.syncProbateRecords;
+  }
+  async GetLineItem(id: string): Promise<GetLineItemQuery> {
+    const statement = `query GetLineItem($id: ID!) {
+        getLineItem(id: $id) {
+          __typename
+          id
+          probateId
+          wordIds
+          title
+          description
+          category
+          subcategory
+          quantity
+          value
+          boundingBox {
+            __typename
+            left
+            top
+            width
+            height
+          }
+          attributeForId
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      id
+    };
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <GetLineItemQuery>response.data.getLineItem;
+  }
+  async ListLineItems(
+    filter?: ModelLineItemFilterInput,
+    limit?: number,
+    nextToken?: string
+  ): Promise<ListLineItemsQuery> {
+    const statement = `query ListLineItems($filter: ModelLineItemFilterInput, $limit: Int, $nextToken: String) {
+        listLineItems(filter: $filter, limit: $limit, nextToken: $nextToken) {
+          __typename
+          items {
+            __typename
+            id
+            probateId
+            wordIds
+            title
+            description
+            category
+            subcategory
+            quantity
+            value
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
+            attributeForId
+            createdAt
+            updatedAt
+            _version
+            _deleted
+            _lastChangedAt
+          }
+          nextToken
+          startedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    if (limit) {
+      gqlAPIServiceArguments.limit = limit;
+    }
+    if (nextToken) {
+      gqlAPIServiceArguments.nextToken = nextToken;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <ListLineItemsQuery>response.data.listLineItems;
+  }
+  async SyncLineItems(
+    filter?: ModelLineItemFilterInput,
+    limit?: number,
+    nextToken?: string,
+    lastSync?: number
+  ): Promise<SyncLineItemsQuery> {
+    const statement = `query SyncLineItems($filter: ModelLineItemFilterInput, $limit: Int, $nextToken: String, $lastSync: AWSTimestamp) {
+        syncLineItems(filter: $filter, limit: $limit, nextToken: $nextToken, lastSync: $lastSync) {
+          __typename
+          items {
+            __typename
+            id
+            probateId
+            wordIds
+            title
+            description
+            category
+            subcategory
+            quantity
+            value
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
+            attributeForId
+            createdAt
+            updatedAt
+            _version
+            _deleted
+            _lastChangedAt
+          }
+          nextToken
+          startedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    if (limit) {
+      gqlAPIServiceArguments.limit = limit;
+    }
+    if (nextToken) {
+      gqlAPIServiceArguments.nextToken = nextToken;
+    }
+    if (lastSync) {
+      gqlAPIServiceArguments.lastSync = lastSync;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <SyncLineItemsQuery>response.data.syncLineItems;
+  }
+  async LineItemByProbateRecord(
+    probateId: string,
+    sortDirection?: ModelSortDirection,
+    filter?: ModelLineItemFilterInput,
+    limit?: number,
+    nextToken?: string
+  ): Promise<LineItemByProbateRecordQuery> {
+    const statement = `query LineItemByProbateRecord($probateId: ID!, $sortDirection: ModelSortDirection, $filter: ModelLineItemFilterInput, $limit: Int, $nextToken: String) {
+        lineItemByProbateRecord(probateId: $probateId, sortDirection: $sortDirection, filter: $filter, limit: $limit, nextToken: $nextToken) {
+          __typename
+          items {
+            __typename
+            id
+            probateId
+            wordIds
+            title
+            description
+            category
+            subcategory
+            quantity
+            value
+            boundingBox {
+              __typename
+              left
+              top
+              width
+              height
+            }
+            attributeForId
+            createdAt
+            updatedAt
+            _version
+            _deleted
+            _lastChangedAt
+          }
+          nextToken
+          startedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      probateId
+    };
+    if (sortDirection) {
+      gqlAPIServiceArguments.sortDirection = sortDirection;
+    }
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    if (limit) {
+      gqlAPIServiceArguments.limit = limit;
+    }
+    if (nextToken) {
+      gqlAPIServiceArguments.nextToken = nextToken;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <LineItemByProbateRecordQuery>response.data.lineItemByProbateRecord;
   }
   async GetDocument(id: string): Promise<GetDocumentQuery> {
     const statement = `query GetDocument($id: ID!) {
@@ -1799,22 +2648,33 @@ export class APIService {
           witness
           lineItems {
             __typename
-            id
-            wordIds
-            title
-            description
-            category
-            subcategory
-            quantity
-            value
-            boundingBox {
+            items {
               __typename
-              left
-              top
-              width
-              height
+              id
+              probateId
+              wordIds
+              title
+              description
+              category
+              subcategory
+              quantity
+              value
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+              attributeForId
+              createdAt
+              updatedAt
+              _version
+              _deleted
+              _lastChangedAt
             }
-            attributeForId
+            nextToken
+            startedAt
           }
           words {
             __typename
@@ -1857,22 +2717,33 @@ export class APIService {
           witness
           lineItems {
             __typename
-            id
-            wordIds
-            title
-            description
-            category
-            subcategory
-            quantity
-            value
-            boundingBox {
+            items {
               __typename
-              left
-              top
-              width
-              height
+              id
+              probateId
+              wordIds
+              title
+              description
+              category
+              subcategory
+              quantity
+              value
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+              attributeForId
+              createdAt
+              updatedAt
+              _version
+              _deleted
+              _lastChangedAt
             }
-            attributeForId
+            nextToken
+            startedAt
           }
           words {
             __typename
@@ -1915,22 +2786,33 @@ export class APIService {
           witness
           lineItems {
             __typename
-            id
-            wordIds
-            title
-            description
-            category
-            subcategory
-            quantity
-            value
-            boundingBox {
+            items {
               __typename
-              left
-              top
-              width
-              height
+              id
+              probateId
+              wordIds
+              title
+              description
+              category
+              subcategory
+              quantity
+              value
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+              attributeForId
+              createdAt
+              updatedAt
+              _version
+              _deleted
+              _lastChangedAt
             }
-            attributeForId
+            nextToken
+            startedAt
           }
           words {
             __typename
@@ -1956,6 +2838,114 @@ export class APIService {
     )
   ) as Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteProbateRecord">>
+  >;
+
+  OnCreateLineItemListener: Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateLineItem">>
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnCreateLineItem {
+        onCreateLineItem {
+          __typename
+          id
+          probateId
+          wordIds
+          title
+          description
+          category
+          subcategory
+          quantity
+          value
+          boundingBox {
+            __typename
+            left
+            top
+            width
+            height
+          }
+          attributeForId
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateLineItem">>
+  >;
+
+  OnUpdateLineItemListener: Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateLineItem">>
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnUpdateLineItem {
+        onUpdateLineItem {
+          __typename
+          id
+          probateId
+          wordIds
+          title
+          description
+          category
+          subcategory
+          quantity
+          value
+          boundingBox {
+            __typename
+            left
+            top
+            width
+            height
+          }
+          attributeForId
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateLineItem">>
+  >;
+
+  OnDeleteLineItemListener: Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteLineItem">>
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnDeleteLineItem {
+        onDeleteLineItem {
+          __typename
+          id
+          probateId
+          wordIds
+          title
+          description
+          category
+          subcategory
+          quantity
+          value
+          boundingBox {
+            __typename
+            left
+            top
+            width
+            height
+          }
+          attributeForId
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteLineItem">>
   >;
 
   OnCreateDocumentListener: Observable<

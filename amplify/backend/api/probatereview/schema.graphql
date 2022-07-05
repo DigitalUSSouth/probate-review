@@ -1,11 +1,11 @@
 type ProbateRecord @model @auth(rules: [{allow: private}]) {
-  id: ID!
+  id: ID! @primaryKey
   title: String!
   deceasedId: ID!
   filingId: ID!
   appraiser: [String]!
   witness: [String]!
-  lineItems: [LineItem]!
+  lineItems: [LineItem] @hasMany(indexName: "byProbate", fields: ["id"])
   words: [Word]!
   totalValue: Float!
   reviewCount: Int!
@@ -32,8 +32,9 @@ type Rect {
   height: Float!
 }
 
-type LineItem {
+type LineItem @model @auth(rules: [{allow: private}]) {
   id: ID!
+  probateId: ID! @index(name: "byProbate", queryField: "lineItemByProbateRecord")
   wordIds: [ID]!
   title: String!
   description: String!

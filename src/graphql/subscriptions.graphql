@@ -8,21 +8,31 @@ subscription OnCreateProbateRecord {
     appraiser
     witness
     lineItems {
-      id
-      wordIds
-      title
-      description
-      category
-      subcategory
-      quantity
-      value
-      boundingBox {
-        left
-        top
-        width
-        height
+      items {
+        id
+        probateId
+        wordIds
+        title
+        description
+        category
+        subcategory
+        quantity
+        value
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+        attributeForId
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
       }
-      attributeForId
+      nextToken
+      startedAt
     }
     words {
       id
@@ -52,21 +62,31 @@ subscription OnUpdateProbateRecord {
     appraiser
     witness
     lineItems {
-      id
-      wordIds
-      title
-      description
-      category
-      subcategory
-      quantity
-      value
-      boundingBox {
-        left
-        top
-        width
-        height
+      items {
+        id
+        probateId
+        wordIds
+        title
+        description
+        category
+        subcategory
+        quantity
+        value
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+        attributeForId
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
       }
-      attributeForId
+      nextToken
+      startedAt
     }
     words {
       id
@@ -96,21 +116,31 @@ subscription OnDeleteProbateRecord {
     appraiser
     witness
     lineItems {
-      id
-      wordIds
-      title
-      description
-      category
-      subcategory
-      quantity
-      value
-      boundingBox {
-        left
-        top
-        width
-        height
+      items {
+        id
+        probateId
+        wordIds
+        title
+        description
+        category
+        subcategory
+        quantity
+        value
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+        attributeForId
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
       }
-      attributeForId
+      nextToken
+      startedAt
     }
     words {
       id
@@ -124,6 +154,81 @@ subscription OnDeleteProbateRecord {
     }
     totalValue
     reviewCount
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+  }
+}
+subscription OnCreateLineItem {
+  onCreateLineItem {
+    id
+    probateId
+    wordIds
+    title
+    description
+    category
+    subcategory
+    quantity
+    value
+    boundingBox {
+      left
+      top
+      width
+      height
+    }
+    attributeForId
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+  }
+}
+subscription OnUpdateLineItem {
+  onUpdateLineItem {
+    id
+    probateId
+    wordIds
+    title
+    description
+    category
+    subcategory
+    quantity
+    value
+    boundingBox {
+      left
+      top
+      width
+      height
+    }
+    attributeForId
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+  }
+}
+subscription OnDeleteLineItem {
+  onDeleteLineItem {
+    id
+    probateId
+    wordIds
+    title
+    description
+    category
+    subcategory
+    quantity
+    value
+    boundingBox {
+      left
+      top
+      width
+      height
+    }
+    attributeForId
     createdAt
     updatedAt
     _version

@@ -5,8 +5,10 @@ import { Location } from '@angular/common';
 // import { ProbateRecord } from '../probate-record';
 import * as dragon from 'openseadragon'
 import data from './categories.json';
-import { ProbateRecord, LineItemInput, APIService, GetProbateRecordQuery, UpdateProbateRecordInput, LineItem} from '../API.service';
+import { ProbateRecord, UpdateLineItemInput, APIService, GetProbateRecordQuery, UpdateProbateRecordInput, LineItem, LineItemByProbateRecordQuery} from '../API.service';
 import { identifierName } from '@angular/compiler';
+import { from } from 'rxjs';
+// import { LineItem } from 'src/models';
 
 interface SubcategoryOptionValue {
   value: string,
@@ -25,7 +27,7 @@ export class ReviewComponent implements OnInit {
   categoryMap: Map<string, Array<SubcategoryOptionValue>> = this.objToStrMap(data); 
   imageSize?: dragon.Point;
   aspectRatio = 1.0;
-  updatedLineItems = new Map<number, LineItemInput> ();
+  updatedLineItems = new Map<number, UpdateLineItemInput> ();
   // private recordService: RecordService,
   constructor(private route: ActivatedRoute, private location: Location, private probateRecordService: APIService, private renderer: Renderer2) { 
   }
@@ -72,16 +74,34 @@ export class ReviewComponent implements OnInit {
 
     // });
     // this.getRecord(id);
-    this.probateRecordService.GetProbateRecord(id).then((probateRecordQuery: GetProbateRecordQuery) => {
-      // console.log(probateRecordQuery);
-      if(probateRecordQuery) {
-        let filteredLineItems = this.filterLineItems(probateRecordQuery.lineItems as LineItem[]);
-        probateRecordQuery.lineItems = filteredLineItems;
-        this.record = probateRecordQuery as ProbateRecord;
-        console.log(this.record);
-        this.getRecord(id);
-      }
+    // this.probateRecordService.GetProbateRecord(id).then((probateRecordQuery: GetProbateRecordQuery) => {
+    //   // console.log(probateRecordQuery);
+    //   if(probateRecordQuery) {
+    //     // let filteredLineItems = this.filterLineItems(probateRecordQuery.lineItems?.items as LineItem[]);
+    //     // probateRecordQuery.lineItems!.items = filteredLineItems;
+    //     this.record = probateRecordQuery as ProbateRecord;
+    //     console.log(this.record);
+    //     this.getRecord(id);
+    //   }
+    // });
+    let record$ = from(this.probateRecordService.GetProbateRecord(id));
+    record$.subscribe(record => {
+      this.record = record as ProbateRecord;
+      
+      console.log(this.record);
+      this.getRecord(id);
+      // let lineItems$ = from(this.probateRecordService.LineItemByProbateRecord(id));
+      // lineItems$.subscribe(lineItems => {
+      //   console.log(lineItems);
+      //   this.record!.lineItems = lineItems;
+      //   console.log(record);
+      //   this.getRecord(id);
+      // })
+
     })
+    
+
+
   }
 
   populateSubcategory(lineIndex: number): void {
@@ -104,13 +124,22 @@ export class ReviewComponent implements OnInit {
         subcategorySelect?.appendChild(optionElement);
       } 
     }
+    
+  }
+
+  onSubcategoryChanged(lineIndex: number): void {
+    const selectObject = document.getElementById("category-" + lineIndex) as HTMLInputElement;
+    const category = selectObject?.value;
+    let subcategorySelect = document.getElementById("subcategory-" + lineIndex) as HTMLInputElement;
+    
     // update our object
     if(this.record != undefined) {
-      let lineItem = this.record.lineItems[lineIndex]!;
+      let lineItem = this.record.lineItems!.items[lineIndex]!;
       let id = lineItem.id;
       let lineItemInput = {
         id,
         category,
+        probateId: lineItem.probateId,
         wordIds: lineItem.wordIds,
         title: lineItem.title,
         description: lineItem.description,
@@ -136,7 +165,7 @@ export class ReviewComponent implements OnInit {
     console.log(`aspect ratio is ${this.aspectRatio}`);
     console.log(`line ${index} highlighted`);
     const OVERLAY_ID = 'highlighted-line';
-    const boundingBox = this.record!.lineItems[index]!.boundingBox;
+    const boundingBox = this.record!.lineItems!.items[index]!.boundingBox;
     console.log(boundingBox);
     // check if overlay exists
     let overlay = document.getElementById(OVERLAY_ID);
@@ -179,14 +208,26 @@ export class ReviewComponent implements OnInit {
     console.log('records received');
   }
 
+  async updateLineItems() {
+    console.log('updating line items');
+    console.log(this.updatedLineItems);
+    for(const lineItem of Array.from(this.updatedLineItems.values())) {
+      console.log(lineItem);
+      let response = await this.probateRecordService.UpdateLineItem(lineItem);
+      console.log(response);
+    }
+  }
+
   async updateRecord() {
-    let item = {id: this.record!.id, reviewCount: ++this.record!.reviewCount,  lineItems: Array.from(this.updatedLineItems.values())};
+    let item = {id: this.record!.id, reviewCount: ++this.record!.reviewCount};
     console.log(item);
     let input:UpdateProbateRecordInput = item;
     console.log(input);
     let response = await this.probateRecordService.UpdateProbateRecord(input as unknown as UpdateProbateRecordInput);
     console.log('response');
     console.log(response);
+    await this.updateLineItems();
+    this.updatedLineItems.clear();
     alert('record updated');
   }
 

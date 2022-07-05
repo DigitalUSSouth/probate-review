@@ -11,21 +11,31 @@ mutation CreateProbateRecord(
     appraiser
     witness
     lineItems {
-      id
-      wordIds
-      title
-      description
-      category
-      subcategory
-      quantity
-      value
-      boundingBox {
-        left
-        top
-        width
-        height
+      items {
+        id
+        probateId
+        wordIds
+        title
+        description
+        category
+        subcategory
+        quantity
+        value
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+        attributeForId
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
       }
-      attributeForId
+      nextToken
+      startedAt
     }
     words {
       id
@@ -58,21 +68,31 @@ mutation UpdateProbateRecord(
     appraiser
     witness
     lineItems {
-      id
-      wordIds
-      title
-      description
-      category
-      subcategory
-      quantity
-      value
-      boundingBox {
-        left
-        top
-        width
-        height
+      items {
+        id
+        probateId
+        wordIds
+        title
+        description
+        category
+        subcategory
+        quantity
+        value
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+        attributeForId
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
       }
-      attributeForId
+      nextToken
+      startedAt
     }
     words {
       id
@@ -105,21 +125,31 @@ mutation DeleteProbateRecord(
     appraiser
     witness
     lineItems {
-      id
-      wordIds
-      title
-      description
-      category
-      subcategory
-      quantity
-      value
-      boundingBox {
-        left
-        top
-        width
-        height
+      items {
+        id
+        probateId
+        wordIds
+        title
+        description
+        category
+        subcategory
+        quantity
+        value
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+        attributeForId
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
       }
-      attributeForId
+      nextToken
+      startedAt
     }
     words {
       id
@@ -133,6 +163,90 @@ mutation DeleteProbateRecord(
     }
     totalValue
     reviewCount
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+  }
+}
+mutation CreateLineItem(
+  $input: CreateLineItemInput!
+  $condition: ModelLineItemConditionInput
+) {
+  createLineItem(input: $input, condition: $condition) {
+    id
+    probateId
+    wordIds
+    title
+    description
+    category
+    subcategory
+    quantity
+    value
+    boundingBox {
+      left
+      top
+      width
+      height
+    }
+    attributeForId
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+  }
+}
+mutation UpdateLineItem(
+  $input: UpdateLineItemInput!
+  $condition: ModelLineItemConditionInput
+) {
+  updateLineItem(input: $input, condition: $condition) {
+    id
+    probateId
+    wordIds
+    title
+    description
+    category
+    subcategory
+    quantity
+    value
+    boundingBox {
+      left
+      top
+      width
+      height
+    }
+    attributeForId
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+  }
+}
+mutation DeleteLineItem(
+  $input: DeleteLineItemInput!
+  $condition: ModelLineItemConditionInput
+) {
+  deleteLineItem(input: $input, condition: $condition) {
+    id
+    probateId
+    wordIds
+    title
+    description
+    category
+    subcategory
+    quantity
+    value
+    boundingBox {
+      left
+      top
+      width
+      height
+    }
+    attributeForId
     createdAt
     updatedAt
     _version

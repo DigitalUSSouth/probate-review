@@ -4,6 +4,10 @@ import {v4 as uuidv4} from 'uuid';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
 import { RecordService } from '../record.service';
 import { interval } from 'rxjs';
+import { ProbateRecord, APIService, GetProbateRecordQuery} from '../API.service';
+// import { ProbateRecord } from 'src/models';
+
+const POLL_INTERVAL = 20000;
 
 @Component({
   selector: 'app-upload',
@@ -15,19 +19,44 @@ export class UploadComponent implements OnInit {
   @ViewChild("fileInput") fileInputRef?: ElementRef<HTMLInputElement>;
   fileMap = new Map<string, File>();
   filesInProcessing = Array<string>();
-  checkFileProcessedInterval = interval(5000);
-  constructor(public authenticator: AuthenticatorService, private recordService: RecordService){
+  checkFileProcessedInterval = interval(POLL_INTERVAL);
+  constructor(public authenticator: AuthenticatorService, private recordService: RecordService, private probateRecordService: APIService){
     let timer = this.checkFileProcessedInterval.subscribe(async () => {
       if(this.filesInProcessing.length > 0) {
         for(let i = 0; i < this.filesInProcessing.length; i++) {
           const docid = this.filesInProcessing[i];          
           try {            
-            let recordStatus = await this.recordService.getProbateRecordStatus(docid);
+            // let recordStatus = await this.recordService.getProbateRecordStatus(docid);
             
-            console.log(`recordStatus: ${recordStatus}`);
-            switch(recordStatus) {
-              case 200:
-                console.log('record has been processed');
+            // console.log(`recordStatus: ${recordStatus}`);
+            // switch(recordStatus) {
+            //   case 200:
+            //     console.log('record has been processed');
+            //     // remove looking for file
+            //     this.filesInProcessing = this.filesInProcessing.filter(id => id != docid);
+            //     let anchorElement = document.getElementById(`a-${docid}`) as HTMLAnchorElement;
+            //     if(anchorElement) {
+            //       anchorElement.className = 'processed';
+            //       anchorElement.innerHTML = 'review';
+            //       anchorElement.href = `review/${docid}`;
+            //       anchorElement.target = '_blank';
+
+            //     }
+            //     break;
+            //   case 404:
+            //     // console.log('record has not been processed');
+            //     break;
+            //   default:
+            //     // console.log('there was a problem processing the record');
+            //     this.filesInProcessing = this.filesInProcessing.filter(id => id != docid);
+            //     break;
+            // }
+            let response = await this.probateRecordService.GetProbateRecord(docid);
+            if(response && typeof response === 'object') {
+              // check if lines have been added
+              console.log(response);
+
+              console.log('record has been processed');
                 // remove looking for file
                 this.filesInProcessing = this.filesInProcessing.filter(id => id != docid);
                 let anchorElement = document.getElementById(`a-${docid}`) as HTMLAnchorElement;
@@ -38,15 +67,10 @@ export class UploadComponent implements OnInit {
                   anchorElement.target = '_blank';
 
                 }
-                break;
-              case 404:
-                // console.log('record has not been processed');
-                break;
-              default:
-                // console.log('there was a problem processing the record');
-                this.filesInProcessing = this.filesInProcessing.filter(id => id != docid);
-                break;
             }
+            // console.log(response);
+
+            
           }
           catch(error) {
               console.log(error);

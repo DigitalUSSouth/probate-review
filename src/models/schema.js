@@ -51,11 +51,15 @@ export const schema = {
                     "name": "lineItems",
                     "isArray": true,
                     "type": {
-                        "nonModel": "LineItem"
+                        "model": "LineItem"
                     },
                     "isRequired": false,
                     "attributes": [],
-                    "isArrayNullable": false
+                    "isArrayNullable": true,
+                    "association": {
+                        "connectionType": "HAS_MANY",
+                        "associatedWith": "probateId"
+                    }
                 },
                 "words": {
                     "name": "words",
@@ -104,6 +108,149 @@ export const schema = {
                 {
                     "type": "model",
                     "properties": {}
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "fields": [
+                            "id"
+                        ]
+                    }
+                },
+                {
+                    "type": "auth",
+                    "properties": {
+                        "rules": [
+                            {
+                                "allow": "private",
+                                "operations": [
+                                    "create",
+                                    "update",
+                                    "delete",
+                                    "read"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "LineItem": {
+            "name": "LineItem",
+            "fields": {
+                "id": {
+                    "name": "id",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "probateId": {
+                    "name": "probateId",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "wordIds": {
+                    "name": "wordIds",
+                    "isArray": true,
+                    "type": "ID",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isArrayNullable": false
+                },
+                "title": {
+                    "name": "title",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "description": {
+                    "name": "description",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "category": {
+                    "name": "category",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "subcategory": {
+                    "name": "subcategory",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "quantity": {
+                    "name": "quantity",
+                    "isArray": false,
+                    "type": "Int",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "value": {
+                    "name": "value",
+                    "isArray": false,
+                    "type": "Float",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "boundingBox": {
+                    "name": "boundingBox",
+                    "isArray": false,
+                    "type": {
+                        "nonModel": "Rect"
+                    },
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "attributeForId": {
+                    "name": "attributeForId",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "createdAt": {
+                    "name": "createdAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
+                },
+                "updatedAt": {
+                    "name": "updatedAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
+                }
+            },
+            "syncable": true,
+            "pluralName": "LineItems",
+            "attributes": [
+                {
+                    "type": "model",
+                    "properties": {}
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byProbate",
+                        "queryField": "lineItemByProbateRecord",
+                        "fields": [
+                            "probateId"
+                        ]
+                    }
                 },
                 {
                     "type": "auth",
@@ -198,84 +345,6 @@ export const schema = {
     },
     "enums": {},
     "nonModels": {
-        "LineItem": {
-            "name": "LineItem",
-            "fields": {
-                "id": {
-                    "name": "id",
-                    "isArray": false,
-                    "type": "ID",
-                    "isRequired": true,
-                    "attributes": []
-                },
-                "wordIds": {
-                    "name": "wordIds",
-                    "isArray": true,
-                    "type": "ID",
-                    "isRequired": false,
-                    "attributes": [],
-                    "isArrayNullable": false
-                },
-                "title": {
-                    "name": "title",
-                    "isArray": false,
-                    "type": "String",
-                    "isRequired": true,
-                    "attributes": []
-                },
-                "description": {
-                    "name": "description",
-                    "isArray": false,
-                    "type": "String",
-                    "isRequired": true,
-                    "attributes": []
-                },
-                "category": {
-                    "name": "category",
-                    "isArray": false,
-                    "type": "String",
-                    "isRequired": true,
-                    "attributes": []
-                },
-                "subcategory": {
-                    "name": "subcategory",
-                    "isArray": false,
-                    "type": "String",
-                    "isRequired": true,
-                    "attributes": []
-                },
-                "quantity": {
-                    "name": "quantity",
-                    "isArray": false,
-                    "type": "Int",
-                    "isRequired": true,
-                    "attributes": []
-                },
-                "value": {
-                    "name": "value",
-                    "isArray": false,
-                    "type": "Float",
-                    "isRequired": true,
-                    "attributes": []
-                },
-                "boundingBox": {
-                    "name": "boundingBox",
-                    "isArray": false,
-                    "type": {
-                        "nonModel": "Rect"
-                    },
-                    "isRequired": false,
-                    "attributes": []
-                },
-                "attributeForId": {
-                    "name": "attributeForId",
-                    "isArray": false,
-                    "type": "ID",
-                    "isRequired": true,
-                    "attributes": []
-                }
-            }
-        },
         "Rect": {
             "name": "Rect",
             "fields": {
@@ -433,5 +502,5 @@ export const schema = {
             }
         }
     },
-    "version": "48abb54c3d218761c3690f8547468c67"
+    "version": "8e01880df9fc022117497bb06205c8ab"
 };

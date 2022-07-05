@@ -8,21 +8,31 @@ query GetProbateRecord($id: ID!) {
     appraiser
     witness
     lineItems {
-      id
-      wordIds
-      title
-      description
-      category
-      subcategory
-      quantity
-      value
-      boundingBox {
-        left
-        top
-        width
-        height
+      items {
+        id
+        probateId
+        wordIds
+        title
+        description
+        category
+        subcategory
+        quantity
+        value
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+        attributeForId
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
       }
-      attributeForId
+      nextToken
+      startedAt
     }
     words {
       id
@@ -44,11 +54,19 @@ query GetProbateRecord($id: ID!) {
   }
 }
 query ListProbateRecords(
+  $id: ID
   $filter: ModelProbateRecordFilterInput
   $limit: Int
   $nextToken: String
+  $sortDirection: ModelSortDirection
 ) {
-  listProbateRecords(filter: $filter, limit: $limit, nextToken: $nextToken) {
+  listProbateRecords(
+    id: $id
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    sortDirection: $sortDirection
+  ) {
     items {
       id
       title
@@ -57,21 +75,31 @@ query ListProbateRecords(
       appraiser
       witness
       lineItems {
-        id
-        wordIds
-        title
-        description
-        category
-        subcategory
-        quantity
-        value
-        boundingBox {
-          left
-          top
-          width
-          height
+        items {
+          id
+          probateId
+          wordIds
+          title
+          description
+          category
+          subcategory
+          quantity
+          value
+          boundingBox {
+            left
+            top
+            width
+            height
+          }
+          attributeForId
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
         }
-        attributeForId
+        nextToken
+        startedAt
       }
       words {
         id
@@ -115,21 +143,31 @@ query SyncProbateRecords(
       appraiser
       witness
       lineItems {
-        id
-        wordIds
-        title
-        description
-        category
-        subcategory
-        quantity
-        value
-        boundingBox {
-          left
-          top
-          width
-          height
+        items {
+          id
+          probateId
+          wordIds
+          title
+          description
+          category
+          subcategory
+          quantity
+          value
+          boundingBox {
+            left
+            top
+            width
+            height
+          }
+          attributeForId
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
         }
-        attributeForId
+        nextToken
+        startedAt
       }
       words {
         id
@@ -143,6 +181,144 @@ query SyncProbateRecords(
       }
       totalValue
       reviewCount
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+    }
+    nextToken
+    startedAt
+  }
+}
+query GetLineItem($id: ID!) {
+  getLineItem(id: $id) {
+    id
+    probateId
+    wordIds
+    title
+    description
+    category
+    subcategory
+    quantity
+    value
+    boundingBox {
+      left
+      top
+      width
+      height
+    }
+    attributeForId
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+  }
+}
+query ListLineItems(
+  $filter: ModelLineItemFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listLineItems(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      probateId
+      wordIds
+      title
+      description
+      category
+      subcategory
+      quantity
+      value
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
+      attributeForId
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+    }
+    nextToken
+    startedAt
+  }
+}
+query SyncLineItems(
+  $filter: ModelLineItemFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncLineItems(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      probateId
+      wordIds
+      title
+      description
+      category
+      subcategory
+      quantity
+      value
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
+      attributeForId
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+    }
+    nextToken
+    startedAt
+  }
+}
+query LineItemByProbateRecord(
+  $probateId: ID!
+  $sortDirection: ModelSortDirection
+  $filter: ModelLineItemFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  lineItemByProbateRecord(
+    probateId: $probateId
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      probateId
+      wordIds
+      title
+      description
+      category
+      subcategory
+      quantity
+      value
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
+      attributeForId
       createdAt
       updatedAt
       _version

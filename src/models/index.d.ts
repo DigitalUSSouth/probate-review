@@ -2,20 +2,6 @@ import { ModelInit, MutableModel, PersistentModelConstructor } from "@aws-amplif
 
 
 
-export declare class LineItem {
-  readonly id: string;
-  readonly wordIds: (string | null)[];
-  readonly title: string;
-  readonly description: string;
-  readonly category: string;
-  readonly subcategory: string;
-  readonly quantity: number;
-  readonly value: number;
-  readonly boundingBox?: Rect | null;
-  readonly attributeForId: string;
-  constructor(init: ModelInit<LineItem>);
-}
-
 export declare class Rect {
   readonly left: number;
   readonly top: number;
@@ -58,6 +44,10 @@ type ProbateRecordMetaData = {
   readOnlyFields: 'createdAt' | 'updatedAt';
 }
 
+type LineItemMetaData = {
+  readOnlyFields: 'createdAt' | 'updatedAt';
+}
+
 type DocumentMetaData = {
   readOnlyFields: 'createdAt' | 'updatedAt';
 }
@@ -69,7 +59,7 @@ export declare class ProbateRecord {
   readonly filingId: string;
   readonly appraiser: (string | null)[];
   readonly witness: (string | null)[];
-  readonly lineItems: (LineItem | null)[];
+  readonly lineItems?: (LineItem | null)[] | null;
   readonly words: (Word | null)[];
   readonly totalValue: number;
   readonly reviewCount: number;
@@ -77,6 +67,24 @@ export declare class ProbateRecord {
   readonly updatedAt?: string | null;
   constructor(init: ModelInit<ProbateRecord, ProbateRecordMetaData>);
   static copyOf(source: ProbateRecord, mutator: (draft: MutableModel<ProbateRecord, ProbateRecordMetaData>) => MutableModel<ProbateRecord, ProbateRecordMetaData> | void): ProbateRecord;
+}
+
+export declare class LineItem {
+  readonly id: string;
+  readonly probateId: string;
+  readonly wordIds: (string | null)[];
+  readonly title: string;
+  readonly description: string;
+  readonly category: string;
+  readonly subcategory: string;
+  readonly quantity: number;
+  readonly value: number;
+  readonly boundingBox?: Rect | null;
+  readonly attributeForId: string;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+  constructor(init: ModelInit<LineItem, LineItemMetaData>);
+  static copyOf(source: LineItem, mutator: (draft: MutableModel<LineItem, LineItemMetaData>) => MutableModel<LineItem, LineItemMetaData> | void): LineItem;
 }
 
 export declare class Document {
