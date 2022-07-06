@@ -103,6 +103,9 @@ export class ReviewComponent implements OnInit {
       case "subcategory":
         updateLineItemInput.subcategory = value;
         break;
+      case "line":
+        updateLineItemInput.title = value;
+        break;
     }
   }
 
@@ -130,8 +133,6 @@ export class ReviewComponent implements OnInit {
   }
 
   onSubcategoryChanged(lineIndex: number): void {
-    const selectObject = document.getElementById("category-" + lineIndex) as HTMLInputElement;
-    const category = selectObject?.value;
     let subcategorySelect = document.getElementById("subcategory-" + lineIndex) as HTMLInputElement;
 
     // update our object
@@ -139,6 +140,12 @@ export class ReviewComponent implements OnInit {
      
       this.updateLineItem(lineIndex, "subcategory", subcategorySelect.value);
     }
+  }
+
+  onTextChanged(lineIndex: number): void {
+    const titleElement = document.getElementById("line-" + lineIndex) as HTMLInputElement;
+    console.log(titleElement);
+    this.updateLineItem(lineIndex, "line", titleElement.value);
   }
 
   createOverlayElement(): HTMLElement

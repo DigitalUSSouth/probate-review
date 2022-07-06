@@ -11,7 +11,7 @@
         <table>
         <tr>
             <th>Line Number</th>
-            <th>Text</th>
+            <th>Title</th>
             <th>Category</th>
             <th>Subcategory</th>
             <th>Quantity</th>
@@ -19,7 +19,7 @@
         </tr>
         <tr *ngFor="let line of record?.lineItems?.items; let i = index">
             <td>{{ i }}</td>
-            <td><input id="line{{i}}" value="{{line!.title}}" (focus)='highlightText(i)'/></td>     
+            <td><input id="line-{{i}}" value="{{line!.title}}" (focus)="highlightText(i)" (input)="onTextChanged(i)"/></td>     
             <td>
                 <select id="category-{{ i }}" name="category-{{ i }}" (change)="populateSubcategory(i)" [value]="line?.category">
                     <option value="n-a">N/A</option>
