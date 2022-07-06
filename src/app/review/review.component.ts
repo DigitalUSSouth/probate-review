@@ -3,17 +3,27 @@ import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 // import { RecordService } from '../record.service';
 // import { ProbateRecord } from '../probate-record';
-import * as dragon from 'openseadragon'
+import OpenSeadragon from 'openseadragon';
 import data from './categories.json';
 import { ProbateRecord, UpdateLineItemInput, APIService, GetProbateRecordQuery, UpdateProbateRecordInput, LineItem, LineItemByProbateRecordQuery} from '../API.service';
-import { identifierName } from '@angular/compiler';
 import { from } from 'rxjs';
-// import { LineItem } from 'src/models';
+// declare var OpenSeadragon: any;
+
+declare const selection: any;
 
 interface SubcategoryOptionValue {
   value: string,
   text: string
 }
+
+interface DragSelect {
+  overlayElement: HTMLElement,
+  startPos: OpenSeadragon.Point,
+  isDragging: boolean
+}
+
+const OVERLAY_ID = 'highlighted-line';
+
 
 @Component({
   selector: 'app-review',
@@ -23,11 +33,20 @@ interface SubcategoryOptionValue {
 export class ReviewComponent implements OnInit {
   @Input() record?: ProbateRecord;
   @ViewChild('viewer') viewer!: ElementRef;  
-  osd?: dragon.Viewer;  
+  osd?: OpenSeadragon.Viewer;
+  selectionRect?: OpenSeadragon.Rect;  
   categoryMap: Map<string, Array<SubcategoryOptionValue>> = this.objToStrMap(data); 
-  imageSize?: dragon.Point;
+  imageSize?: OpenSeadragon.Point;
   aspectRatio = 1.0;
   updatedLineItems = new Map<number, UpdateLineItemInput> ();
+  selectionMode = false;
+  selectTracker?: OpenSeadragon.MouseTracker;
+  dragSelect = {
+    overlayElement: null as unknown as HTMLDivElement,
+    startPos: new OpenSeadragon.Point(0, 0),
+    isDragging: false
+  };
+
   constructor(private route: ActivatedRoute, private location: Location, private probateRecordService: APIService, private renderer: Renderer2) { 
   }
 
@@ -41,6 +60,7 @@ export class ReviewComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // this.loadScript("assets/js/openseadragonselection.js");
     
   }
 
@@ -121,16 +141,9 @@ export class ReviewComponent implements OnInit {
     }
   }
 
-  highlightText(index: number): void {
-    this.imageSize = this.osd!.world.getItemAt(0).getContentSize();
-
-    this.aspectRatio = this.imageSize!.x / this.imageSize!.y;
-    console.log(`aspect ratio is ${this.aspectRatio}`);
-    console.log(`line ${index} highlighted`);
-    const OVERLAY_ID = 'highlighted-line';
-    const boundingBox = this.record!.lineItems!.items[index]!.boundingBox;
-    console.log(boundingBox);
-    // check if overlay exists
+  createOverlayElement(): HTMLElement
+  {
+    
     let overlay = document.getElementById(OVERLAY_ID);
     if(overlay) {
       this.osd?.removeOverlay(OVERLAY_ID);
@@ -140,16 +153,46 @@ export class ReviewComponent implements OnInit {
     this.renderer.setProperty(overlay, 'id', OVERLAY_ID);
     this.renderer.setProperty(overlay, 'className', 'highlight');
     this.renderer.appendChild(document.body, overlay);
-    const point = new dragon.Point(boundingBox?.left, boundingBox?.top);
-    const rect = new dragon.Rect(boundingBox?.left, boundingBox?.top, boundingBox?.width, boundingBox?.height);
+
+    return overlay!;
+  }
+
+  highlightText(index: number): void {
+    this.imageSize = this.osd!.world.getItemAt(0).getContentSize();
+
+    this.aspectRatio = this.imageSize!.x / this.imageSize!.y;
+    console.log(`aspect ratio is ${this.aspectRatio}`);
+    console.log(`line ${index} highlighted`);
+    
+    const boundingBox = this.record!.lineItems!.items[index]!.boundingBox;
+    console.log(boundingBox);
+    // check if overlay exists
+    
+    const point = new OpenSeadragon.Point(boundingBox?.left, boundingBox?.top);
+    const rect = new OpenSeadragon.Rect(boundingBox?.left, boundingBox?.top, boundingBox?.width, boundingBox?.height);
+    this.selectionRect = rect;
     console.log(rect);
     rect.y /= this.aspectRatio;
     rect.height /= this.aspectRatio;
+    let overlay = this.createOverlayElement();
     this.osd?.addOverlay({element: overlay!, location: rect});
-    // width: boundingBox?.Width, height: boundingBox?.Height, checkResize: true
-    // this.osd?.viewport.panTo(new dragon.Point(rect.x + rect.width / 2, rect.y - rect.height / 2));
-    this.osd?.viewport.fitBoundsWithConstraints(rect);
-    // console.log('zoom is ' + this.osd?.viewport.getZoom());
+    this.osd?.viewport.fitBoundsWithConstraints(rect);  
+    
+  }
+
+  selectRect() {
+    this.clearRect();
+    console.log('selecting now');
+    this.selectionMode = true;
+    this.osd!.setMouseNavEnabled(false);
+    this.dragSelect!.isDragging = true;
+  }
+
+  clearRect() {
+    let overlay = document.getElementById(OVERLAY_ID);
+    if(overlay) {
+      this.osd?.removeOverlay(OVERLAY_ID);
+    }
   }
 
   async getRecord(id: string): Promise<void> {
@@ -157,7 +200,7 @@ export class ReviewComponent implements OnInit {
     
     const infoUrl = `https://d2ai2qpooo3jtj.cloudfront.net/iiif/2/${id}/info.json`;
      
-    this.osd = new dragon.Viewer({
+    this.osd = new OpenSeadragon.Viewer({
       element: this.viewer.nativeElement,
       showRotationControl: true,
       // Enable touch rotation on tactile devices
@@ -167,7 +210,51 @@ export class ReviewComponent implements OnInit {
       maxZoomLevel: 5.0,
       prefixUrl: "//openseadragon.github.io/openseadragon/images/",
       tileSources: infoUrl
-    });
+    });    
+
+    this.selectTracker = new OpenSeadragon.MouseTracker({
+      element: this.osd?.element as Element,
+      pressHandler: (event) => {
+        if (!this.selectionMode) {
+          return;
+        }
+        // console.log('press handler');
+        var overlayElement = this.createOverlayElement()
+        // overlayElement.style.background = 'rgba(255, 0, 0, 0.3)'; 
+        this.dragSelect.overlayElement = overlayElement as HTMLDivElement;
+        var viewportPos = this.osd!.viewport.pointFromPixel(event.position);
+        this.dragSelect!.startPos = viewportPos;
+        this.osd!.addOverlay(overlayElement, new OpenSeadragon.Rect(viewportPos.x, viewportPos.y, 0, 0));
+        
+        
+      },
+      dragHandler: (event) => {
+        // console.log('drag handler called');
+        if (!this.dragSelect!.isDragging) {
+          return;
+        }
+        
+        var viewportPos = this.osd!.viewport.pointFromPixel((event as unknown as OpenSeadragon.CanvasDragEvent).position);
+        // console.log(viewportPos);
+        var diffX = viewportPos.x - this.dragSelect!.startPos.x;
+        var diffY = viewportPos.y - this.dragSelect!.startPos.y;
+        
+        var location = new OpenSeadragon.Rect(
+          Math.min(this.dragSelect!.startPos.x, this.dragSelect!.startPos.x + diffX), 
+          Math.min(this.dragSelect!.startPos.y, this.dragSelect!.startPos.y + diffY), 
+          Math.abs(diffX), 
+          Math.abs(diffY)
+        );
+        
+        this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);
+      },
+      releaseHandler: (event) => {
+        console.log('release handler called');
+        this.dragSelect!.isDragging = false;
+        this.selectionMode = false;
+        this.osd!.setMouseNavEnabled(true);
+      }
+  });
     console.log('records received');
   }
 
@@ -194,4 +281,14 @@ export class ReviewComponent implements OnInit {
     alert('record updated');
   }
 
+  public loadScript(url: string): void {
+    let body = <HTMLDivElement> document.body;
+    let script = document.createElement('script');
+    script.innerHTML = '';
+    script.src = url;
+    script.async = true;
+    script.defer = true;
+    body.appendChild(script);
+}
+  
 }

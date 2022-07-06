@@ -3,6 +3,10 @@
     <div id="seadragon-viewer" class="split top" #viewer></div>
 
     <div id="review-form" class="split bottom">
+        <div class="buttonBar">
+            <button mat-raised-button class="form-button" (click)="selectRect()">Select</button>
+            <button mat-raised-button class="form-button" (click)="clearRect()">Clear</button>
+        </div>
         <h1> Enter your corrections below </h1>
         <table>
         <tr>
@@ -54,6 +58,6 @@
             </td>
         </tr>
         </table>
-        <button mat-raised-button class="submit-button" (click)="updateRecord()">Update</button>
+        <button mat-raised-button class="form-button" (click)="updateRecord()">Update</button>
     </div>
 </div>
