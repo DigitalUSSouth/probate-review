@@ -31,7 +31,6 @@ export type CreateProbateRecordInput = {
   words: Array<WordInput | null>;
   totalValue: number;
   reviewCount: number;
-  _version?: number | null;
 };
 
 export type WordInput = {
@@ -153,16 +152,12 @@ export type ProbateRecord = {
   reviewCount: number;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type ModelLineItemConnection = {
   __typename: "ModelLineItemConnection";
   items: Array<LineItem | null>;
   nextToken?: string | null;
-  startedAt?: number | null;
 };
 
 export type LineItem = {
@@ -180,9 +175,6 @@ export type LineItem = {
   attributeForId: string;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type Rect = {
@@ -210,12 +202,10 @@ export type UpdateProbateRecordInput = {
   words?: Array<WordInput | null> | null;
   totalValue?: number | null;
   reviewCount?: number | null;
-  _version?: number | null;
 };
 
 export type DeleteProbateRecordInput = {
   id: string;
-  _version?: number | null;
 };
 
 export type CreateLineItemInput = {
@@ -230,7 +220,6 @@ export type CreateLineItemInput = {
   value: number;
   boundingBox?: RectInput | null;
   attributeForId: string;
-  _version?: number | null;
 };
 
 export type ModelLineItemConditionInput = {
@@ -260,19 +249,16 @@ export type UpdateLineItemInput = {
   value?: number | null;
   boundingBox?: RectInput | null;
   attributeForId?: string | null;
-  _version?: number | null;
 };
 
 export type DeleteLineItemInput = {
   id: string;
-  _version?: number | null;
 };
 
 export type CreateDocumentInput = {
   id?: string | null;
   lines: Array<LineInput | null>;
   words: Array<WordInput | null>;
-  _version?: number | null;
 };
 
 export type LineInput = {
@@ -294,9 +280,6 @@ export type Document = {
   words: Array<Word | null>;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type Line = {
@@ -310,12 +293,10 @@ export type UpdateDocumentInput = {
   id: string;
   lines?: Array<LineInput | null> | null;
   words?: Array<WordInput | null> | null;
-  _version?: number | null;
 };
 
 export type DeleteDocumentInput = {
   id: string;
-  _version?: number | null;
 };
 
 export type ModelProbateRecordFilterInput = {
@@ -341,7 +322,6 @@ export type ModelProbateRecordConnection = {
   __typename: "ModelProbateRecordConnection";
   items: Array<ProbateRecord | null>;
   nextToken?: string | null;
-  startedAt?: number | null;
 };
 
 export type ModelLineItemFilterInput = {
@@ -371,7 +351,6 @@ export type ModelDocumentConnection = {
   __typename: "ModelDocumentConnection";
   items: Array<Document | null>;
   nextToken?: string | null;
-  startedAt?: number | null;
 };
 
 export type CreateProbateRecordMutation = {
@@ -405,12 +384,8 @@ export type CreateProbateRecordMutation = {
       attributeForId: string;
       createdAt: string;
       updatedAt: string;
-      _version: number;
-      _deleted?: boolean | null;
-      _lastChangedAt: number;
     } | null>;
     nextToken?: string | null;
-    startedAt?: number | null;
   } | null;
   words: Array<{
     __typename: "Word";
@@ -428,9 +403,6 @@ export type CreateProbateRecordMutation = {
   reviewCount: number;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type UpdateProbateRecordMutation = {
@@ -464,12 +436,8 @@ export type UpdateProbateRecordMutation = {
       attributeForId: string;
       createdAt: string;
       updatedAt: string;
-      _version: number;
-      _deleted?: boolean | null;
-      _lastChangedAt: number;
     } | null>;
     nextToken?: string | null;
-    startedAt?: number | null;
   } | null;
   words: Array<{
     __typename: "Word";
@@ -487,9 +455,6 @@ export type UpdateProbateRecordMutation = {
   reviewCount: number;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type DeleteProbateRecordMutation = {
@@ -523,12 +488,8 @@ export type DeleteProbateRecordMutation = {
       attributeForId: string;
       createdAt: string;
       updatedAt: string;
-      _version: number;
-      _deleted?: boolean | null;
-      _lastChangedAt: number;
     } | null>;
     nextToken?: string | null;
-    startedAt?: number | null;
   } | null;
   words: Array<{
     __typename: "Word";
@@ -546,9 +507,6 @@ export type DeleteProbateRecordMutation = {
   reviewCount: number;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type CreateLineItemMutation = {
@@ -572,9 +530,6 @@ export type CreateLineItemMutation = {
   attributeForId: string;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type UpdateLineItemMutation = {
@@ -598,9 +553,6 @@ export type UpdateLineItemMutation = {
   attributeForId: string;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type DeleteLineItemMutation = {
@@ -624,9 +576,6 @@ export type DeleteLineItemMutation = {
   attributeForId: string;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type CreateDocumentMutation = {
@@ -658,9 +607,6 @@ export type CreateDocumentMutation = {
   } | null>;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type UpdateDocumentMutation = {
@@ -692,9 +638,6 @@ export type UpdateDocumentMutation = {
   } | null>;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type DeleteDocumentMutation = {
@@ -726,9 +669,6 @@ export type DeleteDocumentMutation = {
   } | null>;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type GetProbateRecordQuery = {
@@ -762,12 +702,8 @@ export type GetProbateRecordQuery = {
       attributeForId: string;
       createdAt: string;
       updatedAt: string;
-      _version: number;
-      _deleted?: boolean | null;
-      _lastChangedAt: number;
     } | null>;
     nextToken?: string | null;
-    startedAt?: number | null;
   } | null;
   words: Array<{
     __typename: "Word";
@@ -785,9 +721,6 @@ export type GetProbateRecordQuery = {
   reviewCount: number;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type ListProbateRecordsQuery = {
@@ -823,12 +756,8 @@ export type ListProbateRecordsQuery = {
         attributeForId: string;
         createdAt: string;
         updatedAt: string;
-        _version: number;
-        _deleted?: boolean | null;
-        _lastChangedAt: number;
       } | null>;
       nextToken?: string | null;
-      startedAt?: number | null;
     } | null;
     words: Array<{
       __typename: "Word";
@@ -846,76 +775,8 @@ export type ListProbateRecordsQuery = {
     reviewCount: number;
     createdAt: string;
     updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
   } | null>;
   nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type SyncProbateRecordsQuery = {
-  __typename: "ModelProbateRecordConnection";
-  items: Array<{
-    __typename: "ProbateRecord";
-    id: string;
-    title: string;
-    deceasedId: string;
-    filingId: string;
-    appraiser: Array<string | null>;
-    witness: Array<string | null>;
-    lineItems?: {
-      __typename: "ModelLineItemConnection";
-      items: Array<{
-        __typename: "LineItem";
-        id: string;
-        probateId: string;
-        wordIds: Array<string | null>;
-        title: string;
-        description: string;
-        category: string;
-        subcategory: string;
-        quantity: number;
-        value: number;
-        boundingBox?: {
-          __typename: "Rect";
-          left: number;
-          top: number;
-          width: number;
-          height: number;
-        } | null;
-        attributeForId: string;
-        createdAt: string;
-        updatedAt: string;
-        _version: number;
-        _deleted?: boolean | null;
-        _lastChangedAt: number;
-      } | null>;
-      nextToken?: string | null;
-      startedAt?: number | null;
-    } | null;
-    words: Array<{
-      __typename: "Word";
-      id: string;
-      text: string;
-      boundingBox?: {
-        __typename: "Rect";
-        left: number;
-        top: number;
-        width: number;
-        height: number;
-      } | null;
-    } | null>;
-    totalValue: number;
-    reviewCount: number;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  } | null>;
-  nextToken?: string | null;
-  startedAt?: number | null;
 };
 
 export type GetLineItemQuery = {
@@ -939,9 +800,6 @@ export type GetLineItemQuery = {
   attributeForId: string;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type ListLineItemsQuery = {
@@ -967,43 +825,8 @@ export type ListLineItemsQuery = {
     attributeForId: string;
     createdAt: string;
     updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
   } | null>;
   nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type SyncLineItemsQuery = {
-  __typename: "ModelLineItemConnection";
-  items: Array<{
-    __typename: "LineItem";
-    id: string;
-    probateId: string;
-    wordIds: Array<string | null>;
-    title: string;
-    description: string;
-    category: string;
-    subcategory: string;
-    quantity: number;
-    value: number;
-    boundingBox?: {
-      __typename: "Rect";
-      left: number;
-      top: number;
-      width: number;
-      height: number;
-    } | null;
-    attributeForId: string;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  } | null>;
-  nextToken?: string | null;
-  startedAt?: number | null;
 };
 
 export type LineItemByProbateRecordQuery = {
@@ -1029,12 +852,8 @@ export type LineItemByProbateRecordQuery = {
     attributeForId: string;
     createdAt: string;
     updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
   } | null>;
   nextToken?: string | null;
-  startedAt?: number | null;
 };
 
 export type GetDocumentQuery = {
@@ -1066,9 +885,6 @@ export type GetDocumentQuery = {
   } | null>;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type ListDocumentsQuery = {
@@ -1102,51 +918,8 @@ export type ListDocumentsQuery = {
     } | null>;
     createdAt: string;
     updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
   } | null>;
   nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type SyncDocumentsQuery = {
-  __typename: "ModelDocumentConnection";
-  items: Array<{
-    __typename: "Document";
-    id: string;
-    lines: Array<{
-      __typename: "Line";
-      id: string;
-      wordIds: Array<string | null>;
-      boundingBox: {
-        __typename: "Rect";
-        left: number;
-        top: number;
-        width: number;
-        height: number;
-      };
-    } | null>;
-    words: Array<{
-      __typename: "Word";
-      id: string;
-      text: string;
-      boundingBox?: {
-        __typename: "Rect";
-        left: number;
-        top: number;
-        width: number;
-        height: number;
-      } | null;
-    } | null>;
-    createdAt: string;
-    updatedAt: string;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-  } | null>;
-  nextToken?: string | null;
-  startedAt?: number | null;
 };
 
 export type OnCreateProbateRecordSubscription = {
@@ -1180,12 +953,8 @@ export type OnCreateProbateRecordSubscription = {
       attributeForId: string;
       createdAt: string;
       updatedAt: string;
-      _version: number;
-      _deleted?: boolean | null;
-      _lastChangedAt: number;
     } | null>;
     nextToken?: string | null;
-    startedAt?: number | null;
   } | null;
   words: Array<{
     __typename: "Word";
@@ -1203,9 +972,6 @@ export type OnCreateProbateRecordSubscription = {
   reviewCount: number;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type OnUpdateProbateRecordSubscription = {
@@ -1239,12 +1005,8 @@ export type OnUpdateProbateRecordSubscription = {
       attributeForId: string;
       createdAt: string;
       updatedAt: string;
-      _version: number;
-      _deleted?: boolean | null;
-      _lastChangedAt: number;
     } | null>;
     nextToken?: string | null;
-    startedAt?: number | null;
   } | null;
   words: Array<{
     __typename: "Word";
@@ -1262,9 +1024,6 @@ export type OnUpdateProbateRecordSubscription = {
   reviewCount: number;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type OnDeleteProbateRecordSubscription = {
@@ -1298,12 +1057,8 @@ export type OnDeleteProbateRecordSubscription = {
       attributeForId: string;
       createdAt: string;
       updatedAt: string;
-      _version: number;
-      _deleted?: boolean | null;
-      _lastChangedAt: number;
     } | null>;
     nextToken?: string | null;
-    startedAt?: number | null;
   } | null;
   words: Array<{
     __typename: "Word";
@@ -1321,9 +1076,6 @@ export type OnDeleteProbateRecordSubscription = {
   reviewCount: number;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type OnCreateLineItemSubscription = {
@@ -1347,9 +1099,6 @@ export type OnCreateLineItemSubscription = {
   attributeForId: string;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type OnUpdateLineItemSubscription = {
@@ -1373,9 +1122,6 @@ export type OnUpdateLineItemSubscription = {
   attributeForId: string;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type OnDeleteLineItemSubscription = {
@@ -1399,9 +1145,6 @@ export type OnDeleteLineItemSubscription = {
   attributeForId: string;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type OnCreateDocumentSubscription = {
@@ -1433,9 +1176,6 @@ export type OnCreateDocumentSubscription = {
   } | null>;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type OnUpdateDocumentSubscription = {
@@ -1467,9 +1207,6 @@ export type OnUpdateDocumentSubscription = {
   } | null>;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 export type OnDeleteDocumentSubscription = {
@@ -1501,9 +1238,6 @@ export type OnDeleteDocumentSubscription = {
   } | null>;
   createdAt: string;
   updatedAt: string;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
 };
 
 @Injectable({
@@ -1546,12 +1280,8 @@ export class APIService {
               attributeForId
               createdAt
               updatedAt
-              _version
-              _deleted
-              _lastChangedAt
             }
             nextToken
-            startedAt
           }
           words {
             __typename
@@ -1569,9 +1299,6 @@ export class APIService {
           reviewCount
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -1621,12 +1348,8 @@ export class APIService {
               attributeForId
               createdAt
               updatedAt
-              _version
-              _deleted
-              _lastChangedAt
             }
             nextToken
-            startedAt
           }
           words {
             __typename
@@ -1644,9 +1367,6 @@ export class APIService {
           reviewCount
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -1696,12 +1416,8 @@ export class APIService {
               attributeForId
               createdAt
               updatedAt
-              _version
-              _deleted
-              _lastChangedAt
             }
             nextToken
-            startedAt
           }
           words {
             __typename
@@ -1719,9 +1435,6 @@ export class APIService {
           reviewCount
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -1761,9 +1474,6 @@ export class APIService {
           attributeForId
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -1803,9 +1513,6 @@ export class APIService {
           attributeForId
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -1845,9 +1552,6 @@ export class APIService {
           attributeForId
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -1895,9 +1599,6 @@ export class APIService {
           }
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -1945,9 +1646,6 @@ export class APIService {
           }
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -1995,9 +1693,6 @@ export class APIService {
           }
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -2044,12 +1739,8 @@ export class APIService {
               attributeForId
               createdAt
               updatedAt
-              _version
-              _deleted
-              _lastChangedAt
             }
             nextToken
-            startedAt
           }
           words {
             __typename
@@ -2067,9 +1758,6 @@ export class APIService {
           reviewCount
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -2121,12 +1809,8 @@ export class APIService {
                 attributeForId
                 createdAt
                 updatedAt
-                _version
-                _deleted
-                _lastChangedAt
               }
               nextToken
-              startedAt
             }
             words {
               __typename
@@ -2144,12 +1828,8 @@ export class APIService {
             reviewCount
             createdAt
             updatedAt
-            _version
-            _deleted
-            _lastChangedAt
           }
           nextToken
-          startedAt
         }
       }`;
     const gqlAPIServiceArguments: any = {};
@@ -2172,95 +1852,6 @@ export class APIService {
       graphqlOperation(statement, gqlAPIServiceArguments)
     )) as any;
     return <ListProbateRecordsQuery>response.data.listProbateRecords;
-  }
-  async SyncProbateRecords(
-    filter?: ModelProbateRecordFilterInput,
-    limit?: number,
-    nextToken?: string,
-    lastSync?: number
-  ): Promise<SyncProbateRecordsQuery> {
-    const statement = `query SyncProbateRecords($filter: ModelProbateRecordFilterInput, $limit: Int, $nextToken: String, $lastSync: AWSTimestamp) {
-        syncProbateRecords(filter: $filter, limit: $limit, nextToken: $nextToken, lastSync: $lastSync) {
-          __typename
-          items {
-            __typename
-            id
-            title
-            deceasedId
-            filingId
-            appraiser
-            witness
-            lineItems {
-              __typename
-              items {
-                __typename
-                id
-                probateId
-                wordIds
-                title
-                description
-                category
-                subcategory
-                quantity
-                value
-                boundingBox {
-                  __typename
-                  left
-                  top
-                  width
-                  height
-                }
-                attributeForId
-                createdAt
-                updatedAt
-                _version
-                _deleted
-                _lastChangedAt
-              }
-              nextToken
-              startedAt
-            }
-            words {
-              __typename
-              id
-              text
-              boundingBox {
-                __typename
-                left
-                top
-                width
-                height
-              }
-            }
-            totalValue
-            reviewCount
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          nextToken
-          startedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {};
-    if (filter) {
-      gqlAPIServiceArguments.filter = filter;
-    }
-    if (limit) {
-      gqlAPIServiceArguments.limit = limit;
-    }
-    if (nextToken) {
-      gqlAPIServiceArguments.nextToken = nextToken;
-    }
-    if (lastSync) {
-      gqlAPIServiceArguments.lastSync = lastSync;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <SyncProbateRecordsQuery>response.data.syncProbateRecords;
   }
   async GetLineItem(id: string): Promise<GetLineItemQuery> {
     const statement = `query GetLineItem($id: ID!) {
@@ -2285,9 +1876,6 @@ export class APIService {
           attributeForId
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -2327,12 +1915,8 @@ export class APIService {
             attributeForId
             createdAt
             updatedAt
-            _version
-            _deleted
-            _lastChangedAt
           }
           nextToken
-          startedAt
         }
       }`;
     const gqlAPIServiceArguments: any = {};
@@ -2349,62 +1933,6 @@ export class APIService {
       graphqlOperation(statement, gqlAPIServiceArguments)
     )) as any;
     return <ListLineItemsQuery>response.data.listLineItems;
-  }
-  async SyncLineItems(
-    filter?: ModelLineItemFilterInput,
-    limit?: number,
-    nextToken?: string,
-    lastSync?: number
-  ): Promise<SyncLineItemsQuery> {
-    const statement = `query SyncLineItems($filter: ModelLineItemFilterInput, $limit: Int, $nextToken: String, $lastSync: AWSTimestamp) {
-        syncLineItems(filter: $filter, limit: $limit, nextToken: $nextToken, lastSync: $lastSync) {
-          __typename
-          items {
-            __typename
-            id
-            probateId
-            wordIds
-            title
-            description
-            category
-            subcategory
-            quantity
-            value
-            boundingBox {
-              __typename
-              left
-              top
-              width
-              height
-            }
-            attributeForId
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          nextToken
-          startedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {};
-    if (filter) {
-      gqlAPIServiceArguments.filter = filter;
-    }
-    if (limit) {
-      gqlAPIServiceArguments.limit = limit;
-    }
-    if (nextToken) {
-      gqlAPIServiceArguments.nextToken = nextToken;
-    }
-    if (lastSync) {
-      gqlAPIServiceArguments.lastSync = lastSync;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <SyncLineItemsQuery>response.data.syncLineItems;
   }
   async LineItemByProbateRecord(
     probateId: string,
@@ -2437,12 +1965,8 @@ export class APIService {
             attributeForId
             createdAt
             updatedAt
-            _version
-            _deleted
-            _lastChangedAt
           }
           nextToken
-          startedAt
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -2496,9 +2020,6 @@ export class APIService {
           }
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -2546,12 +2067,8 @@ export class APIService {
             }
             createdAt
             updatedAt
-            _version
-            _deleted
-            _lastChangedAt
           }
           nextToken
-          startedAt
         }
       }`;
     const gqlAPIServiceArguments: any = {};
@@ -2568,70 +2085,6 @@ export class APIService {
       graphqlOperation(statement, gqlAPIServiceArguments)
     )) as any;
     return <ListDocumentsQuery>response.data.listDocuments;
-  }
-  async SyncDocuments(
-    filter?: ModelDocumentFilterInput,
-    limit?: number,
-    nextToken?: string,
-    lastSync?: number
-  ): Promise<SyncDocumentsQuery> {
-    const statement = `query SyncDocuments($filter: ModelDocumentFilterInput, $limit: Int, $nextToken: String, $lastSync: AWSTimestamp) {
-        syncDocuments(filter: $filter, limit: $limit, nextToken: $nextToken, lastSync: $lastSync) {
-          __typename
-          items {
-            __typename
-            id
-            lines {
-              __typename
-              id
-              wordIds
-              boundingBox {
-                __typename
-                left
-                top
-                width
-                height
-              }
-            }
-            words {
-              __typename
-              id
-              text
-              boundingBox {
-                __typename
-                left
-                top
-                width
-                height
-              }
-            }
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          nextToken
-          startedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {};
-    if (filter) {
-      gqlAPIServiceArguments.filter = filter;
-    }
-    if (limit) {
-      gqlAPIServiceArguments.limit = limit;
-    }
-    if (nextToken) {
-      gqlAPIServiceArguments.nextToken = nextToken;
-    }
-    if (lastSync) {
-      gqlAPIServiceArguments.lastSync = lastSync;
-    }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <SyncDocumentsQuery>response.data.syncDocuments;
   }
   OnCreateProbateRecordListener: Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateProbateRecord">>
@@ -2669,12 +2122,8 @@ export class APIService {
               attributeForId
               createdAt
               updatedAt
-              _version
-              _deleted
-              _lastChangedAt
             }
             nextToken
-            startedAt
           }
           words {
             __typename
@@ -2692,9 +2141,6 @@ export class APIService {
           reviewCount
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
       }`
     )
@@ -2738,12 +2184,8 @@ export class APIService {
               attributeForId
               createdAt
               updatedAt
-              _version
-              _deleted
-              _lastChangedAt
             }
             nextToken
-            startedAt
           }
           words {
             __typename
@@ -2761,9 +2203,6 @@ export class APIService {
           reviewCount
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
       }`
     )
@@ -2807,12 +2246,8 @@ export class APIService {
               attributeForId
               createdAt
               updatedAt
-              _version
-              _deleted
-              _lastChangedAt
             }
             nextToken
-            startedAt
           }
           words {
             __typename
@@ -2830,9 +2265,6 @@ export class APIService {
           reviewCount
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
       }`
     )
@@ -2866,9 +2298,6 @@ export class APIService {
           attributeForId
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
       }`
     )
@@ -2902,9 +2331,6 @@ export class APIService {
           attributeForId
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
       }`
     )
@@ -2938,9 +2364,6 @@ export class APIService {
           attributeForId
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
       }`
     )
@@ -2982,9 +2405,6 @@ export class APIService {
           }
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
       }`
     )
@@ -3026,9 +2446,6 @@ export class APIService {
           }
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
       }`
     )
@@ -3070,9 +2487,6 @@ export class APIService {
           }
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
       }`
     )

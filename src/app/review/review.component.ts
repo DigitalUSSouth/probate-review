@@ -28,7 +28,6 @@ export class ReviewComponent implements OnInit {
   imageSize?: dragon.Point;
   aspectRatio = 1.0;
   updatedLineItems = new Map<number, UpdateLineItemInput> ();
-  // private recordService: RecordService,
   constructor(private route: ActivatedRoute, private location: Location, private probateRecordService: APIService, private renderer: Renderer2) { 
   }
 
@@ -38,7 +37,6 @@ export class ReviewComponent implements OnInit {
       let props = Object.getOwnPropertyNames(obj[k]);
       strMap.set(props[0], obj[k][props[0]]);
     }
-    // console.log(strMap);
     return strMap;
   }
 
@@ -46,62 +44,46 @@ export class ReviewComponent implements OnInit {
     
   }
 
-  filterLineItems(lineItems: LineItem[]): Array<LineItem> {
-    let idMap = new Map<string, number>();
-    let filtered = new Array<LineItem>();
-    for(let i = 0; i < lineItems.length; i++) {
-      let item = lineItems[i];
-      if(idMap.has(item.id)) {
-        let index = idMap.get(item.id);
-        filtered[index!] = item
-      }
-      else {
-        idMap.set(item.id, i);
-        filtered[i] = item;
-      }
-    }
-
-    return filtered;
-  }
+  
 
   ngAfterViewInit(): void {
     const id = String(this.route.snapshot.paramMap.get('id'));
-    // this.probateRecordService.GetDocument(id).then((documentQuery: GetDocumentQuery) => {
-    //   // if(recordsQuery.items) {
-    //   //   this.records = recordsQuery.items;
-    //   // }
-    //   console.log(documentQuery);
-
-    // });
-    // this.getRecord(id);
-    // this.probateRecordService.GetProbateRecord(id).then((probateRecordQuery: GetProbateRecordQuery) => {
-    //   // console.log(probateRecordQuery);
-    //   if(probateRecordQuery) {
-    //     // let filteredLineItems = this.filterLineItems(probateRecordQuery.lineItems?.items as LineItem[]);
-    //     // probateRecordQuery.lineItems!.items = filteredLineItems;
-    //     this.record = probateRecordQuery as ProbateRecord;
-    //     console.log(this.record);
-    //     this.getRecord(id);
-    //   }
-    // });
+    
     let record$ = from(this.probateRecordService.GetProbateRecord(id));
     record$.subscribe(record => {
       this.record = record as ProbateRecord;
       
       console.log(this.record);
       this.getRecord(id);
-      // let lineItems$ = from(this.probateRecordService.LineItemByProbateRecord(id));
-      // lineItems$.subscribe(lineItems => {
-      //   console.log(lineItems);
-      //   this.record!.lineItems = lineItems;
-      //   console.log(record);
-      //   this.getRecord(id);
-      // })
+      
 
     })
     
 
 
+  }
+
+  updateLineItem(lineIndex: number, field: string, value: string) {
+    let updateLineItemInput: UpdateLineItemInput;
+    if(this.updatedLineItems.has(lineIndex)) {
+      updateLineItemInput = this.updatedLineItems.get(lineIndex)!;
+    }
+    else {
+      let lineItem = this.record!.lineItems!.items[lineIndex]!;
+      let id = lineItem.id;
+      updateLineItemInput = {
+        id
+      }
+      this.updatedLineItems.set(lineIndex, updateLineItemInput);
+    }
+    switch(field) {
+      case "category":
+        updateLineItemInput.category = value;
+        break;
+      case "subcategory":
+        updateLineItemInput.subcategory = value;
+        break;
+    }
   }
 
   populateSubcategory(lineIndex: number): void {
@@ -124,37 +106,18 @@ export class ReviewComponent implements OnInit {
         subcategorySelect?.appendChild(optionElement);
       } 
     }
-    
+    this.updateLineItem(lineIndex, "category", category);
   }
 
   onSubcategoryChanged(lineIndex: number): void {
     const selectObject = document.getElementById("category-" + lineIndex) as HTMLInputElement;
     const category = selectObject?.value;
     let subcategorySelect = document.getElementById("subcategory-" + lineIndex) as HTMLInputElement;
-    
+
     // update our object
     if(this.record != undefined) {
-      let lineItem = this.record.lineItems!.items[lineIndex]!;
-      let id = lineItem.id;
-      let lineItemInput = {
-        id,
-        category,
-        probateId: lineItem.probateId,
-        wordIds: lineItem.wordIds,
-        title: lineItem.title,
-        description: lineItem.description,
-        subcategory: subcategorySelect.value,
-        quantity: 1,
-        value: 0.00,
-        attributeForId: '',
-        boundingBox: {
-          left: lineItem.boundingBox!.left, 
-          top: lineItem.boundingBox!.top, 
-          width: lineItem.boundingBox!.width, 
-          height: lineItem.boundingBox!.height
-        }
-      }
-      this.updatedLineItems.set(lineIndex, lineItemInput);
+     
+      this.updateLineItem(lineIndex, "subcategory", subcategorySelect.value);
     }
   }
 

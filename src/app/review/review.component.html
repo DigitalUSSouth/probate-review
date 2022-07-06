@@ -39,7 +39,11 @@
             </td>
             <td>
                 <select id="subcategory-{{ i }}" name="subcategory-{{ i }}" (change)="onSubcategoryChanged(i)">              
-                    <option value="n-a">N/A</option>
+                    <option *ngFor="let subcategory of categoryMap.get(line!.category)" 
+                    [value] = "subcategory.value"
+                    [attr.selected] = "line!.subcategory === subcategory.value ? true : null">
+                    {{subcategory.text}}
+                </option>
                 </select>
             </td>
             <td>

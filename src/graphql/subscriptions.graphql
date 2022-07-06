@@ -27,12 +27,8 @@ subscription OnCreateProbateRecord {
         attributeForId
         createdAt
         updatedAt
-        _version
-        _deleted
-        _lastChangedAt
       }
       nextToken
-      startedAt
     }
     words {
       id
@@ -48,9 +44,6 @@ subscription OnCreateProbateRecord {
     reviewCount
     createdAt
     updatedAt
-    _version
-    _deleted
-    _lastChangedAt
   }
 }
 subscription OnUpdateProbateRecord {
@@ -81,12 +74,8 @@ subscription OnUpdateProbateRecord {
         attributeForId
         createdAt
         updatedAt
-        _version
-        _deleted
-        _lastChangedAt
       }
       nextToken
-      startedAt
     }
     words {
       id
@@ -102,9 +91,6 @@ subscription OnUpdateProbateRecord {
     reviewCount
     createdAt
     updatedAt
-    _version
-    _deleted
-    _lastChangedAt
   }
 }
 subscription OnDeleteProbateRecord {
@@ -135,12 +121,8 @@ subscription OnDeleteProbateRecord {
         attributeForId
         createdAt
         updatedAt
-        _version
-        _deleted
-        _lastChangedAt
       }
       nextToken
-      startedAt
     }
     words {
       id
@@ -156,9 +138,6 @@ subscription OnDeleteProbateRecord {
     reviewCount
     createdAt
     updatedAt
-    _version
-    _deleted
-    _lastChangedAt
   }
 }
 subscription OnCreateLineItem {
@@ -181,9 +160,6 @@ subscription OnCreateLineItem {
     attributeForId
     createdAt
     updatedAt
-    _version
-    _deleted
-    _lastChangedAt
   }
 }
 subscription OnUpdateLineItem {
@@ -206,9 +182,6 @@ subscription OnUpdateLineItem {
     attributeForId
     createdAt
     updatedAt
-    _version
-    _deleted
-    _lastChangedAt
   }
 }
 subscription OnDeleteLineItem {
@@ -231,9 +204,6 @@ subscription OnDeleteLineItem {
     attributeForId
     createdAt
     updatedAt
-    _version
-    _deleted
-    _lastChangedAt
   }
 }
 subscription OnCreateDocument {
@@ -261,9 +231,6 @@ subscription OnCreateDocument {
     }
     createdAt
     updatedAt
-    _version
-    _deleted
-    _lastChangedAt
   }
 }
 subscription OnUpdateDocument {
@@ -291,9 +258,6 @@ subscription OnUpdateDocument {
     }
     createdAt
     updatedAt
-    _version
-    _deleted
-    _lastChangedAt
   }
 }
 subscription OnDeleteDocument {
@@ -321,8 +285,5 @@ subscription OnDeleteDocument {
     }
     createdAt
     updatedAt
-    _version
-    _deleted
-    _lastChangedAt
   }
 }

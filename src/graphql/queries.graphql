@@ -27,12 +27,8 @@ query GetProbateRecord($id: ID!) {
         attributeForId
         createdAt
         updatedAt
-        _version
-        _deleted
-        _lastChangedAt
       }
       nextToken
-      startedAt
     }
     words {
       id
@@ -48,9 +44,6 @@ query GetProbateRecord($id: ID!) {
     reviewCount
     createdAt
     updatedAt
-    _version
-    _deleted
-    _lastChangedAt
   }
 }
 query ListProbateRecords(
@@ -94,12 +87,8 @@ query ListProbateRecords(
           attributeForId
           createdAt
           updatedAt
-          _version
-          _deleted
-          _lastChangedAt
         }
         nextToken
-        startedAt
       }
       words {
         id
@@ -115,80 +104,8 @@ query ListProbateRecords(
       reviewCount
       createdAt
       updatedAt
-      _version
-      _deleted
-      _lastChangedAt
     }
     nextToken
-    startedAt
-  }
-}
-query SyncProbateRecords(
-  $filter: ModelProbateRecordFilterInput
-  $limit: Int
-  $nextToken: String
-  $lastSync: AWSTimestamp
-) {
-  syncProbateRecords(
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-    lastSync: $lastSync
-  ) {
-    items {
-      id
-      title
-      deceasedId
-      filingId
-      appraiser
-      witness
-      lineItems {
-        items {
-          id
-          probateId
-          wordIds
-          title
-          description
-          category
-          subcategory
-          quantity
-          value
-          boundingBox {
-            left
-            top
-            width
-            height
-          }
-          attributeForId
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-        nextToken
-        startedAt
-      }
-      words {
-        id
-        text
-        boundingBox {
-          left
-          top
-          width
-          height
-        }
-      }
-      totalValue
-      reviewCount
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-    nextToken
-    startedAt
   }
 }
 query GetLineItem($id: ID!) {
@@ -211,9 +128,6 @@ query GetLineItem($id: ID!) {
     attributeForId
     createdAt
     updatedAt
-    _version
-    _deleted
-    _lastChangedAt
   }
 }
 query ListLineItems(
@@ -241,51 +155,8 @@ query ListLineItems(
       attributeForId
       createdAt
       updatedAt
-      _version
-      _deleted
-      _lastChangedAt
     }
     nextToken
-    startedAt
-  }
-}
-query SyncLineItems(
-  $filter: ModelLineItemFilterInput
-  $limit: Int
-  $nextToken: String
-  $lastSync: AWSTimestamp
-) {
-  syncLineItems(
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-    lastSync: $lastSync
-  ) {
-    items {
-      id
-      probateId
-      wordIds
-      title
-      description
-      category
-      subcategory
-      quantity
-      value
-      boundingBox {
-        left
-        top
-        width
-        height
-      }
-      attributeForId
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-    nextToken
-    startedAt
   }
 }
 query LineItemByProbateRecord(
@@ -321,12 +192,8 @@ query LineItemByProbateRecord(
       attributeForId
       createdAt
       updatedAt
-      _version
-      _deleted
-      _lastChangedAt
     }
     nextToken
-    startedAt
   }
 }
 query GetDocument($id: ID!) {
@@ -354,9 +221,6 @@ query GetDocument($id: ID!) {
     }
     createdAt
     updatedAt
-    _version
-    _deleted
-    _lastChangedAt
   }
 }
 query ListDocuments(
@@ -389,55 +253,7 @@ query ListDocuments(
       }
       createdAt
       updatedAt
-      _version
-      _deleted
-      _lastChangedAt
     }
     nextToken
-    startedAt
-  }
-}
-query SyncDocuments(
-  $filter: ModelDocumentFilterInput
-  $limit: Int
-  $nextToken: String
-  $lastSync: AWSTimestamp
-) {
-  syncDocuments(
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-    lastSync: $lastSync
-  ) {
-    items {
-      id
-      lines {
-        id
-        wordIds
-        boundingBox {
-          left
-          top
-          width
-          height
-        }
-      }
-      words {
-        id
-        text
-        boundingBox {
-          left
-          top
-          width
-          height
-        }
-      }
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-    nextToken
-    startedAt
   }
 }

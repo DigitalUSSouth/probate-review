@@ -30,12 +30,8 @@ mutation CreateProbateRecord(
         attributeForId
         createdAt
         updatedAt
-        _version
-        _deleted
-        _lastChangedAt
       }
       nextToken
-      startedAt
     }
     words {
       id
@@ -51,9 +47,6 @@ mutation CreateProbateRecord(
     reviewCount
     createdAt
     updatedAt
-    _version
-    _deleted
-    _lastChangedAt
   }
 }
 mutation UpdateProbateRecord(
@@ -87,12 +80,8 @@ mutation UpdateProbateRecord(
         attributeForId
         createdAt
         updatedAt
-        _version
-        _deleted
-        _lastChangedAt
       }
       nextToken
-      startedAt
     }
     words {
       id
@@ -108,9 +97,6 @@ mutation UpdateProbateRecord(
     reviewCount
     createdAt
     updatedAt
-    _version
-    _deleted
-    _lastChangedAt
   }
 }
 mutation DeleteProbateRecord(
@@ -144,12 +130,8 @@ mutation DeleteProbateRecord(
         attributeForId
         createdAt
         updatedAt
-        _version
-        _deleted
-        _lastChangedAt
       }
       nextToken
-      startedAt
     }
     words {
       id
@@ -165,9 +147,6 @@ mutation DeleteProbateRecord(
     reviewCount
     createdAt
     updatedAt
-    _version
-    _deleted
-    _lastChangedAt
   }
 }
 mutation CreateLineItem(
@@ -193,9 +172,6 @@ mutation CreateLineItem(
     attributeForId
     createdAt
     updatedAt
-    _version
-    _deleted
-    _lastChangedAt
   }
 }
 mutation UpdateLineItem(
@@ -221,9 +197,6 @@ mutation UpdateLineItem(
     attributeForId
     createdAt
     updatedAt
-    _version
-    _deleted
-    _lastChangedAt
   }
 }
 mutation DeleteLineItem(
@@ -249,9 +222,6 @@ mutation DeleteLineItem(
     attributeForId
     createdAt
     updatedAt
-    _version
-    _deleted
-    _lastChangedAt
   }
 }
 mutation CreateDocument(
@@ -282,9 +252,6 @@ mutation CreateDocument(
     }
     createdAt
     updatedAt
-    _version
-    _deleted
-    _lastChangedAt
   }
 }
 mutation UpdateDocument(
@@ -315,9 +282,6 @@ mutation UpdateDocument(
     }
     createdAt
     updatedAt
-    _version
-    _deleted
-    _lastChangedAt
   }
 }
 mutation DeleteDocument(
@@ -348,8 +312,5 @@ mutation DeleteDocument(
     }
     createdAt
     updatedAt
-    _version
-    _deleted
-    _lastChangedAt
   }
 }
