@@ -1,3 +1,5 @@
+@import "../theme"
+
 #drop_zone 
   border: 5px solid blue
   width:  200px
@@ -32,7 +34,8 @@ p
 .button 
   display: inline-block
   padding: 10px
-  background: #ccc
+  background: $primary-color
+  color: white
   cursor: pointer
   border-radius: 5px
   border: 1px solid #ccc
@@ -61,4 +64,5 @@ ul
   left: 50%
   -ms-transform: translate(-50%, -50%)
   transform: translate(-50%, -50%)
-
+  color: white
+  background-color: $primary-color
