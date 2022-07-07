@@ -14,6 +14,7 @@ import {MatIconModule} from '@angular/material/icon';
 import { ReviewComponent } from './review/review.component';
 import { UploadComponent } from './upload/upload.component';
 import { AuthComponent } from './auth/auth.component';
+import { ContextMenuComponent } from './context-menu/context-menu.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { AuthComponent } from './auth/auth.component';
     RecordDetailComponent,
     ReviewComponent,
     UploadComponent,
-    AuthComponent
+    AuthComponent,
+    ContextMenuComponent
   ],
   imports: [
     BrowserModule,

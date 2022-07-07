@@ -1,12 +1,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
 <div class="container">
-    <div class="split top">
+    <div class="split top" (contextmenu)="displayContextMenu($event); false">
         <div id="seadragon-viewer" style="height: 85%" #viewer></div>
         <div class="buttonBar" style="height: 15%;">
-            <button mat-raised-button class="form-button" (click)="selectRect()">Select</button>
-            <button mat-raised-button class="form-button" (click)="clearRect()">Clear</button>
-            <button mat-raised-button class="form-button" (click)="updateRecord()">Update</button>
+            <button mat-raised-button class="form-button" (click)="selectRect()">Select lines</button>
+            <button mat-raised-button class="form-button" (click)="clearRect()">Clear selection</button>
+            <button mat-raised-button class="form-button" (click)="updateRecord()">Save</button>
+            <button mat-raised-button class="form-button" (click)="updateRecord(true)">Save and mark as reviewed</button>
         </div>
+        <app-context-menu
+        *ngIf="rightClickMenuItems.length > 0 && isDisplayContextMenu"
+        [ngStyle]="getRightClickMenuStyle()"
+        [contextMenuItems]="rightClickMenuItems"
+        (onContextMenuItemClick)="handleMenuItemClick($event)"
+      ></app-context-menu>
     </div>
     
 

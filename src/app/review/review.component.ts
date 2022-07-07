@@ -1,15 +1,13 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, Renderer2} from '@angular/core';
+
+import { Component, OnInit, Input, ViewChild, ElementRef, Renderer2, HostListener} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
-// import { RecordService } from '../record.service';
-// import { ProbateRecord } from '../probate-record';
 import OpenSeadragon from 'openseadragon';
 import data from './categories.json';
-import { ProbateRecord, UpdateLineItemInput, APIService, GetProbateRecordQuery, UpdateProbateRecordInput, LineItem, LineItemByProbateRecordQuery} from '../API.service';
+import { ProbateRecord, UpdateLineItemInput, APIService, GetProbateRecordQuery, UpdateProbateRecordInput, LineItem, LineItemByProbateRecordQuery, Word} from '../API.service';
 import { from } from 'rxjs';
-// declare var OpenSeadragon: any;
+import { ContextMenuModel } from '../interfaces/context-menu-model';
 
-declare const selection: any;
 
 interface SubcategoryOptionValue {
   value: string,
@@ -23,7 +21,6 @@ interface DragSelect {
 }
 
 const OVERLAY_ID = 'highlighted-line';
-
 
 @Component({
   selector: 'app-review',
@@ -46,8 +43,55 @@ export class ReviewComponent implements OnInit {
     startPos: new OpenSeadragon.Point(0, 0),
     isDragging: false
   };
+  isDisplayContextMenu = false;
+  rightClickMenuItems: Array<ContextMenuModel> = [];
+  rightClickMenuPositionX = 0;
+  rightClickMenuPositionY = 0;
 
-  constructor(private route: ActivatedRoute, private location: Location, private probateRecordService: APIService, private renderer: Renderer2) { 
+  constructor(private route: ActivatedRoute, private location: Location, private probateRecordService: APIService, private renderer: Renderer2) {
+  }
+
+  displayContextMenu(event: any) {
+
+    this.isDisplayContextMenu = true;
+
+    this.rightClickMenuItems = [
+      {
+        menuText: 'Combine',
+        menuEvent: 'Handle combine',
+      },
+      {
+        menuText: 'Split',
+        menuEvent: 'Handle split',
+      },
+    ];
+
+    this.rightClickMenuPositionX = event.clientX;
+    this.rightClickMenuPositionY = event.clientY;
+
+  }
+
+  getRightClickMenuStyle() {
+    return {
+      position: 'fixed',
+      left: `${this.rightClickMenuPositionX}px`,
+      top: `${this.rightClickMenuPositionY}px`
+    }
+  }
+
+  handleMenuItemClick(event: any) {
+    switch (event.data) {
+      case this.rightClickMenuItems[0].menuEvent:
+           console.log('To handle combine');
+           break;
+      case this.rightClickMenuItems[1].menuEvent:
+          console.log('To handle split');
+    }
+  }
+
+  @HostListener('document:click')
+  documentClick(): void {
+    this.isDisplayContextMenu = false;
   }
 
   objToStrMap(obj: any) {
@@ -71,12 +115,9 @@ export class ReviewComponent implements OnInit {
     
     let record$ = from(this.probateRecordService.GetProbateRecord(id));
     record$.subscribe(record => {
-      this.record = record as ProbateRecord;
-      
+      this.record = record as ProbateRecord;      
       console.log(this.record);
       this.getRecord(id);
-      
-
     })
     
 
@@ -202,6 +243,27 @@ export class ReviewComponent implements OnInit {
     }
   }
 
+  rectanglesIntersect(minAx: number, minAy: number, maxAx: number, maxAy: number,
+    minBx: number, minBy:number, maxBx:number, maxBy:number): boolean {
+      return maxAx >= minBx && minAx <= maxBx && minAy <= maxBy && maxAy >= minBy;
+  }
+  
+  getSelectedLines(rect:OpenSeadragon.Rect): LineItem[] {
+    let lines = new Array<LineItem>();
+    for(const line of this.record!.lineItems!.items) {
+      if(line && this.rectanglesIntersect(line.boundingBox!.left, line.boundingBox!.top,
+        line.boundingBox!.left + line.boundingBox!.width,
+        line.boundingBox!.top + line.boundingBox!.height,
+        rect.x,
+        rect.y,
+        rect.x + rect.width,
+        rect.y + rect.height)) {
+          lines.push(line);
+        }
+    }
+    return lines;
+  }
+
   async getRecord(id: string): Promise<void> {
     console.log('getting records');
     
@@ -252,7 +314,9 @@ export class ReviewComponent implements OnInit {
           Math.abs(diffX), 
           Math.abs(diffY)
         );
-        
+       
+        let lines = this.getSelectedLines(location);
+        console.log(lines);
         this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);
       },
       releaseHandler: (event) => {
@@ -275,8 +339,13 @@ export class ReviewComponent implements OnInit {
     }
   }
 
-  async updateRecord() {
-    let item = {id: this.record!.id, reviewCount: ++this.record!.reviewCount};
+  async updateRecord(isReviewed = false) {
+    let reviewCount = this.record!.reviewCount;
+    if(isReviewed) {
+      reviewCount++;
+    }
+    
+    let item = {id: this.record!.id, reviewCount};
     console.log(item);
     let input:UpdateProbateRecordInput = item;
     console.log(input);
