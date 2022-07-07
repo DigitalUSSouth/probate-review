@@ -1,12 +1,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
 <div class="container">
-    <div id="seadragon-viewer" class="split top" #viewer></div>
-
-    <div id="review-form" class="split bottom">
-        <div class="buttonBar">
+    <div class="split top">
+        <div id="seadragon-viewer" style="height: 85%" #viewer></div>
+        <div class="buttonBar" style="height: 15%;">
             <button mat-raised-button class="form-button" (click)="selectRect()">Select</button>
             <button mat-raised-button class="form-button" (click)="clearRect()">Clear</button>
+            <button mat-raised-button class="form-button" (click)="updateRecord()">Update</button>
         </div>
+    </div>
+    
+
+    <div id="review-form" class="split bottom">
+        
         <h1> Enter your corrections below </h1>
         <table>
         <tr>
@@ -59,7 +64,7 @@
         </tr>
         </table>
         <div class="centered">
-            <button mat-raised-button class="submit-button" (click)="updateRecord()">Update</button>
+            
         </div>
     </div>
 </div>
