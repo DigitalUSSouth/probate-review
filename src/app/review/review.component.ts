@@ -34,7 +34,7 @@ export class ReviewComponent implements OnInit {
   selectionRect?: OpenSeadragon.Rect;  
   categoryMap: Map<string, Array<SubcategoryOptionValue>> = this.objToStrMap(data); 
   imageSize?: OpenSeadragon.Point;
-  aspectRatio = 1.0;
+  aspectRatio = 0.0;
   updatedLineItems = new Map<number, UpdateLineItemInput> ();
   selectionMode = false;
   selectTracker?: OpenSeadragon.MouseTracker;
@@ -205,11 +205,18 @@ export class ReviewComponent implements OnInit {
     return overlay!;
   }
 
-  highlightText(index: number): void {
+  calculateAspectRatio() {
     this.imageSize = this.osd!.world.getItemAt(0).getContentSize();
 
     this.aspectRatio = this.imageSize!.x / this.imageSize!.y;
     console.log(`aspect ratio is ${this.aspectRatio}`);
+  }
+
+  highlightText(index: number): void {
+    if(this.aspectRatio === 0.0) {
+      this.calculateAspectRatio();
+    }
+    
     console.log(`line ${index} highlighted`);
     
     const boundingBox = this.record!.lineItems!.items[index]!.boundingBox;
@@ -219,7 +226,6 @@ export class ReviewComponent implements OnInit {
     const point = new OpenSeadragon.Point(boundingBox?.left, boundingBox?.top);
     const rect = new OpenSeadragon.Rect(boundingBox?.left, boundingBox?.top, boundingBox?.width, boundingBox?.height);
     this.selectionRect = rect;
-    console.log(rect);
     rect.y /= this.aspectRatio;
     rect.height /= this.aspectRatio;
     let overlay = this.createOverlayElement();
@@ -247,17 +253,43 @@ export class ReviewComponent implements OnInit {
     minBx: number, minBy:number, maxBx:number, maxBy:number): boolean {
       return maxAx >= minBx && minAx <= maxBx && minAy <= maxBy && maxAy >= minBy;
   }
+
+  // A line
+  // B selection rect
+  verticallyOverlapped(minAy: number, maxAy: number, minBy:number, maxBy:number) {
+    const threshold = 0.6;
+    let heightA = maxAy - minAy;
+    let allowedAmount = (1.0 - threshold) * heightA;
+    let topDeltaY = minBy - minAy; // selecting from bottom
+    let bottomDeltaY = maxAy - maxBy; // selecting from top
+    // console.log('overlap: ' + topDeltaY + ', ' + bottomDeltaY + ', ' + allowedAmount );
+    let isOverlapped = ( topDeltaY > 0 && topDeltaY <  allowedAmount) || (bottomDeltaY > 0 && bottomDeltaY < allowedAmount);
+    console.log('overlap: ' + topDeltaY + ', ' + bottomDeltaY + ', ' + allowedAmount + ' is overlapped ' + isOverlapped );
+    return isOverlapped;
+  }
+
   
-  getSelectedLines(rect:OpenSeadragon.Rect): LineItem[] {
+  getSelectedLines(selectRect:OpenSeadragon.Rect): LineItem[] {
+    if(this.aspectRatio === 0.0) {
+      this.calculateAspectRatio();
+    }
+
     let lines = new Array<LineItem>();
     for(const line of this.record!.lineItems!.items) {
-      if(line && this.rectanglesIntersect(line.boundingBox!.left, line.boundingBox!.top,
-        line.boundingBox!.left + line.boundingBox!.width,
-        line.boundingBox!.top + line.boundingBox!.height,
-        rect.x,
-        rect.y,
-        rect.x + rect.width,
-        rect.y + rect.height)) {
+      const boundingBox = line!.boundingBox;
+      const lineRect = new OpenSeadragon.Rect(boundingBox?.left, boundingBox?.top, boundingBox?.width, boundingBox?.height);
+      lineRect.y /= this.aspectRatio;
+      lineRect.height /= this.aspectRatio;
+
+      if(line && this.rectanglesIntersect(lineRect.x, lineRect.y,
+        lineRect.x + lineRect.width,
+        lineRect.y + lineRect.height,
+        selectRect.x,
+        selectRect.y,
+        selectRect.x + selectRect.width,
+        selectRect.y + selectRect.height) 
+        ) {
+          // && (this.verticallyOverlapped(lineRect.y, lineRect.y + lineRect.height, selectRect.y, selectRect.y + selectRect.height))
           lines.push(line);
         }
     }
@@ -344,7 +376,7 @@ export class ReviewComponent implements OnInit {
     if(isReviewed) {
       reviewCount++;
     }
-    
+
     let item = {id: this.record!.id, reviewCount};
     console.log(item);
     let input:UpdateProbateRecordInput = item;
