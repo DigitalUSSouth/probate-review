@@ -260,11 +260,14 @@ export class ReviewComponent implements OnInit {
     const threshold = 0.6;
     let heightA = maxAy - minAy;
     let allowedAmount = (1.0 - threshold) * heightA;
-    let topDeltaY = minBy - minAy; // selecting from bottom
-    let bottomDeltaY = maxAy - maxBy; // selecting from top
-    // console.log('overlap: ' + topDeltaY + ', ' + bottomDeltaY + ', ' + allowedAmount );
-    let isOverlapped = ( topDeltaY > 0 && topDeltaY <  allowedAmount) || (bottomDeltaY > 0 && bottomDeltaY < allowedAmount);
-    console.log('overlap: ' + topDeltaY + ', ' + bottomDeltaY + ', ' + allowedAmount + ' is overlapped ' + isOverlapped );
+    let isOverlapped = false;
+    if(minBy <= minAy ) {
+      isOverlapped = maxBy > minAy && maxAy - maxBy < allowedAmount;
+    }
+    else {
+      isOverlapped = minBy < maxAy && maxBy < maxAy || minBy - minAy < allowedAmount;
+    }
+    
     return isOverlapped;
   }
 
@@ -288,8 +291,9 @@ export class ReviewComponent implements OnInit {
         selectRect.y,
         selectRect.x + selectRect.width,
         selectRect.y + selectRect.height) 
+        && (this.verticallyOverlapped(lineRect.y, lineRect.y + lineRect.height, selectRect.y, selectRect.y + selectRect.height))
         ) {
-          // && (this.verticallyOverlapped(lineRect.y, lineRect.y + lineRect.height, selectRect.y, selectRect.y + selectRect.height))
+          
           lines.push(line);
         }
     }
