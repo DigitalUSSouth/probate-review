@@ -1,1 +1,77 @@
-<p>review works!</p>
+<meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
+<div class="container">
+    <div class="split top" (contextmenu)="displayContextMenu($event); false">
+        <div id="seadragon-viewer" style="height: 85%" #viewer></div>
+        <div class="buttonBar" style="height: 15%;">
+            <button mat-raised-button class="form-button" (click)="selectRect()">Select lines</button>
+            <button mat-raised-button class="form-button" (click)="clearRect()">Clear selection</button>
+            <button mat-raised-button class="form-button" (click)="updateRecord()">Save</button>
+            <button mat-raised-button class="form-button" (click)="updateRecord(true)">Save and mark as reviewed</button>
+        </div>
+        <app-context-menu
+        *ngIf="rightClickMenuItems.length > 0 && isDisplayContextMenu"
+        [ngStyle]="getRightClickMenuStyle()"
+        [contextMenuItems]="rightClickMenuItems"
+        (onContextMenuItemClick)="handleMenuItemClick($event)"
+      ></app-context-menu>
+    </div>
+    
+
+    <div id="review-form" class="split bottom">
+        
+        <h1> Enter your corrections below </h1>
+        <table>
+        <tr>
+            <th>Line Number</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Subcategory</th>
+            <th>Quantity</th>
+            <th>Value</th>
+        </tr>
+        <tr *ngFor="let line of record?.lineItems?.items; let i = index">
+            <td>{{ i }}</td>
+            <td><input id="line-{{i}}" value="{{line!.title}}" (focus)="highlightText(i)" (input)="onTextChanged(i)"/></td>     
+            <td>
+                <select id="category-{{ i }}" name="category-{{ i }}" (change)="populateSubcategory(i)" [value]="line?.category">
+                    <option value="n-a">N/A</option>
+                    <option value="identity">Identity</option>
+                    <option value="item-attribute">Item Attribute</option>
+                    <option value="furniture">Furniture</option>
+                    <option value="kitchen">Kitchen</option>
+                    <option value="farm">Farm/Business Implements</option>
+                    <option value="clothing">Clothing</option>
+                    <option value="people">Enslaved People</option>
+                    <option value="real-estate">Real Estate</option>
+                    <option value="financial-instrument">Financial Instrument</option>
+                    <option value="personal-items">Personal Items</option>
+                    <option value="firearms">Firearms</option>
+                    <option value="transportation">Transportation</option>
+                    <option value="foodstuffs">Foodstuffs</option>
+                    <option value="alcohol">Alcohol</option>
+                    <option value="agricultural-commodities">Agricultural Commodities</option>
+                    <option value="livestock-animals">Livestock and Animals</option>
+                </select>               
+            </td>
+            <td>
+                <select id="subcategory-{{ i }}" name="subcategory-{{ i }}" (change)="onSubcategoryChanged(i)">              
+                    <option *ngFor="let subcategory of categoryMap.get(line!.category)" 
+                    [value] = "subcategory.value"
+                    [attr.selected] = "line!.subcategory === subcategory.value ? true : null">
+                    {{subcategory.text}}
+                </option>
+                </select>
+            </td>
+            <td>
+                <input id="quantity-{{ i }}" name="quantity-{{ i }}" type="number"/>
+            </td>
+            <td>
+                <input id="total-value-{{ i }}" name="total-value-{{ i }}" min="0.01" step=".01" type="number"/>
+            </td>
+        </tr>
+        </table>
+        <div class="centered">
+            
+        </div>
+    </div>
+</div>

@@ -1,9 +1,9 @@
 export interface TextBoundingBlock {
     boundingBox: {
-        Height: number,
-        Left: number,
-        Top: number,
-        Width: number
+        height: number,
+        left: number,
+        top: number,
+        width: number
     },
     text: string    
 }

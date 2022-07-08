@@ -1,37 +1,66 @@
-# This "input" configures a global authorization rule to enable public access to
-# all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
-input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
-
-type ProbateRecord @model {
-  id: ID!
-  title: String
-  deceased: Deceased @hasOne
-  filing: Filing @hasOne
-  appraiser: [String]
-  witness: [String]
-  items: [LineItem] @hasMany
+type ProbateRecord @model @auth(rules: [{allow: private}]) {
+  id: ID! @primaryKey
+  title: String!
+  deceasedId: ID!
+  filingId: ID!
+  appraiser: [String]!
+  witness: [String]!
+  lineItems: [LineItem] @hasMany(indexName: "byProbate", fields: ["id"])
+  words: [Word]!
+  totalValue: Float!
+  reviewCount: Int!
 }
 
-type Filing @model {
+type Filing {
   id: ID!
-  state: String
-  county: String
-  date: AWSDate
-  filer: String
-  probate: ProbateRecord! @belongsTo
+  state: String!
+  county: String!
+  date: AWSDate!
+  filer: String!
 }
 
-type Deceased @model {
+type Deceased {
   id: ID!
   name: String!
-  gender: String
+  gender: String!
 }
 
-type LineItem @model {
+type Rect {
+  left: Float!
+  top: Float!
+  width: Float!
+  height: Float!
+}
+
+type LineItem @model @auth(rules: [{allow: private}]) {
   id: ID!
+  probateId: ID! @index(name: "byProbate", queryField: "lineItemByProbateRecord")
+  wordIds: [ID]!
   title: String!
-  description: String
-  probate: ProbateRecord! @belongsTo
+  description: String!
   category: String!
   subcategory: String!
+  quantity: Int!
+  value: Float!
+  boundingBox: Rect 
+  attributeForId: ID!
 }
+
+type Document @model @auth(rules: [{allow: private}]) {
+  id: ID!
+  lines: [Line]! 
+  words: [Word]! 
+}
+
+type Line {
+  id: ID!
+  wordIds: [ID]!
+  boundingBox: Rect!
+}
+
+type Word {
+  id: ID!
+  text: String!
+  boundingBox: Rect
+}
+ 

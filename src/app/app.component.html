@@ -34,18 +34,7 @@
     flex: 1;
   }
 
-  .toolbar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    background-color: #1976d2;
-    color: white;
-    font-weight: 600;
-  }
+  
 
   .toolbar img {
     margin: 0 16px;
@@ -304,20 +293,20 @@
 
 <!-- Toolbar -->
 <div class="toolbar" role="banner">
-    <amplify-authenticator>
-      <ng-template
-        amplifySlot="authenticated"
-        let-user="user"
-        let-signOut="signOut"
-      >
-        <h1>Welcome {{ user.username }}!</h1>
-        <button (click)="signOut()">Sign Out</button>
-      </ng-template>
-    </amplify-authenticator>
+  <amplify-authenticator>
+    <ng-template
+      amplifySlot="authenticated"
+      let-user="user"
+      let-signOut="signOut"      
+    >
+      <h1>Welcome {{ user.username }}!</h1>
+      <button (click)="signOut()">Sign Out</button>
+    </ng-template>
+  </amplify-authenticator>
 </div>
 
 <div class="content" role="main">
-
+  
   <!-- Highlight Card -->
   
 

@@ -3,183 +3,105 @@ query GetProbateRecord($id: ID!) {
   getProbateRecord(id: $id) {
     id
     title
-    deceased {
-      id
-      name
-      gender
-      createdAt
-      updatedAt
-    }
-    filing {
-      id
-      state
-      county
-      date
-      filer
-      probate {
-        id
-        title
-        appraiser
-        witness
-        createdAt
-        updatedAt
-        probateRecordDeceasedId
-        probateRecordFilingId
-      }
-      createdAt
-      updatedAt
-      filingProbateId
-    }
+    deceasedId
+    filingId
     appraiser
     witness
-    items {
+    lineItems {
       items {
         id
+        probateId
+        wordIds
         title
         description
         category
         subcategory
+        quantity
+        value
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+        attributeForId
         createdAt
         updatedAt
-        probateRecordItemsId
       }
       nextToken
     }
+    words {
+      id
+      text
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
+    }
+    totalValue
+    reviewCount
     createdAt
     updatedAt
-    probateRecordDeceasedId
-    probateRecordFilingId
   }
 }
 query ListProbateRecords(
+  $id: ID
   $filter: ModelProbateRecordFilterInput
   $limit: Int
   $nextToken: String
+  $sortDirection: ModelSortDirection
 ) {
-  listProbateRecords(filter: $filter, limit: $limit, nextToken: $nextToken) {
+  listProbateRecords(
+    id: $id
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    sortDirection: $sortDirection
+  ) {
     items {
       id
       title
-      deceased {
-        id
-        name
-        gender
-        createdAt
-        updatedAt
-      }
-      filing {
-        id
-        state
-        county
-        date
-        filer
-        createdAt
-        updatedAt
-        filingProbateId
-      }
+      deceasedId
+      filingId
       appraiser
       witness
-      items {
+      lineItems {
+        items {
+          id
+          probateId
+          wordIds
+          title
+          description
+          category
+          subcategory
+          quantity
+          value
+          boundingBox {
+            left
+            top
+            width
+            height
+          }
+          attributeForId
+          createdAt
+          updatedAt
+        }
         nextToken
       }
-      createdAt
-      updatedAt
-      probateRecordDeceasedId
-      probateRecordFilingId
-    }
-    nextToken
-  }
-}
-query GetFiling($id: ID!) {
-  getFiling(id: $id) {
-    id
-    state
-    county
-    date
-    filer
-    probate {
-      id
-      title
-      deceased {
+      words {
         id
-        name
-        gender
-        createdAt
-        updatedAt
+        text
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
       }
-      filing {
-        id
-        state
-        county
-        date
-        filer
-        createdAt
-        updatedAt
-        filingProbateId
-      }
-      appraiser
-      witness
-      items {
-        nextToken
-      }
-      createdAt
-      updatedAt
-      probateRecordDeceasedId
-      probateRecordFilingId
-    }
-    createdAt
-    updatedAt
-    filingProbateId
-  }
-}
-query ListFilings(
-  $filter: ModelFilingFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listFilings(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      id
-      state
-      county
-      date
-      filer
-      probate {
-        id
-        title
-        appraiser
-        witness
-        createdAt
-        updatedAt
-        probateRecordDeceasedId
-        probateRecordFilingId
-      }
-      createdAt
-      updatedAt
-      filingProbateId
-    }
-    nextToken
-  }
-}
-query GetDeceased($id: ID!) {
-  getDeceased(id: $id) {
-    id
-    name
-    gender
-    createdAt
-    updatedAt
-  }
-}
-query ListDeceaseds(
-  $filter: ModelDeceasedFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listDeceaseds(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      id
-      name
-      gender
+      totalValue
+      reviewCount
       createdAt
       updatedAt
     }
@@ -189,43 +111,23 @@ query ListDeceaseds(
 query GetLineItem($id: ID!) {
   getLineItem(id: $id) {
     id
+    probateId
+    wordIds
     title
     description
-    probate {
-      id
-      title
-      deceased {
-        id
-        name
-        gender
-        createdAt
-        updatedAt
-      }
-      filing {
-        id
-        state
-        county
-        date
-        filer
-        createdAt
-        updatedAt
-        filingProbateId
-      }
-      appraiser
-      witness
-      items {
-        nextToken
-      }
-      createdAt
-      updatedAt
-      probateRecordDeceasedId
-      probateRecordFilingId
-    }
     category
     subcategory
+    quantity
+    value
+    boundingBox {
+      left
+      top
+      width
+      height
+    }
+    attributeForId
     createdAt
     updatedAt
-    probateRecordItemsId
   }
 }
 query ListLineItems(
@@ -236,23 +138,121 @@ query ListLineItems(
   listLineItems(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
+      probateId
+      wordIds
       title
       description
-      probate {
-        id
-        title
-        appraiser
-        witness
-        createdAt
-        updatedAt
-        probateRecordDeceasedId
-        probateRecordFilingId
-      }
       category
       subcategory
+      quantity
+      value
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
+      attributeForId
       createdAt
       updatedAt
-      probateRecordItemsId
+    }
+    nextToken
+  }
+}
+query LineItemByProbateRecord(
+  $probateId: ID!
+  $sortDirection: ModelSortDirection
+  $filter: ModelLineItemFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  lineItemByProbateRecord(
+    probateId: $probateId
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      probateId
+      wordIds
+      title
+      description
+      category
+      subcategory
+      quantity
+      value
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
+      attributeForId
+      createdAt
+      updatedAt
+    }
+    nextToken
+  }
+}
+query GetDocument($id: ID!) {
+  getDocument(id: $id) {
+    id
+    lines {
+      id
+      wordIds
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
+    }
+    words {
+      id
+      text
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
+    }
+    createdAt
+    updatedAt
+  }
+}
+query ListDocuments(
+  $filter: ModelDocumentFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listDocuments(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      lines {
+        id
+        wordIds
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+      }
+      words {
+        id
+        text
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+      }
+      createdAt
+      updatedAt
     }
     nextToken
   }

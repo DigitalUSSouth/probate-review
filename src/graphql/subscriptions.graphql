@@ -3,307 +3,139 @@ subscription OnCreateProbateRecord {
   onCreateProbateRecord {
     id
     title
-    deceased {
-      id
-      name
-      gender
-      createdAt
-      updatedAt
-    }
-    filing {
-      id
-      state
-      county
-      date
-      filer
-      probate {
-        id
-        title
-        appraiser
-        witness
-        createdAt
-        updatedAt
-        probateRecordDeceasedId
-        probateRecordFilingId
-      }
-      createdAt
-      updatedAt
-      filingProbateId
-    }
+    deceasedId
+    filingId
     appraiser
     witness
-    items {
+    lineItems {
       items {
         id
+        probateId
+        wordIds
         title
         description
         category
         subcategory
+        quantity
+        value
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+        attributeForId
         createdAt
         updatedAt
-        probateRecordItemsId
       }
       nextToken
     }
+    words {
+      id
+      text
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
+    }
+    totalValue
+    reviewCount
     createdAt
     updatedAt
-    probateRecordDeceasedId
-    probateRecordFilingId
   }
 }
 subscription OnUpdateProbateRecord {
   onUpdateProbateRecord {
     id
     title
-    deceased {
-      id
-      name
-      gender
-      createdAt
-      updatedAt
-    }
-    filing {
-      id
-      state
-      county
-      date
-      filer
-      probate {
-        id
-        title
-        appraiser
-        witness
-        createdAt
-        updatedAt
-        probateRecordDeceasedId
-        probateRecordFilingId
-      }
-      createdAt
-      updatedAt
-      filingProbateId
-    }
+    deceasedId
+    filingId
     appraiser
     witness
-    items {
+    lineItems {
       items {
         id
+        probateId
+        wordIds
         title
         description
         category
         subcategory
+        quantity
+        value
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+        attributeForId
         createdAt
         updatedAt
-        probateRecordItemsId
       }
       nextToken
     }
+    words {
+      id
+      text
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
+    }
+    totalValue
+    reviewCount
     createdAt
     updatedAt
-    probateRecordDeceasedId
-    probateRecordFilingId
   }
 }
 subscription OnDeleteProbateRecord {
   onDeleteProbateRecord {
     id
     title
-    deceased {
-      id
-      name
-      gender
-      createdAt
-      updatedAt
-    }
-    filing {
-      id
-      state
-      county
-      date
-      filer
-      probate {
-        id
-        title
-        appraiser
-        witness
-        createdAt
-        updatedAt
-        probateRecordDeceasedId
-        probateRecordFilingId
-      }
-      createdAt
-      updatedAt
-      filingProbateId
-    }
+    deceasedId
+    filingId
     appraiser
     witness
-    items {
+    lineItems {
       items {
         id
+        probateId
+        wordIds
         title
         description
         category
         subcategory
+        quantity
+        value
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+        attributeForId
         createdAt
         updatedAt
-        probateRecordItemsId
       }
       nextToken
     }
-    createdAt
-    updatedAt
-    probateRecordDeceasedId
-    probateRecordFilingId
-  }
-}
-subscription OnCreateFiling {
-  onCreateFiling {
-    id
-    state
-    county
-    date
-    filer
-    probate {
+    words {
       id
-      title
-      deceased {
-        id
-        name
-        gender
-        createdAt
-        updatedAt
+      text
+      boundingBox {
+        left
+        top
+        width
+        height
       }
-      filing {
-        id
-        state
-        county
-        date
-        filer
-        createdAt
-        updatedAt
-        filingProbateId
-      }
-      appraiser
-      witness
-      items {
-        nextToken
-      }
-      createdAt
-      updatedAt
-      probateRecordDeceasedId
-      probateRecordFilingId
     }
-    createdAt
-    updatedAt
-    filingProbateId
-  }
-}
-subscription OnUpdateFiling {
-  onUpdateFiling {
-    id
-    state
-    county
-    date
-    filer
-    probate {
-      id
-      title
-      deceased {
-        id
-        name
-        gender
-        createdAt
-        updatedAt
-      }
-      filing {
-        id
-        state
-        county
-        date
-        filer
-        createdAt
-        updatedAt
-        filingProbateId
-      }
-      appraiser
-      witness
-      items {
-        nextToken
-      }
-      createdAt
-      updatedAt
-      probateRecordDeceasedId
-      probateRecordFilingId
-    }
-    createdAt
-    updatedAt
-    filingProbateId
-  }
-}
-subscription OnDeleteFiling {
-  onDeleteFiling {
-    id
-    state
-    county
-    date
-    filer
-    probate {
-      id
-      title
-      deceased {
-        id
-        name
-        gender
-        createdAt
-        updatedAt
-      }
-      filing {
-        id
-        state
-        county
-        date
-        filer
-        createdAt
-        updatedAt
-        filingProbateId
-      }
-      appraiser
-      witness
-      items {
-        nextToken
-      }
-      createdAt
-      updatedAt
-      probateRecordDeceasedId
-      probateRecordFilingId
-    }
-    createdAt
-    updatedAt
-    filingProbateId
-  }
-}
-subscription OnCreateDeceased {
-  onCreateDeceased {
-    id
-    name
-    gender
-    createdAt
-    updatedAt
-  }
-}
-subscription OnUpdateDeceased {
-  onUpdateDeceased {
-    id
-    name
-    gender
-    createdAt
-    updatedAt
-  }
-}
-subscription OnDeleteDeceased {
-  onDeleteDeceased {
-    id
-    name
-    gender
+    totalValue
+    reviewCount
     createdAt
     updatedAt
   }
@@ -311,126 +143,147 @@ subscription OnDeleteDeceased {
 subscription OnCreateLineItem {
   onCreateLineItem {
     id
+    probateId
+    wordIds
     title
     description
-    probate {
-      id
-      title
-      deceased {
-        id
-        name
-        gender
-        createdAt
-        updatedAt
-      }
-      filing {
-        id
-        state
-        county
-        date
-        filer
-        createdAt
-        updatedAt
-        filingProbateId
-      }
-      appraiser
-      witness
-      items {
-        nextToken
-      }
-      createdAt
-      updatedAt
-      probateRecordDeceasedId
-      probateRecordFilingId
-    }
     category
     subcategory
+    quantity
+    value
+    boundingBox {
+      left
+      top
+      width
+      height
+    }
+    attributeForId
     createdAt
     updatedAt
-    probateRecordItemsId
   }
 }
 subscription OnUpdateLineItem {
   onUpdateLineItem {
     id
+    probateId
+    wordIds
     title
     description
-    probate {
-      id
-      title
-      deceased {
-        id
-        name
-        gender
-        createdAt
-        updatedAt
-      }
-      filing {
-        id
-        state
-        county
-        date
-        filer
-        createdAt
-        updatedAt
-        filingProbateId
-      }
-      appraiser
-      witness
-      items {
-        nextToken
-      }
-      createdAt
-      updatedAt
-      probateRecordDeceasedId
-      probateRecordFilingId
-    }
     category
     subcategory
+    quantity
+    value
+    boundingBox {
+      left
+      top
+      width
+      height
+    }
+    attributeForId
     createdAt
     updatedAt
-    probateRecordItemsId
   }
 }
 subscription OnDeleteLineItem {
   onDeleteLineItem {
     id
+    probateId
+    wordIds
     title
     description
-    probate {
-      id
-      title
-      deceased {
-        id
-        name
-        gender
-        createdAt
-        updatedAt
-      }
-      filing {
-        id
-        state
-        county
-        date
-        filer
-        createdAt
-        updatedAt
-        filingProbateId
-      }
-      appraiser
-      witness
-      items {
-        nextToken
-      }
-      createdAt
-      updatedAt
-      probateRecordDeceasedId
-      probateRecordFilingId
-    }
     category
     subcategory
+    quantity
+    value
+    boundingBox {
+      left
+      top
+      width
+      height
+    }
+    attributeForId
     createdAt
     updatedAt
-    probateRecordItemsId
+  }
+}
+subscription OnCreateDocument {
+  onCreateDocument {
+    id
+    lines {
+      id
+      wordIds
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
+    }
+    words {
+      id
+      text
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
+    }
+    createdAt
+    updatedAt
+  }
+}
+subscription OnUpdateDocument {
+  onUpdateDocument {
+    id
+    lines {
+      id
+      wordIds
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
+    }
+    words {
+      id
+      text
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
+    }
+    createdAt
+    updatedAt
+  }
+}
+subscription OnDeleteDocument {
+  onDeleteDocument {
+    id
+    lines {
+      id
+      wordIds
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
+    }
+    words {
+      id
+      text
+      boundingBox {
+        left
+        top
+        width
+        height
+      }
+    }
+    createdAt
+    updatedAt
   }
 }
