@@ -47,6 +47,7 @@ export class ReviewComponent implements OnInit {
   rightClickMenuItems: Array<ContextMenuModel> = [];
   rightClickMenuPositionX = 0;
   rightClickMenuPositionY = 0;
+  selectedLines: LineItem[] = [];
 
   constructor(private route: ActivatedRoute, private location: Location, private probateRecordService: APIService, private renderer: Renderer2) {
   }
@@ -55,17 +56,40 @@ export class ReviewComponent implements OnInit {
 
     this.isDisplayContextMenu = true;
 
-    this.rightClickMenuItems = [
-      {
-        menuText: 'Combine',
-        menuEvent: 'Handle combine',
-      },
-      {
-        menuText: 'Split',
-        menuEvent: 'Handle split',
-      },
-    ];
-
+    switch(this.selectedLines.length) {
+      case 0:
+        this.rightClickMenuItems = [
+          {
+            menuText: 'Create',
+            menuEvent: 'create'
+          } 
+        ];
+        break;
+        
+      case 1: 
+        this.rightClickMenuItems = [          
+          {
+            menuText: 'Split',
+            menuEvent: 'split',
+          },
+          {
+            menuText: 'Extend',
+            menuEvent: 'extend',
+          },
+          {
+            menuText: 'Shorten',
+            menuEvent: 'shorten',
+          },
+        ];
+        break;
+      default:
+        this.rightClickMenuItems = [
+          {
+            menuText: 'Combine',
+            menuEvent: 'combine',
+          },
+        ]
+  }
     this.rightClickMenuPositionX = event.clientX;
     this.rightClickMenuPositionY = event.clientY;
 
@@ -81,11 +105,21 @@ export class ReviewComponent implements OnInit {
 
   handleMenuItemClick(event: any) {
     switch (event.data) {
-      case this.rightClickMenuItems[0].menuEvent:
+      case 'create':
+           console.log('To handle create');
+           break;
+      case 'combine':
            console.log('To handle combine');
            break;
-      case this.rightClickMenuItems[1].menuEvent:
+      case 'split':
           console.log('To handle split');
+          break;
+      case 'extend':
+        console.log('To handle extend');
+        break;
+      case 'shorten':
+        console.log('To handle shorten');
+        break;
     }
   }
 
@@ -247,6 +281,7 @@ export class ReviewComponent implements OnInit {
     if(overlay) {
       this.osd?.removeOverlay(OVERLAY_ID);
     }
+    this.selectedLines = [];
   }
 
   rectanglesIntersect(minAx: number, minAy: number, maxAx: number, maxAy: number,
@@ -351,8 +386,8 @@ export class ReviewComponent implements OnInit {
           Math.abs(diffY)
         );
        
-        let lines = this.getSelectedLines(location);
-        console.log(lines);
+        this.selectedLines = this.getSelectedLines(location);
+        // console.log(lines);
         this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);
       },
       releaseHandler: (event) => {
