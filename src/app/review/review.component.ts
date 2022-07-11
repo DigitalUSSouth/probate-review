@@ -206,6 +206,13 @@ export class ReviewComponent implements OnInit {
           height: value.height
         };
         break;
+      case "value":
+        updateLineItemInput.value = value;
+        break;
+
+      case "quantity":
+        updateLineItemInput.quantity = value;
+        break;
     }
 
 
@@ -260,6 +267,18 @@ export class ReviewComponent implements OnInit {
     const titleElement = document.getElementById("line-" + lineIndex) as HTMLInputElement;
     console.log(titleElement);
     this.updateLineItemByIndex(lineIndex, "line", titleElement.value);
+  }
+
+  onValueChanged(lineIndex: number): void {
+    const valueElement = document.getElementById("total-value-" + lineIndex) as HTMLInputElement;
+    console.log(valueElement);
+    this.updateLineItemByIndex(lineIndex, "value", valueElement.value);
+  }
+
+  onQuantityChanged(lineIndex: number): void {
+    const quantityElement = document.getElementById("quantity-" + lineIndex) as HTMLInputElement;
+    console.log(quantityElement);
+    this.updateLineItemByIndex(lineIndex, "quantity", quantityElement.value);
   }
 
   createOverlayElement(id = OVERLAY_ID, className = 'highlight'): HTMLElement
