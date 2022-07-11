@@ -223,17 +223,17 @@ export class ReviewComponent implements OnInit {
     this.updateLineItem(lineIndex, "line", titleElement.value);
   }
 
-  createOverlayElement(): HTMLElement
+  createOverlayElement(id = OVERLAY_ID, className = 'highlight'): HTMLElement
   {
     
-    let overlay = document.getElementById(OVERLAY_ID);
+    let overlay = document.getElementById(id);
     if(overlay) {
-      this.osd?.removeOverlay(OVERLAY_ID);
+      this.osd?.removeOverlay(id);
     }
 
     overlay = this.renderer.createElement('div');
-    this.renderer.setProperty(overlay, 'id', OVERLAY_ID);
-    this.renderer.setProperty(overlay, 'className', 'highlight');
+    this.renderer.setProperty(overlay, 'id', id);
+    this.renderer.setProperty(overlay, 'className', className);
     this.renderer.appendChild(document.body, overlay);
 
     return overlay!;
@@ -250,14 +250,14 @@ export class ReviewComponent implements OnInit {
     if(this.aspectRatio === 0.0) {
       this.calculateAspectRatio();
     }
-    
-    console.log(`line ${index} highlighted`);
-    
+    this.clearSelection();
+
+    console.log(`line ${index} highlighted`);    
     const boundingBox = this.record!.lineItems!.items[index]!.boundingBox;
     console.log(boundingBox);
     // check if overlay exists
     const point = new OpenSeadragon.Point(boundingBox?.left, boundingBox?.top);
-    const rect = this.texRect2osdRect(boundingBox!);//new OpenSeadragon.Rect(boundingBox?.left, boundingBox?.top, boundingBox?.width, boundingBox?.height);
+    const rect = this.texRect2osdRect(boundingBox!);
     this.selectionRect = rect;    
     let overlay = this.createOverlayElement();
     this.osd?.addOverlay({element: overlay!, location: rect});
@@ -266,18 +266,27 @@ export class ReviewComponent implements OnInit {
   }
 
   selectRect() {
-    this.clearRect();
+    this.clearSelection();
     console.log('selecting now');
     this.selectionMode = true;
     this.osd!.setMouseNavEnabled(false);
     this.dragSelect!.isDragging = true;
   }
 
-  clearRect() {
-    let overlay = document.getElementById(OVERLAY_ID);
-    if(overlay) {
-      this.osd?.removeOverlay(OVERLAY_ID);
-    }
+  clearSelectedElems() {
+    let selectionElems = document.querySelectorAll('.select');
+    selectionElems.forEach(selectedLine => {
+      selectedLine.remove();
+    });
+    selectionElems = document.querySelectorAll('.highlight');
+    selectionElems.forEach(selectedLine => {
+      selectedLine.remove();
+    });
+  }
+
+  clearSelection() {    
+    this.osd!.clearOverlays();
+    this.clearSelectedElems();
     this.selectedLines = [];
   }
 
@@ -344,8 +353,7 @@ export class ReviewComponent implements OnInit {
         selectRect.x + selectRect.width,
         selectRect.y + selectRect.height) 
         && (this.verticallyOverlapped(lineRect.y, lineRect.y + lineRect.height, selectRect.y, selectRect.y + selectRect.height))
-        ) {
-          
+        ) {          
           lines.push(line);
         }
     }
@@ -405,9 +413,15 @@ export class ReviewComponent implements OnInit {
        
         this.selectedLines = this.getSelectedLines(location);
         // console.log(lines);
-        this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);
+        this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);        
       },
       releaseHandler: (event) => {
+        // highlight selected lines
+        for(const line of this.selectedLines) {
+          const selectElem = this.createOverlayElement(`boundingBox-${line.id}`, 'select');
+          this.osd!.addOverlay(selectElem, this.texRect2osdRect(line.boundingBox!));
+        }
+
         console.log('release handler called');
         this.dragSelect!.isDragging = false;
         this.selectionMode = false;
