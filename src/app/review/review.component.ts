@@ -21,6 +21,12 @@ interface DragSelect {
 }
 
 const OVERLAY_ID = 'highlighted-line';
+enum DragMode {
+  Select = 1,
+  Extend,
+  Shorten,
+  Split
+}
 
 @Component({
   selector: 'app-review',
@@ -35,13 +41,15 @@ export class ReviewComponent implements OnInit {
   categoryMap: Map<string, Array<SubcategoryOptionValue>> = this.objToStrMap(data); 
   imageSize?: OpenSeadragon.Point;
   aspectRatio = 0.0;
-  updatedLineItems = new Map<number, UpdateLineItemInput> ();
-  selectionMode = false;
+  updatedLineItemsByIndex = new Map<number, UpdateLineItemInput> ();
+  updatedLineItemsById = new Map<string, UpdateLineItemInput>();
+  dragMode = false;
   selectTracker?: OpenSeadragon.MouseTracker;
   dragSelect = {
     overlayElement: null as unknown as HTMLDivElement,
     startPos: new OpenSeadragon.Point(0, 0),
-    isDragging: false
+    isDragging: false,
+    dragMode: DragMode.Select
   };
   isDisplayContextMenu = false;
   rightClickMenuItems: Array<ContextMenuModel> = [];
@@ -116,11 +124,21 @@ export class ReviewComponent implements OnInit {
           break;
       case 'extend':
         console.log('To handle extend');
+        this.dragSelect.dragMode = DragMode.Extend;
+        this.dragMode = true;
+        this.osd!.setMouseNavEnabled(false);
+        this.dragSelect!.isDragging = true;
         break;
       case 'shorten':
         console.log('To handle shorten');
+        this.dragSelect.dragMode = DragMode.Shorten;
+        this.dragMode = true;
+        this.osd!.setMouseNavEnabled(false);
+        this.dragSelect!.isDragging = true;
         break;
     }
+
+    this.clearSelectionBox();
   }
 
   @HostListener('document:click')
@@ -158,19 +176,18 @@ export class ReviewComponent implements OnInit {
 
   }
 
-  updateLineItem(lineIndex: number, field: string, value: string) {
+  updateLineItemById(id: string, field: string, value: any) {
     let updateLineItemInput: UpdateLineItemInput;
-    if(this.updatedLineItems.has(lineIndex)) {
-      updateLineItemInput = this.updatedLineItems.get(lineIndex)!;
+    if(this.updatedLineItemsById.has(id)) {
+      updateLineItemInput = this.updatedLineItemsById.get(id)!;
     }
     else {
-      let lineItem = this.record!.lineItems!.items[lineIndex]!;
-      let id = lineItem.id;
       updateLineItemInput = {
         id
       }
-      this.updatedLineItems.set(lineIndex, updateLineItemInput);
+      this.updatedLineItemsById.set(id, updateLineItemInput);
     }
+
     switch(field) {
       case "category":
         updateLineItemInput.category = value;
@@ -181,7 +198,29 @@ export class ReviewComponent implements OnInit {
       case "line":
         updateLineItemInput.title = value;
         break;
+      case "boundingBox":
+        updateLineItemInput.boundingBox = {
+          left: value.left,
+          top: value.top,
+          width: value.width,
+          height: value.height
+        };
+        break;
     }
+
+
+  }
+
+  updateLineItemByIndex(lineIndex: number, field: string, value: any) {
+    let id: string;
+    if(this.updatedLineItemsByIndex.has(lineIndex)) {
+      id = this.updatedLineItemsByIndex.get(lineIndex)!.id;
+    }
+    else {
+      id = this.record!.lineItems!.items[lineIndex]!.id;      
+            
+    }
+    this.updateLineItemById(id, field, value);
   }
 
   populateSubcategory(lineIndex: number): void {
@@ -204,7 +243,7 @@ export class ReviewComponent implements OnInit {
         subcategorySelect?.appendChild(optionElement);
       } 
     }
-    this.updateLineItem(lineIndex, "category", category);
+    this.updateLineItemByIndex(lineIndex, "category", category);
   }
 
   onSubcategoryChanged(lineIndex: number): void {
@@ -213,14 +252,14 @@ export class ReviewComponent implements OnInit {
     // update our object
     if(this.record != undefined) {
      
-      this.updateLineItem(lineIndex, "subcategory", subcategorySelect.value);
+      this.updateLineItemByIndex(lineIndex, "subcategory", subcategorySelect.value);
     }
   }
 
   onTextChanged(lineIndex: number): void {
     const titleElement = document.getElementById("line-" + lineIndex) as HTMLInputElement;
     console.log(titleElement);
-    this.updateLineItem(lineIndex, "line", titleElement.value);
+    this.updateLineItemByIndex(lineIndex, "line", titleElement.value);
   }
 
   createOverlayElement(id = OVERLAY_ID, className = 'highlight'): HTMLElement
@@ -268,17 +307,16 @@ export class ReviewComponent implements OnInit {
   selectRect() {
     this.clearSelection();
     console.log('selecting now');
-    this.selectionMode = true;
+    this.dragMode = true;
     this.osd!.setMouseNavEnabled(false);
     this.dragSelect!.isDragging = true;
+    this.dragSelect!.dragMode = DragMode.Select;
   }
 
   clearSelectedElems() {
-    let selectionElems = document.querySelectorAll('.select');
-    selectionElems.forEach(selectedLine => {
-      selectedLine.remove();
-    });
-    selectionElems = document.querySelectorAll('.highlight');
+    this.clearSelectionBox();
+      
+    let selectionElems = document.querySelectorAll('.highlight');
     selectionElems.forEach(selectedLine => {
       selectedLine.remove();
     });
@@ -288,6 +326,21 @@ export class ReviewComponent implements OnInit {
     this.osd!.clearOverlays();
     this.clearSelectedElems();
     this.selectedLines = [];
+  }
+  
+  clearSelectionBox() {
+    // we do this otherwise the selection overlay will show up
+    this.osd!.updateOverlay(OVERLAY_ID, new OpenSeadragon.Rect(0, 0, 0, 0));
+
+    let selectionElem = document.getElementById(OVERLAY_ID);
+    if(selectionElem) {
+      // selectionElem.remove();
+      selectionElem.parentElement?.removeChild(selectionElem);
+      console.log('selection box removed');
+    }
+    
+    this.osd!.removeOverlay(OVERLAY_ID);
+    
   }
 
   rectanglesIntersect(minAx: number, minAy: number, maxAx: number, maxAy: number,
@@ -380,16 +433,20 @@ export class ReviewComponent implements OnInit {
     this.selectTracker = new OpenSeadragon.MouseTracker({
       element: this.osd?.element as Element,
       pressHandler: (event) => {
-        if (!this.selectionMode) {
+        if (!this.dragMode) {
           return;
         }
-        // console.log('press handler');
-        var overlayElement = this.createOverlayElement()
-        // overlayElement.style.background = 'rgba(255, 0, 0, 0.3)'; 
-        this.dragSelect.overlayElement = overlayElement as HTMLDivElement;
+
         var viewportPos = this.osd!.viewport.pointFromPixel(event.position);
         this.dragSelect!.startPos = viewportPos;
-        this.osd!.addOverlay(overlayElement, new OpenSeadragon.Rect(viewportPos.x, viewportPos.y, 0, 0));
+
+        if(this.dragSelect.dragMode === DragMode.Select) {
+          console.log('adding selection overlay');
+          var overlayElement = this.createOverlayElement()
+          this.dragSelect.overlayElement = overlayElement as HTMLDivElement;
+          
+          this.osd!.addOverlay(overlayElement, new OpenSeadragon.Rect(viewportPos.x, viewportPos.y, 0, 0));
+        }
         
         
       },
@@ -404,27 +461,70 @@ export class ReviewComponent implements OnInit {
         var diffX = viewportPos.x - this.dragSelect!.startPos.x;
         var diffY = viewportPos.y - this.dragSelect!.startPos.y;
         
-        var location = new OpenSeadragon.Rect(
-          Math.min(this.dragSelect!.startPos.x, this.dragSelect!.startPos.x + diffX), 
-          Math.min(this.dragSelect!.startPos.y, this.dragSelect!.startPos.y + diffY), 
-          Math.abs(diffX), 
-          Math.abs(diffY)
-        );
-       
-        this.selectedLines = this.getSelectedLines(location);
-        // console.log(lines);
-        this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);        
+        let location: OpenSeadragon.Rect;
+        let line: LineItem;
+
+        switch(this.dragSelect.dragMode) {
+          case DragMode.Select:
+            location = new OpenSeadragon.Rect(
+              Math.min(this.dragSelect!.startPos.x, this.dragSelect!.startPos.x + diffX), 
+              Math.min(this.dragSelect!.startPos.y, this.dragSelect!.startPos.y + diffY), 
+              Math.abs(diffX), 
+              Math.abs(diffY)
+            );
+          
+            this.selectedLines = this.getSelectedLines(location);
+            // console.log(lines);
+            this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);        
+            break;
+          case DragMode.Shorten:
+            line = this.selectedLines[0];
+            location = this.texRect2osdRect(line.boundingBox!);
+            if(diffX > 0) {
+              location.x += diffX;              
+            }            
+            location.width -= Math.abs(diffX);
+            this.osd!.updateOverlay(`boundingBox-${line.id}`, location);
+            break;          
+          case DragMode.Extend:
+            line = this.selectedLines[0];
+            location = this.texRect2osdRect(line.boundingBox!);
+            if(diffX < 0) {
+              location.x += diffX;              
+            }            
+            location.width += Math.abs(diffX);
+            this.osd!.updateOverlay(`boundingBox-${line.id}`, location);
+            break;          
+
+        }
       },
-      releaseHandler: (event) => {
+      releaseHandler: () => {
         // highlight selected lines
-        for(const line of this.selectedLines) {
-          const selectElem = this.createOverlayElement(`boundingBox-${line.id}`, 'select');
-          this.osd!.addOverlay(selectElem, this.texRect2osdRect(line.boundingBox!));
+        switch(this.dragSelect.dragMode) {
+          case DragMode.Select:
+            for(const line of this.selectedLines) {
+              const selectElem = this.createOverlayElement(`boundingBox-${line.id}`, 'select');
+              this.osd!.addOverlay(selectElem, this.texRect2osdRect(line.boundingBox!));
+            }
+            
+            if(this.selectedLines.length > 0) {
+              this.clearSelectionBox();
+            }
+          break;
+          case DragMode.Shorten:
+          case DragMode.Extend:
+            // update bounding box
+            let line = this.selectedLines[0];
+            let updatedRect = this.osd!.getOverlayById(`boundingBox-${line.id}`);
+            line.boundingBox = this.osdRect2texRect(updatedRect.getBounds(this.osd!.viewport));
+            this.updateLineItemById(line.id, 'boundingBox', line.boundingBox);
+            console.log('bounding box updated');
+            break;
         }
 
         console.log('release handler called');
         this.dragSelect!.isDragging = false;
-        this.selectionMode = false;
+        this.dragMode = false;
         this.osd!.setMouseNavEnabled(true);
       }
   });
@@ -433,8 +533,8 @@ export class ReviewComponent implements OnInit {
 
   async updateLineItems() {
     console.log('updating line items');
-    console.log(this.updatedLineItems);
-    for(const lineItem of Array.from(this.updatedLineItems.values())) {
+    console.log(this.updatedLineItemsByIndex);
+    for(const lineItem of Array.from(this.updatedLineItemsById.values())) {
       console.log(lineItem);
       let response = await this.probateRecordService.UpdateLineItem(lineItem);
       console.log(response);
@@ -455,7 +555,7 @@ export class ReviewComponent implements OnInit {
     console.log('response');
     console.log(response);
     await this.updateLineItems();
-    this.updatedLineItems.clear();
+    this.updatedLineItemsByIndex.clear();
     alert('record updated');
   }
 
