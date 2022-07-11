@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import OpenSeadragon from 'openseadragon';
 import data from './categories.json';
-import { ProbateRecord, UpdateLineItemInput, APIService, GetProbateRecordQuery, UpdateProbateRecordInput, LineItem, LineItemByProbateRecordQuery, Word} from '../API.service';
+import { ProbateRecord, UpdateLineItemInput, APIService, GetProbateRecordQuery, UpdateProbateRecordInput, LineItem, LineItemByProbateRecordQuery, Word, Rect} from '../API.service';
 import { from } from 'rxjs';
 import { ContextMenuModel } from '../interfaces/context-menu-model';
 
@@ -256,12 +256,9 @@ export class ReviewComponent implements OnInit {
     const boundingBox = this.record!.lineItems!.items[index]!.boundingBox;
     console.log(boundingBox);
     // check if overlay exists
-    
     const point = new OpenSeadragon.Point(boundingBox?.left, boundingBox?.top);
-    const rect = new OpenSeadragon.Rect(boundingBox?.left, boundingBox?.top, boundingBox?.width, boundingBox?.height);
-    this.selectionRect = rect;
-    rect.y /= this.aspectRatio;
-    rect.height /= this.aspectRatio;
+    const rect = this.texRect2osdRect(boundingBox!);//new OpenSeadragon.Rect(boundingBox?.left, boundingBox?.top, boundingBox?.width, boundingBox?.height);
+    this.selectionRect = rect;    
     let overlay = this.createOverlayElement();
     this.osd?.addOverlay({element: overlay!, location: rect});
     this.osd?.viewport.fitBoundsWithConstraints(rect);  
@@ -287,6 +284,26 @@ export class ReviewComponent implements OnInit {
   rectanglesIntersect(minAx: number, minAy: number, maxAx: number, maxAy: number,
     minBx: number, minBy:number, maxBx:number, maxBy:number): boolean {
       return maxAx >= minBx && minAx <= maxBx && minAy <= maxBy && maxAy >= minBy;
+  }
+
+  texRect2osdRect(rect: Rect): OpenSeadragon.Rect {
+    if(this.aspectRatio === 0.0) {
+      this.calculateAspectRatio();
+    }
+    return new OpenSeadragon.Rect(rect.left, rect.top / this.aspectRatio, rect.width, rect.height / this.aspectRatio);
+  }
+
+  osdRect2texRect(rect: OpenSeadragon.Rect): Rect {
+    if(this.aspectRatio === 0.0) {
+      this.calculateAspectRatio();
+    }
+    return {
+      __typename: 'Rect',
+      left: rect.x, 
+      top: rect.y * this.aspectRatio, 
+      width: rect.width, 
+      height: rect.height * this.aspectRatio
+    };
   }
 
   // A line
