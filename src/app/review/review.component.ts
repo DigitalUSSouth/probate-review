@@ -4,10 +4,11 @@ import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import OpenSeadragon from 'openseadragon';
 import data from './categories.json';
-import { ProbateRecord, UpdateLineItemInput, APIService, GetProbateRecordQuery, UpdateProbateRecordInput, LineItem, LineItemByProbateRecordQuery, Word, Rect} from '../API.service';
+import { ProbateRecord, UpdateLineItemInput, APIService, GetProbateRecordQuery, UpdateProbateRecordInput, LineItem, LineItemByProbateRecordQuery, Word, Rect, CreateLineItemInput} from '../API.service';
 import { from } from 'rxjs';
 import { ContextMenuModel } from '../interfaces/context-menu-model';
-
+// import { LineItem } from 'src/models';
+import {v4 as uuidv4} from 'uuid';
 
 interface SubcategoryOptionValue {
   value: string,
@@ -56,6 +57,8 @@ export class ReviewComponent implements OnInit {
   rightClickMenuPositionX = 0;
   rightClickMenuPositionY = 0;
   selectedLines: LineItem[] = [];
+  wordMap = new Map<string, Word>(); 
+  linesItemsToAdd = new Array<CreateLineItemInput>();
 
   constructor(private route: ActivatedRoute, private location: Location, private probateRecordService: APIService, private renderer: Renderer2) {
   }
@@ -121,6 +124,20 @@ export class ReviewComponent implements OnInit {
            break;
       case 'split':
           console.log('To handle split');
+          this.dragSelect.dragMode = DragMode.Split;
+          this.dragMode = true;
+          this.osd!.setMouseNavEnabled(false);
+          this.dragSelect!.isDragging = true;
+          let line = this.selectedLines[0];
+          let texRect = line.boundingBox!;
+          texRect.width /= 2;
+
+          this.osd!.updateOverlay(`boundingBox-${line.id}`, this.texRect2osdRect(texRect));
+
+          // create our second rect
+          texRect.left += texRect.width;
+          let overlayElement = this.createOverlayElement(`boundingBox-${line.id}-2`, 'select');
+          this.osd!.addOverlay(overlayElement, this.texRect2osdRect(texRect));  
           break;
       case 'extend':
         console.log('To handle extend');
@@ -167,7 +184,10 @@ export class ReviewComponent implements OnInit {
     
     let record$ = from(this.probateRecordService.GetProbateRecord(id));
     record$.subscribe(record => {
-      this.record = record as ProbateRecord;      
+      this.record = record as ProbateRecord; 
+      for(const word of this.record.words) {
+        this.wordMap.set(word!.id, word!);
+      }
       console.log(this.record);
       this.getRecord(id);
     })
@@ -367,6 +387,10 @@ export class ReviewComponent implements OnInit {
       return maxAx >= minBx && minAx <= maxBx && minAy <= maxBy && maxAy >= minBy;
   }
 
+  texRectangleContainsTexRectangle(a: Rect, b: Rect) {
+    return a.left <= b.left && a.top <= b.top && a.left + a.width >= b.left + b.width && a.top + a.height >= b.top + b.height;
+  }
+
   texRect2osdRect(rect: Rect): OpenSeadragon.Rect {
     if(this.aspectRatio === 0.0) {
       this.calculateAspectRatio();
@@ -459,13 +483,26 @@ export class ReviewComponent implements OnInit {
         var viewportPos = this.osd!.viewport.pointFromPixel(event.position);
         this.dragSelect!.startPos = viewportPos;
 
-        if(this.dragSelect.dragMode === DragMode.Select) {
-          console.log('adding selection overlay');
-          var overlayElement = this.createOverlayElement()
-          this.dragSelect.overlayElement = overlayElement as HTMLDivElement;
-          
-          this.osd!.addOverlay(overlayElement, new OpenSeadragon.Rect(viewportPos.x, viewportPos.y, 0, 0));
+        let overlayElement: HTMLElement;
+        let line: LineItem;
+        let texRect: Rect;
+        let osdRect: OpenSeadragon.Rect;
+
+        switch(this.dragSelect.dragMode) {
+          case DragMode.Select:
+            console.log('adding selection overlay');
+            overlayElement = this.createOverlayElement()
+            this.dragSelect.overlayElement = overlayElement as HTMLDivElement;
+            
+            this.osd!.addOverlay(overlayElement, new OpenSeadragon.Rect(viewportPos.x, viewportPos.y, 0, 0));
+            break;
+          case DragMode.Split:
+            console.log('splitting overlay');
+            
+            break;
         }
+
+        
         
         
       },
@@ -495,7 +532,7 @@ export class ReviewComponent implements OnInit {
             this.selectedLines = this.getSelectedLines(location);
             // console.log(lines);
             this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);        
-            break;
+            break;          
           case DragMode.Shorten:
             line = this.selectedLines[0];
             location = this.texRect2osdRect(line.boundingBox!);
@@ -514,10 +551,26 @@ export class ReviewComponent implements OnInit {
             location.width += Math.abs(diffX);
             this.osd!.updateOverlay(`boundingBox-${line.id}`, location);
             break;          
+          case DragMode.Split:
+            line = this.selectedLines[0];
+            let boundingBox1Id = `boundingBox-${line.id}`;
+            let boundingBox2Id = `boundingBox-${line.id}-2`;
+            location = this.osd!.getOverlayById(boundingBox1Id).getBounds(this.osd!.viewport);
+            let location2 = this.osd!.getOverlayById(boundingBox2Id).getBounds(this.osd!.viewport);
+            location.width += diffX;
+            location2.width -= diffX;
+            location2.x += diffX;
+            this.osd!.updateOverlay(boundingBox1Id, location);
+            this.osd!.updateOverlay(boundingBox2Id, location2);
+            this.dragSelect!.startPos.x = viewportPos.x;
+            this.dragSelect!.startPos.y = viewportPos.y;
+            break;
 
         }
       },
       releaseHandler: () => {
+        let line = this.selectedLines[0];
+        let selectedLineOverlay = this.osd!.getOverlayById(`boundingBox-${line.id}`);
         // highlight selected lines
         switch(this.dragSelect.dragMode) {
           case DragMode.Select:
@@ -533,11 +586,58 @@ export class ReviewComponent implements OnInit {
           case DragMode.Shorten:
           case DragMode.Extend:
             // update bounding box
-            let line = this.selectedLines[0];
-            let updatedRect = this.osd!.getOverlayById(`boundingBox-${line.id}`);
-            line.boundingBox = this.osdRect2texRect(updatedRect.getBounds(this.osd!.viewport));
+            line.boundingBox = this.osdRect2texRect(selectedLineOverlay.getBounds(this.osd!.viewport));
             this.updateLineItemById(line.id, 'boundingBox', line.boundingBox);
             console.log('bounding box updated');
+            break;
+          case DragMode.Split:
+            // update our first bounding box
+            line.boundingBox = this.osdRect2texRect(selectedLineOverlay.getBounds(this.osd!.viewport));
+            this.updateLineItemById(line.id, 'boundingBox', line.boundingBox);
+            let wordIdsToKeep = [];
+            let wordIdsToRemove = []
+            let textToAdd = '';
+
+            for(const id of line.wordIds) {
+              const word = this.wordMap.get(id!);
+              if(this.texRectangleContainsTexRectangle(line.boundingBox, word!.boundingBox!)) {
+                wordIdsToKeep.push(word!.id);
+              }
+              else {
+                textToAdd += `${word!.text} `;
+                wordIdsToRemove.push(word!.id);
+              }
+            }
+            line.wordIds = wordIdsToKeep;
+            
+            
+            // update our second bounding box
+            let newLineOverlay = this.osd!.getOverlayById(`boundingBox-${line.id}-2`);
+            textToAdd = textToAdd.trim();
+            let newBoundingBox = this.osdRect2texRect(newLineOverlay.getBounds(this.osd!.viewport));
+            
+
+            let newLineItem = {
+              id: uuidv4() as string,
+              probateId: line.probateId,
+              description: line.description,
+              title: textToAdd,
+              category: line.category,
+              subcategory: line.subcategory,
+              value: line.value,
+              quantity: line.quantity,
+              attributeForId: line.attributeForId,
+              wordIds: wordIdsToRemove,
+              boundingBox: {
+                left: newBoundingBox.left,
+                top: newBoundingBox.top,
+                width: newBoundingBox.width,
+                height: newBoundingBox.height
+              }
+            }
+            this.linesItemsToAdd.push(newLineItem);
+            
+            this.record?.lineItems?.items.push({...newLineItem, __typename: 'LineItem', boundingBox: newBoundingBox, createdAt: line.createdAt, updatedAt:line.updatedAt});
             break;
         }
 
@@ -565,6 +665,14 @@ export class ReviewComponent implements OnInit {
     if(isReviewed) {
       reviewCount++;
     }
+
+    // create a new line items
+    for(const newLineItem of this.linesItemsToAdd) {
+      let lineResponse = await this.probateRecordService.CreateLineItem(newLineItem);
+      console.log('new line item created');
+      console.log(lineResponse);      
+    }
+    this.linesItemsToAdd = [];
 
     let item = {id: this.record!.id, reviewCount};
     console.log(item);
