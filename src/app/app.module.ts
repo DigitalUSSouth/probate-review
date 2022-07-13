@@ -15,6 +15,8 @@ import { ReviewComponent } from './review/review.component';
 import { UploadComponent } from './upload/upload.component';
 import { AuthComponent } from './auth/auth.component';
 import { ContextMenuComponent } from './context-menu/context-menu.component';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatTableModule} from '@angular/material/table';
 
 @NgModule({
   declarations: [
@@ -34,7 +36,9 @@ import { ContextMenuComponent } from './context-menu/context-menu.component';
     MatButtonModule,
     MatInputModule,
     MatIconModule,
-    HttpClientModule
+    HttpClientModule,
+    MatPaginatorModule,
+    MatTableModule
   ],
   providers: [],
   bootstrap: [AppComponent]

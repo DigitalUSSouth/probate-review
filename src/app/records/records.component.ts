@@ -1,11 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-// import { RecordService } from '../record.service';
-// import { ProbateRecord } from '../probate-record';
-import { Document, ProbateRecord, APIService, ListProbateRecordsQuery} from '../API.service';
-// import { API } from '../API.service';
-import { API, graphqlOperation } from 'aws-amplify';
-// import { ListProbateRecords} from '../../graphql/queries';
-import { Observable } from 'rxjs';
+import { Document, ProbateRecord, APIService, ListProbateRecordsQuery, ModelProbateRecordFilterInput} from '../API.service';
+import {PageEvent} from '@angular/material/paginator';
 
 @Component({
   selector: 'app-records',
@@ -15,32 +10,37 @@ import { Observable } from 'rxjs';
 export class RecordsComponent implements OnInit {
   records?: ProbateRecord[];
   documents?: Document[];
-  constructor(private recordService: APIService) { }
+  // MatPaginator Inputs
+  length = 50;
+  pageSize = 10;
+  pageSizeOptions: number[] = [5, 10, 25, 100];
+  pageIndex = 0;
+  // MatPaginator Output
+  pageEvent?: PageEvent;
+  displayedColumns: string[] = ['thumbnail', 'title', 'description'];
 
-  // async getRecords(): Promise<void> {
-  //   console.log('getting records');
-  //   this.records = await this.recordService.getProbateRecords();
-  //   console.log('records received');
-  // }
+  constructor(private recordService: APIService) { }  
 
-  
-
-  ngOnInit(): void {
-    // this.getRecords();
-    // (API.graphql(graphqlOperation(ListProbateRecords)) as unknown as Observable<ProbateRecord>).subscribe({
-    //     next: (records: any) => {
-    //     console.log(records);
-    //   }
-    // });
-
-    let records = this.recordService.ListProbateRecords().then((recordsQuery: ListProbateRecordsQuery) => {
-      // if(recordsQuery.items) {
-      //   this.records = recordsQuery.items;
-      // }
-      console.log(recordsQuery);
-
-    });
-    // console.log(this.records);
+  setPageSizeOptions(setPageSizeOptionsInput: string) {
+    if (setPageSizeOptionsInput) {
+      this.pageSizeOptions = setPageSizeOptionsInput.split(',').map(str => +str);
+    }
   }
 
+  ngOnInit(): void {
+    
+    let filter: ModelProbateRecordFilterInput;
+    this.recordService.ListProbateRecords(undefined, {reviewCount: {ge: 2}}).then((recordsQuery: ListProbateRecordsQuery) => {
+      console.log(recordsQuery!.items);
+      this.records = recordsQuery!.items!.map(x => x as ProbateRecord);
+      this.length = this.records.length;
+    });
+    
+  }
+
+  handlePageEvent(event: PageEvent) {
+    this.length = event.length;
+    this.pageSize = event.pageSize;
+    this.pageIndex = event.pageIndex;
+  }
 }
