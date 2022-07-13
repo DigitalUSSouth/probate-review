@@ -581,84 +581,81 @@ export class ReviewComponent implements OnInit {
           Math.min(this.dragSelect!.startPos.y, this.dragSelect!.startPos.y + diffY),
           Math.abs(diffX),
           Math.abs(diffY)
-        );
+        );        
+        
+        // highlight selected lines
+        switch (this.dragSelect.dragMode) {
+          case DragMode.Select:
+            this.selectedLines = this.getSelectedLines(location);
+            for (const line of this.selectedLines) {
+              const selectElem = this.createOverlayElement(`boundingBox-${line.id}`, 'select');
+              this.osd!.addOverlay(selectElem, this.texRect2osdRect(line.boundingBox!));
+            }
 
-        this.selectedLines = this.getSelectedLines(location);
-        if (this.selectedLines.length > 0) {
-          let line = this.selectedLines[0];
-          let selectedLineOverlay = this.osd!.getOverlayById(`boundingBox-${line.id}`);
-          // highlight selected lines
-          switch (this.dragSelect.dragMode) {
-            case DragMode.Select:
-              for (const line of this.selectedLines) {
-                const selectElem = this.createOverlayElement(`boundingBox-${line.id}`, 'select');
-                this.osd!.addOverlay(selectElem, this.texRect2osdRect(line.boundingBox!));
+            if (this.selectedLines.length > 0) {
+              this.clearSelectionBox();
+            }
+            break;
+          case DragMode.Shorten:
+          case DragMode.Extend:
+            // update bounding box
+            let line = this.selectedLines[0];
+            let selectedLineOverlay = this.osd!.getOverlayById(`boundingBox-${line.id}`);
+            line.boundingBox = this.osdRect2texRect(selectedLineOverlay.getBounds(this.osd!.viewport));
+            this.updateLineItemById(line.id, 'boundingBox', line.boundingBox);
+            console.log('bounding box updated');
+            break;
+          case DragMode.Split:
+            let lineToSplit = this.selectedLines[0];
+            let selectedSplitLineOverlay = this.osd!.getOverlayById(`boundingBox-${lineToSplit.id}`);
+            // update our first bounding box
+            lineToSplit.boundingBox = this.osdRect2texRect(selectedSplitLineOverlay.getBounds(this.osd!.viewport));
+            this.updateLineItemById(lineToSplit.id, 'boundingBox', lineToSplit.boundingBox);
+            let wordIdsToKeep = [];
+            let wordIdsToRemove = []
+            let textToAdd = '';
+
+            for (const id of lineToSplit.wordIds) {
+              const word = this.wordMap.get(id!);
+              if (this.texRectangleContainsTexRectangle(lineToSplit.boundingBox, word!.boundingBox!)) {
+                wordIdsToKeep.push(word!.id);
               }
-
-              if (this.selectedLines.length > 0) {
-                this.clearSelectionBox();
+              else {
+                textToAdd += `${word!.text} `;
+                wordIdsToRemove.push(word!.id);
               }
-              break;
-            case DragMode.Shorten:
-            case DragMode.Extend:
-              // update bounding box
-              line.boundingBox = this.osdRect2texRect(selectedLineOverlay.getBounds(this.osd!.viewport));
-              this.updateLineItemById(line.id, 'boundingBox', line.boundingBox);
-              console.log('bounding box updated');
-              break;
-            case DragMode.Split:
-              // update our first bounding box
-              line.boundingBox = this.osdRect2texRect(selectedLineOverlay.getBounds(this.osd!.viewport));
-              this.updateLineItemById(line.id, 'boundingBox', line.boundingBox);
-              let wordIdsToKeep = [];
-              let wordIdsToRemove = []
-              let textToAdd = '';
+            }
+            lineToSplit.wordIds = wordIdsToKeep;
 
-              for (const id of line.wordIds) {
-                const word = this.wordMap.get(id!);
-                if (this.texRectangleContainsTexRectangle(line.boundingBox, word!.boundingBox!)) {
-                  wordIdsToKeep.push(word!.id);
-                }
-                else {
-                  textToAdd += `${word!.text} `;
-                  wordIdsToRemove.push(word!.id);
-                }
+
+            // update our second bounding box
+            let newLineOverlay = this.osd!.getOverlayById(`boundingBox-${lineToSplit.id}-2`);
+            textToAdd = textToAdd.trim();
+            let newBoundingBox = this.osdRect2texRect(newLineOverlay.getBounds(this.osd!.viewport));
+
+
+            let newLineItem = {
+              id: uuidv4() as string,
+              probateId: lineToSplit.probateId,
+              description: lineToSplit.description,
+              title: textToAdd,
+              category: lineToSplit.category,
+              subcategory: lineToSplit.subcategory,
+              value: lineToSplit.value,
+              quantity: lineToSplit.quantity,
+              attributeForId: lineToSplit.attributeForId,
+              wordIds: wordIdsToRemove,
+              boundingBox: {
+                left: newBoundingBox.left,
+                top: newBoundingBox.top,
+                width: newBoundingBox.width,
+                height: newBoundingBox.height
               }
-              line.wordIds = wordIdsToKeep;
+            }
+            this.linesItemsToAdd.push(newLineItem);
 
-
-              // update our second bounding box
-              let newLineOverlay = this.osd!.getOverlayById(`boundingBox-${line.id}-2`);
-              textToAdd = textToAdd.trim();
-              let newBoundingBox = this.osdRect2texRect(newLineOverlay.getBounds(this.osd!.viewport));
-
-
-              let newLineItem = {
-                id: uuidv4() as string,
-                probateId: line.probateId,
-                description: line.description,
-                title: textToAdd,
-                category: line.category,
-                subcategory: line.subcategory,
-                value: line.value,
-                quantity: line.quantity,
-                attributeForId: line.attributeForId,
-                wordIds: wordIdsToRemove,
-                boundingBox: {
-                  left: newBoundingBox.left,
-                  top: newBoundingBox.top,
-                  width: newBoundingBox.width,
-                  height: newBoundingBox.height
-                }
-              }
-              this.linesItemsToAdd.push(newLineItem);
-
-              this.record?.lineItems?.items.push({ ...newLineItem, __typename: 'LineItem', boundingBox: newBoundingBox, createdAt: line.createdAt, updatedAt: line.updatedAt });
-              break;
-          }
-        }
-        else {
-          // check if we clicked on a line
+            this.record?.lineItems?.items.push({ ...newLineItem, __typename: 'LineItem', boundingBox: newBoundingBox, createdAt: lineToSplit.createdAt, updatedAt: lineToSplit.updatedAt });
+            break;
         }
 
         console.log('release handler called');
