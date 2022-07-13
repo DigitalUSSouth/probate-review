@@ -1,8 +1,10 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, Renderer2} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
-import { ProbateRecord,  APIService} from '../API.service';
+import { ProbateRecord, LineItem, APIService} from '../API.service';
 import * as dragon from 'openseadragon'
+import { CollectionViewer, DataSource } from '@angular/cdk/collections';
+
 
 interface SubcategoryOptionValue {
   value: string,
@@ -19,16 +21,25 @@ export class RecordDetailComponent implements OnInit {
   @ViewChild('viewer') viewer!: ElementRef;  
   
   osd?: dragon.Viewer;
+  displayedColumns: string[] = ['title', 'category', 'subcategory', 'quantity', 'value'];
+
+  
+
+  
+
   constructor(private route: ActivatedRoute, private location: Location, private recordService: APIService, private renderer: Renderer2) { 
+
   }
+
 
   async getRecord(id: string): Promise<void> {
     console.log('getting records');
     // this.record = await this.recordService.getProbateRecord(id);
     console.log('fetching query result');
     let queryResult = await this.recordService.GetProbateRecord(id);
+
     console.log(queryResult);
-    //  this.record
+    this.record = queryResult as ProbateRecord;
     // this.recordService.GetProbateRecord(id).subscribe(record => {
     //   this.record = {id, ...record};
       // console.log(record);

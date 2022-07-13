@@ -1,4 +1,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
 <div class="container">
     <div id="seadragon-viewer" class="split top" #viewer></div>
+    <div id="metadata-table" class="split bottom">
+        <div *ngIf="record != null">
+        <table mat-table [dataSource]="record!.lineItems!.items" class="mat-elevation-z8">
+
+            <!--- Note that these columns can be defined in any order.
+                  The actual rendered columns are set as a property on the row definition" -->
+          
+            <ng-container matColumnDef="title">
+              <th mat-header-cell *matHeaderCellDef>Title</th>
+              <td mat-cell *matCellDef="let line"> {{line.title}}</td>
+            </ng-container>          
+            <ng-container matColumnDef="category">
+                <th mat-header-cell *matHeaderCellDef> Category </th>
+                <td mat-cell *matCellDef="let line"> {{line.category}} </td>
+              </ng-container>
+          
+              <ng-container matColumnDef="subcategory">
+                  <th mat-header-cell *matHeaderCellDef> Subcategory </th>
+                  <td mat-cell *matCellDef="let line"> {{line.subcategory}} </td>
+                </ng-container>
+            <ng-container matColumnDef="quantity">
+              <th mat-header-cell *matHeaderCellDef> Quantity </th>
+              <td mat-cell *matCellDef="let line"> {{line.quantity}} </td>
+            </ng-container>
+        
+            <ng-container matColumnDef="value">
+                <th mat-header-cell *matHeaderCellDef> Value </th>
+                <td mat-cell *matCellDef="let line"> {{line.value}} </td>
+              </ng-container>
+        
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+    </div>    
+    </div>
 </div>

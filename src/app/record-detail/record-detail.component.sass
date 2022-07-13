@@ -1,62 +1,41 @@
+@import "../theme"
+
 .image-viewer 
-    height: 50vh
     margin: 10px
     overflow: auto
 
-ul 
-    list-style-type: none
-
-input
-    width:100%
-    margin:-3px
-    border:2px inset #eee
-
-.highlight 
-    border: 1px solid red
-    background-color: transparent
-
-#review-form
-    height: 50vh
-    margin:4px, 4px
-    padding:4px
-    width: 100%
-    overflow-x: hidden
-    overflow-y: auto
-    text-align:justify
-
-.container
-    height: 100%
-
-table
-    width: 100%
-
-th, td 
-  text-align: left
-  padding: 8px
-
-
-tr:nth-child(even) 
-    background-color: #f2f2f2
-
 .split 
-  height: 38%
-  width: 100%
-  position: fixed
+  height: 43%
+  width: 100%  
   z-index: 1
   left: 0
   overflow-y: hidden
 
+.container
+    height: 100%
+    
 
-/* Control the left side */
+/* Control the top */
 .top 
   top: 0
 
-/* Control the right side */
+/* Control the bottom */
 .bottom 
   bottom: 0
 
-.submit-button
-    margin: auto
-    display: block
-    color: white
-    background-color: #1976d2
+#metadata-table
+    width: 100%
+    overflow-y: auto
+
+table
+    width: 100%
+    
+.mat-row:nth-child(even)
+    background-color: #dbe1f1
+        
+.mat-row:nth-child(odd)
+    background-color: #96adfc
+
+.mat-cell
+    color: black
+    justify-content: center
