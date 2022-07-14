@@ -343,7 +343,8 @@ export class ReviewComponent implements OnInit {
     let overlay = this.createOverlayElement();
     this.osd?.addOverlay({ element: overlay!, location: rect });
     this.osd?.viewport.fitBoundsWithConstraints(rect);
-
+    this.selectedLines = [];
+    this.selectedLines.push(this.record!.lineItems!.items[index]!);
   }
 
   selectRect() {
