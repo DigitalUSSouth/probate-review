@@ -508,7 +508,6 @@ export class ReviewComponent implements OnInit {
 
         switch (this.dragSelect.dragMode) {
           case DragMode.Select:
-            console.log('adding selection overlay');
             overlayElement = this.createOverlayElement()
             this.dragSelect.overlayElement = overlayElement as HTMLDivElement;
 
@@ -525,13 +524,11 @@ export class ReviewComponent implements OnInit {
 
       },
       dragHandler: (event) => {
-        // console.log('drag handler called');
         if (!this.dragSelect!.isDragging) {
           return;
         }
 
         var viewportPos = this.osd!.viewport.pointFromPixel((event as unknown as OpenSeadragon.CanvasDragEvent).position);
-        // console.log(viewportPos);
         var diffX = viewportPos.x - this.dragSelect!.startPos.x;
         var diffY = viewportPos.y - this.dragSelect!.startPos.y;
 
@@ -547,7 +544,6 @@ export class ReviewComponent implements OnInit {
               Math.abs(diffY)
             );
             
-            // console.log(lines);
             this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);
             break;
           case DragMode.Shorten:
