@@ -8,6 +8,7 @@ import { ProbateRecord, UpdateLineItemInput, APIService, GetProbateRecordQuery, 
 import { from } from 'rxjs';
 import { ContextMenuModel } from '../interfaces/context-menu-model';
 import { v4 as uuidv4 } from 'uuid';
+import { BoundingBox, QuadTree } from '../quad-tree';
 
 interface SubcategoryOptionValue {
   value: string,
@@ -59,7 +60,7 @@ export class ReviewComponent implements OnInit {
   selectedLines: LineItem[] = [];
   wordMap = new Map<string, Word>();
   linesItemsToAdd = new Array<CreateLineItemInput>();
-  
+  quadTree = new QuadTree();
 
   constructor(private route: ActivatedRoute, private location: Location, private probateRecordService: APIService, private renderer: Renderer2) {
   }
@@ -92,6 +93,10 @@ export class ReviewComponent implements OnInit {
             menuText: 'Shorten',
             menuEvent: 'shorten',
           },
+          {
+            menuText: 'Correct Text',
+            menuEvent: 'correct',
+          }
         ];
         break;
       default:
@@ -154,6 +159,10 @@ export class ReviewComponent implements OnInit {
         this.osd!.setMouseNavEnabled(false);
         this.dragSelect!.isDragging = true;
         break;
+      case 'correct':
+      default:
+        alert('not implemented');
+        break;
     }
 
     this.clearSelectionBox();
@@ -187,7 +196,10 @@ export class ReviewComponent implements OnInit {
     record$.subscribe(record => {
       this.record = record as ProbateRecord;
       for (const word of this.record.words) {
-        this.wordMap.set(word!.id, word!);
+        if(word) {
+          this.wordMap.set(word.id, word);
+          this.quadTree.insert(new BoundingBox(word.boundingBox!.left, word.boundingBox!.top, word.boundingBox!.width, word.boundingBox!.height), word.id);
+        }
       }
 
      
@@ -595,6 +607,13 @@ export class ReviewComponent implements OnInit {
 
             if (this.selectedLines.length > 0) {
               this.clearSelectionBox();
+            }
+            if(this.selectedLines.length == 1) {
+              let selectedLine = this.selectedLines[0];
+              let boundingBox = new BoundingBox(selectedLine.boundingBox?.left, selectedLine.boundingBox?.top, selectedLine.boundingBox?.width, selectedLine.boundingBox?.height);
+              let ids = this.quadTree.retrieve(boundingBox);
+              let selectedWords = this.record!.words.filter(w => ids.includes(w!.id));
+              console.log(selectedWords);
             }
             break;
           case DragMode.Shorten:
