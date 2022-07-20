@@ -259,7 +259,7 @@ export class ReviewComponent implements OnInit {
               this.renderer.setProperty(inputElem, 'id', inputId);
               this.renderer.listen(inputElem, 'input', () => {
                 word.text = (inputElem! as HTMLInputElement).value;
-                
+
                 // update line text
                 let updatedWords = words;
                 updatedWords.sort(
@@ -354,7 +354,7 @@ export class ReviewComponent implements OnInit {
 
         // update line text
         let updatedWords = words;
-        updatedWords.sort((a, b) => a.boundingBox!.left - b.boundingBox!.left);
+        updatedWords.sort((a, b) => (a.boundingBox!.left + a.boundingBox!.width) - (b.boundingBox!.left + b.boundingBox!.width));
         console.log('sorted array of words');
         console.log(updatedWords);
         let updatedText = '';
@@ -364,7 +364,11 @@ export class ReviewComponent implements OnInit {
         }
         updatedText = updatedText.trim();
         this.updateLineItemById(this.selectedLines[0].id, 'title', updatedText);
-        this.updateLineItemById(this.selectedLines[0].id, 'wordIds', words.map(w => w.id));
+        this.updateLineItemById(
+          this.selectedLines[0].id,
+          'wordIds',
+          words.map((w) => w.id)
+        );
         // update our html
         // get line index
         const lineIndex = this.record!.lineItems!.items.indexOf(
@@ -383,11 +387,10 @@ export class ReviewComponent implements OnInit {
         this.clearSelection();
       });
       this.renderer.appendChild(document.body, inputElem);
-      
     }
 
     // this.renderer.setProperty(inputElem, 'className', className);
-    
+
     this.renderer.setAttribute(inputElem, 'value', word.text);
     const osdInputRect = this.texRect2osdRect(word.boundingBox!);
     const pixel = this.osd!.viewport.pixelFromPoint(
@@ -762,7 +765,7 @@ export class ReviewComponent implements OnInit {
     let lines = new Array<LineItem>();
     for (const line of this.record!.lineItems!.items) {
       const boundingBox = line!.boundingBox;
-     
+
       const lineRect = this.texRect2osdRect(boundingBox!);
       if (
         line &&
@@ -834,7 +837,7 @@ export class ReviewComponent implements OnInit {
 
   getWordsInLineBoundingBox(line: LineItem): Word[] {
     let boundingBox = this.texRect2BoundingBox(line.boundingBox!);
-  
+
     let words = this.getWordsOfLine(line);
     words = this.filterLinesInBox(words, boundingBox);
     return words;
@@ -1008,28 +1011,32 @@ export class ReviewComponent implements OnInit {
                 }
                 break;
               case SelectionMode.Word:
-                if(this.selectedLines.length == 1) {
-                  // check if we have clicked on an existing word or input box
-                  
-                  let existingWords = this.getWordsOfLine(this.selectedLines[0]) as Word[];
-                  if(existingWords.filter(w => this.texRect2BoundingBox(w.boundingBox!).contains(this.osdRect2BoundingBox(location))).length > 0) {
-                    break;
-                  };
+                if (this.selectedLines.length == 1) {
+                  // check if we have clicked on an existing input box
+                  let existingWords = this.getWordsOfLine(
+                    this.selectedLines[0]
+                  ) as Word[];
 
                   // check inputs
                   let isClickInExisting = false;
-                  for(const existingWord of existingWords) {
-                    const overlay = this.osd!.getOverlayById(`wordInput-${existingWord.id}`);
-                    if(this.osdRect2BoundingBox(overlay.getBounds(this.osd!.viewport)).contains(this.osdRect2BoundingBox(location))) {
+                  for (const existingWord of existingWords) {
+                    const overlay = this.osd!.getOverlayById(
+                      `wordInput-${existingWord.id}`
+                    );
+                    if (
+                      this.osdRect2BoundingBox(
+                        overlay.getBounds(this.osd!.viewport)
+                      ).contains(this.osdRect2BoundingBox(location))
+                    ) {
                       isClickInExisting = true;
                       break;
                     }
                   }
 
-                  if(isClickInExisting) {
+                  if (isClickInExisting) {
                     break;
                   }
-                  
+
                   console.log('creating word');
                   // create new word
                   let word = {
@@ -1051,7 +1058,7 @@ export class ReviewComponent implements OnInit {
             if (this.selectedLines.length > 0) {
               this.clearSelectionBox();
             }
-           
+
             break;
           case DragMode.Shorten:
           case DragMode.Extend:
