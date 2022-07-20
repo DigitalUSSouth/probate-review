@@ -28,6 +28,7 @@ import { from } from 'rxjs';
 import { ContextMenuModel } from '../interfaces/context-menu-model';
 import { v4 as uuidv4 } from 'uuid';
 import { BoundingBox, QuadTree } from '../quad-tree';
+import { input } from 'aws-amplify';
 
 interface SubcategoryOptionValue {
   value: string;
@@ -258,18 +259,7 @@ export class ReviewComponent implements OnInit {
               this.renderer.setProperty(inputElem, 'id', inputId);
               this.renderer.listen(inputElem, 'input', () => {
                 word.text = (inputElem! as HTMLInputElement).value;
-                if (!this.updatedWordsById.has(word.id)) {
-                  this.updatedWordsById.set(word.id, {
-                    id: word.id,
-                    text: word.text,
-                    boundingBox: {
-                      left: word.boundingBox!.left,
-                      top: word.boundingBox!.top,
-                      width: word.boundingBox!.width,
-                      height: word.boundingBox!.height,
-                    },
-                  });
-                }
+                
                 // update line text
                 let updatedWords = words;
                 updatedWords.sort(
@@ -331,6 +321,9 @@ export class ReviewComponent implements OnInit {
   }
 
   createInputBoxForWord(word: Word, line: LineItem) {
+    // clear all other overlays
+    this.osd!.clearOverlays();
+
     // check if the element exists
     const inputId = `wordInput-${word.id}`;
 
@@ -371,7 +364,7 @@ export class ReviewComponent implements OnInit {
         }
         updatedText = updatedText.trim();
         this.updateLineItemById(this.selectedLines[0].id, 'title', updatedText);
-
+        this.updateLineItemById(this.selectedLines[0].id, 'wordIds', words.map(w => w.id));
         // update our html
         // get line index
         const lineIndex = this.record!.lineItems!.items.indexOf(
@@ -396,8 +389,6 @@ export class ReviewComponent implements OnInit {
     // this.renderer.setProperty(inputElem, 'className', className);
     
     this.renderer.setAttribute(inputElem, 'value', word.text);
-    inputElem!.focus();
-    this.osd?.setMouseNavEnabled(false);
     const osdInputRect = this.texRect2osdRect(word.boundingBox!);
     const pixel = this.osd!.viewport.pixelFromPoint(
       new OpenSeadragon.Point(osdInputRect.x, osdInputRect.y)
@@ -418,6 +409,7 @@ export class ReviewComponent implements OnInit {
     rect.y = inputTop;
     rect.height = inputHeight;
     this.osd!.addOverlay(inputElem!, rect);
+    inputElem!.focus();
   }
 
   @HostListener('document:click')
@@ -831,9 +823,6 @@ export class ReviewComponent implements OnInit {
   }
 
   getWordsInBoundingBox(boundingBox: BoundingBox) {
-    // let selectedWords = this.record!.words.filter((w) =>
-    //   boundingBox.contains(this.texRect2BoundingBox(w!.boundingBox!))
-    // );
     return this.filterLinesInBox(this.record!.words as Word[], boundingBox);
   }
 
@@ -875,6 +864,10 @@ export class ReviewComponent implements OnInit {
         console.log('click handler fired');
         console.log(event);
         if (target!.matches('input')) {
+          this.dragSelect.selectionMode = SelectionMode.None;
+          console.log('focus on ');
+          console.log(target);
+          target.style.display = 'block';
           target.focus();
           this.osd!.setMouseNavEnabled(false);
         }
@@ -1015,19 +1008,44 @@ export class ReviewComponent implements OnInit {
                 }
                 break;
               case SelectionMode.Word:
-                console.log('creating word');
-                // create new word
-                let word = {
-                  __typename: 'Word',
-                  text: '',
-                  id: uuidv4(),
-                  boundingBox: this.osdRect2texRect(location),
-                } as unknown as Word;
-                this.record?.words.push(word);
-                this.selectedLines[0].wordIds.push(word.id);
-                // create input box above boundingBox
-                // this.createInputBoxForWord(word, this.selectedLines[0]);
-                mouseNavEnabled = false;
+                if(this.selectedLines.length == 1) {
+                  // check if we have clicked on an existing word or input box
+                  
+                  let existingWords = this.getWordsOfLine(this.selectedLines[0]) as Word[];
+                  if(existingWords.filter(w => this.texRect2BoundingBox(w.boundingBox!).contains(this.osdRect2BoundingBox(location))).length > 0) {
+                    break;
+                  };
+
+                  // check inputs
+                  let isClickInExisting = false;
+                  for(const existingWord of existingWords) {
+                    const overlay = this.osd!.getOverlayById(`wordInput-${existingWord.id}`);
+                    if(this.osdRect2BoundingBox(overlay.getBounds(this.osd!.viewport)).contains(this.osdRect2BoundingBox(location))) {
+                      isClickInExisting = true;
+                      break;
+                    }
+                  }
+
+                  if(isClickInExisting) {
+                    break;
+                  }
+                  
+                  console.log('creating word');
+                  // create new word
+                  let word = {
+                    __typename: 'Word',
+                    text: '',
+                    id: uuidv4(),
+                    boundingBox: this.osdRect2texRect(location),
+                  } as unknown as Word;
+                  console.log('word created');
+                  console.log(word);
+                  this.record?.words.push(word);
+                  this.selectedLines[0].wordIds.push(word.id);
+                  // create input box above boundingBox
+                  this.createInputBoxForWord(word, this.selectedLines[0]);
+                  mouseNavEnabled = false;
+                }
                 break;
             }
             if (this.selectedLines.length > 0) {
