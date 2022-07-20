@@ -166,6 +166,37 @@ export class ReviewComponent implements OnInit {
     switch (event.data) {
       case 'create':
         console.log('To handle create');
+        // get selection bounding box
+        let selectionBox = this.osd!.getOverlayById(OVERLAY_ID)!.getBounds(this.osd!.viewport);
+        let boundingBox = this.osdRect2texRect(selectionBox);
+        let newLineItem = {
+          id: uuidv4() as string,
+          probateId: this.record!.id,
+          description: '',
+          title: '',
+          category: '',
+          subcategory: '',
+          value: 0.00,
+          quantity: 1,
+          attributeForId: '',
+          wordIds: [],
+          boundingBox: {
+            left: boundingBox.left,
+            top: boundingBox.top,
+            width: boundingBox.width,
+            height: boundingBox.height,
+          },
+        };
+        this.linesItemsToAdd.push(newLineItem);
+
+        let createdAt = new Date();
+        this.record?.lineItems?.items.push({
+          ...newLineItem,
+          __typename: 'LineItem',
+          boundingBox: boundingBox,
+          createdAt: createdAt.toISOString(),
+          updatedAt: createdAt.toISOString(),
+        });
         break;
       case 'combine':
         console.log('To handle combine');
