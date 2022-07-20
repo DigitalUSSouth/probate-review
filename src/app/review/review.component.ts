@@ -40,11 +40,13 @@ interface DragSelect {
   startPos: OpenSeadragon.Point;
   isDragging: boolean;
   selectionMode: SelectionMode;
+  editMode: EditMode;
 }
 
 const OVERLAY_ID = 'highlighted-line';
 enum DragMode {
-  Select = 1,
+  None,
+  Select,
   Extend,
   Shorten,
   Split,
@@ -54,6 +56,12 @@ enum SelectionMode {
   None,
   Line,
   Word,
+}
+
+enum EditMode {
+  None,
+  Line,
+  Word
 }
 
 const InputBoxHeight = 20;
@@ -82,6 +90,7 @@ export class ReviewComponent implements OnInit {
     isDragging: false,
     dragMode: DragMode.Select,
     selectionMode: SelectionMode.None,
+    editMode: EditMode.None
   };
   isDisplayContextMenu = false;
   rightClickMenuItems: Array<ContextMenuModel> = [];
@@ -199,6 +208,7 @@ export class ReviewComponent implements OnInit {
         this.dragSelect!.isDragging = true;
         break;
       case 'correct':
+        
         let words = this.getWordsOfLine(this.selectedLines[0]);
         if (words.length > 0) {
           // clear all of our bounding boxes for lines
@@ -308,7 +318,9 @@ export class ReviewComponent implements OnInit {
         this.dragMode = true;
         this.osd!.setMouseNavEnabled(false);
         this.dragSelect!.isDragging = true;
+        this.dragSelect.dragMode = DragMode.Select;
         this.dragSelect.selectionMode = SelectionMode.Word;
+        this.dragSelect.editMode = EditMode.Word;
         break;
       default:
         alert('not implemented');
@@ -639,6 +651,7 @@ export class ReviewComponent implements OnInit {
     this.dragSelect!.isDragging = true;
     this.dragSelect!.dragMode = DragMode.Select;
     this.dragSelect.selectionMode = SelectionMode.Line;
+    this.dragSelect.editMode = EditMode.Line;
   }
 
   clearSelectedElems() {
@@ -653,6 +666,12 @@ export class ReviewComponent implements OnInit {
   clearSelection() {
     this.osd!.clearOverlays();
     this.clearSelectedElems();
+    this.dragSelect.selectionMode = SelectionMode.None;
+    this.dragSelect.editMode = EditMode.None;
+    this.dragSelect.dragMode = DragMode.None;
+    this.dragSelect.isDragging = false;
+    this.osd!.setMouseNavEnabled(true);
+
     this.selectedLines = [];
   }
 
