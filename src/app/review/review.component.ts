@@ -262,9 +262,7 @@ export class ReviewComponent implements OnInit {
 
                 // update line text
                 let updatedWords = words;
-                updatedWords.sort(
-                  (a, b) => a.boundingBox!.left - b.boundingBox!.left
-                );
+                updatedWords.sort((a, b) => (a.boundingBox!.left + a.boundingBox!.width) - (b.boundingBox!.left + b.boundingBox!.width));
                 console.log('sorted array of words');
                 console.log(updatedWords);
                 let updatedText = '';
