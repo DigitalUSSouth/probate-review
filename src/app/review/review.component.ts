@@ -197,43 +197,136 @@ export class ReviewComponent implements OnInit {
     }
   }
 
+  createLine(): void {
+    // get selection bounding box
+    let selectionBox = this.osd!.getOverlayById(OVERLAY_ID)!.getBounds(
+      this.osd!.viewport
+    );
+    let boundingBox = this.osdRect2texRect(selectionBox);
+    let newCreateLineItem = {
+      id: uuidv4() as string,
+      probateId: this.record!.id,
+      description: '',
+      title: '',
+      category: '',
+      subcategory: '',
+      value: 0.0,
+      quantity: 1,
+      attributeForId: '',
+      wordIds: [],
+      boundingBox: {
+        left: boundingBox.left,
+        top: boundingBox.top,
+        width: boundingBox.width,
+        height: boundingBox.height,
+      },
+    };
+    this.linesItemsToAdd.push(newCreateLineItem);
+
+    let createdAt = new Date();
+    const newLineItem = {
+      ...newCreateLineItem,
+      __typename: 'LineItem',
+      boundingBox: boundingBox,
+      createdAt: createdAt.toISOString(),
+      updatedAt: createdAt.toISOString(),
+    } as LineItem;
+
+    this.record?.lineItems?.items.push(newLineItem);
+    this.highlightLine(newLineItem);
+  }
+
+  correctText(): void {
+    // this.osd!.clearOverlays();
+    let words = this.getWordsOfLine(this.selectedLines[0]);
+        if (words.length > 0) {
+          // get lowest and highest heights
+          const highestLowest = new Array<Word>();
+          const minMax = words.reduce((acc, val) => {
+            acc[0] =
+              acc[0] === undefined ||
+              val.boundingBox!.top < acc[0].boundingBox!.top
+                ? val
+                : acc[0];
+            acc[1] =
+              acc[1] === undefined ||
+              val.boundingBox!.top > acc[1].boundingBox!.top
+                ? val
+                : acc[1];
+            return acc;
+          }, highestLowest);
+
+          const tallest = words.reduce((p, c) =>
+            c.boundingBox!.height > p.boundingBox!.height ? c : p
+          );
+
+          const osdInputRect = this.texRect2osdRect(minMax[0].boundingBox!);
+          const pixel = this.osd!.viewport.pixelFromPoint(
+            new OpenSeadragon.Point(osdInputRect.x, osdInputRect.y)
+          );
+          pixel.y -= InputBoxHeight; // give input box height of 20 pixels
+          const osdInputPoint = this.osd!.viewport.pointFromPixel(pixel);
+
+          let inputHeight = osdInputRect.y - osdInputPoint.y;
+          let inputTop: number;
+          if (minMax[0].boundingBox!.top < 0.5) {
+            inputTop =
+              minMax[1].boundingBox!.top / this.aspectRatio +
+              tallest.boundingBox!.height / this.aspectRatio;
+          } else {
+            inputTop =
+              minMax[0].boundingBox!.top / this.aspectRatio - inputHeight;
+          }
+
+          for (const word of words) {
+            const selectElem = this.createOverlayElement(
+              `wordBoundingBox-${word.id}`,
+              'select'
+            );
+            const rect = this.texRect2osdRect(word.boundingBox!);
+            this.osd!.addOverlay(selectElem, rect);
+
+            // check if the element exists
+            const inputId = `wordInput-${word.id}`;
+
+            let inputElem = document.getElementById(inputId);
+
+            if (!inputElem) {
+              inputElem = this.renderer.createElement('input');
+              this.renderer.setProperty(inputElem, 'id', inputId);
+              this.renderer.listen(inputElem, 'input', () => {
+                word.text = (inputElem! as HTMLInputElement).value;
+                this.updateLineItemText(this.selectedLines[0]);
+                
+              });
+              this.renderer.listen(inputElem, 'keyup.enter', () => {
+                this.clearSelection();
+              });
+              this.renderer.appendChild(document.body, inputElem);
+            }
+
+            // this.renderer.setProperty(inputElem, 'className', className);
+            this.renderer.setAttribute(inputElem, 'value', word.text);
+
+            rect.y = inputTop;
+            rect.height = inputHeight;
+            this.osd!.addOverlay(inputElem!, rect);
+          }
+        }
+        this.dragMode = true;
+        this.osd!.setMouseNavEnabled(false);
+        this.dragSelect!.isDragging = true;
+        this.dragSelect.dragMode = DragMode.Select;
+        this.dragSelect.selectionMode = SelectionMode.Word;
+        this.dragSelect.editMode = EditMode.Word;
+       
+  }
+
   handleMenuItemClick(event: any) {
     switch (event.data) {
       case 'create':
         console.log('To handle create');
-        // get selection bounding box
-        let selectionBox = this.osd!.getOverlayById(OVERLAY_ID)!.getBounds(
-          this.osd!.viewport
-        );
-        let boundingBox = this.osdRect2texRect(selectionBox);
-        let newLineItem = {
-          id: uuidv4() as string,
-          probateId: this.record!.id,
-          description: '',
-          title: '',
-          category: '',
-          subcategory: '',
-          value: 0.0,
-          quantity: 1,
-          attributeForId: '',
-          wordIds: [],
-          boundingBox: {
-            left: boundingBox.left,
-            top: boundingBox.top,
-            width: boundingBox.width,
-            height: boundingBox.height,
-          },
-        };
-        this.linesItemsToAdd.push(newLineItem);
-
-        let createdAt = new Date();
-        this.record?.lineItems?.items.push({
-          ...newLineItem,
-          __typename: 'LineItem',
-          boundingBox: boundingBox,
-          createdAt: createdAt.toISOString(),
-          updatedAt: createdAt.toISOString(),
-        });
+        this.createLine();
         break;
       case 'combine':
         console.log('To handle combine');
@@ -350,123 +443,7 @@ export class ReviewComponent implements OnInit {
         this.dragSelect!.isDragging = true;
         break;
       case 'correct':
-        let words = this.getWordsOfLine(this.selectedLines[0]);
-        if (words.length > 0) {
-          // clear all of our bounding boxes for lines
-          this.osd!.clearOverlays();
-          // get lowest and highest heights
-          const highestLowest = new Array<Word>();
-          const minMax = words.reduce((acc, val) => {
-            acc[0] =
-              acc[0] === undefined ||
-              val.boundingBox!.top < acc[0].boundingBox!.top
-                ? val
-                : acc[0];
-            acc[1] =
-              acc[1] === undefined ||
-              val.boundingBox!.top > acc[1].boundingBox!.top
-                ? val
-                : acc[1];
-            return acc;
-          }, highestLowest);
-
-          const tallest = words.reduce((p, c) =>
-            c.boundingBox!.height > p.boundingBox!.height ? c : p
-          );
-
-          const osdInputRect = this.texRect2osdRect(minMax[0].boundingBox!);
-          const pixel = this.osd!.viewport.pixelFromPoint(
-            new OpenSeadragon.Point(osdInputRect.x, osdInputRect.y)
-          );
-          pixel.y -= InputBoxHeight; // give input box height of 20 pixels
-          const osdInputPoint = this.osd!.viewport.pointFromPixel(pixel);
-
-          let inputHeight = osdInputRect.y - osdInputPoint.y;
-          let inputTop: number;
-          if (minMax[0].boundingBox!.top < 0.5) {
-            inputTop =
-              minMax[1].boundingBox!.top / this.aspectRatio +
-              tallest.boundingBox!.height / this.aspectRatio;
-          } else {
-            inputTop =
-              minMax[0].boundingBox!.top / this.aspectRatio - inputHeight;
-          }
-
-          for (const word of words) {
-            const selectElem = this.createOverlayElement(
-              `wordBoundingBox-${word.id}`,
-              'select'
-            );
-            const rect = this.texRect2osdRect(word.boundingBox!);
-            this.osd!.addOverlay(selectElem, rect);
-
-            // check if the element exists
-            const inputId = `wordInput-${word.id}`;
-
-            let inputElem = document.getElementById(inputId);
-
-            if (!inputElem) {
-              inputElem = this.renderer.createElement('input');
-              this.renderer.setProperty(inputElem, 'id', inputId);
-              this.renderer.listen(inputElem, 'input', () => {
-                word.text = (inputElem! as HTMLInputElement).value;
-                this.updateLineItemText(this.selectedLines[0]);
-                // // update line text
-                // let updatedWords = words;
-                // updatedWords.sort(
-                //   (a, b) =>
-                //     a.boundingBox!.left +
-                //     a.boundingBox!.width -
-                //     (b.boundingBox!.left + b.boundingBox!.width)
-                // );
-                // console.log('sorted array of words');
-                // console.log(updatedWords);
-                // let updatedText = '';
-                // for (const word of updatedWords) {
-                //   updatedText += word.text;
-                //   updatedText += ' ';
-                // }
-                // updatedText = updatedText.trim();
-                // this.updateLineItemById(
-                //   this.selectedLines[0].id,
-                //   'title',
-                //   updatedText
-                // );
-
-                // update our html
-                // get line index
-                // const lineIndex = this.record!.lineItems!.items.indexOf(
-                //   this.selectedLines[0]
-                // );
-                // let lineElem = document.getElementById(
-                //   `line-${lineIndex}`
-                // ) as HTMLInputElement;
-                // if (lineElem) {
-                //   console.log('updating line value');
-                //   lineElem.value = updatedText;
-                //   console.log('line value is ' + lineElem.value);
-                // }
-              });
-              this.renderer.listen(inputElem, 'keyup.enter', () => {
-                this.clearSelection();
-              });
-              this.renderer.appendChild(document.body, inputElem);
-            }
-
-            // this.renderer.setProperty(inputElem, 'className', className);
-            this.renderer.setAttribute(inputElem, 'value', word.text);
-
-            rect.y = inputTop;
-            rect.height = inputHeight;
-            this.osd!.addOverlay(inputElem!, rect);
-          }
-        }
-        this.dragMode = true;
-        this.osd!.setMouseNavEnabled(false);
-        this.dragSelect!.isDragging = true;
-        this.dragSelect.dragMode = DragMode.Select;
-        this.dragSelect.selectionMode = SelectionMode.Word;
-        this.dragSelect.editMode = EditMode.Word;
+        this.correctText();
         break;
       default:
         alert('not implemented');
@@ -478,7 +455,7 @@ export class ReviewComponent implements OnInit {
 
   createInputBoxForWord(word: Word, line: LineItem) {
     // clear all other overlays
-    this.osd!.clearOverlays();
+    // this.osd!.clearOverlays();
 
     // check if the element exists
     const inputId = `wordInput-${word.id}`;
@@ -545,7 +522,8 @@ export class ReviewComponent implements OnInit {
         }
       });
       this.renderer.listen(inputElem, 'keyup.enter', () => {
-        this.clearSelection();
+        // this.clearSelection();
+        this.correctText();
       });
       this.renderer.appendChild(document.body, inputElem);
     }
@@ -774,6 +752,28 @@ export class ReviewComponent implements OnInit {
     console.log(`aspect ratio is ${this.aspectRatio}`);
   }
 
+  highlightLine(line: LineItem): void {
+    if (this.aspectRatio === 0.0) {
+      this.calculateAspectRatio();
+    }
+    this.clearSelection();
+
+    const boundingBox = line!.boundingBox;
+    const rect = this.texRect2osdRect(boundingBox!);
+    
+    this.osd!.clearOverlays();
+    const selectElem = this.createOverlayElement(
+      `boundingBox-${line.id}`,
+      'select'
+    );
+    this.osd!.addOverlay(
+      selectElem,
+      this.texRect2osdRect(line.boundingBox!)
+    );
+    this.selectedLines = [];
+    this.selectedLines.push(line);
+  }
+
   highlightText(index: number): void {
     if (this.aspectRatio === 0.0) {
       this.calculateAspectRatio();
@@ -782,7 +782,6 @@ export class ReviewComponent implements OnInit {
 
     console.log(`line ${index} highlighted`);
     const boundingBox = this.record!.lineItems!.items[index]!.boundingBox;
-    console.log(boundingBox);
     // check if overlay exists
     const point = new OpenSeadragon.Point(boundingBox?.left, boundingBox?.top);
     const rect = this.texRect2osdRect(boundingBox!);
