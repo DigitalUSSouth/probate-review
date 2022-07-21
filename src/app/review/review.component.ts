@@ -61,7 +61,7 @@ enum SelectionMode {
 enum EditMode {
   None,
   Line,
-  Word
+  Word,
 }
 
 const InputBoxHeight = 20;
@@ -90,7 +90,7 @@ export class ReviewComponent implements OnInit {
     isDragging: false,
     dragMode: DragMode.Select,
     selectionMode: SelectionMode.None,
-    editMode: EditMode.None
+    editMode: EditMode.None,
   };
   isDisplayContextMenu = false;
   rightClickMenuItems: Array<ContextMenuModel> = [];
@@ -99,8 +99,9 @@ export class ReviewComponent implements OnInit {
   selectedLines: LineItem[] = [];
   wordMap = new Map<string, Word>();
   linesItemsToAdd = new Array<CreateLineItemInput>();
-  wordQuadTree = new QuadTree();
-  lineQuadTree = new QuadTree();
+  linesItemIdsToDelete = new Array<string>();
+  // wordQuadTree = new QuadTree();
+  // lineQuadTree = new QuadTree();
 
   constructor(
     private route: ActivatedRoute,
@@ -162,12 +163,48 @@ export class ReviewComponent implements OnInit {
     };
   }
 
+  updateLineItemText(line: LineItem): void {
+    // update line text
+    let updatedWords = this.record!.words.filter((w) =>
+      line.wordIds.includes(w!.id)
+    ) as Word[];
+    updatedWords.sort(
+      (a, b) =>
+        a.boundingBox!.left +
+        a.boundingBox!.width -
+        (b.boundingBox!.left + b.boundingBox!.width)
+    );
+    console.log('sorted array of words');
+    console.log(updatedWords);
+    let updatedText = '';
+    for (const word of updatedWords) {
+      updatedText += word.text;
+      updatedText += ' ';
+    }
+    updatedText = updatedText.trim();
+    this.updateLineItemById(this.selectedLines[0].id, 'title', updatedText);
+
+    const lineIndex = this.record!.lineItems!.items.indexOf(
+      line
+    );
+    let lineElem = document.getElementById(
+      `line-${lineIndex}`
+    ) as HTMLInputElement;
+    if (lineElem) {
+      console.log('updating line value');
+      lineElem.value = updatedText;
+      console.log('line value is ' + lineElem.value);
+    }
+  }
+
   handleMenuItemClick(event: any) {
     switch (event.data) {
       case 'create':
         console.log('To handle create');
         // get selection bounding box
-        let selectionBox = this.osd!.getOverlayById(OVERLAY_ID)!.getBounds(this.osd!.viewport);
+        let selectionBox = this.osd!.getOverlayById(OVERLAY_ID)!.getBounds(
+          this.osd!.viewport
+        );
         let boundingBox = this.osdRect2texRect(selectionBox);
         let newLineItem = {
           id: uuidv4() as string,
@@ -176,7 +213,7 @@ export class ReviewComponent implements OnInit {
           title: '',
           category: '',
           subcategory: '',
-          value: 0.00,
+          value: 0.0,
           quantity: 1,
           attributeForId: '',
           wordIds: [],
@@ -200,6 +237,80 @@ export class ReviewComponent implements OnInit {
         break;
       case 'combine':
         console.log('To handle combine');
+        // mark lines for deletion
+        const highestLowest = new Array<LineItem>();
+        let minMax = this.selectedLines.reduce((acc, val) => {
+          acc[0] =
+            acc[0] === undefined ||
+            val.boundingBox!.top < acc[0].boundingBox!.top
+              ? val
+              : acc[0];
+          acc[1] =
+            acc[1] === undefined ||
+            val.boundingBox!.top + val.boundingBox!.height >
+              acc[1].boundingBox!.top + acc[1].boundingBox!.height
+              ? val
+              : acc[1];
+          return acc;
+        }, highestLowest);
+
+        const top = minMax[0].boundingBox!.top;
+        const height =
+          minMax[1].boundingBox!.top -
+          minMax[0].boundingBox!.top +
+          minMax[1].boundingBox!.height;
+
+        const leftMostRightMost = new Array<LineItem>();
+        minMax = this.selectedLines.reduce((acc, val) => {
+          acc[0] =
+            acc[0] === undefined ||
+            val.boundingBox!.left < acc[0].boundingBox!.left
+              ? val
+              : acc[0];
+          acc[1] =
+            acc[1] === undefined ||
+            val.boundingBox!.left + val.boundingBox!.width >
+              acc[1].boundingBox!.left + acc[1].boundingBox!.width
+              ? val
+              : acc[1];
+          return acc;
+        }, leftMostRightMost);
+
+        const left = minMax[0].boundingBox!.left;
+        const width =
+          minMax[1].boundingBox!.left +
+          minMax[1].boundingBox!.width -
+          minMax[0].boundingBox!.left;
+
+        this.selectedLines[0].boundingBox = {
+          __typename: 'Rect',
+          left,
+          top,
+          width,
+          height,
+        };
+
+        // Aggregate all word ids and make largest bounding box
+        const wordIds = Array<string>();
+        (this.selectedLines as LineItem[]).map((id) =>
+          wordIds.push(...(id.wordIds as string[]))
+        );
+        this.selectedLines[0].wordIds = wordIds;
+
+        // update text and mark as updated
+        this.updateLineItemText(this.selectedLines[0]);
+
+        // mark items for deletion and remove from record
+        for (let i = 1; i < this.selectedLines.length; i++) {
+          const line = this.selectedLines[i];
+          this.linesItemIdsToDelete.push(line.id);
+          const index = this.record!.lineItems!.items.indexOf(line);
+          if (index > -1) { // only splice array when item is found
+            this.record!.lineItems!.items.splice(index, 1); // 2nd parameter means remove one item only
+          }
+        }
+        
+
         break;
       case 'split':
         console.log('To handle split');
@@ -239,7 +350,6 @@ export class ReviewComponent implements OnInit {
         this.dragSelect!.isDragging = true;
         break;
       case 'correct':
-        
         let words = this.getWordsOfLine(this.selectedLines[0]);
         if (words.length > 0) {
           // clear all of our bounding boxes for lines
@@ -300,37 +410,42 @@ export class ReviewComponent implements OnInit {
               this.renderer.setProperty(inputElem, 'id', inputId);
               this.renderer.listen(inputElem, 'input', () => {
                 word.text = (inputElem! as HTMLInputElement).value;
-
-                // update line text
-                let updatedWords = words;
-                updatedWords.sort((a, b) => (a.boundingBox!.left + a.boundingBox!.width) - (b.boundingBox!.left + b.boundingBox!.width));
-                console.log('sorted array of words');
-                console.log(updatedWords);
-                let updatedText = '';
-                for (const word of updatedWords) {
-                  updatedText += word.text;
-                  updatedText += ' ';
-                }
-                updatedText = updatedText.trim();
-                this.updateLineItemById(
-                  this.selectedLines[0].id,
-                  'title',
-                  updatedText
-                );
+                this.updateLineItemText(this.selectedLines[0]);
+                // // update line text
+                // let updatedWords = words;
+                // updatedWords.sort(
+                //   (a, b) =>
+                //     a.boundingBox!.left +
+                //     a.boundingBox!.width -
+                //     (b.boundingBox!.left + b.boundingBox!.width)
+                // );
+                // console.log('sorted array of words');
+                // console.log(updatedWords);
+                // let updatedText = '';
+                // for (const word of updatedWords) {
+                //   updatedText += word.text;
+                //   updatedText += ' ';
+                // }
+                // updatedText = updatedText.trim();
+                // this.updateLineItemById(
+                //   this.selectedLines[0].id,
+                //   'title',
+                //   updatedText
+                // );
 
                 // update our html
                 // get line index
-                const lineIndex = this.record!.lineItems!.items.indexOf(
-                  this.selectedLines[0]
-                );
-                let lineElem = document.getElementById(
-                  `line-${lineIndex}`
-                ) as HTMLInputElement;
-                if (lineElem) {
-                  console.log('updating line value');
-                  lineElem.value = updatedText;
-                  console.log('line value is ' + lineElem.value);
-                }
+                // const lineIndex = this.record!.lineItems!.items.indexOf(
+                //   this.selectedLines[0]
+                // );
+                // let lineElem = document.getElementById(
+                //   `line-${lineIndex}`
+                // ) as HTMLInputElement;
+                // if (lineElem) {
+                //   console.log('updating line value');
+                //   lineElem.value = updatedText;
+                //   console.log('line value is ' + lineElem.value);
+                // }
               });
               this.renderer.listen(inputElem, 'keyup.enter', () => {
                 this.clearSelection();
@@ -395,7 +510,12 @@ export class ReviewComponent implements OnInit {
 
         // update line text
         let updatedWords = words;
-        updatedWords.sort((a, b) => (a.boundingBox!.left + a.boundingBox!.width) - (b.boundingBox!.left + b.boundingBox!.width));
+        updatedWords.sort(
+          (a, b) =>
+            a.boundingBox!.left +
+            a.boundingBox!.width -
+            (b.boundingBox!.left + b.boundingBox!.width)
+        );
         console.log('sorted array of words');
         console.log(updatedWords);
         let updatedText = '';
@@ -1209,6 +1329,14 @@ export class ReviewComponent implements OnInit {
     for (const lineItem of Array.from(this.updatedLineItemsById.values())) {
       console.log(lineItem);
       let response = await this.probateRecordService.UpdateLineItem(lineItem);
+      console.log(response);
+    }
+
+    for(const lineItemId of this.linesItemIdsToDelete) {
+      let item = {
+        id: lineItemId
+      }
+      let response = await this.probateRecordService.DeleteLineItem(item);
       console.log(response);
     }
   }
