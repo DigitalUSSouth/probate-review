@@ -29,6 +29,7 @@ import { ContextMenuModel } from '../interfaces/context-menu-model';
 import { v4 as uuidv4 } from 'uuid';
 import { BoundingBox, QuadTree } from '../quad-tree';
 import { input } from 'aws-amplify';
+import { ConsoleLogger } from '@aws-amplify/core';
 
 interface SubcategoryOptionValue {
   value: string;
@@ -163,30 +164,70 @@ export class ReviewComponent implements OnInit {
     };
   }
 
+  getRowsOfText(words: Word[]): Array<Array<Word>> {
+    const rows = new Array<Array<Word>>();
+    // get average word height
+    const totalHeight = words
+      .map((w) => w.boundingBox!.height)
+      .reduce((previousValue, currentValue) => previousValue + currentValue);
+
+    const avgHeight = totalHeight / words.length;
+
+    // find the top most word
+    // let topMostWord = words.reduce((p, c) => {
+    //   return c.boundingBox!.top < p.boundingBox!.top ? c : p;
+    // });
+
+    let currentRow = 0;
+    let copyOfWords = [...words];
+    while (copyOfWords.length > 0) {
+      const topMostWord = copyOfWords.reduce((p, c) => {
+        return c.boundingBox!.top < p.boundingBox!.top ? c : p;
+      });
+      const currentTop = topMostWord.boundingBox!.top;
+      let rowOfWords = copyOfWords.filter(
+        (w) => w.boundingBox!.top < currentTop + avgHeight
+      );
+      rowOfWords.sort(
+        (a, b) =>
+          a.boundingBox!.left +
+          a.boundingBox!.width -
+          (b.boundingBox!.left + b.boundingBox!.width)
+      );
+      rows[currentRow++] = [...rowOfWords];
+      // filter out words just added to row
+      copyOfWords = copyOfWords.filter(
+        (w) => !rowOfWords.map((w) => w.id).includes(w.id)
+      );
+    }
+
+    return rows;
+  }
+
   updateLineItemText(line: LineItem): void {
     // update line text
     let updatedWords = this.record!.words.filter((w) =>
       line.wordIds.includes(w!.id)
     ) as Word[];
-    updatedWords.sort(
-      (a, b) =>
-        a.boundingBox!.left +
-        a.boundingBox!.width -
-        (b.boundingBox!.left + b.boundingBox!.width)
-    );
-    console.log('sorted array of words');
-    console.log(updatedWords);
+
+    let rows = this.getRowsOfText(updatedWords);
+    console.log('rows: ');
+    console.log(rows);
+
     let updatedText = '';
-    for (const word of updatedWords) {
-      updatedText += word.text;
-      updatedText += ' ';
+    for (const row of rows) {
+      for (const word of row) {
+        updatedText += word.text;
+        updatedText += ' ';
+      }
+      updatedText.trim();
+      updatedText += '\n';
     }
+
     updatedText = updatedText.trim();
     this.updateLineItemById(this.selectedLines[0].id, 'title', updatedText);
 
-    const lineIndex = this.record!.lineItems!.items.indexOf(
-      line
-    );
+    const lineIndex = this.record!.lineItems!.items.indexOf(line);
     let lineElem = document.getElementById(
       `line-${lineIndex}`
     ) as HTMLInputElement;
@@ -195,6 +236,87 @@ export class ReviewComponent implements OnInit {
       lineElem.value = updatedText;
       console.log('line value is ' + lineElem.value);
     }
+  }
+
+  showInputsForWords(words: Word[]): void {
+    const isInputAbove = words[0].boundingBox!.top > 0.5;
+    
+    // calculate height of input element
+    const osdAnyWordRect = this.texRect2osdRect(words[0].boundingBox!);
+    const pixel = this.osd!.viewport.pixelFromPoint(
+      new OpenSeadragon.Point(osdAnyWordRect.x, osdAnyWordRect.y)
+    );
+    pixel.y -= InputBoxHeight; // give input box height of 20 pixels
+    const osdInputPoint = this.osd!.viewport.pointFromPixel(pixel);
+    let inputHeight = osdAnyWordRect.y - osdInputPoint.y;
+
+    const rows = this.getRowsOfText(words);
+    let top: number;
+    
+    for (const row of rows) {
+      if (isInputAbove) {
+        const topMostWord = row.reduce((p, c) => {
+          return c.boundingBox!.top < p.boundingBox!.top ? c : p;
+        });        
+        top = topMostWord.boundingBox!.top;
+      } else {
+        const tallest = words.reduce((p, c) =>
+          c.boundingBox!.height > p.boundingBox!.height ? c : p
+        );
+        const lowestWord = row.reduce((p, c) => 
+          c.boundingBox!.top > p.boundingBox!.top ? c : p
+        );
+
+        top = lowestWord.boundingBox!.top + tallest.boundingBox!.height;
+        
+      }
+      top /= this.aspectRatio;
+
+      for (const word of row) {
+        const selectElem = this.createOverlayElement(
+          `wordBoundingBox-${word.id}`,
+          'select'
+        );
+        const rect = this.texRect2osdRect(word.boundingBox!);
+        console.log('word rect');
+        console.log(rect);
+
+        this.osd!.addOverlay(selectElem, rect);
+  
+        // check if the element exists
+        const inputId = `wordInput-${word.id}`;
+  
+        let inputElem = document.getElementById(inputId);
+  
+        if (!inputElem) {
+          inputElem = this.renderer.createElement('input');
+          this.renderer.setProperty(inputElem, 'id', inputId);
+          this.renderer.listen(inputElem, 'input', () => {
+            word.text = (inputElem! as HTMLInputElement).value;
+            this.updateLineItemText(this.selectedLines[0]);
+          });
+          this.renderer.listen(inputElem, 'keyup.enter', () => {
+            this.clearSelection();
+          });
+          this.renderer.appendChild(document.body, inputElem);
+        }
+  
+        // this.renderer.setProperty(inputElem, 'className', className);
+        this.renderer.setAttribute(inputElem, 'value', word.text);
+  
+        rect.y = top;
+        if(isInputAbove) {
+          rect.y -= inputHeight;
+        }
+        rect.height = inputHeight;
+        console.log('input rect');
+        console.log(rect);
+        this.osd!.addOverlay(inputElem!, rect);
+      }
+    }
+   
+
+    
   }
 
   createLine(): void {
@@ -239,87 +361,15 @@ export class ReviewComponent implements OnInit {
   correctText(): void {
     // this.osd!.clearOverlays();
     let words = this.getWordsOfLine(this.selectedLines[0]);
-        if (words.length > 0) {
-          // get lowest and highest heights
-          const highestLowest = new Array<Word>();
-          const minMax = words.reduce((acc, val) => {
-            acc[0] =
-              acc[0] === undefined ||
-              val.boundingBox!.top < acc[0].boundingBox!.top
-                ? val
-                : acc[0];
-            acc[1] =
-              acc[1] === undefined ||
-              val.boundingBox!.top > acc[1].boundingBox!.top
-                ? val
-                : acc[1];
-            return acc;
-          }, highestLowest);
-
-          const tallest = words.reduce((p, c) =>
-            c.boundingBox!.height > p.boundingBox!.height ? c : p
-          );
-
-          const osdInputRect = this.texRect2osdRect(minMax[0].boundingBox!);
-          const pixel = this.osd!.viewport.pixelFromPoint(
-            new OpenSeadragon.Point(osdInputRect.x, osdInputRect.y)
-          );
-          pixel.y -= InputBoxHeight; // give input box height of 20 pixels
-          const osdInputPoint = this.osd!.viewport.pointFromPixel(pixel);
-
-          let inputHeight = osdInputRect.y - osdInputPoint.y;
-          let inputTop: number;
-          if (minMax[0].boundingBox!.top < 0.5) {
-            inputTop =
-              minMax[1].boundingBox!.top / this.aspectRatio +
-              tallest.boundingBox!.height / this.aspectRatio;
-          } else {
-            inputTop =
-              minMax[0].boundingBox!.top / this.aspectRatio - inputHeight;
-          }
-
-          for (const word of words) {
-            const selectElem = this.createOverlayElement(
-              `wordBoundingBox-${word.id}`,
-              'select'
-            );
-            const rect = this.texRect2osdRect(word.boundingBox!);
-            this.osd!.addOverlay(selectElem, rect);
-
-            // check if the element exists
-            const inputId = `wordInput-${word.id}`;
-
-            let inputElem = document.getElementById(inputId);
-
-            if (!inputElem) {
-              inputElem = this.renderer.createElement('input');
-              this.renderer.setProperty(inputElem, 'id', inputId);
-              this.renderer.listen(inputElem, 'input', () => {
-                word.text = (inputElem! as HTMLInputElement).value;
-                this.updateLineItemText(this.selectedLines[0]);
-                
-              });
-              this.renderer.listen(inputElem, 'keyup.enter', () => {
-                this.clearSelection();
-              });
-              this.renderer.appendChild(document.body, inputElem);
-            }
-
-            // this.renderer.setProperty(inputElem, 'className', className);
-            this.renderer.setAttribute(inputElem, 'value', word.text);
-
-            rect.y = inputTop;
-            rect.height = inputHeight;
-            this.osd!.addOverlay(inputElem!, rect);
-          }
-        }
-        this.dragMode = true;
-        this.osd!.setMouseNavEnabled(false);
-        this.dragSelect!.isDragging = true;
-        this.dragSelect.dragMode = DragMode.Select;
-        this.dragSelect.selectionMode = SelectionMode.Word;
-        this.dragSelect.editMode = EditMode.Word;
-       
+    if (words.length > 0) {
+      this.showInputsForWords(words);
+    }
+    this.dragMode = true;
+    this.osd!.setMouseNavEnabled(false);
+    this.dragSelect!.isDragging = true;
+    this.dragSelect.dragMode = DragMode.Select;
+    this.dragSelect.selectionMode = SelectionMode.Word;
+    this.dragSelect.editMode = EditMode.Word;
   }
 
   handleMenuItemClick(event: any) {
@@ -382,13 +432,14 @@ export class ReviewComponent implements OnInit {
           width,
           height,
         };
-
+        this.updateLineItemById(this.selectedLines[0].id, 'boundingBox', this.selectedLines[0].boundingBox);
         // Aggregate all word ids and make largest bounding box
         const wordIds = Array<string>();
         (this.selectedLines as LineItem[]).map((id) =>
           wordIds.push(...(id.wordIds as string[]))
         );
         this.selectedLines[0].wordIds = wordIds;
+        this.updateLineItemById(this.selectedLines[0].id, 'wordIds', wordIds);
 
         // update text and mark as updated
         this.updateLineItemText(this.selectedLines[0]);
@@ -398,12 +449,19 @@ export class ReviewComponent implements OnInit {
           const line = this.selectedLines[i];
           this.linesItemIdsToDelete.push(line.id);
           const index = this.record!.lineItems!.items.indexOf(line);
-          if (index > -1) { // only splice array when item is found
+          if (index > -1) {
+            // only splice array when item is found
             this.record!.lineItems!.items.splice(index, 1); // 2nd parameter means remove one item only
           }
         }
-        
 
+        this.osd!.clearOverlays();
+        let combinedOverlayElement = this.createOverlayElement(
+          `boundingBox-${this.selectedLines[0].id}`,
+          'select'
+        );
+        this.osd!.addOverlay(combinedOverlayElement, this.texRect2osdRect(this.selectedLines[0].boundingBox));
+        this.selectedLines = [this.selectedLines[0]];
         break;
       case 'split':
         console.log('To handle split');
@@ -760,16 +818,13 @@ export class ReviewComponent implements OnInit {
 
     const boundingBox = line!.boundingBox;
     const rect = this.texRect2osdRect(boundingBox!);
-    
+
     this.osd!.clearOverlays();
     const selectElem = this.createOverlayElement(
       `boundingBox-${line.id}`,
       'select'
     );
-    this.osd!.addOverlay(
-      selectElem,
-      this.texRect2osdRect(line.boundingBox!)
-    );
+    this.osd!.addOverlay(selectElem, this.texRect2osdRect(line.boundingBox!));
     this.selectedLines = [];
     this.selectedLines.push(line);
   }
@@ -1331,10 +1386,10 @@ export class ReviewComponent implements OnInit {
       console.log(response);
     }
 
-    for(const lineItemId of this.linesItemIdsToDelete) {
+    for (const lineItemId of this.linesItemIdsToDelete) {
       let item = {
-        id: lineItemId
-      }
+        id: lineItemId,
+      };
       let response = await this.probateRecordService.DeleteLineItem(item);
       console.log(response);
     }
