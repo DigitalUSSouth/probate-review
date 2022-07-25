@@ -50,6 +50,7 @@ enum DragMode {
   Select,
   Extend,
   Shorten,
+  Expand,
   Split,
 }
 
@@ -137,6 +138,10 @@ export class ReviewComponent implements OnInit {
           {
             menuText: 'Shorten',
             menuEvent: 'shorten',
+          },
+          {
+            menuText: 'Expand',
+            menuEvent: 'expand',
           },
           {
             menuText: 'Correct Text',
@@ -240,7 +245,7 @@ export class ReviewComponent implements OnInit {
 
   showInputsForWords(words: Word[]): void {
     const isInputAbove = words[0].boundingBox!.top > 0.5;
-    
+
     // calculate height of input element
     const osdAnyWordRect = this.texRect2osdRect(words[0].boundingBox!);
     const pixel = this.osd!.viewport.pixelFromPoint(
@@ -252,23 +257,22 @@ export class ReviewComponent implements OnInit {
 
     const rows = this.getRowsOfText(words);
     let top: number;
-    
+
     for (const row of rows) {
       if (isInputAbove) {
         const topMostWord = row.reduce((p, c) => {
           return c.boundingBox!.top < p.boundingBox!.top ? c : p;
-        });        
+        });
         top = topMostWord.boundingBox!.top;
       } else {
         const tallest = words.reduce((p, c) =>
           c.boundingBox!.height > p.boundingBox!.height ? c : p
         );
-        const lowestWord = row.reduce((p, c) => 
+        const lowestWord = row.reduce((p, c) =>
           c.boundingBox!.top > p.boundingBox!.top ? c : p
         );
 
         top = lowestWord.boundingBox!.top + tallest.boundingBox!.height;
-        
       }
       top /= this.aspectRatio;
 
@@ -282,12 +286,12 @@ export class ReviewComponent implements OnInit {
         console.log(rect);
 
         this.osd!.addOverlay(selectElem, rect);
-  
+
         // check if the element exists
         const inputId = `wordInput-${word.id}`;
-  
+
         let inputElem = document.getElementById(inputId);
-  
+
         if (!inputElem) {
           inputElem = this.renderer.createElement('input');
           this.renderer.setProperty(inputElem, 'id', inputId);
@@ -300,12 +304,12 @@ export class ReviewComponent implements OnInit {
           });
           this.renderer.appendChild(document.body, inputElem);
         }
-  
+
         // this.renderer.setProperty(inputElem, 'className', className);
         this.renderer.setAttribute(inputElem, 'value', word.text);
-  
+
         rect.y = top;
-        if(isInputAbove) {
+        if (isInputAbove) {
           rect.y -= inputHeight;
         }
         rect.height = inputHeight;
@@ -314,9 +318,6 @@ export class ReviewComponent implements OnInit {
         this.osd!.addOverlay(inputElem!, rect);
       }
     }
-   
-
-    
   }
 
   createLine(): void {
@@ -432,7 +433,11 @@ export class ReviewComponent implements OnInit {
           width,
           height,
         };
-        this.updateLineItemById(this.selectedLines[0].id, 'boundingBox', this.selectedLines[0].boundingBox);
+        this.updateLineItemById(
+          this.selectedLines[0].id,
+          'boundingBox',
+          this.selectedLines[0].boundingBox
+        );
         // Aggregate all word ids and make largest bounding box
         const wordIds = Array<string>();
         (this.selectedLines as LineItem[]).map((id) =>
@@ -460,7 +465,10 @@ export class ReviewComponent implements OnInit {
           `boundingBox-${this.selectedLines[0].id}`,
           'select'
         );
-        this.osd!.addOverlay(combinedOverlayElement, this.texRect2osdRect(this.selectedLines[0].boundingBox));
+        this.osd!.addOverlay(
+          combinedOverlayElement,
+          this.texRect2osdRect(this.selectedLines[0].boundingBox)
+        );
         this.selectedLines = [this.selectedLines[0]];
         break;
       case 'split':
@@ -496,6 +504,12 @@ export class ReviewComponent implements OnInit {
       case 'shorten':
         console.log('To handle shorten');
         this.dragSelect.dragMode = DragMode.Shorten;
+        this.dragMode = true;
+        this.osd!.setMouseNavEnabled(false);
+        this.dragSelect!.isDragging = true;
+        break;
+      case 'expand':
+        this.dragSelect.dragMode = DragMode.Expand;
         this.dragMode = true;
         this.osd!.setMouseNavEnabled(false);
         this.dragSelect!.isDragging = true;
@@ -928,7 +942,10 @@ export class ReviewComponent implements OnInit {
     );
   }
 
-  osdRectangleContainsOsdRectangle(a: OpenSeadragon.Rect, b: OpenSeadragon.Rect) {
+  osdRectangleContainsOsdRectangle(
+    a: OpenSeadragon.Rect,
+    b: OpenSeadragon.Rect
+  ) {
     return (
       a.x <= b.x &&
       a.y <= b.y &&
@@ -1150,9 +1167,7 @@ export class ReviewComponent implements OnInit {
         let line: LineItem;
 
         switch (this.dragSelect.dragMode) {
-          case DragMode.Select:            
-            
-
+          case DragMode.Select:
             location = new OpenSeadragon.Rect(
               Math.min(
                 this.dragSelect!.startPos.x,
@@ -1165,14 +1180,20 @@ export class ReviewComponent implements OnInit {
               Math.abs(diffX),
               Math.abs(diffY)
             );
-            
-            if(this.dragSelect.editMode === EditMode.Word) {
+
+            if (this.dragSelect.editMode === EditMode.Word) {
               // do not allow user to select word bounds outside line item bounds
-              let selectedLineBoundingBox = this.osd!.getOverlayById(`boundingBox-${this.selectedLines[0].id}`).getBounds(this.osd!.viewport);
-              if(!this.osdRectangleContainsOsdRectangle(selectedLineBoundingBox, location)) {
+              let selectedLineBoundingBox = this.osd!.getOverlayById(
+                `boundingBox-${this.selectedLines[0].id}`
+              ).getBounds(this.osd!.viewport);
+              if (
+                !this.osdRectangleContainsOsdRectangle(
+                  selectedLineBoundingBox,
+                  location
+                )
+              ) {
                 break;
               }
-
             }
             this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);
             break;
@@ -1192,6 +1213,19 @@ export class ReviewComponent implements OnInit {
               location.x += diffX;
             }
             location.width += Math.abs(diffX);
+            this.osd!.updateOverlay(`boundingBox-${line.id}`, location);
+            break;
+          case DragMode.Expand:
+            line = this.selectedLines[0];
+            location = this.texRect2osdRect(line.boundingBox!);
+            if (diffX < 0) {
+              location.x += diffX;
+            }
+            location.width += Math.abs(diffX);
+            if (diffY < 0) {
+              location.y += diffY;
+            }
+            location.height += Math.abs(diffY);
             this.osd!.updateOverlay(`boundingBox-${line.id}`, location);
             break;
           case DragMode.Split:
@@ -1303,6 +1337,7 @@ export class ReviewComponent implements OnInit {
             break;
           case DragMode.Shorten:
           case DragMode.Extend:
+          case DragMode.Expand:
             // update bounding box
             let line = this.selectedLines[0];
             let selectedLineOverlay = this.osd!.getOverlayById(
@@ -1313,6 +1348,8 @@ export class ReviewComponent implements OnInit {
             );
             this.updateLineItemById(line.id, 'boundingBox', line.boundingBox);
             console.log('bounding box updated');
+            break;
+          case DragMode.Expand:
             break;
           case DragMode.Split:
             let lineToSplit = this.selectedLines[0];
