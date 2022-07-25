@@ -928,6 +928,15 @@ export class ReviewComponent implements OnInit {
     );
   }
 
+  osdRectangleContainsOsdRectangle(a: OpenSeadragon.Rect, b: OpenSeadragon.Rect) {
+    return (
+      a.x <= b.x &&
+      a.y <= b.y &&
+      a.x + a.width >= b.x + b.width &&
+      a.y + a.height >= b.y + b.height
+    );
+  }
+
   osdRect2texRect(rect: OpenSeadragon.Rect): Rect {
     if (this.aspectRatio === 0.0) {
       this.calculateAspectRatio();
@@ -1141,7 +1150,9 @@ export class ReviewComponent implements OnInit {
         let line: LineItem;
 
         switch (this.dragSelect.dragMode) {
-          case DragMode.Select:
+          case DragMode.Select:            
+            
+
             location = new OpenSeadragon.Rect(
               Math.min(
                 this.dragSelect!.startPos.x,
@@ -1154,7 +1165,15 @@ export class ReviewComponent implements OnInit {
               Math.abs(diffX),
               Math.abs(diffY)
             );
+            
+            if(this.dragSelect.editMode === EditMode.Word) {
+              // do not allow user to select word bounds outside line item bounds
+              let selectedLineBoundingBox = this.osd!.getOverlayById(`boundingBox-${this.selectedLines[0].id}`).getBounds(this.osd!.viewport);
+              if(!this.osdRectangleContainsOsdRectangle(selectedLineBoundingBox, location)) {
+                break;
+              }
 
+            }
             this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);
             break;
           case DragMode.Shorten:
