@@ -1286,6 +1286,15 @@ export class ReviewComponent implements OnInit {
                     this.texRect2osdRect(line.boundingBox!)
                   );
                 }
+                if(this.selectedLines.length == 1) {
+                  // scroll element into view
+                  let lineIndex = (this.record!.lineItems!.items as LineItem[]).findIndex(l => l.id == this.selectedLines[0].id);
+                  let lineElem = document.getElementById(`line-${lineIndex}`);
+                  if(lineElem) {
+                    lineElem.scrollIntoView({behavior: 'smooth', block: 'end'});
+                  }
+                  
+                }
                 break;
               case SelectionMode.Word:
                 if (this.selectedLines.length == 1) {
