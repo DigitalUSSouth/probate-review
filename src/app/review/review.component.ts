@@ -1287,6 +1287,15 @@ export class ReviewComponent implements OnInit {
                 break;
               case SelectionMode.Word:
                 if (this.selectedLines.length == 1) {
+                  // check if we clicked outside of the bounds
+                  let selectedLineBoundingBox = this.osd!.getOverlayById(`boundingBox-${this.selectedLines[0].id}`).getBounds(this.osd!.viewport);
+                  if(!this.osdRectangleContainsOsdRectangle(selectedLineBoundingBox, location)) {
+                    // done editing
+                    this.clearSelection();
+                    
+                    return;
+                  }
+
                   // check if we have clicked on an existing input box
                   let existingWords = this.getWordsOfLine(
                     this.selectedLines[0]
