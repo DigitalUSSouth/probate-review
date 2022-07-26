@@ -191,7 +191,7 @@ export class ReviewComponent implements OnInit {
       });
       const currentTop = topMostWord.boundingBox!.top;
       let rowOfWords = copyOfWords.filter(
-        (w) => w.boundingBox!.top < currentTop + avgHeight
+        (w) => w.boundingBox!.top < currentTop + avgHeight / 2
       );
       rowOfWords.sort(
         (a, b) =>
@@ -1398,6 +1398,7 @@ export class ReviewComponent implements OnInit {
               }
             }
             this.updateLineItemById(lineToSplit.id, 'wordIds', wordIdsToKeep);
+            lineToSplit.wordIds = wordIdsToKeep;
 
             // update our second bounding box
             let newLineOverlay = this.osd!.getOverlayById(
