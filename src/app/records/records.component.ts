@@ -47,7 +47,10 @@ export class RecordsComponent implements OnInit {
 
   handlePageEvent(event: PageEvent) {
     this.length = event.length;
-    this.pageSize = event.pageSize;
+    if(this.pageSize != event.pageSize) {
+      this.pageSize = event.pageSize;
+      this.nextToken = undefined;      
+    }
     this.pageIndex = event.pageIndex;
     this.fetchRcords();
   }
