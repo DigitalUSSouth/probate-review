@@ -849,17 +849,19 @@ export class ReviewComponent implements OnInit {
     }
     this.clearSelection();
 
-    console.log(`line ${index} highlighted`);
-    const boundingBox = this.record!.lineItems!.items[index]!.boundingBox;
-    // check if overlay exists
-    const point = new OpenSeadragon.Point(boundingBox?.left, boundingBox?.top);
-    const rect = this.texRect2osdRect(boundingBox!);
-    this.selectionRect = rect;
-    let overlay = this.createOverlayElement();
-    this.osd?.addOverlay({ element: overlay!, location: rect });
+    // this.selectedLines.push(this.record!.lineItems!.items[index]!);
+    const line = this.record!.lineItems!.items[index] as LineItem;
+    // console.log(`line ${index} highlighted`);
+    // const boundingBox = line.boundingBox;
+    // // check if overlay exists
+    // const point = new OpenSeadragon.Point(boundingBox?.left, boundingBox?.top);
+    const rect = this.texRect2osdRect(line.boundingBox!);
+    // this.selectionRect = rect;
+    // let overlay = this.createOverlayElement();
+    // this.osd?.addOverlay({ element: overlay!, location: rect });
     this.osd?.viewport.fitBoundsWithConstraints(rect);
-    this.selectedLines = [];
-    this.selectedLines.push(this.record!.lineItems!.items[index]!);
+    // this.selectedLines = [];
+    this.highlightLine(line);
   }
 
   selectRect() {
@@ -1289,12 +1291,7 @@ export class ReviewComponent implements OnInit {
                 if (this.selectedLines.length == 1) {
                   // check if we clicked outside of the bounds
                   let selectedLineBoundingBox = this.osd!.getOverlayById(`boundingBox-${this.selectedLines[0].id}`).getBounds(this.osd!.viewport);
-                  if(!this.osdRectangleContainsOsdRectangle(selectedLineBoundingBox, location)) {
-                    // done editing
-                    this.clearSelection();
-                    
-                    return;
-                  }
+                 
 
                   // check if we have clicked on an existing input box
                   let existingWords = this.getWordsOfLine(
@@ -1319,6 +1316,14 @@ export class ReviewComponent implements OnInit {
 
                   if (isClickInExisting) {
                     break;
+                  }
+
+                  // do not create a new word if clicking outside of line bounding box
+                  if(!this.osdRectangleContainsOsdRectangle(selectedLineBoundingBox, location)) {
+                    // done editing
+                    this.clearSelection();
+
+                    return;
                   }
 
                   console.log('creating word');
