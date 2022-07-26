@@ -1436,6 +1436,9 @@ export class ReviewComponent implements OnInit {
               createdAt: lineToSplit.createdAt,
               updatedAt: lineToSplit.updatedAt,
             });
+
+            // highlight our new split off line
+            this.highlightLine(lineToSplit);
             break;
         }
 
