@@ -322,6 +322,8 @@ export type ModelProbateRecordConnection = {
   __typename: "ModelProbateRecordConnection";
   items: Array<ProbateRecord | null>;
   nextToken?: string | null;
+  scannedCount?: number | null;
+  count?: number | null;
 };
 
 export type ModelLineItemFilterInput = {
@@ -777,6 +779,8 @@ export type ListProbateRecordsQuery = {
     updatedAt: string;
   } | null>;
   nextToken?: string | null;
+  scannedCount?: number | null;
+  count?: number | null;
 };
 
 export type GetLineItemQuery = {
@@ -1830,6 +1834,8 @@ export class APIService {
             updatedAt
           }
           nextToken
+          scannedCount
+          count
         }
       }`;
     const gqlAPIServiceArguments: any = {};

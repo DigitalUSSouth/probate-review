@@ -106,6 +106,8 @@ query ListProbateRecords(
       updatedAt
     }
     nextToken
+    scannedCount
+    count
   }
 }
 query GetLineItem($id: ID!) {

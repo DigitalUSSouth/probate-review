@@ -63,4 +63,10 @@ type Word {
   text: String!
   boundingBox: Rect
 }
- 
+
+type ModelProbateRecordConnection @aws_iam @aws_cognito_user_pools {
+  items: [ProbateRecord]!
+  nextToken: String,
+  scannedCount: Int,
+  count: Int  
+}
