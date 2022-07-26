@@ -238,8 +238,8 @@ export class ReviewComponent implements OnInit {
     ) as HTMLInputElement;
     if (lineElem) {
       console.log('updating line value');
-      lineElem.value = updatedText;
-      console.log('line value is ' + lineElem.value);
+      lineElem.innerText = updatedText;
+      console.log('line value is ' + lineElem.innerText);
     }
   }
 
@@ -1399,7 +1399,7 @@ export class ReviewComponent implements OnInit {
             }
             this.updateLineItemById(lineToSplit.id, 'wordIds', wordIdsToKeep);
             lineToSplit.wordIds = wordIdsToKeep;
-
+            this.updateLineItemText(lineToSplit);
             // update our second bounding box
             let newLineOverlay = this.osd!.getOverlayById(
               `boundingBox-${lineToSplit.id}-2`
