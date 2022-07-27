@@ -2,7 +2,6 @@ import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation, AfterViewI
 import { Storage } from 'aws-amplify';
 import { v4 as uuidv4 } from 'uuid';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
-import { RecordService } from '../record.service';
 import { interval } from 'rxjs';
 import { ProbateRecord, APIService, GetProbateRecordQuery } from '../API.service';
 
@@ -20,7 +19,7 @@ export class UploadComponent implements OnInit {
   fileMap = new Map<string, File>();
   filesInProcessing = Array<string>();
   checkFileProcessedInterval = interval(POLL_INTERVAL);
-  constructor(public authenticator: AuthenticatorService, private recordService: RecordService, private probateRecordService: APIService) {
+  constructor(public authenticator: AuthenticatorService, private probateRecordService: APIService) {
     let timer = this.checkFileProcessedInterval.subscribe(async () => {
       if (this.filesInProcessing.length > 0) {
         for (let i = 0; i < this.filesInProcessing.length; i++) {

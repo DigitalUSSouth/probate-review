@@ -10,7 +10,7 @@
     "config": {
       "SourceDir": "src",
       "DistributionDir": "dist/probate-review",
-      "BuildCommand": "npm run-script build",
+      "BuildCommand": "ng build",
       "StartCommand": "ng serve"
     }
   }

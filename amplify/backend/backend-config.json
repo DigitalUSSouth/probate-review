@@ -18,11 +18,6 @@
       "providerPlugin": "awscloudformation",
       "service": "LambdaLayer",
       "build": true
-    },
-    "S3Triggera1b411c2": {
-      "service": "Lambda",
-      "providerPlugin": "awscloudformation",
-      "build": true
     }
   },
   "api": {
@@ -105,17 +100,7 @@
     "uploads": {
       "service": "S3",
       "providerPlugin": "awscloudformation",
-      "dependsOn": [
-        {
-          "category": "function",
-          "resourceName": "S3Triggera1b411c2",
-          "attributes": [
-            "Name",
-            "Arn",
-            "LambdaExecutionRole"
-          ]
-        }
-      ]
+      "dependsOn": []
     }
   }
 }

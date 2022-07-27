@@ -8,12 +8,6 @@ export type AmplifyDependentResourcesAttributes = {
         },
         "probatereviewawsclient": {
             "Arn": "string"
-        },
-        "S3Triggera1b411c2": {
-            "Name": "string",
-            "Arn": "string",
-            "Region": "string",
-            "LambdaExecutionRole": "string"
         }
     },
     "api": {

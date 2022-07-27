@@ -3,7 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  dynamodbProbateRecordTable: 'ProbateRecord-beqt2gcegrb5zgftexccfcexgy-staging',
+  dynamodbLineItemTable: 'LineItem-beqt2gcegrb5zgftexccfcexgy-staging'
 };
 
 /*
