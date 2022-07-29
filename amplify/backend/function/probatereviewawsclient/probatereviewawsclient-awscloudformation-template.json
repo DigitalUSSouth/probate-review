@@ -20,7 +20,7 @@
     }
   },
   "Resources": {
-    "LambdaLayerVersion9289eae3": {
+    "LambdaLayerVersion0ecd0519": {
       "Type": "AWS::Lambda::LayerVersion",
       "Properties": {
         "CompatibleRuntimes": {
@@ -51,50 +51,13 @@
       "DeletionPolicy": "Delete",
       "UpdateReplacePolicy": "Retain"
     },
-    "LambdaLayerPermissionPrivate9289eae3": {
+    "LambdaLayerPermissionPrivate0ecd0519": {
       "Type": "AWS::Lambda::LayerVersionPermission",
       "Properties": {
         "Action": "lambda:GetLayerVersion",
         "LayerVersionArn": {
-          "Ref": "LambdaLayerVersion9289eae3"
+          "Ref": "LambdaLayerVersion0ecd0519"
         },
-        "Principal": {
-          "Ref": "AWS::AccountId"
-        }
-      }
-    },
-    "LambdaLayerVersion376bf4c2": {
-      "Type": "AWS::Lambda::LayerVersion",
-      "Properties": {
-        "CompatibleRuntimes": [
-          "nodejs14.x"
-        ],
-        "Content": {
-          "S3Bucket": {
-            "Ref": "deploymentBucketName"
-          },
-          "S3Key": "amplify-builds/probatereviewawsclient-LambdaLayerVersion376bf4c2-build.zip"
-        },
-        "Description": "Updated layer version 2022-05-24T15:40:20.895Z",
-        "LayerName": {
-          "Fn::Sub": [
-            "probatereviewawsclient-${env}",
-            {
-              "env": {
-                "Ref": "env"
-              }
-            }
-          ]
-        }
-      },
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Retain"
-    },
-    "LambdaLayerPermissionPrivate376bf4c2": {
-      "Type": "AWS::Lambda::LayerVersionPermission",
-      "Properties": {
-        "Action": "lambda:GetLayerVersion",
-        "LayerVersionArn": "arn:aws:lambda:us-east-1:752231335446:layer:probatereviewawsclient-staging:1",
         "Principal": {
           "Ref": "AWS::AccountId"
         }
@@ -104,7 +67,7 @@
   "Outputs": {
     "Arn": {
       "Value": {
-        "Ref": "LambdaLayerVersion9289eae3"
+        "Ref": "LambdaLayerVersion0ecd0519"
       }
     }
   }

@@ -18,6 +18,7 @@ import { ContextMenuComponent } from './context-menu/context-menu.component';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatTableModule} from '@angular/material/table';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { UnreviewedComponent } from './unreviewed/unreviewed.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     ReviewComponent,
     UploadComponent,
     AuthComponent,
-    ContextMenuComponent
+    ContextMenuComponent,
+    UnreviewedComponent
   ],
   imports: [
     BrowserModule,
