@@ -171,18 +171,17 @@ export class ReviewComponent implements OnInit {
 
   getRowsOfText(words: Word[]): Array<Array<Word>> {
     const rows = new Array<Array<Word>>();
+    if(!words || words.length == 0) {
+      return rows;
+    }
+
     // get average word height
     const totalHeight = words
       .map((w) => w.boundingBox!.height)
       .reduce((previousValue, currentValue) => previousValue + currentValue);
 
     const avgHeight = totalHeight / words.length;
-
-    // find the top most word
-    // let topMostWord = words.reduce((p, c) => {
-    //   return c.boundingBox!.top < p.boundingBox!.top ? c : p;
-    // });
-
+    
     let currentRow = 0;
     let copyOfWords = [...words];
     while (copyOfWords.length > 0) {
