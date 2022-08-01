@@ -492,6 +492,10 @@ export class ReviewComponent implements OnInit {
           'select'
         );
         this.osd!.addOverlay(overlayElement, this.texRect2osdRect(texRect));
+        let words = (this.record!.words as Word[]).filter(w => this.selectedLines[0].wordIds.includes(w.id));
+        if(words.length > 0) {
+          this.showInputsForWords(words);
+        }
         break;
       case 'extend':
         console.log('To handle extend');
