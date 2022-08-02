@@ -159,6 +159,8 @@ export class ReviewComponent implements OnInit {
     }
     this.rightClickMenuPositionX = event.clientX;
     this.rightClickMenuPositionY = event.clientY;
+    event.preventDefault();
+    event.stopPropagation();
   }
 
   getRightClickMenuStyle() {
@@ -645,6 +647,7 @@ export class ReviewComponent implements OnInit {
 
   ngOnInit(): void {
     // this.loadScript("assets/js/openseadragonselection.js");
+   
   }
 
   ngAfterViewInit(): void {
