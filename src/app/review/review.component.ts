@@ -280,7 +280,7 @@ export class ReviewComponent implements OnInit {
       for (const word of row) {
         const selectElem = this.createOverlayElement(
           `wordBoundingBox-${word.id}`,
-          'select'
+          'word-select'
         );
         const rect = this.texRect2osdRect(word.boundingBox!);
         console.log('word rect');
