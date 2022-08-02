@@ -25,18 +25,28 @@ input
     background-color: transparent
 
 #review-form
-    margin:4px, 4px
-    padding:4px
+    margin: auto
+    padding:8px
     width: 100%
     overflow-x: hidden
     overflow-y: auto
     text-align:justify
+    border: 2px solid $secondary-color
+    border-radius: 16px
+    height: 400px
+
+#seadragon-viewer    
+    height: 400px
+    margin: auto
 
 .container
-    height: 100%
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+   
 
-table
-    width: 100%
+
 
 th, td 
   text-align: left
@@ -47,11 +57,10 @@ tr:nth-child(even)
     background-color: #f2f2f2
 
 .split 
-  height: 43%
+  height: 50%
   width: 100%  
   z-index: 1
   left: 0
-  overflow-y: hidden
 
 
 /* Control the top */

@@ -1,4 +1,5 @@
 import { Component, ChangeDetectorRef} from '@angular/core';
+import { Router } from '@angular/router';
 import { onAuthUIStateChange, CognitoUserInterface, AuthState } from '@aws-amplify/ui-components';
 
 @Component({
@@ -11,7 +12,7 @@ export class AppComponent {
   user: CognitoUserInterface | undefined;
   authState!: AuthState;
 
-  constructor(private ref: ChangeDetectorRef) {}
+  constructor(private ref: ChangeDetectorRef, private router: Router) {}
   
   ngOnInit() {
     onAuthUIStateChange((authState, authData) => {
@@ -23,5 +24,9 @@ export class AppComponent {
   
   ngOnDestroy() {
     return onAuthUIStateChange;
+  }
+
+  navigate(url: string) {
+    this.router.navigateByUrl(url);
   }
 }

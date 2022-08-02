@@ -1294,7 +1294,7 @@ export class ReviewComponent implements OnInit {
                   let lineIndex = (this.record!.lineItems!.items as LineItem[]).findIndex(l => l.id == this.selectedLines[0].id);
                   let lineElem = document.getElementById(`line-${lineIndex}`);
                   if(lineElem) {
-                    lineElem.scrollIntoView({behavior: 'smooth', block: 'end'});
+                    lineElem.scrollIntoView({behavior: 'smooth', block: 'start'});
                   }
                   
                 }
