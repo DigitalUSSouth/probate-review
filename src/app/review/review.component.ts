@@ -220,9 +220,15 @@ export class ReviewComponent implements OnInit {
     console.log('rows: ');
     console.log(rows);
 
+    let wordIdsToRemove = [] as string[];
+
     let updatedText = '';
     for (const row of rows) {
       for (const word of row) {
+        if(!word.text) {
+          wordIdsToRemove.push(word.id);
+          continue;
+        }
         updatedText += word.text;
         updatedText += ' ';
       }
@@ -242,6 +248,10 @@ export class ReviewComponent implements OnInit {
       lineElem.innerText = updatedText;
       console.log('line value is ' + lineElem.innerText);
     }
+
+    // Remove blank words
+
+    this.record!.words = this.record!.words.filter(w => !wordIdsToRemove.includes(w!.id)) as Word[];
   }
 
   showInputsForWords(words: Word[]): void {
