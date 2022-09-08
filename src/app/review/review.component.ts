@@ -110,7 +110,7 @@ export class ReviewComponent implements OnInit {
     private location: Location,
     private probateRecordService: APIService,
     private renderer: Renderer2
-  ) {}
+  ) { }
 
   displayContextMenu(event: any) {
     this.isDisplayContextMenu = true;
@@ -173,7 +173,7 @@ export class ReviewComponent implements OnInit {
 
   getRowsOfText(words: Word[]): Array<Array<Word>> {
     const rows = new Array<Array<Word>>();
-    if(!words || words.length == 0) {
+    if (!words || words.length == 0) {
       return rows;
     }
 
@@ -183,7 +183,7 @@ export class ReviewComponent implements OnInit {
       .reduce((previousValue, currentValue) => previousValue + currentValue);
 
     const avgHeight = totalHeight / words.length;
-    
+
     let currentRow = 0;
     let copyOfWords = [...words];
     while (copyOfWords.length > 0) {
@@ -225,7 +225,7 @@ export class ReviewComponent implements OnInit {
     let updatedText = '';
     for (const row of rows) {
       for (const word of row) {
-        if(!word.text) {
+        if (!word.text) {
           wordIdsToRemove.push(word.id);
           continue;
         }
@@ -252,6 +252,77 @@ export class ReviewComponent implements OnInit {
     // Remove blank words
 
     this.record!.words = this.record!.words.filter(w => !wordIdsToRemove.includes(w!.id)) as Word[];
+  }
+
+  showPanButtons() {
+    let arrowClasses = ['up', 'left', 'right', 'down'];
+    let buttonPanel = document.getElementById('button-panel');
+    if (!buttonPanel) {
+      buttonPanel = this.renderer.createElement('div');
+      this.renderer.setProperty(buttonPanel, 'id', 'button-panel');
+      this.renderer.addClass(buttonPanel, 'centered-buttons');
+      this.renderer.appendChild(document.body, buttonPanel);
+      
+      let divs = [] as HTMLDivElement[];
+      for (let i = 0; i < 3; i++) {
+        let div = this.renderer.createElement('div') as HTMLDivElement;
+        divs.push(div);
+      }
+
+      for (let i = 0; i < 4; i++) {
+        let button = this.renderer.createElement('button') as HTMLButtonElement;
+        this.renderer.setProperty(button, 'id', `${arrowClasses[i]}-button`);
+        this.renderer.setStyle(button, 'height', '25px');
+        let icon = this.renderer.createElement('i');
+        this.renderer.addClass(icon, arrowClasses[i]);
+        this.renderer.addClass(icon, 'arrow');
+        button.appendChild(icon);
+
+        switch (i) {
+          case 0:
+            divs[0].appendChild(button);
+            break;
+          case 1:
+          case 2:
+            divs[1].appendChild(button);
+            break;
+          case 3:
+            divs[2].appendChild(button);
+            break;
+        }
+
+      }
+      for (const div of divs) {
+        buttonPanel!.appendChild(div);
+      }
+    }
+
+    if (this.selectedLines.length === 1) {
+      let midpoint = new OpenSeadragon.Point(this.osd!.canvas.clientWidth / 2, this.osd!.canvas.clientHeight / 2);
+      let point = new OpenSeadragon.Point(this.osd!.canvas.clientHeight / 2 - 50, this.osd!.canvas.clientHeight / 2 - 50);
+      point = this.osd!.viewport.pointFromPixelNoRotate(point);
+      midpoint = this.osd!.viewport.pointFromPixelNoRotate(midpoint);
+      let sideLength = (midpoint.x - point.x) / this.aspectRatio;
+      console.log('aspect ratio is ' + this.aspectRatio);
+      // let rect = this.texRect2osdRect(this.selectedLines[0].boundingBox!);
+      // if(below) {
+      //   rect.y += rect.height;
+      // }
+      // else {
+      //   rect.y -= sideLength;
+      // }
+      // rect.x += ((rect.width - sideLength) / 2);  
+      // rect.width = sideLength;
+      // rect.height = sideLength;    
+
+      let centerPoint = this.osd!.viewport.getCenter();
+      let rect = new OpenSeadragon.Rect(centerPoint.x, centerPoint.y, sideLength, sideLength);
+      rect.x -= sideLength / 2;
+      rect.y += sideLength / 2;
+
+      this.osd!.addOverlay(buttonPanel!, rect);
+      this.renderer.setStyle(buttonPanel, 'display', 'flex');
+    }
   }
 
   showInputsForWords(words: Word[]): void {
@@ -376,6 +447,10 @@ export class ReviewComponent implements OnInit {
     if (words.length > 0) {
       this.showInputsForWords(words);
     }
+
+    this.showPanButtons();
+
+
     this.dragMode = true;
     this.osd!.setMouseNavEnabled(false);
     this.dragSelect!.isDragging = true;
@@ -397,12 +472,12 @@ export class ReviewComponent implements OnInit {
         let minMax = this.selectedLines.reduce((acc, val) => {
           acc[0] =
             acc[0] === undefined ||
-            val.boundingBox!.top < acc[0].boundingBox!.top
+              val.boundingBox!.top < acc[0].boundingBox!.top
               ? val
               : acc[0];
           acc[1] =
             acc[1] === undefined ||
-            val.boundingBox!.top + val.boundingBox!.height >
+              val.boundingBox!.top + val.boundingBox!.height >
               acc[1].boundingBox!.top + acc[1].boundingBox!.height
               ? val
               : acc[1];
@@ -419,12 +494,12 @@ export class ReviewComponent implements OnInit {
         minMax = this.selectedLines.reduce((acc, val) => {
           acc[0] =
             acc[0] === undefined ||
-            val.boundingBox!.left < acc[0].boundingBox!.left
+              val.boundingBox!.left < acc[0].boundingBox!.left
               ? val
               : acc[0];
           acc[1] =
             acc[1] === undefined ||
-            val.boundingBox!.left + val.boundingBox!.width >
+              val.boundingBox!.left + val.boundingBox!.width >
               acc[1].boundingBox!.left + acc[1].boundingBox!.width
               ? val
               : acc[1];
@@ -505,7 +580,7 @@ export class ReviewComponent implements OnInit {
         );
         this.osd!.addOverlay(overlayElement, this.texRect2osdRect(texRect));
         let words = (this.record!.words as Word[]).filter(w => this.selectedLines[0].wordIds.includes(w.id));
-        if(words.length > 0) {
+        if (words.length > 0) {
           this.showInputsForWords(words);
         }
         break;
@@ -657,7 +732,7 @@ export class ReviewComponent implements OnInit {
 
   ngOnInit(): void {
     // this.loadScript("assets/js/openseadragonselection.js");
-   
+
   }
 
   ngAfterViewInit(): void {
@@ -1302,21 +1377,21 @@ export class ReviewComponent implements OnInit {
                     this.texRect2osdRect(line.boundingBox!)
                   );
                 }
-                if(this.selectedLines.length == 1) {
+                if (this.selectedLines.length == 1) {
                   // scroll element into view
                   let lineIndex = (this.record!.lineItems!.items as LineItem[]).findIndex(l => l.id == this.selectedLines[0].id);
                   let lineElem = document.getElementById(`line-${lineIndex}`);
-                  if(lineElem) {
-                    lineElem.scrollIntoView({behavior: 'smooth', block: 'start'});
+                  if (lineElem) {
+                    lineElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
                   }
-                  
+
                 }
                 break;
               case SelectionMode.Word:
                 if (this.selectedLines.length == 1) {
                   // check if we clicked outside of the bounds
                   let selectedLineBoundingBox = this.osd!.getOverlayById(`boundingBox-${this.selectedLines[0].id}`).getBounds(this.osd!.viewport);
-                 
+
 
                   // check if we have clicked on an existing input box
                   let existingWords = this.getWordsOfLine(
@@ -1344,7 +1419,7 @@ export class ReviewComponent implements OnInit {
                   }
 
                   // do not create a new word if clicking outside of line bounding box
-                  if(!this.osdRectangleContainsOsdRectangle(selectedLineBoundingBox, location)) {
+                  if (!this.osdRectangleContainsOsdRectangle(selectedLineBoundingBox, location)) {
                     // done editing
                     this.clearSelection();
 
