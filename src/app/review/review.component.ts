@@ -254,15 +254,15 @@ export class ReviewComponent implements OnInit {
     this.record!.words = this.record!.words.filter(w => !wordIdsToRemove.includes(w!.id)) as Word[];
   }
 
-  showPanButtons() {
+  createButtonPanel(): HTMLDivElement {
     let arrowClasses = ['up', 'left', 'right', 'down'];
-    let buttonPanel = document.getElementById('button-panel');
+    let buttonPanel = document.getElementById('button-panel') as HTMLDivElement;
     if (!buttonPanel) {
       buttonPanel = this.renderer.createElement('div');
       this.renderer.setProperty(buttonPanel, 'id', 'button-panel');
       this.renderer.addClass(buttonPanel, 'centered-buttons');
       this.renderer.appendChild(document.body, buttonPanel);
-      
+
       let divs = [] as HTMLDivElement[];
       for (let i = 0; i < 3; i++) {
         let div = this.renderer.createElement('div') as HTMLDivElement;
@@ -281,20 +281,45 @@ export class ReviewComponent implements OnInit {
         switch (i) {
           case 0:
             divs[0].appendChild(button);
+            this.renderer.listen(button, 'click', () => {
+              this.osd!.viewport.panBy(new OpenSeadragon.Point(0, -0.01));
+              console.log('showing panel buttons');
+              this.showPanButtons();
+            });
             break;
           case 1:
+            this.renderer.listen(button, 'click', () => {
+              this.osd!.viewport.panBy(new OpenSeadragon.Point(-0.01, 0.0));
+            });
+            divs[1].appendChild(button);
+            break;
           case 2:
+            this.renderer.listen(button, 'click', () => {
+              this.osd!.viewport.panBy(new OpenSeadragon.Point(0.01, 0.0));
+            });
             divs[1].appendChild(button);
             break;
           case 3:
+            this.renderer.listen(button, 'click', () => {
+              this.osd!.viewport.panBy(new OpenSeadragon.Point(0, 0.01));
+            });
             divs[2].appendChild(button);
             break;
         }
-
       }
       for (const div of divs) {
         buttonPanel!.appendChild(div);
       }
+    }
+
+    return buttonPanel;
+  }
+
+  showPanButtons() {
+    let arrowClasses = ['up', 'left', 'right', 'down'];
+    let buttonPanel = document.getElementById('button-panel');
+    if (!buttonPanel) {
+      buttonPanel = this.createButtonPanel();
     }
 
     if (this.selectedLines.length === 1) {
@@ -304,23 +329,18 @@ export class ReviewComponent implements OnInit {
       midpoint = this.osd!.viewport.pointFromPixelNoRotate(midpoint);
       let sideLength = (midpoint.x - point.x) / this.aspectRatio;
       console.log('aspect ratio is ' + this.aspectRatio);
-      // let rect = this.texRect2osdRect(this.selectedLines[0].boundingBox!);
-      // if(below) {
-      //   rect.y += rect.height;
-      // }
-      // else {
-      //   rect.y -= sideLength;
-      // }
-      // rect.x += ((rect.width - sideLength) / 2);  
-      // rect.width = sideLength;
-      // rect.height = sideLength;    
+      
 
       let centerPoint = this.osd!.viewport.getCenter();
       let rect = new OpenSeadragon.Rect(centerPoint.x, centerPoint.y, sideLength, sideLength);
       rect.x -= sideLength / 2;
-      rect.y += sideLength / 2;
-
-      this.osd!.addOverlay(buttonPanel!, rect);
+      rect.y += this.selectedLines[0].boundingBox!.height;
+      if(this.osd!.getOverlayById('button-panel')) {
+        this.osd!.updateOverlay('button-panel', rect);
+      }
+      else {
+        this.osd!.addOverlay(buttonPanel!, rect);
+      }
       this.renderer.setStyle(buttonPanel, 'display', 'flex');
     }
   }
