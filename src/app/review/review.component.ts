@@ -93,6 +93,8 @@ export class ReviewComponent implements OnInit {
     dragMode: DragMode.Select,
     selectionMode: SelectionMode.None,
     editMode: EditMode.None,
+    buttonClicked: false,
+    showPanButtons: false
   };
   isDisplayContextMenu = false;
   rightClickMenuItems: Array<ContextMenuModel> = [];
@@ -316,7 +318,6 @@ export class ReviewComponent implements OnInit {
   }
 
   showPanButtons() {
-    let arrowClasses = ['up', 'left', 'right', 'down'];
     let buttonPanel = document.getElementById('button-panel');
     if (!buttonPanel) {
       buttonPanel = this.createButtonPanel();
@@ -342,6 +343,7 @@ export class ReviewComponent implements OnInit {
         this.osd!.addOverlay(buttonPanel!, rect);
       }
       this.renderer.setStyle(buttonPanel, 'display', 'flex');
+      this.dragSelect.showPanButtons = true;
     }
   }
 
@@ -632,6 +634,7 @@ export class ReviewComponent implements OnInit {
         break;
     }
 
+    console.log('clearing from context menu');
     this.clearSelectionBox();
   }
 
@@ -987,6 +990,7 @@ export class ReviewComponent implements OnInit {
   }
 
   clearSelectedElems() {
+    console.log('clearing selected elems');
     this.clearSelectionBox();
 
     let selectionElems = document.querySelectorAll('.highlight');
@@ -998,6 +1002,9 @@ export class ReviewComponent implements OnInit {
   clearSelection() {
     this.osd!.clearOverlays();
     this.clearSelectedElems();
+    if(this.dragSelect.showPanButtons) {
+      this.showPanButtons();
+    }
     this.dragSelect.selectionMode = SelectionMode.None;
     this.dragSelect.editMode = EditMode.None;
     this.dragSelect.dragMode = DragMode.None;
@@ -1008,6 +1015,7 @@ export class ReviewComponent implements OnInit {
   }
 
   clearSelectionBox() {
+    console.log('clear selection box');
     // we do this otherwise the selection overlay will show up
     this.osd!.updateOverlay(OVERLAY_ID, new OpenSeadragon.Rect(0, 0, 0, 0));
 
@@ -1227,13 +1235,27 @@ export class ReviewComponent implements OnInit {
         var target = (event as any).originalTarget as HTMLElement;
         console.log('click handler fired');
         console.log(event);
-        if (target!.matches('input')) {
-          this.dragSelect.selectionMode = SelectionMode.None;
-          console.log('focus on ');
-          console.log(target);
-          target.style.display = 'block';
-          target.focus();
-          this.osd!.setMouseNavEnabled(false);
+        console.log(target);
+        console.log('tag name');
+        console.log(target.tagName);
+        switch (target.tagName.toLocaleLowerCase()) {
+          case 'input':
+            this.dragSelect.selectionMode = SelectionMode.None;
+            console.log('focus on ');
+            console.log(target);
+            // target.style.display = 'block';
+            target.focus();
+            this.osd!.setMouseNavEnabled(false);
+            break;
+          case 'button':
+            console.log('button found');
+            target.click();
+            this.dragSelect.buttonClicked = true;
+            break;
+          case 'i':
+            target.parentElement!.click();
+            this.dragSelect.buttonClicked = true;
+            break;
         }
       },
       pressHandler: (event) => {
@@ -1264,6 +1286,7 @@ export class ReviewComponent implements OnInit {
 
             break;
         }
+        
       },
       dragHandler: (event) => {
         if (!this.dragSelect!.isDragging) {
@@ -1439,10 +1462,10 @@ export class ReviewComponent implements OnInit {
                   }
 
                   // do not create a new word if clicking outside of line bounding box
-                  if (!this.osdRectangleContainsOsdRectangle(selectedLineBoundingBox, location)) {
+                  if (!this.osdRectangleContainsOsdRectangle(selectedLineBoundingBox, location) && !this.dragSelect.buttonClicked) {
                     // done editing
                     this.clearSelection();
-
+                    console.log('clearing when checking for word creation');
                     return;
                   }
 
@@ -1464,10 +1487,13 @@ export class ReviewComponent implements OnInit {
                 }
                 break;
             }
-            if (this.selectedLines.length > 0) {
+            if (this.selectedLines.length > 0 && !this.dragSelect.buttonClicked) {
               this.clearSelectionBox();
+              console.log('clearing on release');
             }
-
+            if(this.dragSelect.buttonClicked) {
+              this.dragSelect.buttonClicked = false;
+            }
             break;
           case DragMode.Shorten:
           case DragMode.Extend:
@@ -1562,6 +1588,9 @@ export class ReviewComponent implements OnInit {
             break;
         }
 
+        if (this.dragSelect.editMode != EditMode.Word) {
+          this.dragSelect.showPanButtons = false;
+        }
         console.log('release handler called');
         this.dragSelect!.isDragging = false;
         this.dragMode = false;
