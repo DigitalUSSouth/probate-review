@@ -448,8 +448,6 @@ export class ReviewComponent implements OnInit {
       this.showInputsForWords(words);
     }
 
-    this.showPanButtons();
-
 
     this.dragMode = true;
     this.osd!.setMouseNavEnabled(false);
