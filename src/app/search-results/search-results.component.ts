@@ -120,15 +120,31 @@ export class SearchResultsComponent implements OnInit {
     console.log('line item filter');
     console.log(lineItemFilter);
 
-    let lineItemQuery: ListLineItemsQuery = await this.probateRecordService.ListLineItems(lineItemFilter, maxCount, this.lineItemNextToken);
+
+    let lineItemQuery: ListLineItemsQuery;
+    let itemCount = 0; 
+    do {
+      try {
+    lineItemQuery = await this.probateRecordService.ListLineItems(lineItemFilter, maxCount, this.lineItemNextToken);
+    console.log(lineItemQuery);
+    itemCount = lineItemQuery.items.length;
     for (const lineItem of lineItemQuery.items) {
       this.recordIdsToFetch.add(lineItem!.probateId);
+      this.lineItemNextToken = (lineItemQuery.nextToken) ? lineItemQuery.nextToken : undefined;
+      console.log(lineItemQuery!.items);
     }
-    console.log('line item query');
-    console.log(lineItemQuery);
-    console.log(lineItemQuery!.items);
-    this.lineItemNextToken = (lineItemQuery.nextToken) ? lineItemQuery.nextToken : undefined;
-    console.log('next token: ' + this.lineItemNextToken);
+  }
+  catch(e) {
+    console.log(e);
+    break;
+  }
+  } while(itemCount > 0);
+
+    // console.log('line item query');
+    // console.log(lineItemQuery);
+    // console.log(lineItemQuery!.items);
+    
+    // console.log('next token: ' + this.lineItemNextToken);
 
   }
 
