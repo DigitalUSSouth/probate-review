@@ -250,79 +250,7 @@ export class ReviewComponent implements OnInit {
     }
 
     // Remove blank words
-
     this.record!.words = this.record!.words.filter(w => !wordIdsToRemove.includes(w!.id)) as Word[];
-  }
-
-  showPanButtons() {
-    let arrowClasses = ['up', 'left', 'right', 'down'];
-    let buttonPanel = document.getElementById('button-panel');
-    if (!buttonPanel) {
-      buttonPanel = this.renderer.createElement('div');
-      this.renderer.setProperty(buttonPanel, 'id', 'button-panel');
-      this.renderer.addClass(buttonPanel, 'centered-buttons');
-      this.renderer.appendChild(document.body, buttonPanel);
-      
-      let divs = [] as HTMLDivElement[];
-      for (let i = 0; i < 3; i++) {
-        let div = this.renderer.createElement('div') as HTMLDivElement;
-        divs.push(div);
-      }
-
-      for (let i = 0; i < 4; i++) {
-        let button = this.renderer.createElement('button') as HTMLButtonElement;
-        this.renderer.setProperty(button, 'id', `${arrowClasses[i]}-button`);
-        this.renderer.setStyle(button, 'height', '25px');
-        let icon = this.renderer.createElement('i');
-        this.renderer.addClass(icon, arrowClasses[i]);
-        this.renderer.addClass(icon, 'arrow');
-        button.appendChild(icon);
-
-        switch (i) {
-          case 0:
-            divs[0].appendChild(button);
-            break;
-          case 1:
-          case 2:
-            divs[1].appendChild(button);
-            break;
-          case 3:
-            divs[2].appendChild(button);
-            break;
-        }
-
-      }
-      for (const div of divs) {
-        buttonPanel!.appendChild(div);
-      }
-    }
-
-    if (this.selectedLines.length === 1) {
-      let midpoint = new OpenSeadragon.Point(this.osd!.canvas.clientWidth / 2, this.osd!.canvas.clientHeight / 2);
-      let point = new OpenSeadragon.Point(this.osd!.canvas.clientHeight / 2 - 50, this.osd!.canvas.clientHeight / 2 - 50);
-      point = this.osd!.viewport.pointFromPixelNoRotate(point);
-      midpoint = this.osd!.viewport.pointFromPixelNoRotate(midpoint);
-      let sideLength = (midpoint.x - point.x) / this.aspectRatio;
-      console.log('aspect ratio is ' + this.aspectRatio);
-      // let rect = this.texRect2osdRect(this.selectedLines[0].boundingBox!);
-      // if(below) {
-      //   rect.y += rect.height;
-      // }
-      // else {
-      //   rect.y -= sideLength;
-      // }
-      // rect.x += ((rect.width - sideLength) / 2);  
-      // rect.width = sideLength;
-      // rect.height = sideLength;    
-
-      let centerPoint = this.osd!.viewport.getCenter();
-      let rect = new OpenSeadragon.Rect(centerPoint.x, centerPoint.y, sideLength, sideLength);
-      rect.x -= sideLength / 2;
-      rect.y += sideLength / 2;
-
-      this.osd!.addOverlay(buttonPanel!, rect);
-      this.renderer.setStyle(buttonPanel, 'display', 'flex');
-    }
   }
 
   showInputsForWords(words: Word[]): void {
@@ -384,10 +312,12 @@ export class ReviewComponent implements OnInit {
           this.renderer.listen(inputElem, 'keyup.enter', () => {
             this.clearSelection();
           });
+          this.renderer.listen(inputElem, 'focus', ()=> {            
+            this.osd?.viewport.fitBoundsWithConstraints(rect);
+          } );
           this.renderer.appendChild(document.body, inputElem);
         }
 
-        // this.renderer.setProperty(inputElem, 'className', className);
         this.renderer.setAttribute(inputElem, 'value', word.text);
 
         rect.y = top;
