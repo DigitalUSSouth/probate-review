@@ -1,7 +1,7 @@
 <div class="search-container" style="display:flex; justify-content: center; align-items: center; height:100%; width:100%">
     <mat-form-field appearance="fill">
         <mat-label>Search probate records</mat-label>
-        <input matInput [(ngModel)]="searchTerm" />
+        <input matInput [(ngModel)]="searchTerm" (keyup.enter)="search()"/>
         <mat-icon matPrefix>search</mat-icon>
     </mat-form-field>
 </div>
