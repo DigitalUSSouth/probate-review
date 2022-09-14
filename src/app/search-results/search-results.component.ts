@@ -115,13 +115,7 @@ export class SearchResultsComponent implements OnInit {
           }
         }
       ]
-    };  
-    
-    lineItemFilter = {
-      title: {
-        contains: q
-      }
-    }
+    };          
 
     console.log('line item filter');
     console.log(lineItemFilter);
