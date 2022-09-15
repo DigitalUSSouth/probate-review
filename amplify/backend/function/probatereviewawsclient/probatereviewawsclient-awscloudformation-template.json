@@ -20,23 +20,19 @@
     }
   },
   "Resources": {
-    "LambdaLayerVersione1fa0069": {
+    "LambdaLayerVersionb540a371": {
       "Type": "AWS::Lambda::LayerVersion",
       "Properties": {
-        "CompatibleRuntimes": {
-          "Ref": "runtimes"
-        },
+        "CompatibleRuntimes": [
+          "nodejs14.x"
+        ],
         "Content": {
           "S3Bucket": {
             "Ref": "deploymentBucketName"
           },
-          "S3Key": {
-            "Ref": "s3Key"
-          }
+          "S3Key": "amplify-builds/probatereviewawsclient-LambdaLayerVersionb540a371-build.zip"
         },
-        "Description": {
-          "Ref": "description"
-        },
+        "Description": "Updated layer version 2022-09-15T02:28:16.321Z",
         "LayerName": {
           "Fn::Sub": [
             "probatereviewawsclient-${env}",
@@ -51,13 +47,11 @@
       "DeletionPolicy": "Delete",
       "UpdateReplacePolicy": "Retain"
     },
-    "LambdaLayerPermissionPrivatee1fa0069": {
+    "LambdaLayerPermissionPrivateb540a371": {
       "Type": "AWS::Lambda::LayerVersionPermission",
       "Properties": {
         "Action": "lambda:GetLayerVersion",
-        "LayerVersionArn": {
-          "Ref": "LambdaLayerVersione1fa0069"
-        },
+        "LayerVersionArn": "arn:aws:lambda:us-east-1:752231335446:layer:probatereviewawsclient-staging:22",
         "Principal": {
           "Ref": "AWS::AccountId"
         }
@@ -67,7 +61,7 @@
   "Outputs": {
     "Arn": {
       "Value": {
-        "Ref": "LambdaLayerVersione1fa0069"
+        "Ref": "LambdaLayerVersionb540a371"
       }
     }
   }

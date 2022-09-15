@@ -10,10 +10,18 @@ AWS.config.update({ region: "us-east-1" });
 var ddb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
 const docClient = new AWS.DynamoDB.DocumentClient();
 
-exports.handler = async (event) => {
-  let current = new Date();
-  let uuid = event["uuid"] ? event["uuid"] : AWS.util.uuid.v4();
-  let lines = event["JobStatus"]["Blocks"]
+async function getLinesAndWords(event) {
+  let JobId = event["JobId"]["JobId"];
+  console.log('getting document analysis for job id ' + JobId);
+  let params = {
+    JobId    
+  };
+
+  const textract = new AWS.Textract();
+  
+  let data = await textract.getDocumentAnalysis(params).promise();
+  
+  let lines = data.Blocks
     .filter((l) => l["BlockType"] === "LINE")
     .map((l) => ({
       id: l["Id"],
@@ -26,9 +34,9 @@ exports.handler = async (event) => {
         top: l["Geometry"]["BoundingBox"]["Top"],
       },
     }));
-
-  let words = event["JobStatus"]["Blocks"]
-    .filter((l) => l["BlockType"] === "WORD")
+  
+  let words = data.Blocks
+  .filter((l) => l["BlockType"] === "WORD")
     .map((w) => ({
       id: w["Id"],
       text: w["Text"],
@@ -39,6 +47,21 @@ exports.handler = async (event) => {
         top: w["Geometry"]["BoundingBox"]["Top"],
       },
     }));
+  
+  return {lines, words};
+}
+
+
+
+exports.handler = async (event) => {
+  let current = new Date();
+  let uuid = event["uuid"] ? event["uuid"] : AWS.util.uuid.v4();
+
+  let data = await getLinesAndWords(event);
+
+  let lines = data.lines;
+  let words = data.words;
+  
 
   let lineItems = lines.map((l) => ({
     id: l.id,
