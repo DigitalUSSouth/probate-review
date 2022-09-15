@@ -21,6 +21,9 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { UnreviewedComponent } from './unreviewed/unreviewed.component';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatToolbarModule} from '@angular/material/toolbar';
+import { SearchComponent } from './search/search.component';
+import { FormsModule } from '@angular/forms';
+import { SearchResultsComponent } from './search-results/search-results.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +34,9 @@ import {MatToolbarModule} from '@angular/material/toolbar';
     UploadComponent,
     AuthComponent,
     ContextMenuComponent,
-    UnreviewedComponent
+    UnreviewedComponent,
+    SearchComponent,
+    SearchResultsComponent
   ],
   imports: [
     BrowserModule,
@@ -46,7 +51,8 @@ import {MatToolbarModule} from '@angular/material/toolbar';
     MatTableModule,
     MatProgressSpinnerModule,
     MatMenuModule,
-    MatToolbarModule
+    MatToolbarModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
