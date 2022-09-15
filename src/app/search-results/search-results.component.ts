@@ -70,10 +70,11 @@ export class SearchResultsComponent implements OnInit {
 
     this.recordNextToken = (recordsQuery.nextToken) ? recordsQuery.nextToken : undefined;
 
-    await this.fetchLineItems(q, this.pageSize - this.records.length);
-
+    let ids = await this.fetchLineItems(q, this.pageSize - this.records.length);
+    // do not fetch records we have already fetched
+    ids = ids.filter(r => !(this.records!.map(id => id.id)).includes(r));
+    
     // fetch probate ids 
-    let ids = Array.from(this.recordIdsToFetch.values());
     console.log('ids to fetch');
     console.log(ids);
     if (ids.length) {
@@ -95,7 +96,9 @@ export class SearchResultsComponent implements OnInit {
     }
   }
 
-  async fetchLineItems(q: string, maxCount: number): Promise<void> {
+  async fetchLineItems(q: string, maxCount: number): Promise<string[]> {
+    let recordIdsToFetch = new Set<string>();
+
     // filter our line items
     let lineItemFilter: ModelLineItemFilterInput = {
       or: [
@@ -129,9 +132,8 @@ export class SearchResultsComponent implements OnInit {
     console.log(lineItemQuery);
     itemCount = lineItemQuery.items.length;
     for (const lineItem of lineItemQuery.items) {
-      this.recordIdsToFetch.add(lineItem!.probateId);
+      recordIdsToFetch.add(lineItem!.probateId);
       this.lineItemNextToken = (lineItemQuery.nextToken) ? lineItemQuery.nextToken : undefined;
-      console.log(lineItemQuery!.items);
     }
   }
   catch(e) {
@@ -140,12 +142,9 @@ export class SearchResultsComponent implements OnInit {
   }
   } while(itemCount > 0);
 
-    // console.log('line item query');
-    // console.log(lineItemQuery);
-    // console.log(lineItemQuery!.items);
     
-    // console.log('next token: ' + this.lineItemNextToken);
 
+    return Array.from(recordIdsToFetch.values());
   }
 
   handlePageEvent(event: PageEvent) {
