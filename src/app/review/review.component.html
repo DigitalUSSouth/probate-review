@@ -1,6 +1,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
 <div class="container">
-    <div id="viewer" oncontextmenu="return false;">
+    <div id="viewer" oncontextmenu="return false;" class="flex-child">
         <div id="seadragon-viewer" #viewer (contextmenu)="displayContextMenu($event);"></div>
         <div class="buttonBar" >
             <button mat-raised-button class="form-button" (click)="selectRect()">Select lines</button>
@@ -17,7 +17,7 @@
     </div>
     
 
-    <div id="review-form">
+    <div id="review-form" class="flex-child">
         
         <h1> Enter your corrections below </h1>
         <table id="line-items-table">
