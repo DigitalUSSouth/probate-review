@@ -38,17 +38,34 @@ input
     border: 2px solid $secondary-color
     border-radius: 16px
     height: 50%
+    flex: 1
+
+#viewer
+    height: 400px
+    position: -webkit-sticky
+    position: sticky
+    top: 0
+    padding: 50px
+    font-size: 20px
 
 #seadragon-viewer    
-    height: 400px
-    margin: auto
+    height: 400px    
+    
+
 
 .container
-    display: flex
-    flex-direction: column
-    align-items: center
+    display: flex    
     justify-content: center
-   
+    overflow: visible
+
+.flex-child
+    flex: 1
+    
+
+.flex-child:first-child
+  margin-right: 20px
+  
+
 table
     width: 100%
 
