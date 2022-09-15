@@ -357,7 +357,7 @@ export class ReviewComponent implements OnInit {
       },
     };
     this.linesItemsToAdd.push(newCreateLineItem);
-
+    console.log('create line called');
     let createdAt = new Date();
     const newLineItem = {
       ...newCreateLineItem,
@@ -390,11 +390,11 @@ export class ReviewComponent implements OnInit {
   handleMenuItemClick(event: any) {
     switch (event.data) {
       case 'create':
-        console.log('To handle create');
+        console.log('create line clicked');
         this.createLine();
         break;
       case 'combine':
-        console.log('To handle combine');
+        console.log('combine lines clicked');
         // mark lines for deletion
         const highestLowest = new Array<LineItem>();
         let minMax = this.selectedLines.reduce((acc, val) => {
@@ -667,41 +667,31 @@ export class ReviewComponent implements OnInit {
     const id = String(this.route.snapshot.paramMap.get('id'));
 
     let record$ = from(this.probateRecordService.GetProbateRecord(id));
+    let lineItems$ = from(this.probateRecordService.LineItemByProbateRecord(id, undefined, undefined, 1000));
+
     record$.subscribe((record) => {
+      console.log(record);
       this.record = record as ProbateRecord;
       for (const word of this.record.words) {
         if (word) {
-          this.wordMap.set(word.id, word);
-          // this.wordQuadTree.insert(
-          //   new BoundingBox(
-          //     word.boundingBox!.left,
-          //     word.boundingBox!.top,
-          //     word.boundingBox!.width,
-          //     word.boundingBox!.height
-          //   ),
-          //   word.id
-          // );
+          this.wordMap.set(word.id, word);          
         }
       }
-
-      // for (const line of this.record.lineItems!.items) {
-      //   if (line) {
-      //     this.lineQuadTree.insert(
-      //       new BoundingBox(
-      //         line.boundingBox!.left,
-      //         line.boundingBox!.top,
-      //         line.boundingBox!.width,
-      //         line.boundingBox!.height
-      //       ),
-      //       line.id
-      //     );
-      //   }
-      // }
+      
+      lineItems$.subscribe((lineItems) => {
+        let sortedLineItems = (lineItems.items as unknown as LineItem[]).sort((a, b) => a!.boundingBox!.top - b!.boundingBox!.top);
+        this.record!.lineItems!.items = sortedLineItems;
+        
+        console.log('rec\'d line items');
+        console.log(lineItems);
+      });
 
       // get our
       console.log(this.record);
       this.getRecord(id);
     });
+
+    
   }
 
   updateLineItemById(id: string, field: string, value: any) {
