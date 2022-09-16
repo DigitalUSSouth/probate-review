@@ -28,6 +28,8 @@ mutation CreateProbateRecord(
           height
         }
         attributeForId
+        lowerTitle
+        confidence
         createdAt
         updatedAt
       }
@@ -42,9 +44,12 @@ mutation CreateProbateRecord(
         width
         height
       }
+      lowerText
+      confidence
     }
     totalValue
     reviewCount
+    lowerTitle
     createdAt
     updatedAt
   }
@@ -78,6 +83,8 @@ mutation UpdateProbateRecord(
           height
         }
         attributeForId
+        lowerTitle
+        confidence
         createdAt
         updatedAt
       }
@@ -92,9 +99,12 @@ mutation UpdateProbateRecord(
         width
         height
       }
+      lowerText
+      confidence
     }
     totalValue
     reviewCount
+    lowerTitle
     createdAt
     updatedAt
   }
@@ -128,6 +138,8 @@ mutation DeleteProbateRecord(
           height
         }
         attributeForId
+        lowerTitle
+        confidence
         createdAt
         updatedAt
       }
@@ -142,9 +154,12 @@ mutation DeleteProbateRecord(
         width
         height
       }
+      lowerText
+      confidence
     }
     totalValue
     reviewCount
+    lowerTitle
     createdAt
     updatedAt
   }
@@ -170,6 +185,8 @@ mutation CreateLineItem(
       height
     }
     attributeForId
+    lowerTitle
+    confidence
     createdAt
     updatedAt
   }
@@ -195,6 +212,8 @@ mutation UpdateLineItem(
       height
     }
     attributeForId
+    lowerTitle
+    confidence
     createdAt
     updatedAt
   }
@@ -220,6 +239,8 @@ mutation DeleteLineItem(
       height
     }
     attributeForId
+    lowerTitle
+    confidence
     createdAt
     updatedAt
   }
@@ -249,6 +270,8 @@ mutation CreateDocument(
         width
         height
       }
+      lowerText
+      confidence
     }
     createdAt
     updatedAt
@@ -279,6 +302,8 @@ mutation UpdateDocument(
         width
         height
       }
+      lowerText
+      confidence
     }
     createdAt
     updatedAt
@@ -309,7 +334,96 @@ mutation DeleteDocument(
         width
         height
       }
+      lowerText
+      confidence
     }
+    createdAt
+    updatedAt
+  }
+}
+mutation CreateLineItemReviewerNote(
+  $input: CreateLineItemReviewerNoteInput!
+  $condition: ModelLineItemReviewerNoteConditionInput
+) {
+  createLineItemReviewerNote(input: $input, condition: $condition) {
+    id
+    lineItemId
+    title
+    reviewed
+    reviewer
+    createdAt
+    updatedAt
+  }
+}
+mutation UpdateLineItemReviewerNote(
+  $input: UpdateLineItemReviewerNoteInput!
+  $condition: ModelLineItemReviewerNoteConditionInput
+) {
+  updateLineItemReviewerNote(input: $input, condition: $condition) {
+    id
+    lineItemId
+    title
+    reviewed
+    reviewer
+    createdAt
+    updatedAt
+  }
+}
+mutation DeleteLineItemReviewerNote(
+  $input: DeleteLineItemReviewerNoteInput!
+  $condition: ModelLineItemReviewerNoteConditionInput
+) {
+  deleteLineItemReviewerNote(input: $input, condition: $condition) {
+    id
+    lineItemId
+    title
+    reviewed
+    reviewer
+    createdAt
+    updatedAt
+  }
+}
+mutation CreateIssue(
+  $input: CreateIssueInput!
+  $condition: ModelIssueConditionInput
+) {
+  createIssue(input: $input, condition: $condition) {
+    id
+    title
+    description
+    reporter
+    status
+    type
+    createdAt
+    updatedAt
+  }
+}
+mutation UpdateIssue(
+  $input: UpdateIssueInput!
+  $condition: ModelIssueConditionInput
+) {
+  updateIssue(input: $input, condition: $condition) {
+    id
+    title
+    description
+    reporter
+    status
+    type
+    createdAt
+    updatedAt
+  }
+}
+mutation DeleteIssue(
+  $input: DeleteIssueInput!
+  $condition: ModelIssueConditionInput
+) {
+  deleteIssue(input: $input, condition: $condition) {
+    id
+    title
+    description
+    reporter
+    status
+    type
     createdAt
     updatedAt
   }

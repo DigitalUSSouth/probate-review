@@ -25,6 +25,8 @@ query GetProbateRecord($id: ID!) {
           height
         }
         attributeForId
+        lowerTitle
+        confidence
         createdAt
         updatedAt
       }
@@ -39,9 +41,12 @@ query GetProbateRecord($id: ID!) {
         width
         height
       }
+      lowerText
+      confidence
     }
     totalValue
     reviewCount
+    lowerTitle
     createdAt
     updatedAt
   }
@@ -85,6 +90,8 @@ query ListProbateRecords(
             height
           }
           attributeForId
+          lowerTitle
+          confidence
           createdAt
           updatedAt
         }
@@ -99,9 +106,12 @@ query ListProbateRecords(
           width
           height
         }
+        lowerText
+        confidence
       }
       totalValue
       reviewCount
+      lowerTitle
       createdAt
       updatedAt
     }
@@ -128,6 +138,8 @@ query GetLineItem($id: ID!) {
       height
     }
     attributeForId
+    lowerTitle
+    confidence
     createdAt
     updatedAt
   }
@@ -155,6 +167,8 @@ query ListLineItems(
         height
       }
       attributeForId
+      lowerTitle
+      confidence
       createdAt
       updatedAt
     }
@@ -192,6 +206,8 @@ query LineItemByProbateRecord(
         height
       }
       attributeForId
+      lowerTitle
+      confidence
       createdAt
       updatedAt
     }
@@ -220,6 +236,8 @@ query GetDocument($id: ID!) {
         width
         height
       }
+      lowerText
+      confidence
     }
     createdAt
     updatedAt
@@ -252,7 +270,73 @@ query ListDocuments(
           width
           height
         }
+        lowerText
+        confidence
       }
+      createdAt
+      updatedAt
+    }
+    nextToken
+  }
+}
+query GetLineItemReviewerNote($id: ID!) {
+  getLineItemReviewerNote(id: $id) {
+    id
+    lineItemId
+    title
+    reviewed
+    reviewer
+    createdAt
+    updatedAt
+  }
+}
+query ListLineItemReviewerNotes(
+  $filter: ModelLineItemReviewerNoteFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listLineItemReviewerNotes(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      lineItemId
+      title
+      reviewed
+      reviewer
+      createdAt
+      updatedAt
+    }
+    nextToken
+  }
+}
+query GetIssue($id: ID!) {
+  getIssue(id: $id) {
+    id
+    title
+    description
+    reporter
+    status
+    type
+    createdAt
+    updatedAt
+  }
+}
+query ListIssues(
+  $filter: ModelIssueFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listIssues(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      title
+      description
+      reporter
+      status
+      type
       createdAt
       updatedAt
     }

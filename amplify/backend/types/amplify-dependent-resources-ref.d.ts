@@ -8,6 +8,12 @@ export type AmplifyDependentResourcesAttributes = {
         },
         "probatereviewawsclient": {
             "Arn": "string"
+        },
+        "probateAddDynamodbRecord": {
+            "Name": "string",
+            "Arn": "string",
+            "Region": "string",
+            "LambdaExecutionRole": "string"
         }
     },
     "api": {

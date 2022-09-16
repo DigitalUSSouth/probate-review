@@ -52,6 +52,10 @@
         "probatereviewawsclient": {
           "deploymentBucketName": "amplify-probatereview-staging-142826-deployment",
           "s3Key": "amplify-builds/probatereviewawsclient-LambdaLayerVersione1fa0069-build.zip"
+        },
+        "probateAddDynamodbRecord": {
+          "deploymentBucketName": "amplify-probatereview-staging-142826-deployment",
+          "s3Key": "amplify-builds/probateAddDynamodbRecord-7353322f706271756f76-build.zip"
         }
       },
       "auth": {
