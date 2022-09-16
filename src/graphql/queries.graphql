@@ -25,8 +25,6 @@ query GetProbateRecord($id: ID!) {
           height
         }
         attributeForId
-        lowerTitle
-        confidence
         createdAt
         updatedAt
       }
@@ -41,8 +39,6 @@ query GetProbateRecord($id: ID!) {
         width
         height
       }
-      lowerText
-      confidence
     }
     totalValue
     reviewCount
@@ -90,8 +86,6 @@ query ListProbateRecords(
             height
           }
           attributeForId
-          lowerTitle
-          confidence
           createdAt
           updatedAt
         }
@@ -106,8 +100,6 @@ query ListProbateRecords(
           width
           height
         }
-        lowerText
-        confidence
       }
       totalValue
       reviewCount
@@ -138,8 +130,6 @@ query GetLineItem($id: ID!) {
       height
     }
     attributeForId
-    lowerTitle
-    confidence
     createdAt
     updatedAt
   }
@@ -167,8 +157,6 @@ query ListLineItems(
         height
       }
       attributeForId
-      lowerTitle
-      confidence
       createdAt
       updatedAt
     }
@@ -206,8 +194,6 @@ query LineItemByProbateRecord(
         height
       }
       attributeForId
-      lowerTitle
-      confidence
       createdAt
       updatedAt
     }
@@ -236,8 +222,6 @@ query GetDocument($id: ID!) {
         width
         height
       }
-      lowerText
-      confidence
     }
     createdAt
     updatedAt
@@ -270,8 +254,6 @@ query ListDocuments(
           width
           height
         }
-        lowerText
-        confidence
       }
       createdAt
       updatedAt

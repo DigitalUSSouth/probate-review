@@ -355,6 +355,8 @@ export class ReviewComponent implements OnInit {
         width: boundingBox.width,
         height: boundingBox.height,
       },
+      lowerTitle: '',
+      confidence: 1.0,
     };
     this.linesItemsToAdd.push(newCreateLineItem);
     console.log('create line called');
@@ -567,6 +569,8 @@ export class ReviewComponent implements OnInit {
               width: word.boundingBox!.width,
               height: word.boundingBox!.height,
             },
+            // confidence: word.confidence,
+            // lowerText: word.lowerText
           });
         }
 
@@ -1444,6 +1448,8 @@ export class ReviewComponent implements OnInit {
                 width: newBoundingBox.width,
                 height: newBoundingBox.height,
               },
+              confidence: 1.0,
+              lowerTitle: textToAdd.toLocaleLowerCase()
             };
             this.linesItemsToAdd.push(newLineItem);
 
@@ -1511,6 +1517,8 @@ export class ReviewComponent implements OnInit {
         width: w.boundingBox!.width,
         height: w.boundingBox!.height,
       },
+      // confidence: w.confidence,
+      // lowerText: w.lowerText
     }));
 
     let item = { id: this.record!.id, reviewCount, words: updatedWords };

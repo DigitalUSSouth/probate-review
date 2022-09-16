@@ -44,8 +44,6 @@ export type WordInput = {
   id?: string | null;
   text: string;
   boundingBox?: RectInput | null;
-  lowerText: string;
-  confidence: number;
 };
 
 export type RectInput = {
@@ -184,8 +182,6 @@ export type LineItem = {
   value: number;
   boundingBox?: Rect | null;
   attributeForId: string;
-  lowerTitle: string;
-  confidence: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -203,8 +199,6 @@ export type Word = {
   id: string;
   text: string;
   boundingBox?: Rect | null;
-  lowerText: string;
-  confidence: number;
 };
 
 export type UpdateProbateRecordInput = {
@@ -236,8 +230,6 @@ export type CreateLineItemInput = {
   value: number;
   boundingBox?: RectInput | null;
   attributeForId: string;
-  lowerTitle: string;
-  confidence: number;
 };
 
 export type ModelLineItemConditionInput = {
@@ -250,8 +242,6 @@ export type ModelLineItemConditionInput = {
   quantity?: ModelIntInput | null;
   value?: ModelFloatInput | null;
   attributeForId?: ModelIDInput | null;
-  lowerTitle?: ModelStringInput | null;
-  confidence?: ModelFloatInput | null;
   and?: Array<ModelLineItemConditionInput | null> | null;
   or?: Array<ModelLineItemConditionInput | null> | null;
   not?: ModelLineItemConditionInput | null;
@@ -269,8 +259,6 @@ export type UpdateLineItemInput = {
   value?: number | null;
   boundingBox?: RectInput | null;
   attributeForId?: string | null;
-  lowerTitle?: string | null;
-  confidence?: number | null;
 };
 
 export type DeleteLineItemInput = {
@@ -476,8 +464,6 @@ export type ModelLineItemFilterInput = {
   quantity?: ModelIntInput | null;
   value?: ModelFloatInput | null;
   attributeForId?: ModelIDInput | null;
-  lowerTitle?: ModelStringInput | null;
-  confidence?: ModelFloatInput | null;
   and?: Array<ModelLineItemFilterInput | null> | null;
   or?: Array<ModelLineItemFilterInput | null> | null;
   not?: ModelLineItemFilterInput | null;
@@ -560,8 +546,6 @@ export type CreateProbateRecordMutation = {
         height: number;
       } | null;
       attributeForId: string;
-      lowerTitle: string;
-      confidence: number;
       createdAt: string;
       updatedAt: string;
     } | null>;
@@ -578,8 +562,6 @@ export type CreateProbateRecordMutation = {
       width: number;
       height: number;
     } | null;
-    lowerText: string;
-    confidence: number;
   } | null>;
   totalValue: number;
   reviewCount: number;
@@ -617,8 +599,6 @@ export type UpdateProbateRecordMutation = {
         height: number;
       } | null;
       attributeForId: string;
-      lowerTitle: string;
-      confidence: number;
       createdAt: string;
       updatedAt: string;
     } | null>;
@@ -635,8 +615,6 @@ export type UpdateProbateRecordMutation = {
       width: number;
       height: number;
     } | null;
-    lowerText: string;
-    confidence: number;
   } | null>;
   totalValue: number;
   reviewCount: number;
@@ -674,8 +652,6 @@ export type DeleteProbateRecordMutation = {
         height: number;
       } | null;
       attributeForId: string;
-      lowerTitle: string;
-      confidence: number;
       createdAt: string;
       updatedAt: string;
     } | null>;
@@ -692,8 +668,6 @@ export type DeleteProbateRecordMutation = {
       width: number;
       height: number;
     } | null;
-    lowerText: string;
-    confidence: number;
   } | null>;
   totalValue: number;
   reviewCount: number;
@@ -721,8 +695,6 @@ export type CreateLineItemMutation = {
     height: number;
   } | null;
   attributeForId: string;
-  lowerTitle: string;
-  confidence: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -746,8 +718,6 @@ export type UpdateLineItemMutation = {
     height: number;
   } | null;
   attributeForId: string;
-  lowerTitle: string;
-  confidence: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -771,8 +741,6 @@ export type DeleteLineItemMutation = {
     height: number;
   } | null;
   attributeForId: string;
-  lowerTitle: string;
-  confidence: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -803,8 +771,6 @@ export type CreateDocumentMutation = {
       width: number;
       height: number;
     } | null;
-    lowerText: string;
-    confidence: number;
   } | null>;
   createdAt: string;
   updatedAt: string;
@@ -836,8 +802,6 @@ export type UpdateDocumentMutation = {
       width: number;
       height: number;
     } | null;
-    lowerText: string;
-    confidence: number;
   } | null>;
   createdAt: string;
   updatedAt: string;
@@ -869,8 +833,6 @@ export type DeleteDocumentMutation = {
       width: number;
       height: number;
     } | null;
-    lowerText: string;
-    confidence: number;
   } | null>;
   createdAt: string;
   updatedAt: string;
@@ -974,8 +936,6 @@ export type GetProbateRecordQuery = {
         height: number;
       } | null;
       attributeForId: string;
-      lowerTitle: string;
-      confidence: number;
       createdAt: string;
       updatedAt: string;
     } | null>;
@@ -992,8 +952,6 @@ export type GetProbateRecordQuery = {
       width: number;
       height: number;
     } | null;
-    lowerText: string;
-    confidence: number;
   } | null>;
   totalValue: number;
   reviewCount: number;
@@ -1033,8 +991,6 @@ export type ListProbateRecordsQuery = {
           height: number;
         } | null;
         attributeForId: string;
-        lowerTitle: string;
-        confidence: number;
         createdAt: string;
         updatedAt: string;
       } | null>;
@@ -1051,8 +1007,6 @@ export type ListProbateRecordsQuery = {
         width: number;
         height: number;
       } | null;
-      lowerText: string;
-      confidence: number;
     } | null>;
     totalValue: number;
     reviewCount: number;
@@ -1084,8 +1038,6 @@ export type GetLineItemQuery = {
     height: number;
   } | null;
   attributeForId: string;
-  lowerTitle: string;
-  confidence: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -1111,8 +1063,6 @@ export type ListLineItemsQuery = {
       height: number;
     } | null;
     attributeForId: string;
-    lowerTitle: string;
-    confidence: number;
     createdAt: string;
     updatedAt: string;
   } | null>;
@@ -1140,8 +1090,6 @@ export type LineItemByProbateRecordQuery = {
       height: number;
     } | null;
     attributeForId: string;
-    lowerTitle: string;
-    confidence: number;
     createdAt: string;
     updatedAt: string;
   } | null>;
@@ -1174,8 +1122,6 @@ export type GetDocumentQuery = {
       width: number;
       height: number;
     } | null;
-    lowerText: string;
-    confidence: number;
   } | null>;
   createdAt: string;
   updatedAt: string;
@@ -1209,8 +1155,6 @@ export type ListDocumentsQuery = {
         width: number;
         height: number;
       } | null;
-      lowerText: string;
-      confidence: number;
     } | null>;
     createdAt: string;
     updatedAt: string;
@@ -1301,8 +1245,6 @@ export type OnCreateProbateRecordSubscription = {
         height: number;
       } | null;
       attributeForId: string;
-      lowerTitle: string;
-      confidence: number;
       createdAt: string;
       updatedAt: string;
     } | null>;
@@ -1319,8 +1261,6 @@ export type OnCreateProbateRecordSubscription = {
       width: number;
       height: number;
     } | null;
-    lowerText: string;
-    confidence: number;
   } | null>;
   totalValue: number;
   reviewCount: number;
@@ -1358,8 +1298,6 @@ export type OnUpdateProbateRecordSubscription = {
         height: number;
       } | null;
       attributeForId: string;
-      lowerTitle: string;
-      confidence: number;
       createdAt: string;
       updatedAt: string;
     } | null>;
@@ -1376,8 +1314,6 @@ export type OnUpdateProbateRecordSubscription = {
       width: number;
       height: number;
     } | null;
-    lowerText: string;
-    confidence: number;
   } | null>;
   totalValue: number;
   reviewCount: number;
@@ -1415,8 +1351,6 @@ export type OnDeleteProbateRecordSubscription = {
         height: number;
       } | null;
       attributeForId: string;
-      lowerTitle: string;
-      confidence: number;
       createdAt: string;
       updatedAt: string;
     } | null>;
@@ -1433,8 +1367,6 @@ export type OnDeleteProbateRecordSubscription = {
       width: number;
       height: number;
     } | null;
-    lowerText: string;
-    confidence: number;
   } | null>;
   totalValue: number;
   reviewCount: number;
@@ -1462,8 +1394,6 @@ export type OnCreateLineItemSubscription = {
     height: number;
   } | null;
   attributeForId: string;
-  lowerTitle: string;
-  confidence: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -1487,8 +1417,6 @@ export type OnUpdateLineItemSubscription = {
     height: number;
   } | null;
   attributeForId: string;
-  lowerTitle: string;
-  confidence: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -1512,8 +1440,6 @@ export type OnDeleteLineItemSubscription = {
     height: number;
   } | null;
   attributeForId: string;
-  lowerTitle: string;
-  confidence: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -1544,8 +1470,6 @@ export type OnCreateDocumentSubscription = {
       width: number;
       height: number;
     } | null;
-    lowerText: string;
-    confidence: number;
   } | null>;
   createdAt: string;
   updatedAt: string;
@@ -1577,8 +1501,6 @@ export type OnUpdateDocumentSubscription = {
       width: number;
       height: number;
     } | null;
-    lowerText: string;
-    confidence: number;
   } | null>;
   createdAt: string;
   updatedAt: string;
@@ -1610,8 +1532,6 @@ export type OnDeleteDocumentSubscription = {
       width: number;
       height: number;
     } | null;
-    lowerText: string;
-    confidence: number;
   } | null>;
   createdAt: string;
   updatedAt: string;
@@ -1724,8 +1644,6 @@ export class APIService {
                 height
               }
               attributeForId
-              lowerTitle
-              confidence
               createdAt
               updatedAt
             }
@@ -1742,8 +1660,6 @@ export class APIService {
               width
               height
             }
-            lowerText
-            confidence
           }
           totalValue
           reviewCount
@@ -1797,8 +1713,6 @@ export class APIService {
                 height
               }
               attributeForId
-              lowerTitle
-              confidence
               createdAt
               updatedAt
             }
@@ -1815,8 +1729,6 @@ export class APIService {
               width
               height
             }
-            lowerText
-            confidence
           }
           totalValue
           reviewCount
@@ -1870,8 +1782,6 @@ export class APIService {
                 height
               }
               attributeForId
-              lowerTitle
-              confidence
               createdAt
               updatedAt
             }
@@ -1888,8 +1798,6 @@ export class APIService {
               width
               height
             }
-            lowerText
-            confidence
           }
           totalValue
           reviewCount
@@ -1933,8 +1841,6 @@ export class APIService {
             height
           }
           attributeForId
-          lowerTitle
-          confidence
           createdAt
           updatedAt
         }
@@ -1974,8 +1880,6 @@ export class APIService {
             height
           }
           attributeForId
-          lowerTitle
-          confidence
           createdAt
           updatedAt
         }
@@ -2015,8 +1919,6 @@ export class APIService {
             height
           }
           attributeForId
-          lowerTitle
-          confidence
           createdAt
           updatedAt
         }
@@ -2063,8 +1965,6 @@ export class APIService {
               width
               height
             }
-            lowerText
-            confidence
           }
           createdAt
           updatedAt
@@ -2112,8 +2012,6 @@ export class APIService {
               width
               height
             }
-            lowerText
-            confidence
           }
           createdAt
           updatedAt
@@ -2161,8 +2059,6 @@ export class APIService {
               width
               height
             }
-            lowerText
-            confidence
           }
           createdAt
           updatedAt
@@ -2381,8 +2277,6 @@ export class APIService {
                 height
               }
               attributeForId
-              lowerTitle
-              confidence
               createdAt
               updatedAt
             }
@@ -2399,8 +2293,6 @@ export class APIService {
               width
               height
             }
-            lowerText
-            confidence
           }
           totalValue
           reviewCount
@@ -2456,8 +2348,6 @@ export class APIService {
                   height
                 }
                 attributeForId
-                lowerTitle
-                confidence
                 createdAt
                 updatedAt
               }
@@ -2474,8 +2364,6 @@ export class APIService {
                 width
                 height
               }
-              lowerText
-              confidence
             }
             totalValue
             reviewCount
@@ -2530,8 +2418,6 @@ export class APIService {
             height
           }
           attributeForId
-          lowerTitle
-          confidence
           createdAt
           updatedAt
         }
@@ -2571,8 +2457,6 @@ export class APIService {
               height
             }
             attributeForId
-            lowerTitle
-            confidence
             createdAt
             updatedAt
           }
@@ -2623,8 +2507,6 @@ export class APIService {
               height
             }
             attributeForId
-            lowerTitle
-            confidence
             createdAt
             updatedAt
           }
@@ -2679,8 +2561,6 @@ export class APIService {
               width
               height
             }
-            lowerText
-            confidence
           }
           createdAt
           updatedAt
@@ -2728,8 +2608,6 @@ export class APIService {
                 width
                 height
               }
-              lowerText
-              confidence
             }
             createdAt
             updatedAt
@@ -2906,8 +2784,6 @@ export class APIService {
                 height
               }
               attributeForId
-              lowerTitle
-              confidence
               createdAt
               updatedAt
             }
@@ -2924,8 +2800,6 @@ export class APIService {
               width
               height
             }
-            lowerText
-            confidence
           }
           totalValue
           reviewCount
@@ -2973,8 +2847,6 @@ export class APIService {
                 height
               }
               attributeForId
-              lowerTitle
-              confidence
               createdAt
               updatedAt
             }
@@ -2991,8 +2863,6 @@ export class APIService {
               width
               height
             }
-            lowerText
-            confidence
           }
           totalValue
           reviewCount
@@ -3040,8 +2910,6 @@ export class APIService {
                 height
               }
               attributeForId
-              lowerTitle
-              confidence
               createdAt
               updatedAt
             }
@@ -3058,8 +2926,6 @@ export class APIService {
               width
               height
             }
-            lowerText
-            confidence
           }
           totalValue
           reviewCount
@@ -3097,8 +2963,6 @@ export class APIService {
             height
           }
           attributeForId
-          lowerTitle
-          confidence
           createdAt
           updatedAt
         }
@@ -3132,8 +2996,6 @@ export class APIService {
             height
           }
           attributeForId
-          lowerTitle
-          confidence
           createdAt
           updatedAt
         }
@@ -3167,8 +3029,6 @@ export class APIService {
             height
           }
           attributeForId
-          lowerTitle
-          confidence
           createdAt
           updatedAt
         }
@@ -3209,8 +3069,6 @@ export class APIService {
               width
               height
             }
-            lowerText
-            confidence
           }
           createdAt
           updatedAt
@@ -3252,8 +3110,6 @@ export class APIService {
               width
               height
             }
-            lowerText
-            confidence
           }
           createdAt
           updatedAt
@@ -3295,8 +3151,6 @@ export class APIService {
               width
               height
             }
-            lowerText
-            confidence
           }
           createdAt
           updatedAt
