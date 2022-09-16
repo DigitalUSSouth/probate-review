@@ -44,9 +44,7 @@ type LineItem @model @auth(rules: [{allow: private}]) {
   quantity: Int!
   value: Float!
   boundingBox: Rect 
-  attributeForId: ID!
-  lowerTitle: String!
-  confidence: Float!
+  attributeForId: ID!  
 }
 
 type Document @model @auth(rules: [{allow: private}]) {
@@ -64,9 +62,7 @@ type Line {
 type Word {
   id: ID!
   text: String!
-  boundingBox: Rect
-  lowerText: String!
-  confidence: Float!
+  boundingBox: Rect  
 }
 
 type ModelProbateRecordConnection @aws_iam @aws_cognito_user_pools {

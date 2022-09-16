@@ -28,8 +28,6 @@ mutation CreateProbateRecord(
           height
         }
         attributeForId
-        lowerTitle
-        confidence
         createdAt
         updatedAt
       }
@@ -44,8 +42,6 @@ mutation CreateProbateRecord(
         width
         height
       }
-      lowerText
-      confidence
     }
     totalValue
     reviewCount
@@ -83,8 +79,6 @@ mutation UpdateProbateRecord(
           height
         }
         attributeForId
-        lowerTitle
-        confidence
         createdAt
         updatedAt
       }
@@ -99,8 +93,6 @@ mutation UpdateProbateRecord(
         width
         height
       }
-      lowerText
-      confidence
     }
     totalValue
     reviewCount
@@ -138,8 +130,6 @@ mutation DeleteProbateRecord(
           height
         }
         attributeForId
-        lowerTitle
-        confidence
         createdAt
         updatedAt
       }
@@ -154,8 +144,6 @@ mutation DeleteProbateRecord(
         width
         height
       }
-      lowerText
-      confidence
     }
     totalValue
     reviewCount
@@ -185,8 +173,6 @@ mutation CreateLineItem(
       height
     }
     attributeForId
-    lowerTitle
-    confidence
     createdAt
     updatedAt
   }
@@ -212,8 +198,6 @@ mutation UpdateLineItem(
       height
     }
     attributeForId
-    lowerTitle
-    confidence
     createdAt
     updatedAt
   }
@@ -239,8 +223,6 @@ mutation DeleteLineItem(
       height
     }
     attributeForId
-    lowerTitle
-    confidence
     createdAt
     updatedAt
   }
@@ -270,8 +252,6 @@ mutation CreateDocument(
         width
         height
       }
-      lowerText
-      confidence
     }
     createdAt
     updatedAt
@@ -302,8 +282,6 @@ mutation UpdateDocument(
         width
         height
       }
-      lowerText
-      confidence
     }
     createdAt
     updatedAt
@@ -334,8 +312,6 @@ mutation DeleteDocument(
         width
         height
       }
-      lowerText
-      confidence
     }
     createdAt
     updatedAt
