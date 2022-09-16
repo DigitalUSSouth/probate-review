@@ -19,6 +19,12 @@ export type __SubscriptionContainer = {
   onCreateDocument: OnCreateDocumentSubscription;
   onUpdateDocument: OnUpdateDocumentSubscription;
   onDeleteDocument: OnDeleteDocumentSubscription;
+  onCreateLineItemReviewerNote: OnCreateLineItemReviewerNoteSubscription;
+  onUpdateLineItemReviewerNote: OnUpdateLineItemReviewerNoteSubscription;
+  onDeleteLineItemReviewerNote: OnDeleteLineItemReviewerNoteSubscription;
+  onCreateIssue: OnCreateIssueSubscription;
+  onUpdateIssue: OnUpdateIssueSubscription;
+  onDeleteIssue: OnDeleteIssueSubscription;
 };
 
 export type CreateProbateRecordInput = {
@@ -31,12 +37,15 @@ export type CreateProbateRecordInput = {
   words: Array<WordInput | null>;
   totalValue: number;
   reviewCount: number;
+  lowerTitle: string;
 };
 
 export type WordInput = {
   id?: string | null;
   text: string;
   boundingBox?: RectInput | null;
+  lowerText: string;
+  confidence: number;
 };
 
 export type RectInput = {
@@ -54,6 +63,7 @@ export type ModelProbateRecordConditionInput = {
   witness?: ModelStringInput | null;
   totalValue?: ModelFloatInput | null;
   reviewCount?: ModelIntInput | null;
+  lowerTitle?: ModelStringInput | null;
   and?: Array<ModelProbateRecordConditionInput | null> | null;
   or?: Array<ModelProbateRecordConditionInput | null> | null;
   not?: ModelProbateRecordConditionInput | null;
@@ -150,6 +160,7 @@ export type ProbateRecord = {
   words: Array<Word | null>;
   totalValue: number;
   reviewCount: number;
+  lowerTitle: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -173,6 +184,8 @@ export type LineItem = {
   value: number;
   boundingBox?: Rect | null;
   attributeForId: string;
+  lowerTitle: string;
+  confidence: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -190,6 +203,8 @@ export type Word = {
   id: string;
   text: string;
   boundingBox?: Rect | null;
+  lowerText: string;
+  confidence: number;
 };
 
 export type UpdateProbateRecordInput = {
@@ -202,6 +217,7 @@ export type UpdateProbateRecordInput = {
   words?: Array<WordInput | null> | null;
   totalValue?: number | null;
   reviewCount?: number | null;
+  lowerTitle?: string | null;
 };
 
 export type DeleteProbateRecordInput = {
@@ -220,6 +236,8 @@ export type CreateLineItemInput = {
   value: number;
   boundingBox?: RectInput | null;
   attributeForId: string;
+  lowerTitle: string;
+  confidence: number;
 };
 
 export type ModelLineItemConditionInput = {
@@ -232,6 +250,8 @@ export type ModelLineItemConditionInput = {
   quantity?: ModelIntInput | null;
   value?: ModelFloatInput | null;
   attributeForId?: ModelIDInput | null;
+  lowerTitle?: ModelStringInput | null;
+  confidence?: ModelFloatInput | null;
   and?: Array<ModelLineItemConditionInput | null> | null;
   or?: Array<ModelLineItemConditionInput | null> | null;
   not?: ModelLineItemConditionInput | null;
@@ -249,6 +269,8 @@ export type UpdateLineItemInput = {
   value?: number | null;
   boundingBox?: RectInput | null;
   attributeForId?: string | null;
+  lowerTitle?: string | null;
+  confidence?: number | null;
 };
 
 export type DeleteLineItemInput = {
@@ -299,6 +321,122 @@ export type DeleteDocumentInput = {
   id: string;
 };
 
+export type CreateLineItemReviewerNoteInput = {
+  id?: string | null;
+  lineItemId: string;
+  title: string;
+  reviewed: boolean;
+  reviewer: string;
+};
+
+export type ModelLineItemReviewerNoteConditionInput = {
+  lineItemId?: ModelIDInput | null;
+  title?: ModelStringInput | null;
+  reviewed?: ModelBooleanInput | null;
+  reviewer?: ModelStringInput | null;
+  and?: Array<ModelLineItemReviewerNoteConditionInput | null> | null;
+  or?: Array<ModelLineItemReviewerNoteConditionInput | null> | null;
+  not?: ModelLineItemReviewerNoteConditionInput | null;
+};
+
+export type ModelBooleanInput = {
+  ne?: boolean | null;
+  eq?: boolean | null;
+  attributeExists?: boolean | null;
+  attributeType?: ModelAttributeTypes | null;
+};
+
+export type LineItemReviewerNote = {
+  __typename: "LineItemReviewerNote";
+  id: string;
+  lineItemId: string;
+  title: string;
+  reviewed: boolean;
+  reviewer: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UpdateLineItemReviewerNoteInput = {
+  id: string;
+  lineItemId?: string | null;
+  title?: string | null;
+  reviewed?: boolean | null;
+  reviewer?: string | null;
+};
+
+export type DeleteLineItemReviewerNoteInput = {
+  id: string;
+};
+
+export type CreateIssueInput = {
+  id?: string | null;
+  title: string;
+  description: string;
+  reporter: string;
+  status?: IssueStatus | null;
+  type?: IssueType | null;
+};
+
+export enum IssueStatus {
+  open = "open",
+  closed = "closed",
+  resolved = "resolved",
+  obsolete = "obsolete",
+  will_not_fix = "will_not_fix"
+}
+
+export enum IssueType {
+  bug = "bug",
+  feature_request = "feature_request"
+}
+
+export type ModelIssueConditionInput = {
+  title?: ModelStringInput | null;
+  description?: ModelStringInput | null;
+  reporter?: ModelStringInput | null;
+  status?: ModelIssueStatusInput | null;
+  type?: ModelIssueTypeInput | null;
+  and?: Array<ModelIssueConditionInput | null> | null;
+  or?: Array<ModelIssueConditionInput | null> | null;
+  not?: ModelIssueConditionInput | null;
+};
+
+export type ModelIssueStatusInput = {
+  eq?: IssueStatus | null;
+  ne?: IssueStatus | null;
+};
+
+export type ModelIssueTypeInput = {
+  eq?: IssueType | null;
+  ne?: IssueType | null;
+};
+
+export type Issue = {
+  __typename: "Issue";
+  id: string;
+  title: string;
+  description: string;
+  reporter: string;
+  status?: IssueStatus | null;
+  type?: IssueType | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UpdateIssueInput = {
+  id: string;
+  title?: string | null;
+  description?: string | null;
+  reporter?: string | null;
+  status?: IssueStatus | null;
+  type?: IssueType | null;
+};
+
+export type DeleteIssueInput = {
+  id: string;
+};
+
 export type ModelProbateRecordFilterInput = {
   id?: ModelIDInput | null;
   title?: ModelStringInput | null;
@@ -308,6 +446,7 @@ export type ModelProbateRecordFilterInput = {
   witness?: ModelStringInput | null;
   totalValue?: ModelFloatInput | null;
   reviewCount?: ModelIntInput | null;
+  lowerTitle?: ModelStringInput | null;
   and?: Array<ModelProbateRecordFilterInput | null> | null;
   or?: Array<ModelProbateRecordFilterInput | null> | null;
   not?: ModelProbateRecordFilterInput | null;
@@ -337,6 +476,8 @@ export type ModelLineItemFilterInput = {
   quantity?: ModelIntInput | null;
   value?: ModelFloatInput | null;
   attributeForId?: ModelIDInput | null;
+  lowerTitle?: ModelStringInput | null;
+  confidence?: ModelFloatInput | null;
   and?: Array<ModelLineItemFilterInput | null> | null;
   or?: Array<ModelLineItemFilterInput | null> | null;
   not?: ModelLineItemFilterInput | null;
@@ -352,6 +493,41 @@ export type ModelDocumentFilterInput = {
 export type ModelDocumentConnection = {
   __typename: "ModelDocumentConnection";
   items: Array<Document | null>;
+  nextToken?: string | null;
+};
+
+export type ModelLineItemReviewerNoteFilterInput = {
+  id?: ModelIDInput | null;
+  lineItemId?: ModelIDInput | null;
+  title?: ModelStringInput | null;
+  reviewed?: ModelBooleanInput | null;
+  reviewer?: ModelStringInput | null;
+  and?: Array<ModelLineItemReviewerNoteFilterInput | null> | null;
+  or?: Array<ModelLineItemReviewerNoteFilterInput | null> | null;
+  not?: ModelLineItemReviewerNoteFilterInput | null;
+};
+
+export type ModelLineItemReviewerNoteConnection = {
+  __typename: "ModelLineItemReviewerNoteConnection";
+  items: Array<LineItemReviewerNote | null>;
+  nextToken?: string | null;
+};
+
+export type ModelIssueFilterInput = {
+  id?: ModelIDInput | null;
+  title?: ModelStringInput | null;
+  description?: ModelStringInput | null;
+  reporter?: ModelStringInput | null;
+  status?: ModelIssueStatusInput | null;
+  type?: ModelIssueTypeInput | null;
+  and?: Array<ModelIssueFilterInput | null> | null;
+  or?: Array<ModelIssueFilterInput | null> | null;
+  not?: ModelIssueFilterInput | null;
+};
+
+export type ModelIssueConnection = {
+  __typename: "ModelIssueConnection";
+  items: Array<Issue | null>;
   nextToken?: string | null;
 };
 
@@ -384,6 +560,8 @@ export type CreateProbateRecordMutation = {
         height: number;
       } | null;
       attributeForId: string;
+      lowerTitle: string;
+      confidence: number;
       createdAt: string;
       updatedAt: string;
     } | null>;
@@ -400,9 +578,12 @@ export type CreateProbateRecordMutation = {
       width: number;
       height: number;
     } | null;
+    lowerText: string;
+    confidence: number;
   } | null>;
   totalValue: number;
   reviewCount: number;
+  lowerTitle: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -436,6 +617,8 @@ export type UpdateProbateRecordMutation = {
         height: number;
       } | null;
       attributeForId: string;
+      lowerTitle: string;
+      confidence: number;
       createdAt: string;
       updatedAt: string;
     } | null>;
@@ -452,9 +635,12 @@ export type UpdateProbateRecordMutation = {
       width: number;
       height: number;
     } | null;
+    lowerText: string;
+    confidence: number;
   } | null>;
   totalValue: number;
   reviewCount: number;
+  lowerTitle: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -488,6 +674,8 @@ export type DeleteProbateRecordMutation = {
         height: number;
       } | null;
       attributeForId: string;
+      lowerTitle: string;
+      confidence: number;
       createdAt: string;
       updatedAt: string;
     } | null>;
@@ -504,9 +692,12 @@ export type DeleteProbateRecordMutation = {
       width: number;
       height: number;
     } | null;
+    lowerText: string;
+    confidence: number;
   } | null>;
   totalValue: number;
   reviewCount: number;
+  lowerTitle: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -530,6 +721,8 @@ export type CreateLineItemMutation = {
     height: number;
   } | null;
   attributeForId: string;
+  lowerTitle: string;
+  confidence: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -553,6 +746,8 @@ export type UpdateLineItemMutation = {
     height: number;
   } | null;
   attributeForId: string;
+  lowerTitle: string;
+  confidence: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -576,6 +771,8 @@ export type DeleteLineItemMutation = {
     height: number;
   } | null;
   attributeForId: string;
+  lowerTitle: string;
+  confidence: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -606,6 +803,8 @@ export type CreateDocumentMutation = {
       width: number;
       height: number;
     } | null;
+    lowerText: string;
+    confidence: number;
   } | null>;
   createdAt: string;
   updatedAt: string;
@@ -637,6 +836,8 @@ export type UpdateDocumentMutation = {
       width: number;
       height: number;
     } | null;
+    lowerText: string;
+    confidence: number;
   } | null>;
   createdAt: string;
   updatedAt: string;
@@ -668,7 +869,78 @@ export type DeleteDocumentMutation = {
       width: number;
       height: number;
     } | null;
+    lowerText: string;
+    confidence: number;
   } | null>;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CreateLineItemReviewerNoteMutation = {
+  __typename: "LineItemReviewerNote";
+  id: string;
+  lineItemId: string;
+  title: string;
+  reviewed: boolean;
+  reviewer: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UpdateLineItemReviewerNoteMutation = {
+  __typename: "LineItemReviewerNote";
+  id: string;
+  lineItemId: string;
+  title: string;
+  reviewed: boolean;
+  reviewer: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type DeleteLineItemReviewerNoteMutation = {
+  __typename: "LineItemReviewerNote";
+  id: string;
+  lineItemId: string;
+  title: string;
+  reviewed: boolean;
+  reviewer: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CreateIssueMutation = {
+  __typename: "Issue";
+  id: string;
+  title: string;
+  description: string;
+  reporter: string;
+  status?: IssueStatus | null;
+  type?: IssueType | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UpdateIssueMutation = {
+  __typename: "Issue";
+  id: string;
+  title: string;
+  description: string;
+  reporter: string;
+  status?: IssueStatus | null;
+  type?: IssueType | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type DeleteIssueMutation = {
+  __typename: "Issue";
+  id: string;
+  title: string;
+  description: string;
+  reporter: string;
+  status?: IssueStatus | null;
+  type?: IssueType | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -702,6 +974,8 @@ export type GetProbateRecordQuery = {
         height: number;
       } | null;
       attributeForId: string;
+      lowerTitle: string;
+      confidence: number;
       createdAt: string;
       updatedAt: string;
     } | null>;
@@ -718,9 +992,12 @@ export type GetProbateRecordQuery = {
       width: number;
       height: number;
     } | null;
+    lowerText: string;
+    confidence: number;
   } | null>;
   totalValue: number;
   reviewCount: number;
+  lowerTitle: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -756,6 +1033,8 @@ export type ListProbateRecordsQuery = {
           height: number;
         } | null;
         attributeForId: string;
+        lowerTitle: string;
+        confidence: number;
         createdAt: string;
         updatedAt: string;
       } | null>;
@@ -772,9 +1051,12 @@ export type ListProbateRecordsQuery = {
         width: number;
         height: number;
       } | null;
+      lowerText: string;
+      confidence: number;
     } | null>;
     totalValue: number;
     reviewCount: number;
+    lowerTitle: string;
     createdAt: string;
     updatedAt: string;
   } | null>;
@@ -802,6 +1084,8 @@ export type GetLineItemQuery = {
     height: number;
   } | null;
   attributeForId: string;
+  lowerTitle: string;
+  confidence: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -827,6 +1111,8 @@ export type ListLineItemsQuery = {
       height: number;
     } | null;
     attributeForId: string;
+    lowerTitle: string;
+    confidence: number;
     createdAt: string;
     updatedAt: string;
   } | null>;
@@ -854,6 +1140,8 @@ export type LineItemByProbateRecordQuery = {
       height: number;
     } | null;
     attributeForId: string;
+    lowerTitle: string;
+    confidence: number;
     createdAt: string;
     updatedAt: string;
   } | null>;
@@ -886,6 +1174,8 @@ export type GetDocumentQuery = {
       width: number;
       height: number;
     } | null;
+    lowerText: string;
+    confidence: number;
   } | null>;
   createdAt: string;
   updatedAt: string;
@@ -919,7 +1209,63 @@ export type ListDocumentsQuery = {
         width: number;
         height: number;
       } | null;
+      lowerText: string;
+      confidence: number;
     } | null>;
+    createdAt: string;
+    updatedAt: string;
+  } | null>;
+  nextToken?: string | null;
+};
+
+export type GetLineItemReviewerNoteQuery = {
+  __typename: "LineItemReviewerNote";
+  id: string;
+  lineItemId: string;
+  title: string;
+  reviewed: boolean;
+  reviewer: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ListLineItemReviewerNotesQuery = {
+  __typename: "ModelLineItemReviewerNoteConnection";
+  items: Array<{
+    __typename: "LineItemReviewerNote";
+    id: string;
+    lineItemId: string;
+    title: string;
+    reviewed: boolean;
+    reviewer: string;
+    createdAt: string;
+    updatedAt: string;
+  } | null>;
+  nextToken?: string | null;
+};
+
+export type GetIssueQuery = {
+  __typename: "Issue";
+  id: string;
+  title: string;
+  description: string;
+  reporter: string;
+  status?: IssueStatus | null;
+  type?: IssueType | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ListIssuesQuery = {
+  __typename: "ModelIssueConnection";
+  items: Array<{
+    __typename: "Issue";
+    id: string;
+    title: string;
+    description: string;
+    reporter: string;
+    status?: IssueStatus | null;
+    type?: IssueType | null;
     createdAt: string;
     updatedAt: string;
   } | null>;
@@ -955,6 +1301,8 @@ export type OnCreateProbateRecordSubscription = {
         height: number;
       } | null;
       attributeForId: string;
+      lowerTitle: string;
+      confidence: number;
       createdAt: string;
       updatedAt: string;
     } | null>;
@@ -971,9 +1319,12 @@ export type OnCreateProbateRecordSubscription = {
       width: number;
       height: number;
     } | null;
+    lowerText: string;
+    confidence: number;
   } | null>;
   totalValue: number;
   reviewCount: number;
+  lowerTitle: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -1007,6 +1358,8 @@ export type OnUpdateProbateRecordSubscription = {
         height: number;
       } | null;
       attributeForId: string;
+      lowerTitle: string;
+      confidence: number;
       createdAt: string;
       updatedAt: string;
     } | null>;
@@ -1023,9 +1376,12 @@ export type OnUpdateProbateRecordSubscription = {
       width: number;
       height: number;
     } | null;
+    lowerText: string;
+    confidence: number;
   } | null>;
   totalValue: number;
   reviewCount: number;
+  lowerTitle: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -1059,6 +1415,8 @@ export type OnDeleteProbateRecordSubscription = {
         height: number;
       } | null;
       attributeForId: string;
+      lowerTitle: string;
+      confidence: number;
       createdAt: string;
       updatedAt: string;
     } | null>;
@@ -1075,9 +1433,12 @@ export type OnDeleteProbateRecordSubscription = {
       width: number;
       height: number;
     } | null;
+    lowerText: string;
+    confidence: number;
   } | null>;
   totalValue: number;
   reviewCount: number;
+  lowerTitle: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -1101,6 +1462,8 @@ export type OnCreateLineItemSubscription = {
     height: number;
   } | null;
   attributeForId: string;
+  lowerTitle: string;
+  confidence: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -1124,6 +1487,8 @@ export type OnUpdateLineItemSubscription = {
     height: number;
   } | null;
   attributeForId: string;
+  lowerTitle: string;
+  confidence: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -1147,6 +1512,8 @@ export type OnDeleteLineItemSubscription = {
     height: number;
   } | null;
   attributeForId: string;
+  lowerTitle: string;
+  confidence: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -1177,6 +1544,8 @@ export type OnCreateDocumentSubscription = {
       width: number;
       height: number;
     } | null;
+    lowerText: string;
+    confidence: number;
   } | null>;
   createdAt: string;
   updatedAt: string;
@@ -1208,6 +1577,8 @@ export type OnUpdateDocumentSubscription = {
       width: number;
       height: number;
     } | null;
+    lowerText: string;
+    confidence: number;
   } | null>;
   createdAt: string;
   updatedAt: string;
@@ -1239,7 +1610,78 @@ export type OnDeleteDocumentSubscription = {
       width: number;
       height: number;
     } | null;
+    lowerText: string;
+    confidence: number;
   } | null>;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type OnCreateLineItemReviewerNoteSubscription = {
+  __typename: "LineItemReviewerNote";
+  id: string;
+  lineItemId: string;
+  title: string;
+  reviewed: boolean;
+  reviewer: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type OnUpdateLineItemReviewerNoteSubscription = {
+  __typename: "LineItemReviewerNote";
+  id: string;
+  lineItemId: string;
+  title: string;
+  reviewed: boolean;
+  reviewer: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type OnDeleteLineItemReviewerNoteSubscription = {
+  __typename: "LineItemReviewerNote";
+  id: string;
+  lineItemId: string;
+  title: string;
+  reviewed: boolean;
+  reviewer: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type OnCreateIssueSubscription = {
+  __typename: "Issue";
+  id: string;
+  title: string;
+  description: string;
+  reporter: string;
+  status?: IssueStatus | null;
+  type?: IssueType | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type OnUpdateIssueSubscription = {
+  __typename: "Issue";
+  id: string;
+  title: string;
+  description: string;
+  reporter: string;
+  status?: IssueStatus | null;
+  type?: IssueType | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type OnDeleteIssueSubscription = {
+  __typename: "Issue";
+  id: string;
+  title: string;
+  description: string;
+  reporter: string;
+  status?: IssueStatus | null;
+  type?: IssueType | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -1282,6 +1724,8 @@ export class APIService {
                 height
               }
               attributeForId
+              lowerTitle
+              confidence
               createdAt
               updatedAt
             }
@@ -1298,9 +1742,12 @@ export class APIService {
               width
               height
             }
+            lowerText
+            confidence
           }
           totalValue
           reviewCount
+          lowerTitle
           createdAt
           updatedAt
         }
@@ -1350,6 +1797,8 @@ export class APIService {
                 height
               }
               attributeForId
+              lowerTitle
+              confidence
               createdAt
               updatedAt
             }
@@ -1366,9 +1815,12 @@ export class APIService {
               width
               height
             }
+            lowerText
+            confidence
           }
           totalValue
           reviewCount
+          lowerTitle
           createdAt
           updatedAt
         }
@@ -1418,6 +1870,8 @@ export class APIService {
                 height
               }
               attributeForId
+              lowerTitle
+              confidence
               createdAt
               updatedAt
             }
@@ -1434,9 +1888,12 @@ export class APIService {
               width
               height
             }
+            lowerText
+            confidence
           }
           totalValue
           reviewCount
+          lowerTitle
           createdAt
           updatedAt
         }
@@ -1476,6 +1933,8 @@ export class APIService {
             height
           }
           attributeForId
+          lowerTitle
+          confidence
           createdAt
           updatedAt
         }
@@ -1515,6 +1974,8 @@ export class APIService {
             height
           }
           attributeForId
+          lowerTitle
+          confidence
           createdAt
           updatedAt
         }
@@ -1554,6 +2015,8 @@ export class APIService {
             height
           }
           attributeForId
+          lowerTitle
+          confidence
           createdAt
           updatedAt
         }
@@ -1600,6 +2063,8 @@ export class APIService {
               width
               height
             }
+            lowerText
+            confidence
           }
           createdAt
           updatedAt
@@ -1647,6 +2112,8 @@ export class APIService {
               width
               height
             }
+            lowerText
+            confidence
           }
           createdAt
           updatedAt
@@ -1694,6 +2161,8 @@ export class APIService {
               width
               height
             }
+            lowerText
+            confidence
           }
           createdAt
           updatedAt
@@ -1709,6 +2178,177 @@ export class APIService {
       graphqlOperation(statement, gqlAPIServiceArguments)
     )) as any;
     return <DeleteDocumentMutation>response.data.deleteDocument;
+  }
+  async CreateLineItemReviewerNote(
+    input: CreateLineItemReviewerNoteInput,
+    condition?: ModelLineItemReviewerNoteConditionInput
+  ): Promise<CreateLineItemReviewerNoteMutation> {
+    const statement = `mutation CreateLineItemReviewerNote($input: CreateLineItemReviewerNoteInput!, $condition: ModelLineItemReviewerNoteConditionInput) {
+        createLineItemReviewerNote(input: $input, condition: $condition) {
+          __typename
+          id
+          lineItemId
+          title
+          reviewed
+          reviewer
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <CreateLineItemReviewerNoteMutation>(
+      response.data.createLineItemReviewerNote
+    );
+  }
+  async UpdateLineItemReviewerNote(
+    input: UpdateLineItemReviewerNoteInput,
+    condition?: ModelLineItemReviewerNoteConditionInput
+  ): Promise<UpdateLineItemReviewerNoteMutation> {
+    const statement = `mutation UpdateLineItemReviewerNote($input: UpdateLineItemReviewerNoteInput!, $condition: ModelLineItemReviewerNoteConditionInput) {
+        updateLineItemReviewerNote(input: $input, condition: $condition) {
+          __typename
+          id
+          lineItemId
+          title
+          reviewed
+          reviewer
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <UpdateLineItemReviewerNoteMutation>(
+      response.data.updateLineItemReviewerNote
+    );
+  }
+  async DeleteLineItemReviewerNote(
+    input: DeleteLineItemReviewerNoteInput,
+    condition?: ModelLineItemReviewerNoteConditionInput
+  ): Promise<DeleteLineItemReviewerNoteMutation> {
+    const statement = `mutation DeleteLineItemReviewerNote($input: DeleteLineItemReviewerNoteInput!, $condition: ModelLineItemReviewerNoteConditionInput) {
+        deleteLineItemReviewerNote(input: $input, condition: $condition) {
+          __typename
+          id
+          lineItemId
+          title
+          reviewed
+          reviewer
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <DeleteLineItemReviewerNoteMutation>(
+      response.data.deleteLineItemReviewerNote
+    );
+  }
+  async CreateIssue(
+    input: CreateIssueInput,
+    condition?: ModelIssueConditionInput
+  ): Promise<CreateIssueMutation> {
+    const statement = `mutation CreateIssue($input: CreateIssueInput!, $condition: ModelIssueConditionInput) {
+        createIssue(input: $input, condition: $condition) {
+          __typename
+          id
+          title
+          description
+          reporter
+          status
+          type
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <CreateIssueMutation>response.data.createIssue;
+  }
+  async UpdateIssue(
+    input: UpdateIssueInput,
+    condition?: ModelIssueConditionInput
+  ): Promise<UpdateIssueMutation> {
+    const statement = `mutation UpdateIssue($input: UpdateIssueInput!, $condition: ModelIssueConditionInput) {
+        updateIssue(input: $input, condition: $condition) {
+          __typename
+          id
+          title
+          description
+          reporter
+          status
+          type
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <UpdateIssueMutation>response.data.updateIssue;
+  }
+  async DeleteIssue(
+    input: DeleteIssueInput,
+    condition?: ModelIssueConditionInput
+  ): Promise<DeleteIssueMutation> {
+    const statement = `mutation DeleteIssue($input: DeleteIssueInput!, $condition: ModelIssueConditionInput) {
+        deleteIssue(input: $input, condition: $condition) {
+          __typename
+          id
+          title
+          description
+          reporter
+          status
+          type
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <DeleteIssueMutation>response.data.deleteIssue;
   }
   async GetProbateRecord(id: string): Promise<GetProbateRecordQuery> {
     const statement = `query GetProbateRecord($id: ID!) {
@@ -1741,6 +2381,8 @@ export class APIService {
                 height
               }
               attributeForId
+              lowerTitle
+              confidence
               createdAt
               updatedAt
             }
@@ -1757,9 +2399,12 @@ export class APIService {
               width
               height
             }
+            lowerText
+            confidence
           }
           totalValue
           reviewCount
+          lowerTitle
           createdAt
           updatedAt
         }
@@ -1811,6 +2456,8 @@ export class APIService {
                   height
                 }
                 attributeForId
+                lowerTitle
+                confidence
                 createdAt
                 updatedAt
               }
@@ -1827,9 +2474,12 @@ export class APIService {
                 width
                 height
               }
+              lowerText
+              confidence
             }
             totalValue
             reviewCount
+            lowerTitle
             createdAt
             updatedAt
           }
@@ -1880,6 +2530,8 @@ export class APIService {
             height
           }
           attributeForId
+          lowerTitle
+          confidence
           createdAt
           updatedAt
         }
@@ -1919,6 +2571,8 @@ export class APIService {
               height
             }
             attributeForId
+            lowerTitle
+            confidence
             createdAt
             updatedAt
           }
@@ -1969,6 +2623,8 @@ export class APIService {
               height
             }
             attributeForId
+            lowerTitle
+            confidence
             createdAt
             updatedAt
           }
@@ -2023,6 +2679,8 @@ export class APIService {
               width
               height
             }
+            lowerText
+            confidence
           }
           createdAt
           updatedAt
@@ -2070,6 +2728,8 @@ export class APIService {
                 width
                 height
               }
+              lowerText
+              confidence
             }
             createdAt
             updatedAt
@@ -2091,6 +2751,126 @@ export class APIService {
       graphqlOperation(statement, gqlAPIServiceArguments)
     )) as any;
     return <ListDocumentsQuery>response.data.listDocuments;
+  }
+  async GetLineItemReviewerNote(
+    id: string
+  ): Promise<GetLineItemReviewerNoteQuery> {
+    const statement = `query GetLineItemReviewerNote($id: ID!) {
+        getLineItemReviewerNote(id: $id) {
+          __typename
+          id
+          lineItemId
+          title
+          reviewed
+          reviewer
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      id
+    };
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <GetLineItemReviewerNoteQuery>response.data.getLineItemReviewerNote;
+  }
+  async ListLineItemReviewerNotes(
+    filter?: ModelLineItemReviewerNoteFilterInput,
+    limit?: number,
+    nextToken?: string
+  ): Promise<ListLineItemReviewerNotesQuery> {
+    const statement = `query ListLineItemReviewerNotes($filter: ModelLineItemReviewerNoteFilterInput, $limit: Int, $nextToken: String) {
+        listLineItemReviewerNotes(filter: $filter, limit: $limit, nextToken: $nextToken) {
+          __typename
+          items {
+            __typename
+            id
+            lineItemId
+            title
+            reviewed
+            reviewer
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    if (limit) {
+      gqlAPIServiceArguments.limit = limit;
+    }
+    if (nextToken) {
+      gqlAPIServiceArguments.nextToken = nextToken;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <ListLineItemReviewerNotesQuery>(
+      response.data.listLineItemReviewerNotes
+    );
+  }
+  async GetIssue(id: string): Promise<GetIssueQuery> {
+    const statement = `query GetIssue($id: ID!) {
+        getIssue(id: $id) {
+          __typename
+          id
+          title
+          description
+          reporter
+          status
+          type
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      id
+    };
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <GetIssueQuery>response.data.getIssue;
+  }
+  async ListIssues(
+    filter?: ModelIssueFilterInput,
+    limit?: number,
+    nextToken?: string
+  ): Promise<ListIssuesQuery> {
+    const statement = `query ListIssues($filter: ModelIssueFilterInput, $limit: Int, $nextToken: String) {
+        listIssues(filter: $filter, limit: $limit, nextToken: $nextToken) {
+          __typename
+          items {
+            __typename
+            id
+            title
+            description
+            reporter
+            status
+            type
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    if (limit) {
+      gqlAPIServiceArguments.limit = limit;
+    }
+    if (nextToken) {
+      gqlAPIServiceArguments.nextToken = nextToken;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <ListIssuesQuery>response.data.listIssues;
   }
   OnCreateProbateRecordListener: Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateProbateRecord">>
@@ -2126,6 +2906,8 @@ export class APIService {
                 height
               }
               attributeForId
+              lowerTitle
+              confidence
               createdAt
               updatedAt
             }
@@ -2142,9 +2924,12 @@ export class APIService {
               width
               height
             }
+            lowerText
+            confidence
           }
           totalValue
           reviewCount
+          lowerTitle
           createdAt
           updatedAt
         }
@@ -2188,6 +2973,8 @@ export class APIService {
                 height
               }
               attributeForId
+              lowerTitle
+              confidence
               createdAt
               updatedAt
             }
@@ -2204,9 +2991,12 @@ export class APIService {
               width
               height
             }
+            lowerText
+            confidence
           }
           totalValue
           reviewCount
+          lowerTitle
           createdAt
           updatedAt
         }
@@ -2250,6 +3040,8 @@ export class APIService {
                 height
               }
               attributeForId
+              lowerTitle
+              confidence
               createdAt
               updatedAt
             }
@@ -2266,9 +3058,12 @@ export class APIService {
               width
               height
             }
+            lowerText
+            confidence
           }
           totalValue
           reviewCount
+          lowerTitle
           createdAt
           updatedAt
         }
@@ -2302,6 +3097,8 @@ export class APIService {
             height
           }
           attributeForId
+          lowerTitle
+          confidence
           createdAt
           updatedAt
         }
@@ -2335,6 +3132,8 @@ export class APIService {
             height
           }
           attributeForId
+          lowerTitle
+          confidence
           createdAt
           updatedAt
         }
@@ -2368,6 +3167,8 @@ export class APIService {
             height
           }
           attributeForId
+          lowerTitle
+          confidence
           createdAt
           updatedAt
         }
@@ -2408,6 +3209,8 @@ export class APIService {
               width
               height
             }
+            lowerText
+            confidence
           }
           createdAt
           updatedAt
@@ -2449,6 +3252,8 @@ export class APIService {
               width
               height
             }
+            lowerText
+            confidence
           }
           createdAt
           updatedAt
@@ -2490,6 +3295,8 @@ export class APIService {
               width
               height
             }
+            lowerText
+            confidence
           }
           createdAt
           updatedAt
@@ -2498,5 +3305,146 @@ export class APIService {
     )
   ) as Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteDocument">>
+  >;
+
+  OnCreateLineItemReviewerNoteListener: Observable<
+    SubscriptionResponse<
+      Pick<__SubscriptionContainer, "onCreateLineItemReviewerNote">
+    >
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnCreateLineItemReviewerNote {
+        onCreateLineItemReviewerNote {
+          __typename
+          id
+          lineItemId
+          title
+          reviewed
+          reviewer
+          createdAt
+          updatedAt
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<
+      Pick<__SubscriptionContainer, "onCreateLineItemReviewerNote">
+    >
+  >;
+
+  OnUpdateLineItemReviewerNoteListener: Observable<
+    SubscriptionResponse<
+      Pick<__SubscriptionContainer, "onUpdateLineItemReviewerNote">
+    >
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnUpdateLineItemReviewerNote {
+        onUpdateLineItemReviewerNote {
+          __typename
+          id
+          lineItemId
+          title
+          reviewed
+          reviewer
+          createdAt
+          updatedAt
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<
+      Pick<__SubscriptionContainer, "onUpdateLineItemReviewerNote">
+    >
+  >;
+
+  OnDeleteLineItemReviewerNoteListener: Observable<
+    SubscriptionResponse<
+      Pick<__SubscriptionContainer, "onDeleteLineItemReviewerNote">
+    >
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnDeleteLineItemReviewerNote {
+        onDeleteLineItemReviewerNote {
+          __typename
+          id
+          lineItemId
+          title
+          reviewed
+          reviewer
+          createdAt
+          updatedAt
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<
+      Pick<__SubscriptionContainer, "onDeleteLineItemReviewerNote">
+    >
+  >;
+
+  OnCreateIssueListener: Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateIssue">>
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnCreateIssue {
+        onCreateIssue {
+          __typename
+          id
+          title
+          description
+          reporter
+          status
+          type
+          createdAt
+          updatedAt
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateIssue">>
+  >;
+
+  OnUpdateIssueListener: Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateIssue">>
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnUpdateIssue {
+        onUpdateIssue {
+          __typename
+          id
+          title
+          description
+          reporter
+          status
+          type
+          createdAt
+          updatedAt
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateIssue">>
+  >;
+
+  OnDeleteIssueListener: Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteIssue">>
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnDeleteIssue {
+        onDeleteIssue {
+          __typename
+          id
+          title
+          description
+          reporter
+          status
+          type
+          createdAt
+          updatedAt
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteIssue">>
   >;
 }

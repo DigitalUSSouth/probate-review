@@ -9,6 +9,7 @@ type ProbateRecord @model @auth(rules: [{allow: private}]) {
   words: [Word]!
   totalValue: Float!
   reviewCount: Int!
+  lowerTitle: String!  
 }
 
 type Filing {
@@ -44,6 +45,8 @@ type LineItem @model @auth(rules: [{allow: private}]) {
   value: Float!
   boundingBox: Rect 
   attributeForId: ID!
+  lowerTitle: String!
+  confidence: Float!
 }
 
 type Document @model @auth(rules: [{allow: private}]) {
@@ -62,6 +65,8 @@ type Word {
   id: ID!
   text: String!
   boundingBox: Rect
+  lowerText: String!
+  confidence: Float!
 }
 
 type ModelProbateRecordConnection @aws_iam @aws_cognito_user_pools {
@@ -70,3 +75,34 @@ type ModelProbateRecordConnection @aws_iam @aws_cognito_user_pools {
   scannedCount: Int,
   count: Int  
 }
+
+type LineItemReviewerNote @model @auth(rules: [{allow: private}]) {
+  id: ID!
+  lineItemId: ID!
+  title: String!
+  reviewed: Boolean!
+  reviewer: String!
+}
+
+type Issue @model @auth(rules: [{allow: private}]) {
+  id: ID!
+  title: String!
+  description: String!
+  reporter: String!
+  status: IssueStatus
+  type: IssueType
+}
+
+enum IssueStatus {
+  open
+  closed
+  resolved
+  obsolete
+  will_not_fix
+}
+
+enum IssueType {
+  bug
+  feature_request
+}
+ 

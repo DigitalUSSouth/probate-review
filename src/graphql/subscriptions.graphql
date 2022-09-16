@@ -25,6 +25,8 @@ subscription OnCreateProbateRecord {
           height
         }
         attributeForId
+        lowerTitle
+        confidence
         createdAt
         updatedAt
       }
@@ -39,9 +41,12 @@ subscription OnCreateProbateRecord {
         width
         height
       }
+      lowerText
+      confidence
     }
     totalValue
     reviewCount
+    lowerTitle
     createdAt
     updatedAt
   }
@@ -72,6 +77,8 @@ subscription OnUpdateProbateRecord {
           height
         }
         attributeForId
+        lowerTitle
+        confidence
         createdAt
         updatedAt
       }
@@ -86,9 +93,12 @@ subscription OnUpdateProbateRecord {
         width
         height
       }
+      lowerText
+      confidence
     }
     totalValue
     reviewCount
+    lowerTitle
     createdAt
     updatedAt
   }
@@ -119,6 +129,8 @@ subscription OnDeleteProbateRecord {
           height
         }
         attributeForId
+        lowerTitle
+        confidence
         createdAt
         updatedAt
       }
@@ -133,9 +145,12 @@ subscription OnDeleteProbateRecord {
         width
         height
       }
+      lowerText
+      confidence
     }
     totalValue
     reviewCount
+    lowerTitle
     createdAt
     updatedAt
   }
@@ -158,6 +173,8 @@ subscription OnCreateLineItem {
       height
     }
     attributeForId
+    lowerTitle
+    confidence
     createdAt
     updatedAt
   }
@@ -180,6 +197,8 @@ subscription OnUpdateLineItem {
       height
     }
     attributeForId
+    lowerTitle
+    confidence
     createdAt
     updatedAt
   }
@@ -202,6 +221,8 @@ subscription OnDeleteLineItem {
       height
     }
     attributeForId
+    lowerTitle
+    confidence
     createdAt
     updatedAt
   }
@@ -228,6 +249,8 @@ subscription OnCreateDocument {
         width
         height
       }
+      lowerText
+      confidence
     }
     createdAt
     updatedAt
@@ -255,6 +278,8 @@ subscription OnUpdateDocument {
         width
         height
       }
+      lowerText
+      confidence
     }
     createdAt
     updatedAt
@@ -282,7 +307,78 @@ subscription OnDeleteDocument {
         width
         height
       }
+      lowerText
+      confidence
     }
+    createdAt
+    updatedAt
+  }
+}
+subscription OnCreateLineItemReviewerNote {
+  onCreateLineItemReviewerNote {
+    id
+    lineItemId
+    title
+    reviewed
+    reviewer
+    createdAt
+    updatedAt
+  }
+}
+subscription OnUpdateLineItemReviewerNote {
+  onUpdateLineItemReviewerNote {
+    id
+    lineItemId
+    title
+    reviewed
+    reviewer
+    createdAt
+    updatedAt
+  }
+}
+subscription OnDeleteLineItemReviewerNote {
+  onDeleteLineItemReviewerNote {
+    id
+    lineItemId
+    title
+    reviewed
+    reviewer
+    createdAt
+    updatedAt
+  }
+}
+subscription OnCreateIssue {
+  onCreateIssue {
+    id
+    title
+    description
+    reporter
+    status
+    type
+    createdAt
+    updatedAt
+  }
+}
+subscription OnUpdateIssue {
+  onUpdateIssue {
+    id
+    title
+    description
+    reporter
+    status
+    type
+    createdAt
+    updatedAt
+  }
+}
+subscription OnDeleteIssue {
+  onDeleteIssue {
+    id
+    title
+    description
+    reporter
+    status
+    type
     createdAt
     updatedAt
   }
