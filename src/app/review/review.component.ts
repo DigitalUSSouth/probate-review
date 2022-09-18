@@ -24,6 +24,7 @@ import {
   Rect,
   CreateLineItemInput,
   DeleteProbateRecordInput,
+  Line,
 } from '../API.service';
 import { from } from 'rxjs';
 import { ContextMenuModel } from '../interfaces/context-menu-model';
@@ -31,6 +32,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { BoundingBox, QuadTree } from '../quad-tree';
 import { input } from 'aws-amplify';
 import { ConsoleLogger } from '@aws-amplify/core';
+import { deleteWord } from 'src/graphql/mutations';
 
 interface SubcategoryOptionValue {
   value: string;
@@ -43,6 +45,26 @@ interface DragSelect {
   isDragging: boolean;
   selectionMode: SelectionMode;
   editMode: EditMode;
+}
+
+enum CommandType {
+  CreateLine,
+  DeleteLine,
+  ResizeLineBoundingBox,
+  CreateWord,
+  DeleteWord,
+  ResizeWordBoundingBox
+}
+
+interface BoundingBoxChange {
+  id: string,
+  newVal: Rect,
+  oldVal: Rect,
+}
+
+interface Command {
+  type: CommandType
+  value: LineItem | Word | BoundingBoxChange
 }
 
 const OVERLAY_ID = 'highlighted-line';
@@ -68,6 +90,8 @@ enum EditMode {
 }
 
 const InputBoxHeight = 20;
+const CommandQueueLength = 20;
+
 @Component({
   selector: 'app-review',
   templateUrl: './review.component.html',
@@ -103,8 +127,9 @@ export class ReviewComponent implements OnInit {
   wordMap = new Map<string, Word>();
   linesItemsToAdd = new Array<CreateLineItemInput>();
   linesItemIdsToDelete = new Array<string>();
-  // wordQuadTree = new QuadTree();
-  // lineQuadTree = new QuadTree();
+
+  commands: Command[] = [];
+  
 
   constructor(
     private route: ActivatedRoute,
@@ -684,8 +709,8 @@ export class ReviewComponent implements OnInit {
       }
       
       lineItems$.subscribe((lineItems) => {
-        let sortedLineItems = (lineItems.items as unknown as LineItem[]).sort((a, b) => a!.boundingBox!.top - b!.boundingBox!.top);
-        this.record!.lineItems!.items = sortedLineItems;
+        this.record!.lineItems!.items = lineItems as unknown as LineItem[];
+        this.sortLineItems();
         
         console.log('rec\'d line items');
         console.log(lineItems);
@@ -697,6 +722,11 @@ export class ReviewComponent implements OnInit {
     });
 
     
+  }
+
+  sortLineItems(): void {
+    let sortedLineItems = (this.record!.lineItems!.items).sort((a, b) => a!.boundingBox!.top - b!.boundingBox!.top);
+    this.record!.lineItems!.items = sortedLineItems;
   }
 
   updateLineItemById(id: string, field: string, value: any) {
@@ -1520,15 +1550,201 @@ export class ReviewComponent implements OnInit {
     body.appendChild(script);
   }
 
-  async deleteLine(index: number): Promise<void> {
+  async deleteLineItem(lineItem: LineItem) {
     if(this.record && this.record.lineItems) {
-      let line = this.record.lineItems.items[index];
-      if(line) {
-        this.record.lineItems.items = this.record.lineItems.items.filter(r => r!.id != line!.id);
-        console.log('deleting record ' + line.id);
-        let response = await this.probateRecordService.DeleteLineItem({id: line!.id});
+      if(lineItem) {
+        this.record.lineItems.items = this.record.lineItems.items.filter(r => r!.id != lineItem.id);
+        console.log('deleting record ' + lineItem.id);
+        let response = await this.probateRecordService.DeleteLineItem({id: lineItem.id});
         console.log(response);
       }
     }
   }
+
+  async deleteLineItemByIndex(index: number): Promise<void> {
+    if(this.record && this.record.lineItems) {
+      let lineItem = this.record.lineItems.items[index];
+      if(lineItem) {
+       await this.deleteLineItem(lineItem);
+      }
+    }
+  }
+
+  async createLineItem(lineItem: LineItem | null | undefined) {
+    let defaultLineItemToAdd = {
+      probateId: this.record!.id,
+      wordIds: [],
+      title: '',
+      description: '',
+      category: '',
+      subcategory: '',
+      quantity: 0,
+      value: 0,
+      attributeForId: ''
+    };
+    let lineItemToAdd = (lineItem) ? lineItem : defaultLineItemToAdd;
+    let addedLineItem = await this.probateRecordService.CreateLineItem(lineItemToAdd);
+    console.log(addedLineItem);
+    this.record!.lineItems?.items.push(addedLineItem);
+    this.sortLineItems();
+  }
+  
+  createWord(word: Word | null | undefined) {
+    let defaultWord = {
+      __typename: "Word",
+      id: uuidv4(),
+      text: '',
+      boundingBox: {
+        __typename: "Rect",
+        top: 0,
+        left: 0,
+        width: 0,
+        height: 0
+      }
+    }
+   
+    let wordToAdd = word ? word : defaultWord;
+    this.record!.words.push(wordToAdd as Word);
+  }
+
+  deleteWord(word: Word) {
+    const id = word.id;
+    // remove it from the record
+    this.record!.words = this.record!.words.filter(w => w!.id != id);
+
+    // remove it from all lines
+    for(const lineItem of this.record!.lineItems!.items) {
+      if(lineItem?.wordIds.includes(id)) {
+        lineItem.wordIds = lineItem.wordIds.filter(w => w != id);
+      }
+    }
+  }
+
+  undoCommand(command: Command) {
+    switch(command.type) {
+      case CommandType.CreateLine:
+        this.deleteLineItem(command.value as LineItem);
+        break;
+      case CommandType.DeleteLine:
+        this.createLineItem(command.value as LineItem);
+        break;
+      case CommandType.ResizeLineBoundingBox:
+        {
+          let lineItem = (this.record!.lineItems!.items as LineItem[]).find(l => l.id == command.value.id);
+          if(lineItem) {
+            lineItem.boundingBox = (command.value as BoundingBoxChange).oldVal;
+          }
+        }
+        break;
+      case CommandType.CreateWord:
+        this.deleteWord(command.value as Word);
+        break;
+      case CommandType.DeleteWord:
+        this.createWord(command.value as Word);
+        break;
+      case CommandType.ResizeWordBoundingBox:
+        let word = this.record!.words.find(w => w!.id === command.value.id);
+        if(word) {
+          word.boundingBox = (command.value as BoundingBoxChange).oldVal;
+        }
+        break;
+    }
+  }
+
+  async redoCommand(command: Command) {
+    switch(command.type) {
+      case CommandType.CreateLine:
+        this.createLineItem(command.value as LineItem);
+        break;
+      case CommandType.DeleteLine:
+        this.deleteLineItem(command.value as LineItem);
+        break;
+      case CommandType.ResizeLineBoundingBox:
+        {
+          let lineItem = (this.record!.lineItems!.items as LineItem[]).find(l => l.id == command.value.id);
+          if(lineItem) {
+            lineItem.boundingBox = (command.value as BoundingBoxChange).newVal;
+          }
+        }
+        break;
+      case CommandType.CreateWord:
+        this.createWord(command.value as Word);
+        break;
+      case CommandType.DeleteWord:
+        this.deleteWord(command.value as Word);
+        break;
+      case CommandType.ResizeWordBoundingBox:
+        let word = this.record!.words.find(w => w!.id === command.value.id);
+        if(word) {
+          word.boundingBox = (command.value as BoundingBoxChange).newVal;
+        }
+        break;
+    }
+
+  }
+
+  callCommand(command: Command) {
+    // check our command length
+    if(this.commands.length === CommandQueueLength) {
+      this.commands.pop();
+    }
+    this.commands.push(command);
+
+    this.redoCommand(command);
+  }
+
+  callCreateLineItem(lineItem: LineItem | undefined | null) {
+    let command = {
+      type: CommandType.CreateLine,
+      value: lineItem
+    }
+    this.callCommand(command as Command);
+  }
+
+  callDeleteLineItem(lineItem: LineItem) {
+    let command = {
+      type: CommandType.DeleteLine,
+      value: lineItem
+    };
+    this.callCommand(command as Command);
+  }
+
+  callCreateWord(word: Word) {
+    let command = {
+      type: CommandType.CreateWord,
+      value: word
+    };
+    this.callCommand(command);
+  }
+
+  callDeleteWord(word: Word) {
+    let command = {
+      type: CommandType.DeleteWord,
+      value: word
+    };
+    this.callCommand(command as Command);
+  }
+
+  callAdjustBoundingBoxForLine(id: string, oldVal: Rect, newVal: Rect) {
+    let command = {
+      type: CommandType.ResizeLineBoundingBox,
+        value: {
+          id, oldVal, newVal
+        }
+    };
+    
+    this.callCommand(command as Command);
+  }
+
+  callAdjustBoundingBoxForWord(id: string, oldVal: Rect, newVal: Rect) {
+    let command = {
+      type: CommandType.ResizeWordBoundingBox,
+        value: {
+          id, oldVal, newVal
+        }
+    };
+    
+    this.callCommand(command as Command);
+  }
+  
 }
