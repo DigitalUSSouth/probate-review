@@ -68,6 +68,9 @@
             <td>
                 <input id="total-value-{{ i }}" name="total-value-{{ i }}" min="0.01" step=".01" type="number"/>
             </td>
+            <td>
+                <a (click)="deleteLine(i)"><u>delete</u></a>
+            </td>
         </tr>
         </table>
         <div class="centered">

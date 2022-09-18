@@ -23,6 +23,7 @@ import {
   WordInput,
   Rect,
   CreateLineItemInput,
+  DeleteProbateRecordInput,
 } from '../API.service';
 import { from } from 'rxjs';
 import { ContextMenuModel } from '../interfaces/context-menu-model';
@@ -1055,33 +1056,7 @@ export class ReviewComponent implements OnInit {
 
     return lines;
   }
-  // getSelectedLines(selectRect: OpenSeadragon.Rect): LineItem[] {
-  //   if (this.aspectRatio === 0.0) {
-  //     this.calculateAspectRatio();
-  //   }
-  //   let boundingBox = this.osdRect2BoundingBox(selectRect);
-  //   let lineIds = this.lineQuadTree.retrieve(boundingBox);
-  //   let lines: LineItem[] = this.record!.lineItems!.items.filter((l) =>
-  //     lineIds.includes(l!.id)
-  //   ) as LineItem[];
-  //   lines = lines.filter((l) =>
-  //     this.verticallyOverlapped(
-  //       l.boundingBox!.top,
-  //       l.boundingBox!.top + l.boundingBox!.height,
-  //       boundingBox.y,
-  //       boundingBox.y + boundingBox.height
-  //     )
-  //   );
-
-  //   return lines;
-  // }
-
-  // getWordsInBoundingBox(boundingBox: BoundingBox) {
-  //   let ids = this.wordQuadTree.retrieve(boundingBox);
-  //   let selectedWords = this.record!.words.filter((w) => ids.includes(w!.id));
-  //   return selectedWords;
-  // }
-
+ 
   filterLinesInBox(words: Word[], boundingBox: BoundingBox): Word[] {
     return words.filter((w) =>
       boundingBox.contains(this.texRect2BoundingBox(w!.boundingBox!))
@@ -1543,5 +1518,17 @@ export class ReviewComponent implements OnInit {
     script.async = true;
     script.defer = true;
     body.appendChild(script);
+  }
+
+  async deleteLine(index: number): Promise<void> {
+    if(this.record && this.record.lineItems) {
+      let line = this.record.lineItems.items[index];
+      if(line) {
+        this.record.lineItems.items = this.record.lineItems.items.filter(r => r!.id != line!.id);
+        console.log('deleting record ' + line.id);
+        let response = await this.probateRecordService.DeleteLineItem({id: line!.id});
+        console.log(response);
+      }
+    }
   }
 }
