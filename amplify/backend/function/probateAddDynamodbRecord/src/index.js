@@ -101,7 +101,7 @@ exports.handler = async (event) => {
       TableName: process.env.PROBATE_RECORD_TABLE,
       Item: {
         id: uuid,
-        title: event['fileName'],
+        title: event['fileName'],        
         deceasedId: '',
         appraiser: [],
         witness: [],
