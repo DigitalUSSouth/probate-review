@@ -58,16 +58,27 @@ enum CommandType {
 }
 
 interface BoundingBoxChange {
-  newVal: Rect,
-  oldVal: Rect,
+  newVal?: Rect,
+  oldVal?: Rect,
 }
+
+interface WordResult {
+  word?: Word,
+  lineItemIds?: string[]
+}
+
+interface LineItemResult {
+  lineItem?: LineItem,
+  rect?: Rect
+}
+
 
 interface Command {
   type: CommandType
-  value: LineItem | Word | BoundingBoxChange
+  input: LineItem | Word | BoundingBoxChange
   ids?: string[],
   rect?: Rect,
-  result?: LineItem | Word | Rect
+  result?: LineItemResult | WordResult | BoundingBoxChange
 }
 
 const OVERLAY_ID = 'highlighted-line';
@@ -411,7 +422,7 @@ export class ReviewComponent implements OnInit {
         );
         let boundingBox = this.osdRect2texRect(selectionBox);
         this.callCreateLineItem(null, boundingBox).then((command) => {
-          this.highlightLine(command.result as LineItem);
+          this.highlightLine((command.result as LineItemResult).lineItem as LineItem);
         });
   
         break;
@@ -1547,7 +1558,7 @@ export class ReviewComponent implements OnInit {
     body.appendChild(script);
   }
 
-  async deleteLineItem(lineItem: LineItem): Promise<LineItem> {
+  async deleteLineItem(lineItem: LineItem): Promise<LineItemResult> {
     if(this.record && this.record.lineItems) {
       if(lineItem) {
         this.record.lineItems.items = this.record.lineItems.items.filter(r => r!.id != lineItem.id);
@@ -1556,28 +1567,25 @@ export class ReviewComponent implements OnInit {
         console.log(response);
       }
     }
-
-    return lineItem;
+    let rect = lineItem.boundingBox || undefined;
+    return {lineItem, rect};
   }
 
-  async deleteLineItemByIndex(index: number): Promise<LineItem> {
+  deleteLineItemByIndex(index: number): void {
     let lineItem = null;
     if(this.record && this.record.lineItems) {
-      lineItem = this.record.lineItems.items[index];
-      if(lineItem) {
-       await this.deleteLineItem(lineItem);
-      }
+      lineItem = this.record.lineItems.items[index];      
     }
 
     if(!lineItem) {
       throw "Invalid line index";
     }
 
-    return lineItem;
+    this.callDeleteLineItem(lineItem);
   }
 
 
-  async createLineItem(lineItem: LineItem | null | undefined = undefined, rect: Rect | undefined = undefined): Promise<LineItem> {
+  async createLineItem(lineItem: LineItem | null | undefined = undefined, rect: Rect | undefined = undefined): Promise<LineItemResult> {
     let defaultLineItemToAdd = {
       probateId: this.record!.id,
       wordIds: [],
@@ -1596,7 +1604,21 @@ export class ReviewComponent implements OnInit {
       }
     };
 
-    let lineItemToAdd = (lineItem) ? lineItem : defaultLineItemToAdd;
+
+
+    
+    let lineItemInput: CreateLineItemInput;
+    if(lineItem) {
+      let lineItemToAdd: Partial<LineItem> = lineItem;
+      delete lineItemToAdd['__typename'];
+      delete lineItemToAdd['createdAt'];
+      delete lineItemToAdd['updatedAt'];
+      lineItemInput = lineItemToAdd as CreateLineItemInput;
+    }
+    else {
+      lineItemInput = defaultLineItemToAdd;
+    }
+
     if(rect) {
       let boundingBox = {
         left: rect.left,
@@ -1605,17 +1627,17 @@ export class ReviewComponent implements OnInit {
         width: rect.width        
       }
       
-      lineItemToAdd.boundingBox = boundingBox;
-      console.log('rect assigned');
+      lineItemInput.boundingBox = boundingBox;
     }
-    let addedLineItem = await this.probateRecordService.CreateLineItem(lineItemToAdd);
+
+    let addedLineItem = await this.probateRecordService.CreateLineItem(lineItemInput);
     console.log(addedLineItem);
     this.record!.lineItems?.items.push(addedLineItem);
     this.sortLineItems();
-    return addedLineItem;
+    return {lineItem: addedLineItem, rect};
   }
   
-  createWord(word: Word | null | undefined, ids: string[] | undefined = undefined): Word {
+  createWord(word: Word | null | undefined, lineItemIds: string[] | undefined = undefined): WordResult {
     let defaultWord = {
       __typename: "Word",
       id: uuidv4(),
@@ -1631,100 +1653,103 @@ export class ReviewComponent implements OnInit {
    
     let wordToAdd = word ? word : defaultWord;
     this.record!.words.push(wordToAdd as Word);
-    if(ids) {
+    if(lineItemIds) {
       for(const lineItem of this.record!.lineItems!.items as LineItem[]) {
-        if(ids.includes(lineItem.id)) {
+        if(lineItemIds.includes(lineItem.id)) {
           lineItem.wordIds.push(wordToAdd.id);
         }
       }
     }
 
-    return wordToAdd as Word;
+    return {word: wordToAdd as Word, lineItemIds};
   }
 
-  deleteWord(word: Word, ids: string[] | undefined = undefined): Word {
+  deleteWord(word: Word): WordResult {
     const id = word.id;
+    let lineItemIds: string[] = [];
     // remove it from the record
     this.record!.words = this.record!.words.filter(w => w!.id != id);
 
     // remove it from all lines
-    if(ids) {
-      for(const lineItem of this.record!.lineItems!.items as LineItem[]) {
-        if(ids.includes(lineItem.id)) {
-          lineItem.wordIds = lineItem.wordIds.filter(w => w != id);
-        }
+    if(!lineItemIds) {        
+      lineItemIds = (this.record!.lineItems!.items as LineItem[]).filter(l => l.wordIds.includes(id)).map(l => l.id);
+    }
+
+    for(const lineItem of this.record!.lineItems!.items as LineItem[]) {
+      if(lineItemIds.includes(lineItem.id)) {
+        lineItem.wordIds = lineItem.wordIds.filter(w => w != id);
       }
     }
-    return word;
+    return {word, lineItemIds};
   }
 
-  undoCommand(command: Command) {
+  async undoCommand(command: Command) {
+    console.log('undoing command');
+    console.log(command);
     switch(command.type) {
       case CommandType.CreateLine:
-        this.deleteLineItem(command.value as LineItem);
+        command.result = await this.getCommandResult({type: CommandType.DeleteLine, input: (command.result! as LineItemResult).lineItem!});
+        
         break;
       case CommandType.DeleteLine:
-        this.createLineItem(command.value as LineItem, command.rect);
+        command.result = await this.getCommandResult({type: CommandType.CreateLine, input: (command.result! as LineItemResult).lineItem!, rect: (command.result! as LineItemResult).lineItem!.boundingBox || undefined});        
         break;
       case CommandType.ResizeLineBoundingBox:
-        {
-          let lineItem = (this.record!.lineItems!.items as LineItem[]).find(l => l.id == command.ids![0]);
-          if(lineItem) {
-            lineItem.boundingBox = (command.value as BoundingBoxChange).oldVal;
-          }
-        }
+        command.result = await this.getCommandResult({...command, input: {oldVal: (command.input as BoundingBoxChange).newVal, newVal: (command.input as BoundingBoxChange).oldVal}});
         break;
       case CommandType.CreateWord:
-        this.deleteWord(command.value as Word, command.ids);
+        command.result = await this.getCommandResult({...command, type: CommandType.DeleteWord});
         break;
       case CommandType.DeleteWord:
-        this.createWord(command.value as Word, command.ids);
+        command.result = await this.getCommandResult({...command, type: CommandType.CreateWord});
         break;
       case CommandType.ResizeWordBoundingBox:
-        let word = this.record!.words.find(w => w!.id === command.ids![0]);
-        if(word) {
-          word.boundingBox = (command.value as BoundingBoxChange).oldVal;
-        }
+        command.result = await this.getCommandResult({...command, input: {oldVal: (command.input as BoundingBoxChange).newVal, newVal: (command.input as BoundingBoxChange).oldVal}});
         break;
     }
   }
 
 
-  async getCommandResult(command: Command): Promise<LineItem | Word | Rect>
+  async getCommandResult(command: Command): Promise<LineItemResult | WordResult | BoundingBoxChange>
   {
-    let result: Promise<LineItem | Word | Rect> | undefined;
+    let result: LineItemResult | WordResult | BoundingBoxChange | undefined;
 
     switch(command.type) {
       case CommandType.CreateLine:
-        result = this.createLineItem(command.value as LineItem, command.rect);
+        result = await this.createLineItem(command.input as LineItem, command.rect);
+        this.highlightLine((result as LineItemResult).lineItem!);
         break;
       case CommandType.DeleteLine:
-        result = this.deleteLineItem(command.value as LineItem);
+        result = await this.deleteLineItem(command.input as LineItem);
+        this.clearSelection();
         break;
       case CommandType.ResizeLineBoundingBox:
         {
           let lineItem = (this.record!.lineItems!.items as LineItem[]).find(l => l.id == command.ids![0]);
           if(lineItem) {
-            lineItem.boundingBox = (command.value as BoundingBoxChange).newVal;
-            result = Promise.resolve(lineItem!.boundingBox as Rect);
+            let oldVal = lineItem.boundingBox || undefined;
+            lineItem.boundingBox = (command.input as BoundingBoxChange).newVal;
+            result = {newVal: lineItem!.boundingBox, oldVal};
           }
           else {
-            throw "Invalid bounding box";
+            throw "Invalid line item";
           }
           
         }
         break;
       case CommandType.CreateWord:
-        result = Promise.resolve(this.createWord(command.value as Word));
+        result = this.createWord(command.input as Word, command.ids);
         break;
       case CommandType.DeleteWord:
-        return Promise.resolve(this.deleteWord(command.value as Word));
+        result = this.deleteWord(command.input as Word);
         break;
       case CommandType.ResizeWordBoundingBox:
         let word = this.record!.words.find(w => w!.id === command.ids![0]);
         if(word) {
-          word.boundingBox = (command.value as BoundingBoxChange).newVal;
-          return Promise.resolve(word.boundingBox);
+          let oldVal = word.boundingBox || undefined;
+          word.boundingBox = (command.input as BoundingBoxChange).newVal;
+          
+          result = {newVal: word.boundingBox, oldVal};
         }
         break;      
     }
@@ -1742,8 +1767,7 @@ export class ReviewComponent implements OnInit {
   }
 
   async executeCommand(command: Command): Promise<Command> {
-    
-
+    command.result = await this.getCommandResult(command);
     return command;
   }
 
@@ -1754,26 +1778,26 @@ export class ReviewComponent implements OnInit {
     }
     this.commands.push(command);
 
-    return this.redoCommand(command);
+    return this.executeCommand(command);
   }
 
   async callCreateLineItem(lineItem: LineItem | undefined | null = undefined, rect: Rect | undefined): Promise<Command> {
     let command = {
       type: CommandType.CreateLine,
-      value: lineItem
+      input: lineItem
     }
     
     if(rect) {
       (command as Command).rect = rect;
     }
-
+    console.log(command);
     return await this.callCommand(command as Command);
   }
 
   async callDeleteLineItem(lineItem: LineItem): Promise<Command> {
     let command = {
       type: CommandType.DeleteLine,
-      value: lineItem,
+      input: lineItem,
       rect: lineItem.boundingBox
     };
     return await this.callCommand(command as Command);
@@ -1782,7 +1806,7 @@ export class ReviewComponent implements OnInit {
   async callCreateWord(word: Word): Promise<Command> {
     let command = {
       type: CommandType.CreateWord,
-      value: word,
+      input: word,
     };
     return await this.callCommand(command);
   }
@@ -1797,7 +1821,7 @@ export class ReviewComponent implements OnInit {
 
     let command = {
       type: CommandType.DeleteWord,
-      value: word,
+      input: word,
       ids
     };
     return await this.callCommand(command as Command);
@@ -1806,7 +1830,7 @@ export class ReviewComponent implements OnInit {
   async callAdjustBoundingBoxForLine(id: string, oldVal: Rect, newVal: Rect): Promise<Command> {
     let command = {
       type: CommandType.ResizeLineBoundingBox,
-      value: {
+      input: {
         oldVal, newVal
       },
       ids: [id]
@@ -1818,7 +1842,7 @@ export class ReviewComponent implements OnInit {
   async callAdjustBoundingBoxForWord(id: string, oldVal: Rect, newVal: Rect): Promise<Command> {
     let command = {
       type: CommandType.ResizeWordBoundingBox,
-      value: {
+      input: {
         oldVal, newVal
       },
       ids: [id]
@@ -1831,9 +1855,11 @@ export class ReviewComponent implements OnInit {
     if(this.commands.length > 0) {
       let command = this.commands.pop() as Command;
       this.redoCommands.push(command);
-      this.undoCommand(command);
-      console.log('undo called');
-      console.log(command);
+      this.undoCommand(command).then(() => {
+        console.log('undo called');
+        console.log(command);
+      });
+      
     }
     
   }
