@@ -373,6 +373,7 @@ export class ReviewComponent implements OnInit {
             this.updateLineItemText(this.selectedLines[0]);
           });
           this.renderer.listen(inputElem, 'keyup.enter', () => {
+            console.log('keyup.enter fired');
             this.clearSelection();
           });
           this.renderer.listen(inputElem, 'focus', ()=> {            
@@ -642,8 +643,8 @@ export class ReviewComponent implements OnInit {
         ) as HTMLInputElement;
         if (lineElem) {
           console.log('updating line value');
-          lineElem.value = updatedText;
-          console.log('line value is ' + lineElem.value);
+          lineElem.innerText = updatedText;
+          console.log('line value is ' + lineElem.innerText);
         }
       });
       this.renderer.listen(inputElem, 'keyup.enter', () => {
@@ -893,6 +894,7 @@ export class ReviewComponent implements OnInit {
     this.osd!.addOverlay(selectElem, this.texRect2osdRect(line.boundingBox!));
     this.selectedLines = [];
     this.selectedLines.push(line);
+    this.osd?.viewport.fitBoundsWithConstraints(rect);
   }
 
   highlightText(index: number): void {
@@ -1582,6 +1584,20 @@ export class ReviewComponent implements OnInit {
     }
 
     this.callDeleteLineItem(lineItem);
+  }
+
+  editLineItemByIndex(index: number): void {
+    let lineItem = null;
+    if(this.record && this.record.lineItems) {
+      lineItem = this.record.lineItems.items[index];      
+    }
+
+    if(!lineItem) {
+      throw "Invalid line index";
+    }
+
+    this.highlightLine(lineItem);
+    this.correctText();
   }
 
 
