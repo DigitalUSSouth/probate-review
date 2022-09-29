@@ -597,16 +597,18 @@ export class ReviewComponent implements OnInit {
 
       case 'delete word':
         {
-          console.log('deleting word');
-          console.log(this.activeWord);
-          this.callDeleteWord(this.activeWord!);
-          this.activeWord = undefined;
-          let lineItem = this.selectedLines[0];
-          this.clearSelection();
-          this.selectedLines[0] = lineItem;
-          // remove overlay and input for deleted word
-          this.highlightLine(lineItem);
-          this.correctText();
+          if(this.activeWord) {
+            console.log('deleting word');
+            console.log(this.activeWord);
+            this.callDeleteWord(this.activeWord!);
+            this.activeWord = undefined;
+            let lineItem = this.selectedLines[0];
+            this.clearSelection();
+            this.selectedLines[0] = lineItem;
+            // remove overlay and input for deleted word
+            this.highlightLine(lineItem);
+            this.correctText();
+          }
         }
         break;
       default:
@@ -717,6 +719,7 @@ export class ReviewComponent implements OnInit {
     rect.y = inputTop;
     rect.height = inputHeight;
     this.osd!.addOverlay(inputElem!, rect);
+    this.activeWord = word;
     inputElem!.focus();
   }
 
@@ -1733,7 +1736,7 @@ export class ReviewComponent implements OnInit {
       },
     };
 
-    let wordToAdd = word ? word : defaultWord;
+    let wordToAdd = word || defaultWord;
     this.record!.words.push(wordToAdd as Word);
     if (lineItemIds) {
       for (const lineItem of this.record!.lineItems!.items as LineItem[]) {
@@ -1798,10 +1801,23 @@ export class ReviewComponent implements OnInit {
         });
         break;
       case CommandType.CreateWord:
-        command.result = await this.getCommandResult({
-          type: CommandType.DeleteWord,
-          input: (command.result! as WordResult).word!,
-        });
+        {
+          let word = (command.result! as WordResult).word!;
+          let lineItem = this.record!.lineItems!.items.find((l) =>
+            l!.wordIds.includes(word.id)
+          );
+          command.result = await this.getCommandResult({
+            type: CommandType.DeleteWord,
+            input: word,
+          });
+          if (lineItem === this.selectedLines[0]) {
+            this.clearSelection();
+            this.selectedLines[0] = lineItem;
+            this.highlightLine(lineItem);
+            this.updateLineItemText(lineItem);
+            this.correctText();
+          }
+        }
         break;
       case CommandType.DeleteWord:
         {
@@ -1811,14 +1827,13 @@ export class ReviewComponent implements OnInit {
             input: word,
             ids: (command.result! as WordResult).lineItemIds,
           });
-          let lineItem = this.record!.lineItems!.items.find(
-            (l) => l!.wordIds.includes(word.id)
+          let lineItem = this.record!.lineItems!.items.find((l) =>
+            l!.wordIds.includes(word.id)
           );
-          if(lineItem === this.selectedLines[0]) {
+          if (lineItem === this.selectedLines[0]) {
             this.updateLineItemText(lineItem);
             this.correctText();
           }
-
         }
         break;
       case CommandType.ResizeWordBoundingBox:
