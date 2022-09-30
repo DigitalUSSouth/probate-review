@@ -102,6 +102,7 @@ exports.handler = async (event) => {
       Item: {
         id: uuid,
         title: event['fileName'],
+        lowerTitle: event['fileName'].toLowerCase(),        
         deceasedId: '',
         appraiser: [],
         witness: [],

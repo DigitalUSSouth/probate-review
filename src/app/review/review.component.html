@@ -30,7 +30,8 @@
             <th>Value</th>
         </tr>
         <tr *ngFor="let line of record?.lineItems?.items; let i = index">
-            <td>{{ i }}</td>
+            <td>{{ i }} <span class="action-link"><a (click)="editLineItemByIndex(i)"><u>edit</u></a></span>
+                <span class="action-link"><a (click)="deleteLineItemByIndex(i)"><u>delete</u></a></span></td>
             <td><a id="line-{{i}}" (click)="highlightText(i)">{{line!.title}}</a></td>     
             <td>
                 <select id="category-{{ i }}" name="category-{{ i }}" (change)="populateSubcategory(i)" [value]="line?.category">
@@ -69,9 +70,9 @@
                 <input id="total-value-{{ i }}" name="total-value-{{ i }}" min="0.01" step=".01" type="number"/>
             </td>
             <td>
-                <a (click)="deleteLine(i)"><u>delete</u></a>
+                
             </td>
-        </tr>
+        </tr>        
         </table>
         <div class="centered">
             
