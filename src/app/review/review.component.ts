@@ -74,7 +74,7 @@ interface LineItemResult {
 
 interface Command {
   type: CommandType;
-  input: LineItem | Word | BoundingBoxChange;
+  input: LineItem | Word | BoundingBoxChange | undefined;
   ids?: string[];
   rect?: Rect;
   result?: LineItemResult | WordResult | BoundingBoxChange;
@@ -335,6 +335,46 @@ export class ReviewComponent implements OnInit {
     ) as Word[];
   }
 
+  createInputForWord(word: Word): HTMLInputElement {
+    let inputElem = this.renderer.createElement('input');
+    const inputId = `wordInput-${word.id}`;
+    this.renderer.setProperty(inputElem, 'id', inputId);
+    this.renderer.setAttribute(inputElem, 'value', word.text);
+    this.renderer.listen(inputElem, 'input', () => {
+      word.text = (inputElem! as HTMLInputElement).value;
+      if (!this.updatedWordsById.has(word.id)) {
+        this.updatedWordsById.set(word.id, {
+          id: word.id,
+          text: word.text,
+          boundingBox: {
+            left: word.boundingBox!.left,
+            top: word.boundingBox!.top,
+            width: word.boundingBox!.width,
+            height: word.boundingBox!.height,
+          },
+          // confidence: word.confidence,
+          // lowerText: word.lowerText
+        });
+      }
+    });
+
+    this.renderer.listen(inputElem, 'keyup.enter', () => {
+      // if we don't have a value
+      if (!inputElem.value) {
+        this.callDeleteWord(word);
+      } else {
+        this.correctText();
+      }
+    });
+
+    this.renderer.listen(inputElem, 'focus', () => {
+      this.activeWord = word;
+    });
+
+    this.renderer.appendChild(document.body, inputElem);
+    return inputElem;
+  }
+
   showInputsForWords(words: Word[]): void {
     const isInputAbove = words[0].boundingBox!.top > 0.5;
 
@@ -383,26 +423,9 @@ export class ReviewComponent implements OnInit {
         const inputId = `wordInput-${word.id}`;
 
         let inputElem = document.getElementById(inputId);
-
         if (!inputElem) {
-          inputElem = this.renderer.createElement('input');
-          this.renderer.setProperty(inputElem, 'id', inputId);
-          this.renderer.listen(inputElem, 'input', () => {
-            word.text = (inputElem! as HTMLInputElement).value;
-            this.updateLineItemText(this.selectedLines[0]);
-          });
-          this.renderer.listen(inputElem, 'keyup.enter', () => {
-            console.log('keyup.enter fired');
-            this.clearSelection();
-          });
-          this.renderer.listen(inputElem, 'focus', () => {
-            this.osd?.viewport.fitBoundsWithConstraints(rect);
-            this.activeWord = word;
-          });
-          this.renderer.appendChild(document.body, inputElem);
+          inputElem = this.createInputForWord(word);
         }
-
-        this.renderer.setAttribute(inputElem, 'value', word.text);
 
         rect.y = top;
         if (isInputAbove) {
@@ -597,7 +620,7 @@ export class ReviewComponent implements OnInit {
 
       case 'delete word':
         {
-          if(this.activeWord) {
+          if (this.activeWord) {
             console.log('deleting word');
             console.log(this.activeWord);
             this.callDeleteWord(this.activeWord!);
@@ -629,76 +652,9 @@ export class ReviewComponent implements OnInit {
     let inputElem = document.getElementById(inputId);
 
     if (!inputElem) {
-      inputElem = this.renderer.createElement('input');
-      this.renderer.setProperty(inputElem, 'id', inputId);
-      this.renderer.listen(inputElem, 'input', () => {
-        word.text = (inputElem! as HTMLInputElement).value;
-        if (!this.updatedWordsById.has(word.id)) {
-          this.updatedWordsById.set(word.id, {
-            id: word.id,
-            text: word.text,
-            boundingBox: {
-              left: word.boundingBox!.left,
-              top: word.boundingBox!.top,
-              width: word.boundingBox!.width,
-              height: word.boundingBox!.height,
-            },
-            // confidence: word.confidence,
-            // lowerText: word.lowerText
-          });
-        }
-
-        // get the other words of this word's line
-        let words = (this.record!.words as Word[]).filter((w) =>
-          line.wordIds.includes(w!.id)
-        );
-
-        // update line text
-        let updatedWords = words;
-        updatedWords.sort(
-          (a, b) =>
-            a.boundingBox!.left +
-            a.boundingBox!.width -
-            (b.boundingBox!.left + b.boundingBox!.width)
-        );
-        console.log('sorted array of words');
-        console.log(updatedWords);
-        let updatedText = '';
-        for (const word of updatedWords) {
-          updatedText += word.text;
-          updatedText += ' ';
-        }
-        updatedText = updatedText.trim();
-        this.updateLineItemById(this.selectedLines[0].id, 'title', updatedText);
-        this.updateLineItemById(
-          this.selectedLines[0].id,
-          'wordIds',
-          words.map((w) => w.id)
-        );
-        // update our html
-        // get line index
-        const lineIndex = this.record!.lineItems!.items.indexOf(
-          this.selectedLines[0]
-        );
-        let lineElem = document.getElementById(
-          `line-${lineIndex}`
-        ) as HTMLInputElement;
-        if (lineElem) {
-          console.log('updating line value');
-          lineElem.innerText = updatedText;
-          console.log('line value is ' + lineElem.innerText);
-        }
-      });
-      this.renderer.listen(inputElem, 'keyup.enter', () => {
-        // this.clearSelection();
-        this.correctText();
-      });
-      this.renderer.appendChild(document.body, inputElem);
+      inputElem = this.createInputForWord(word);
     }
 
-    // this.renderer.setProperty(inputElem, 'className', className);
-
-    this.renderer.setAttribute(inputElem, 'value', word.text);
     const osdInputRect = this.texRect2osdRect(word.boundingBox!);
     const pixel = this.osd!.viewport.pixelFromPoint(
       new OpenSeadragon.Point(osdInputRect.x, osdInputRect.y)
@@ -719,7 +675,6 @@ export class ReviewComponent implements OnInit {
     rect.y = inputTop;
     rect.height = inputHeight;
     this.osd!.addOverlay(inputElem!, rect);
-    this.activeWord = word;
     inputElem!.focus();
   }
 
@@ -1433,9 +1388,10 @@ export class ReviewComponent implements OnInit {
                     id: uuidv4(),
                     boundingBox: this.osdRect2texRect(location),
                   } as unknown as Word;
-                  console.log('word created');
-                  console.log(word);
-                  this.record?.words.push(word);
+                  this.callCreateWord(word);
+                  // console.log('word created');
+                  // console.log(word);
+                  // this.record?.words.push(word);
                   this.selectedLines[0].wordIds.push(word.id);
                   // create input box above boundingBox
                   this.createInputBoxForWord(word, this.selectedLines[0]);
@@ -1741,7 +1697,9 @@ export class ReviewComponent implements OnInit {
     if (lineItemIds) {
       for (const lineItem of this.record!.lineItems!.items as LineItem[]) {
         if (lineItemIds.includes(lineItem.id)) {
-          lineItem.wordIds.push(wordToAdd.id);
+          if(!lineItemIds.includes(wordToAdd.id)) {
+            lineItem.wordIds.push(wordToAdd.id);
+          }
         }
       }
     }
@@ -1855,11 +1813,16 @@ export class ReviewComponent implements OnInit {
 
     switch (command.type) {
       case CommandType.CreateLine:
-        result = await this.createLineItem(
-          command.input as LineItem,
-          command.rect
-        );
-        this.highlightLine((result as LineItemResult).lineItem!);
+        {
+          result = await this.createLineItem(
+            command.input as LineItem,
+            command.rect
+          );
+          let lineItem = (result as LineItemResult).lineItem!;
+
+          this.highlightLine(lineItem);
+          this.updateLineItemText(lineItem);
+        }
         break;
       case CommandType.DeleteLine:
         result = await this.deleteLineItem(command.input as LineItem);
@@ -1948,10 +1911,11 @@ export class ReviewComponent implements OnInit {
     return await this.callCommand(command as Command);
   }
 
-  async callCreateWord(word: Word): Promise<Command> {
+  async callCreateWord(word: Word | undefined, lineItemIds?: string[] | undefined): Promise<Command> {
     let command = {
       type: CommandType.CreateWord,
       input: word,
+      ids: lineItemIds
     };
     return await this.callCommand(command);
   }
@@ -1962,6 +1926,11 @@ export class ReviewComponent implements OnInit {
       if (lineItem.wordIds.includes(word.id)) {
         ids.push(lineItem.id);
       }
+    }
+    // remove associate input box if it exists
+    let inputElem = document.getElementById(`wordInput-${word.id}`)
+    if(inputElem) {
+      inputElem.remove();
     }
 
     let command = {
