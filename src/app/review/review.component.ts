@@ -155,23 +155,23 @@ export class ReviewComponent implements OnInit {
   }
 
   setupListeners(): void {
-    window.addEventListener('keyup', (ev) => {
-      console.log('keyup');
-      if (ev.ctrlKey) {
-        switch (ev.key) {
-          case 'z':
-            console.log('undo has been called');
-            this.undo();
-            break;
+    // window.addEventListener('keyup', (ev) => {
+    //   console.log('keyup');
+    //   if (ev.ctrlKey) {
+    //     switch (ev.key) {
+    //       case 'z':
+    //         console.log('undo has been called');
+    //         this.undo();
+    //         break;
 
-          case 'y': {
-            console.log('redo has been called');
-            this.redo();
-          }
-        }
-      }
-      ev.preventDefault();
-    });
+    //       case 'y': {
+    //         console.log('redo has been called');
+    //         this.redo();
+    //       }
+    //     }
+    //   }
+    //   ev.preventDefault();
+    // });
   }
 
   displayContextMenu(event: any): void {
