@@ -363,10 +363,15 @@ export class ReviewComponent implements OnInit {
     });
 
     this.renderer.listen(inputElem, 'keyup.enter', () => {
+      console.log('keyup handler called');
       // if we don't have a value
+      console.log(inputElem);
+      let value = console.log((inputElem as HTMLInputElement).value);
+      console.log(value);
       if (!inputElem.value) {
         this.callDeleteWord(word);
       } else {
+        this.updateLineItemText(this.selectedLines[0]);
         this.correctText();
       }
     });
