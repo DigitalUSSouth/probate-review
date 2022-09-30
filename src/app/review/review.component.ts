@@ -100,6 +100,7 @@ enum EditMode {
   None,
   Line,
   Word,
+  AdjustWord,
 }
 
 const InputBoxHeight = 20;
@@ -147,7 +148,6 @@ export class ReviewComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private location: Location,
     private probateRecordService: APIService,
     private renderer: Renderer2
   ) {
@@ -197,6 +197,10 @@ export class ReviewComponent implements OnInit {
               {
                 menuText: 'Delete Word',
                 menuEvent: 'delete word',
+              },
+              {
+                menuText: 'Adjust Box',
+                menuEvent: 'adjust word box',
               },
             ];
           }
@@ -632,6 +636,15 @@ export class ReviewComponent implements OnInit {
             this.highlightLine(lineItem);
             this.correctText();
           }
+        }
+        break;
+      case 'adjust word box':
+        {
+          // we are in correct text mode, just change the edit mode
+          this.dragSelect.editMode = EditMode.AdjustWord;
+          // remove our existing overlay
+          this.osd!.removeOverlay(`wordBoundingBox-${this.activeWord!.id}`);
+          console.log('adjusting bounding box for word');
         }
         break;
       default:
@@ -1347,27 +1360,6 @@ export class ReviewComponent implements OnInit {
                     this.selectedLines[0]
                   ) as Word[];
 
-                  // check inputs
-                  let isClickInExisting = false;
-                  for (const existingWord of existingWords) {
-                    const overlay = this.osd!.getOverlayById(
-                      `wordInput-${existingWord.id}`
-                    );
-                    if (
-                      this.osdRect2BoundingBox(
-                        overlay.getBounds(this.osd!.viewport)
-                      ).contains(this.osdRect2BoundingBox(location))
-                    ) {
-                      isClickInExisting = true;
-                      break;
-                    }
-                  }
-
-                  if (isClickInExisting) {
-                    break;
-                  }
-
-                  // do not create a new word if clicking outside of line bounding box
                   if (
                     !this.osdRectangleContainsOsdRectangle(
                       selectedLineBoundingBox,
@@ -1380,21 +1372,48 @@ export class ReviewComponent implements OnInit {
                     return;
                   }
 
-                  console.log('creating word');
-                  // create new word
-                  let word = {
-                    __typename: 'Word',
-                    text: '',
-                    id: uuidv4(),
-                    boundingBox: this.osdRect2texRect(location),
-                  } as unknown as Word;
-                  this.callCreateWord(word);
-                  // console.log('word created');
-                  // console.log(word);
-                  // this.record?.words.push(word);
-                  this.selectedLines[0].wordIds.push(word.id);
-                  // create input box above boundingBox
-                  this.createInputBoxForWord(word, this.selectedLines[0]);
+                  if (this.dragSelect.editMode === EditMode.Word) {
+                    // check inputs
+                    let isClickInExisting = false;
+                    for (const existingWord of existingWords) {
+                      const overlay = this.osd!.getOverlayById(
+                        `wordInput-${existingWord.id}`
+                      );
+                      if (
+                        this.osdRect2BoundingBox(
+                          overlay.getBounds(this.osd!.viewport)
+                        ).contains(this.osdRect2BoundingBox(location))
+                      ) {
+                        isClickInExisting = true;
+                        break;
+                      }
+                    }
+
+                    if (isClickInExisting) {
+                      return;
+                    }
+                    // do not create a new word if clicking outside of line bounding box
+                    
+
+                    console.log('creating word');
+                    // create new word
+                    let word = {
+                      __typename: 'Word',
+                      text: '',
+                      id: uuidv4(),
+                      boundingBox: this.osdRect2texRect(location),
+                    } as unknown as Word;
+                    this.callCreateWord(word);
+
+                    this.selectedLines[0].wordIds.push(word.id);
+                    // create input box above boundingBox
+                    this.createInputBoxForWord(word, this.selectedLines[0]);
+                  }
+                  else if(this.dragSelect.editMode === EditMode.AdjustWord) {
+                    this.callAdjustBoundingBoxForWord(this.activeWord!.id, this.activeWord!.boundingBox!, this.osdRect2texRect(location));
+                    this.correctText();
+                  }
+
                   mouseNavEnabled = false;
                 }
                 break;
@@ -1697,7 +1716,7 @@ export class ReviewComponent implements OnInit {
     if (lineItemIds) {
       for (const lineItem of this.record!.lineItems!.items as LineItem[]) {
         if (lineItemIds.includes(lineItem.id)) {
-          if(!lineItemIds.includes(wordToAdd.id)) {
+          if (!lineItemIds.includes(wordToAdd.id)) {
             lineItem.wordIds.push(wordToAdd.id);
           }
         }
@@ -1911,11 +1930,14 @@ export class ReviewComponent implements OnInit {
     return await this.callCommand(command as Command);
   }
 
-  async callCreateWord(word: Word | undefined, lineItemIds?: string[] | undefined): Promise<Command> {
+  async callCreateWord(
+    word: Word | undefined,
+    lineItemIds?: string[] | undefined
+  ): Promise<Command> {
     let command = {
       type: CommandType.CreateWord,
       input: word,
-      ids: lineItemIds
+      ids: lineItemIds,
     };
     return await this.callCommand(command);
   }
@@ -1928,8 +1950,8 @@ export class ReviewComponent implements OnInit {
       }
     }
     // remove associate input box if it exists
-    let inputElem = document.getElementById(`wordInput-${word.id}`)
-    if(inputElem) {
+    let inputElem = document.getElementById(`wordInput-${word.id}`);
+    if (inputElem) {
       inputElem.remove();
     }
 
