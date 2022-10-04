@@ -1372,7 +1372,7 @@ export class ReviewComponent implements OnInit {
                     )
                   ) {
                     // done editing
-                    this.clearSelection();
+                    // this.clearSelection();
 
                     return;
                   }
