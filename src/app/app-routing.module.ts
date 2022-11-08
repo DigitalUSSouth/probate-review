@@ -8,11 +8,12 @@ import { SearchResultsComponent } from './search-results/search-results.componen
 import { SearchComponent } from './search/search.component';
 import { UnreviewedComponent } from './unreviewed/unreviewed.component';
 import { UploadComponent } from './upload/upload.component';
+import { UnreviewedDetailComponent } from './unreviewed-detail/unreviewed-detail.component';
 
 const routes: Routes = [
   {path: 'records', component: RecordsComponent},
   {path: 'record/:id', component: RecordDetailComponent},
-  {path: 'review/:id', component: ReviewComponent, canActivate: [AuthGuard]},
+  {path: 'review/:id', component: UnreviewedDetailComponent, canActivate: [AuthGuard]},
   {path: 'unreviewed', component: UnreviewedComponent, canActivate: [AuthGuard ]},
   {path: 'upload', component: UploadComponent, canActivate: [AuthGuard]},
   {path: '', component: SearchComponent},

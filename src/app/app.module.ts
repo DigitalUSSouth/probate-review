@@ -24,6 +24,8 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import { SearchComponent } from './search/search.component';
 import { FormsModule } from '@angular/forms';
 import { SearchResultsComponent } from './search-results/search-results.component';
+import { UnreviewedDetailComponent } from './unreviewed-detail/unreviewed-detail.component';
+import { AngularSplitModule } from 'angular-split';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,8 @@ import { SearchResultsComponent } from './search-results/search-results.componen
     ContextMenuComponent,
     UnreviewedComponent,
     SearchComponent,
-    SearchResultsComponent
+    SearchResultsComponent,
+    UnreviewedDetailComponent
   ],
   imports: [
     BrowserModule,
@@ -52,7 +55,8 @@ import { SearchResultsComponent } from './search-results/search-results.componen
     MatProgressSpinnerModule,
     MatMenuModule,
     MatToolbarModule,
-    FormsModule
+    FormsModule,
+    AngularSplitModule
   ],
   providers: [],
   bootstrap: [AppComponent]

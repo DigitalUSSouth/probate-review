@@ -23,6 +23,7 @@
     "@aws-amplify/ui-angular": "^2.4.6",
     "@aws-sdk/client-s3": "^3.95.0",
     "@types/openseadragon": "^3.0.3",
+    "angular-split": "^14.1.0",
     "aws-amplify": "^4.3.24",
     "openseadragon": "^3.0.0",
     "rxjs": "~7.5.0",
