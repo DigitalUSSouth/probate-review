@@ -1,69 +1,43 @@
-<div style="width: 100%; height: 100%; background: lightblue">
+<div style="width: 100%; height: 100%;">
   <as-split direction="horizontal">
     <as-split-area [size]="40">
         <div id="seadragon-viewer" #viewer (contextmenu)="displayContextMenu($event);"></div>
     </as-split-area>
     <as-split-area [size]="60">
-        <div id="review-form" class="flex-child">
-        
+        <div id="review-form" class="flex-child">        
             <h1> Enter your corrections below </h1>
-            <table id="line-items-table">
-            <tr>
-                <th>Line Number</th>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Subcategory</th>
-                <th>Quantity</th>
-                <th>Value</th>
-            </tr>
-            <tr *ngFor="let line of record?.lineItems?.items; let i = index">
-                <td>{{ i }} <span class="action-link"><a (click)="editLineItemByIndex(i)"><u>edit</u></a></span>
-                    <span class="action-link"><a (click)="deleteLineItemByIndex(i)"><u>delete</u></a></span></td>
-                <td><a id="line-{{i}}" (click)="highlightText(i)">{{line!.title}}</a></td>     
-                <td>
-                    <select id="category-{{ i }}" name="category-{{ i }}" (change)="populateSubcategory(i)" [value]="line?.category">
-                        <option value="n-a">N/A</option>
-                        <option value="identity">Identity</option>
-                        <option value="item-attribute">Item Attribute</option>
-                        <option value="furniture">Furniture</option>
-                        <option value="kitchen">Kitchen</option>
-                        <option value="farm">Farm/Business Implements</option>
-                        <option value="clothing">Clothing</option>
-                        <option value="people">Enslaved People</option>
-                        <option value="real-estate">Real Estate</option>
-                        <option value="financial-instrument">Financial Instrument</option>
-                        <option value="personal-items">Personal Items</option>
-                        <option value="firearms">Firearms</option>
-                        <option value="transportation">Transportation</option>
-                        <option value="foodstuffs">Foodstuffs</option>
-                        <option value="alcohol">Alcohol</option>
-                        <option value="agricultural-commodities">Agricultural Commodities</option>
-                        <option value="livestock-animals">Livestock and Animals</option>
-                    </select>               
-                </td>
-                <td>
-                    <select id="subcategory-{{ i }}" name="subcategory-{{ i }}" (change)="onSubcategoryChanged(i)">              
-                        <option *ngFor="let subcategory of categoryMap.get(line!.category)" 
-                        [value] = "subcategory.value"
-                        [attr.selected] = "line!.subcategory === subcategory.value ? true : null">
-                        {{subcategory.text}}
-                    </option>
-                    </select>
-                </td>
-                <td>
-                    <input id="quantity-{{ i }}" name="quantity-{{ i }}" type="number"/>
-                </td>
-                <td>
-                    <input id="total-value-{{ i }}" name="total-value-{{ i }}" min="0.01" step=".01" type="number"/>
-                </td>
-                <td>
-                    
-                </td>
-            </tr>        
-            </table>
-            <div class="centered">
+            <div *ngIf="record != null">
+                <table mat-table #table [dataSource]="record!.lineItems!.items" cdkDropList [cdkDropListData]="record!.lineItems!.items" (cdkDropListDropped)="drop($any($event))" class="mat-elevation-z8">
+        
+                    <!--- Note that these columns can be defined in any order.
+                          The actual rendered columns are set as a property on the row definition" -->
+                    <ng-container matColumnDef="title">
+                      <th mat-header-cell *matHeaderCellDef>Text</th>
+                      <td mat-cell *matCellDef="let line"> {{line.title}}</td>
+                    </ng-container>          
+                    <ng-container matColumnDef="category">
+                        <th mat-header-cell *matHeaderCellDef> Category </th>
+                        <td mat-cell *matCellDef="let line"> {{line.category}} </td>
+                      </ng-container>
+                  
+                      <ng-container matColumnDef="subcategory">
+                          <th mat-header-cell *matHeaderCellDef> Subcategory </th>
+                          <td mat-cell *matCellDef="let line"> {{line.subcategory}} </td>
+                        </ng-container>
+                    <ng-container matColumnDef="quantity">
+                      <th mat-header-cell *matHeaderCellDef> Quantity </th>
+                      <td mat-cell *matCellDef="let line"> {{line.quantity}} </td>
+                    </ng-container>
                 
-            </div>
+                    <ng-container matColumnDef="value">
+                        <th mat-header-cell *matHeaderCellDef> Value </th>
+                        <td mat-cell *matCellDef="let line"> {{line.value}} </td>
+                      </ng-container>
+                
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;" cdkDrag></tr>
+                </table>
+            </div>    
         </div>
     </as-split-area>
   </as-split>

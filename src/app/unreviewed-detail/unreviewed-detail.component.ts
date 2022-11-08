@@ -24,6 +24,8 @@ import data from '../categories.json';
 import { from } from 'rxjs';
 import { ContextMenuModel } from '../interfaces/context-menu-model';
 import { v4 as uuidv4 } from 'uuid';
+import {CdkDragDrop, moveItemInArray, transferArrayItem, CdkDropList} from '@angular/cdk/drag-drop';
+import {MatTable} from '@angular/material/table';
 
 interface SubcategoryOptionValue {
   value: string;
@@ -39,8 +41,12 @@ interface SubcategoryOptionValue {
 export class UnreviewedDetailComponent implements OnInit {
   @Input() record?: ProbateRecord;
   @ViewChild('viewer') viewer!: ElementRef;
+  @ViewChild('table') table!: MatTable<LineItem>;
   osd?: OpenSeadragon.Viewer;
   
+  // Data table
+  displayedColumns: string[] = ['title', 'category', 'subcategory', 'quantity', 'value'];
+
   // Context Menu
   isDisplayContextMenu = false;
   rightClickMenuItems: Array<ContextMenuModel> = [];
@@ -219,4 +225,13 @@ export class UnreviewedDetailComponent implements OnInit {
 
   onSubcategoryChanged(lineIndex: number): void {}
 
+  drop(event: CdkDragDrop<LineItem[]>) {
+    // const prevIndex = this.record!.lineItems!.items.findIndex((d) => d === event.item.data);
+    // moveItemInArray(this.record!.lineItems!.items, prevIndex, event.currentIndex);
+    // this.table.renderRows();
+    console.log(event);
+    
+    moveItemInArray(this.record!.lineItems!.items, event.previousIndex, event.currentIndex);
+    this.table.renderRows();
+  }
 }

@@ -26,6 +26,7 @@ import { FormsModule } from '@angular/forms';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { UnreviewedDetailComponent } from './unreviewed-detail/unreviewed-detail.component';
 import { AngularSplitModule } from 'angular-split';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
@@ -56,7 +57,8 @@ import { AngularSplitModule } from 'angular-split';
     MatMenuModule,
     MatToolbarModule,
     FormsModule,
-    AngularSplitModule
+    AngularSplitModule,
+    DragDropModule
   ],
   providers: [],
   bootstrap: [AppComponent]
