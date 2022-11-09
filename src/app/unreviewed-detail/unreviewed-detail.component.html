@@ -12,6 +12,8 @@
         <h1>Enter your corrections below</h1>        
         <button mat-raised-button class="form-button" [disabled]="recordsChecked() === 0">Delete</button>
         <button mat-raised-button class="form-button" [disabled]="recordsChecked() < 2">Sort Vertically</button>
+        <button mat-raised-button class="form-button" [disabled]="!isDirty">Save</button>
+        <mat-checkbox [(ngModel)]="isReviewed" color="primary">Reviewed</mat-checkbox>
         <div *ngIf="record != null">
           <table
             mat-table

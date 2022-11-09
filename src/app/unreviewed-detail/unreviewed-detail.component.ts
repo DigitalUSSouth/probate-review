@@ -29,6 +29,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDropList } from '@angular/cdk/drag-drop';
 import { MatTable } from '@angular/material/table';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
+import { BoundingBox } from '../quad-tree';
 
 interface SubcategoryOptionValue {
   value: string;
@@ -44,6 +45,8 @@ enum DragMode {
   Split,
 }
 
+const InputBoxHeight = 20;
+
 @Component({
   selector: 'app-unreviewed-detail',
   templateUrl: './unreviewed-detail.component.html',
@@ -55,8 +58,11 @@ export class UnreviewedDetailComponent implements OnInit {
   @ViewChild('table') table!: MatTable<LineItem>;
   @ViewChildren('checkbox') checkBoxes?: QueryList<MatCheckbox>;
   
+  // Image
   osd?: OpenSeadragon.Viewer;
   selectTracker?: OpenSeadragon.MouseTracker;
+  imageSize?: OpenSeadragon.Point;
+  aspectRatio = 0.0;
 
   // Data table
   displayedColumns: string[] = ['checked', 'title'];
@@ -68,6 +74,8 @@ export class UnreviewedDetailComponent implements OnInit {
   rightClickMenuPositionY = 0;
 
   // Data
+  isDirty = false;
+  isReviewed = false;
   selectedLines: LineItem[] = [];
   wordMap = new Map<string, Word>();
   categoryMap: Map<string, Array<SubcategoryOptionValue>> =
@@ -272,22 +280,298 @@ export class UnreviewedDetailComponent implements OnInit {
     // this.updateLineItemByIndex(lineIndex, 'category', category);
   }
 
+  getWordsOfLine(line: LineItem): Word[] {
+    return (this.record!.words as Word[]).filter((w) =>
+      line.wordIds.includes(w!.id)
+    );
+  }
+
+  getRowsOfText(words: Word[]): Array<Array<Word>> {
+    const rows = new Array<Array<Word>>();
+    if (!words || words.length == 0) {
+      return rows;
+    }
+
+    // get average word height
+    const totalHeight = words
+      .map((w) => w.boundingBox!.height)
+      .reduce((previousValue, currentValue) => previousValue + currentValue);
+
+    const avgHeight = totalHeight / words.length;
+
+    let currentRow = 0;
+    let copyOfWords = [...words];
+    while (copyOfWords.length > 0) {
+      const topMostWord = copyOfWords.reduce((p, c) => {
+        return c.boundingBox!.top < p.boundingBox!.top ? c : p;
+      });
+      const currentTop = topMostWord.boundingBox!.top;
+      let rowOfWords = copyOfWords.filter(
+        (w) => w.boundingBox!.top < currentTop + avgHeight / 2
+      );
+      rowOfWords.sort(
+        (a, b) =>
+          a.boundingBox!.left +
+          a.boundingBox!.width -
+          (b.boundingBox!.left + b.boundingBox!.width)
+      );
+      rows[currentRow++] = [...rowOfWords];
+      // filter out words just added to row
+      copyOfWords = copyOfWords.filter(
+        (w) => !rowOfWords.map((w) => w.id).includes(w.id)
+      );
+    }
+
+    return rows;
+  }
+
+  createInputForWord(word: Word): HTMLInputElement {
+    let inputElem = this.renderer.createElement('input');
+    const inputId = `wordInput-${word.id}`;
+    this.renderer.setProperty(inputElem, 'id', inputId);
+    this.renderer.setAttribute(inputElem, 'value', word.text);
+    this.renderer.listen(inputElem, 'input', () => {
+      word.text = (inputElem! as HTMLInputElement).value;
+      // if (!this.updatedWordsById.has(word.id)) {
+      //   this.updatedWordsById.set(word.id, {
+      //     id: word.id,
+      //     text: word.text,
+      //     boundingBox: {
+      //       left: word.boundingBox!.left,
+      //       top: word.boundingBox!.top,
+      //       width: word.boundingBox!.width,
+      //       height: word.boundingBox!.height,
+      //     },
+      //     // confidence: word.confidence,
+      //     // lowerText: word.lowerText
+      //   });
+      // }
+    });
+
+    this.renderer.listen(inputElem, 'keyup.enter', () => {
+      console.log('keyup handler called');
+      // if we don't have a value
+      console.log(inputElem);
+      let value = console.log((inputElem as HTMLInputElement).value);
+      console.log(value);
+      // if (!inputElem.value) {
+      //   this.callDeleteWord(word);
+      // } else {
+      //   this.updateLineItemText(this.selectedLines[0]);
+      //   this.correctText();
+      // }
+    });
+
+    this.renderer.listen(inputElem, 'focus', () => {
+      // this.activeWord = word;
+    });
+
+    this.renderer.appendChild(document.body, inputElem);
+    return inputElem;
+  }
+
+  showInputsForWords(words: Word[]): void {
+    const isInputAbove = words[0].boundingBox!.top > 0.5;
+
+    // calculate height of input element
+    const osdAnyWordRect = this.texRect2osdRect(words[0].boundingBox!);
+    const pixel = this.osd!.viewport.pixelFromPoint(
+      new OpenSeadragon.Point(osdAnyWordRect.x, osdAnyWordRect.y)
+    );
+    pixel.y -= InputBoxHeight; // give input box height of 20 pixels
+    const osdInputPoint = this.osd!.viewport.pointFromPixel(pixel);
+    let inputHeight = osdAnyWordRect.y - osdInputPoint.y;
+
+    const rows = this.getRowsOfText(words);
+    let top: number;
+
+    for (const row of rows) {
+      if (isInputAbove) {
+        const topMostWord = row.reduce((p, c) => {
+          return c.boundingBox!.top < p.boundingBox!.top ? c : p;
+        });
+        top = topMostWord.boundingBox!.top;
+      } else {
+        const tallest = words.reduce((p, c) =>
+          c.boundingBox!.height > p.boundingBox!.height ? c : p
+        );
+        const lowestWord = row.reduce((p, c) =>
+          c.boundingBox!.top > p.boundingBox!.top ? c : p
+        );
+
+        top = lowestWord.boundingBox!.top + tallest.boundingBox!.height;
+      }
+      top /= this.aspectRatio;
+
+      for (const word of row) {
+        const selectElem = this.createOverlayElement(
+          `wordBoundingBox-${word.id}`,
+          'word-select'
+        );
+        const rect = this.texRect2osdRect(word.boundingBox!);
+        console.log('word rect');
+        console.log(rect);
+
+        this.osd!.addOverlay(selectElem, rect);
+
+        // check if the element exists
+        const inputId = `wordInput-${word.id}`;
+
+        let inputElem = document.getElementById(inputId);
+        if (!inputElem) {
+          inputElem = this.createInputForWord(word);
+        }
+
+        rect.y = top;
+        if (isInputAbove) {
+          rect.y -= inputHeight;
+        }
+        rect.height = inputHeight;
+        console.log('input rect');
+        console.log(rect);
+        this.osd!.addOverlay(inputElem!, rect);
+      }
+    }
+  }
+
+  correctText(): void {
+    // this.osd!.clearOverlays();
+    let words = this.getWordsOfLine(this.selectedLines[0]);
+    console.log(words);
+    if (words.length > 0) {
+      this.showInputsForWords(words);
+    }
+
+    this.osd!.setMouseNavEnabled(false);    
+  }
+
   editLineItemByIndex(index: number): void {
+    let lineItem = null;
+    if (this.record && this.record.lineItems) {
+      lineItem = this.record.lineItems.items[index];
+    }
+
+    if (!lineItem) {
+      throw 'Invalid line index';
+    }
+
+    this.highlightLine(lineItem);
+    this.correctText();
+  }
+
+  highlightLineItemByIndex(index: number): void {
+    const line = this.record!.lineItems!.items[index] as LineItem;    
+    this.highlightLine(line);
   }
 
   deleteLineItemByIndex(index: number): void { }
 
-  highlightText(index: number): void { }
+  calculateAspectRatio() {
+    this.imageSize = this.osd!.world.getItemAt(0).getContentSize();
+
+    this.aspectRatio = this.imageSize!.x / this.imageSize!.y;
+    console.log(`aspect ratio is ${this.aspectRatio}`);
+  }
+
+  clearSelection() {
+    this.osd!.clearOverlays();
+    this.osd!.setMouseNavEnabled(true);
+    this.selectedLines = [];
+  }
+
+  createOverlayElement(id: string, className = 'highlight'): HTMLElement {
+    let overlay = document.getElementById(id);
+    if (overlay) {
+      this.osd?.removeOverlay(id);
+    }
+
+    overlay = this.renderer.createElement('div');
+    this.renderer.setProperty(overlay, 'id', id);
+    this.renderer.setProperty(overlay, 'className', className);
+    this.renderer.appendChild(document.body, overlay);
+
+    return overlay!;
+  }
+
+  highlightLine(line: LineItem): void {    
+    if (this.aspectRatio === 0.0) {
+      this.calculateAspectRatio();
+    }
+    this.clearSelection();
+
+    const boundingBox = line!.boundingBox;
+    const rect = this.texRect2osdRect(boundingBox!);
+
+    this.osd!.clearOverlays();
+    const selectElem = this.createOverlayElement(
+      `boundingBox-${line.id}`,
+      'highlighted-line'
+    );
+    this.osd!.addOverlay(selectElem, this.texRect2osdRect(line.boundingBox!));
+    this.selectedLines = [];
+    this.selectedLines.push(line);
+    this.osd?.viewport.fitBoundsWithConstraints(rect);
+  }
+
 
   onSubcategoryChanged(lineIndex: number): void { }
 
-  drop(event: CdkDragDrop<LineItem[]>) {
-    // const prevIndex = this.record!.lineItems!.items.findIndex((d) => d === event.item.data);
-    // moveItemInArray(this.record!.lineItems!.items, prevIndex, event.currentIndex);
-    // this.table.renderRows();
-    console.log(event);
-
+  drop(event: CdkDragDrop<LineItem[]>) {    
     moveItemInArray(this.record!.lineItems!.items, event.previousIndex, event.currentIndex);
+    this.isDirty = true;
     this.table.renderRows();
+  }
+
+  texRect2osdRect(rect: Rect): OpenSeadragon.Rect {
+    if (this.aspectRatio === 0.0) {
+      this.calculateAspectRatio();
+    }
+    return new OpenSeadragon.Rect(
+      rect.left,
+      rect.top / this.aspectRatio,
+      rect.width,
+      rect.height / this.aspectRatio
+    );
+  }
+
+  osdRectangleContainsOsdRectangle(
+    a: OpenSeadragon.Rect,
+    b: OpenSeadragon.Rect
+  ) {
+    return (
+      a.x <= b.x &&
+      a.y <= b.y &&
+      a.x + a.width >= b.x + b.width &&
+      a.y + a.height >= b.y + b.height
+    );
+  }
+
+  osdRect2texRect(rect: OpenSeadragon.Rect): Rect {
+    if (this.aspectRatio === 0.0) {
+      this.calculateAspectRatio();
+    }
+    return {
+      __typename: 'Rect',
+      left: rect.x,
+      top: rect.y * this.aspectRatio,
+      width: rect.width,
+      height: rect.height * this.aspectRatio,
+    };
+  }
+
+  osdRect2BoundingBox(rect: OpenSeadragon.Rect): BoundingBox {
+    if (this.aspectRatio === 0.0) {
+      this.calculateAspectRatio();
+    }
+    return new BoundingBox(
+      rect.x,
+      rect.y * this.aspectRatio,
+      rect.width,
+      rect.height * this.aspectRatio
+    );
+  }
+
+  texRect2BoundingBox(rect: Rect): BoundingBox {
+    return new BoundingBox(rect.left, rect.top, rect.width, rect.height);
   }
 }
