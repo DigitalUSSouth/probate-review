@@ -163,7 +163,7 @@ export class UnreviewedDetailComponent implements OnInit {
 
     const infoUrl = `https://d2ai2qpooo3jtj.cloudfront.net/iiif/2/${id}/info.json`;
 
-    this.osd = new OpenSeadragon.Viewer({
+    let options = {
       element: this.viewer.nativeElement,
       showRotationControl: true,
       // Enable touch rotation on tactile devices
@@ -171,12 +171,15 @@ export class UnreviewedDetailComponent implements OnInit {
         pinchToZoom: true,
       },
       showNavigator:  true,
-      navigatorAutoFade:  false,
+      navigatorAutoFade:  false,      
       maxZoomLevel: 5.0,
       prefixUrl: '//openseadragon.github.io/openseadragon/images/',
       tileSources: infoUrl,
-    });
+    };
 
+    
+    this.osd = new OpenSeadragon.Viewer(options);
+    this.osd.addControl("toolbarDiv", {anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT, autoFade: false});
     this.hideNav();
     
   }
