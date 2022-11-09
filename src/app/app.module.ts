@@ -41,7 +41,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     UnreviewedComponent,
     SearchComponent,
     SearchResultsComponent,
-    UnreviewedDetailComponent
+    UnreviewedDetailComponent,
   ],
   imports: [
     BrowserModule,

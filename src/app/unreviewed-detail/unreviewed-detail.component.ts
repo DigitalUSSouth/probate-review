@@ -72,9 +72,15 @@ export class UnreviewedDetailComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  toggleAllChecks(event: MatCheckboxChange): void {
-    console.log("this.checkBoxes");
-    console.log(this.checkBoxes);
+  recordsChecked(): number {
+    return this.checkBoxes ? (this.checkBoxes as QueryList<MatCheckbox>).filter((c: MatCheckbox) => c.checked == true).length : 0;
+  }
+
+  checkedCheckBoxesFilterFunction(checkBox: MatCheckbox): boolean {
+    return checkBox.checked;
+  }
+
+  toggleAllChecks(event: MatCheckboxChange): void {    
     if (this.checkBoxes) {
       for (const checkBox of this.checkBoxes) {
         checkBox.checked = event.checked;
@@ -228,6 +234,30 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   populateSubcategory(lineIndex: number): void {
+    const selectObject = document.getElementById(
+      'category-' + lineIndex
+    ) as HTMLInputElement;
+    const category = selectObject?.value;
+    let subcategories = this.categoryMap.get(category);
+    console.log(subcategories);
+    let subcategorySelect = document.getElementById(
+      'subcategory-' + lineIndex
+    ) as HTMLInputElement;
+    while (subcategorySelect?.firstChild) {
+      subcategorySelect.removeChild(subcategorySelect.firstChild);
+    }
+    if (subcategories) {
+      for (let i = 0; i < subcategories.length; i++) {
+        let optionJSON = subcategories[i];
+        console.log(optionJSON);
+        let optionElement = document.createElement('option');
+        optionElement.setAttribute('value', optionJSON.value);
+        let textNode = document.createTextNode(optionJSON.text);
+        optionElement.appendChild(textNode);
+        subcategorySelect?.appendChild(optionElement);
+      }
+    }
+    // this.updateLineItemByIndex(lineIndex, 'category', category);
   }
 
   editLineItemByIndex(index: number): void {
