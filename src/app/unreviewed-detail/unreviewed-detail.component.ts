@@ -35,6 +35,14 @@ interface SubcategoryOptionValue {
   text: string;
 }
 
+enum DragMode {
+  None,
+  Select,
+  Extend,
+  Shorten,
+  Expand,
+  Split,
+}
 
 @Component({
   selector: 'app-unreviewed-detail',
@@ -46,7 +54,9 @@ export class UnreviewedDetailComponent implements OnInit {
   @ViewChild('viewer') viewer!: ElementRef;
   @ViewChild('table') table!: MatTable<LineItem>;
   @ViewChildren('checkbox') checkBoxes?: QueryList<MatCheckbox>;
+  
   osd?: OpenSeadragon.Viewer;
+  selectTracker?: OpenSeadragon.MouseTracker;
 
   // Data table
   displayedColumns: string[] = ['checked', 'title'];
@@ -137,6 +147,8 @@ export class UnreviewedDetailComponent implements OnInit {
       prefixUrl: '//openseadragon.github.io/openseadragon/images/',
       tileSources: infoUrl,
     });
+
+    
   }
 
   sortLineItems(): void {

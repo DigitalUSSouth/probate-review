@@ -29,10 +29,11 @@
                 <mat-checkbox
                   id="check-all"
                   (change)="toggleAllChecks($event)"
+                  color="primary"
                 ></mat-checkbox>
               </th>
               <td mat-cell *matCellDef="let line let i = index">
-                <mat-checkbox id="check-{{ line.id }}" #checkbox></mat-checkbox>
+                <mat-checkbox id="check-{{ line.id }}" #checkbox color="primary"></mat-checkbox>
                 <div class="action-link"><a (click)="editLineItemByIndex(i)"><u>edit</u></a></div>
               </td>
             </ng-container>
