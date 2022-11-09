@@ -63,6 +63,7 @@ export class UnreviewedDetailComponent implements OnInit {
   selectTracker?: OpenSeadragon.MouseTracker;
   imageSize?: OpenSeadragon.Point;
   aspectRatio = 0.0;
+  isNavigatorVisible = false;
 
   // Data table
   displayedColumns: string[] = ['checked', 'title'];
@@ -104,6 +105,24 @@ export class UnreviewedDetailComponent implements OnInit {
         checkBox.checked = event.checked;
       }
     }
+  }
+
+  toggleNav () {
+    if (this.isNavigatorVisible)
+        this.osd!.navigator.element.style.display = "none";
+    else
+        this.osd!.navigator.element.style.display = "inline-block";
+    this.isNavigatorVisible = !this.isNavigatorVisible;
+  }
+
+  showNav() {
+    this.osd!.navigator.element.style.display = "inline-block";
+    this.isNavigatorVisible = true;
+  }
+
+  hideNav() {
+    this.osd!.navigator.element.style.display = "none";
+    this.isNavigatorVisible = false;
   }
 
   ngAfterViewInit(): void {
@@ -151,11 +170,14 @@ export class UnreviewedDetailComponent implements OnInit {
       gestureSettingsTouch: {
         pinchToZoom: true,
       },
+      showNavigator:  true,
+      navigatorAutoFade:  false,
       maxZoomLevel: 5.0,
       prefixUrl: '//openseadragon.github.io/openseadragon/images/',
       tileSources: infoUrl,
     });
 
+    this.hideNav();
     
   }
 
@@ -457,6 +479,7 @@ export class UnreviewedDetailComponent implements OnInit {
 
     this.highlightLine(lineItem);
     this.correctText();
+    this.showNav();
   }
 
   highlightLineItemByIndex(index: number): void {
