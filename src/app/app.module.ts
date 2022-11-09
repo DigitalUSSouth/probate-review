@@ -27,6 +27,7 @@ import { SearchResultsComponent } from './search-results/search-results.componen
 import { UnreviewedDetailComponent } from './unreviewed-detail/unreviewed-detail.component';
 import { AngularSplitModule } from 'angular-split';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -58,7 +59,8 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
     MatToolbarModule,
     FormsModule,
     AngularSplitModule,
-    DragDropModule
+    DragDropModule,
+    MatCheckboxModule
   ],
   providers: [],
   bootstrap: [AppComponent]

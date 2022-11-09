@@ -6,6 +6,8 @@ import {
   ElementRef,
   Renderer2,
   HostListener,
+  ViewChildren,
+  QueryList
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import OpenSeadragon from 'openseadragon';
@@ -24,8 +26,9 @@ import data from '../categories.json';
 import { from } from 'rxjs';
 import { ContextMenuModel } from '../interfaces/context-menu-model';
 import { v4 as uuidv4 } from 'uuid';
-import {CdkDragDrop, moveItemInArray, transferArrayItem, CdkDropList} from '@angular/cdk/drag-drop';
-import {MatTable} from '@angular/material/table';
+import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDropList } from '@angular/cdk/drag-drop';
+import { MatTable } from '@angular/material/table';
+import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 
 interface SubcategoryOptionValue {
   value: string;
@@ -42,10 +45,11 @@ export class UnreviewedDetailComponent implements OnInit {
   @Input() record?: ProbateRecord;
   @ViewChild('viewer') viewer!: ElementRef;
   @ViewChild('table') table!: MatTable<LineItem>;
+  @ViewChildren('checkbox') checkBoxes?: QueryList<MatCheckbox>;
   osd?: OpenSeadragon.Viewer;
-  
+
   // Data table
-  displayedColumns: string[] = ['title', 'category', 'subcategory', 'quantity', 'value'];
+  displayedColumns: string[] = ['checked', 'title'];
 
   // Context Menu
   isDisplayContextMenu = false;
@@ -66,6 +70,16 @@ export class UnreviewedDetailComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+  }
+
+  toggleAllChecks(event: MatCheckboxChange): void {
+    console.log("this.checkBoxes");
+    console.log(this.checkBoxes);
+    if (this.checkBoxes) {
+      for (const checkBox of this.checkBoxes) {
+        checkBox.checked = event.checked;
+      }
+    }
   }
 
   ngAfterViewInit(): void {
@@ -93,7 +107,7 @@ export class UnreviewedDetailComponent implements OnInit {
       lineItems$.subscribe((lineItems) => {
         this.record!.lineItems!.items =
           lineItems.items as unknown as LineItem[];
-        this.sortLineItems();        
+        this.sortLineItems();
       });
 
       // get our associated image     
@@ -219,18 +233,18 @@ export class UnreviewedDetailComponent implements OnInit {
   editLineItemByIndex(index: number): void {
   }
 
-  deleteLineItemByIndex(index: number): void {}
+  deleteLineItemByIndex(index: number): void { }
 
-  highlightText(index: number): void {}
+  highlightText(index: number): void { }
 
-  onSubcategoryChanged(lineIndex: number): void {}
+  onSubcategoryChanged(lineIndex: number): void { }
 
   drop(event: CdkDragDrop<LineItem[]>) {
     // const prevIndex = this.record!.lineItems!.items.findIndex((d) => d === event.item.data);
     // moveItemInArray(this.record!.lineItems!.items, prevIndex, event.currentIndex);
     // this.table.renderRows();
     console.log(event);
-    
+
     moveItemInArray(this.record!.lineItems!.items, event.previousIndex, event.currentIndex);
     this.table.renderRows();
   }
