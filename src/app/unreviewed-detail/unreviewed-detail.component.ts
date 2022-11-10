@@ -153,6 +153,7 @@ export class UnreviewedDetailComponent implements OnInit {
     }
     this.osd!.clearOverlays();
     this.osd!.setControlsEnabled(false);
+    this.resetView();
   }
 
   ngAfterViewInit(): void {
@@ -568,6 +569,10 @@ export class UnreviewedDetailComponent implements OnInit {
     this.selectedLines = [];
     this.selectedLines.push(line);
     this.osd?.viewport.fitBoundsWithConstraints(rect);
+  }
+
+  resetView() {
+    this.osd!.viewport.goHome();
   }
 
 
