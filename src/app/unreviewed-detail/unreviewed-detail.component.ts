@@ -32,6 +32,7 @@ import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 import { BoundingBox } from '../quad-tree';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
+import { deleteLine } from 'src/graphql/mutations';
 
 interface SubcategoryOptionValue {
   value: string;
@@ -59,7 +60,7 @@ export class UnreviewedDetailComponent implements OnInit {
   @ViewChild('viewer') viewer!: ElementRef;
   @ViewChild('table') table!: MatTable<LineItem>;
   @ViewChildren('checkbox') checkBoxes?: QueryList<MatCheckbox>;
-  
+
   // Image
   osd?: OpenSeadragon.Viewer;
   selectTracker?: OpenSeadragon.MouseTracker;
@@ -77,12 +78,22 @@ export class UnreviewedDetailComponent implements OnInit {
   rightClickMenuPositionY = 0;
 
   // Data
+  //recordsChecked() === 0
+  isLineChecked = false;
   isDirty = false;
   isReviewed = false;
   selectedLines: LineItem[] = [];
   wordMap = new Map<string, Word>();
+
+  // Deleted data
+  deletedLines: LineItem[] = [];
+  deletedLineWordsMap = new Map<string, Word[]>();
+
+  // Categories
   categoryMap: Map<string, Array<SubcategoryOptionValue>> =
     this.objToStrMap(data);
+
+
 
   constructor(
     private route: ActivatedRoute,
@@ -98,23 +109,28 @@ export class UnreviewedDetailComponent implements OnInit {
     return this.checkBoxes ? (this.checkBoxes as QueryList<MatCheckbox>).filter((c: MatCheckbox) => c.checked == true).length : 0;
   }
 
+  checkRow() {
+    this.isLineChecked = this.recordsChecked() > 0;
+  }
+
   checkedCheckBoxesFilterFunction(checkBox: MatCheckbox): boolean {
     return checkBox.checked;
   }
 
-  toggleAllChecks(event: MatCheckboxChange): void {    
+  toggleAllChecks(event: MatCheckboxChange): void {
     if (this.checkBoxes) {
       for (const checkBox of this.checkBoxes) {
         checkBox.checked = event.checked;
       }
+      this.isLineChecked = event.checked;
     }
   }
 
-  toggleNav () {
+  toggleNav() {
     if (this.isNavigatorVisible)
-        this.osd!.navigator.element.style.display = "none";
+      this.osd!.navigator.element.style.display = "none";
     else
-        this.osd!.navigator.element.style.display = "inline-block";
+      this.osd!.navigator.element.style.display = "inline-block";
     this.isNavigatorVisible = !this.isNavigatorVisible;
   }
 
@@ -124,7 +140,7 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   hideNav() {
-    this.osd!.navigator.element.style.display = "none";    
+    this.osd!.navigator.element.style.display = "none";
     this.isNavigatorVisible = false;
   }
 
@@ -132,11 +148,12 @@ export class UnreviewedDetailComponent implements OnInit {
     this.showNav();
     this.osd!.setControlsEnabled(true);
     let toolbarElem = document.getElementById('toolbarDiv');
-    if(toolbarElem) {
+    if (toolbarElem) {
       toolbarElem.style.display = "inline-block";
     }
+    this.osd!.setMouseNavEnabled(false);
   }
-  
+
   saveEdit() {
     this.exitEditMode();
   }
@@ -146,14 +163,15 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   exitEditMode() {
-    this.hideNav();    
+    this.hideNav();
     let toolbarElem = document.getElementById('toolbarDiv');
-    if(toolbarElem) {
+    if (toolbarElem) {
       toolbarElem.style.display = "none";
     }
     this.osd!.clearOverlays();
     this.osd!.setControlsEnabled(false);
     this.resetView();
+    this.osd!.setMouseNavEnabled(true);
   }
 
   ngAfterViewInit(): void {
@@ -202,18 +220,18 @@ export class UnreviewedDetailComponent implements OnInit {
         pinchToZoom: true,
       },
       autoHideControls: false,
-      showNavigator:  true,
-      navigatorAutoFade:  false,      
+      showNavigator: true,
+      navigatorAutoFade: false,
       maxZoomLevel: 5.0,
       prefixUrl: '//openseadragon.github.io/openseadragon/images/',
       tileSources: infoUrl,
     };
 
-    
+
     this.osd = new OpenSeadragon.Viewer(options);
-    this.osd.addControl("toolbarDiv", {anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT, autoFade: false});
+    this.osd.addControl("toolbarDiv", { anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT, autoFade: false });
     this.exitEditMode();
-    
+
   }
 
   sortLineItems(): void {
@@ -499,7 +517,7 @@ export class UnreviewedDetailComponent implements OnInit {
       this.showInputsForWords(words);
     }
 
-    this.osd!.setMouseNavEnabled(false);    
+    this.osd!.setMouseNavEnabled(false);
   }
 
   editLineItemByIndex(index: number): void {
@@ -518,7 +536,7 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   highlightLineItemByIndex(index: number): void {
-    const line = this.record!.lineItems!.items[index] as LineItem;    
+    const line = this.record!.lineItems!.items[index] as LineItem;
     this.highlightLine(line);
   }
 
@@ -551,7 +569,7 @@ export class UnreviewedDetailComponent implements OnInit {
     return overlay!;
   }
 
-  highlightLine(line: LineItem): void {    
+  highlightLine(line: LineItem): void {
     if (this.aspectRatio === 0.0) {
       this.calculateAspectRatio();
     }
@@ -578,7 +596,7 @@ export class UnreviewedDetailComponent implements OnInit {
 
   onSubcategoryChanged(lineIndex: number): void { }
 
-  drop(event: CdkDragDrop<LineItem[]>) {    
+  drop(event: CdkDragDrop<LineItem[]>) {
     moveItemInArray(this.record!.lineItems!.items, event.previousIndex, event.currentIndex);
     this.isDirty = true;
     this.table.renderRows();
@@ -637,21 +655,56 @@ export class UnreviewedDetailComponent implements OnInit {
     return new BoundingBox(rect.left, rect.top, rect.width, rect.height);
   }
 
-  openDialog(): void {
+  openDialog(): string {
     let dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
       height: '400px',
       width: '600px',
     });
 
+    let confirmation = "";
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-      console.log(result);
+      confirmation = result;
     });
+
+    return confirmation;
+  }
+
+
+  deleteLine(lineItem: LineItem) {
+    this.isDirty = true;
+    this.deletedLines.push(lineItem);
+    let wordsToDelete = (this.record!.words as Word[]).filter(w => lineItem.wordIds.includes(w.id));
+    this.deletedLineWordsMap.set(lineItem.id, wordsToDelete);
+    this.record!.words = (this.record!.words as Word[]).filter(w => !lineItem.wordIds.includes(w.id));
+
   }
 
   deleteCheckedLines() {
-    console.log("opening dialog");
-    this.openDialog();
+    let dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
+      height: '260px',
+      width: '400px',
+    });
+    
+    dialogRef.afterClosed().subscribe(result => {      
+      if (result === "delete") {
+        let lineIds: string[] = [];
+        // get checked checkboxes
+        let checkedBoxes = (this.checkBoxes as QueryList<MatCheckbox>).filter((c: MatCheckbox) => c.checked == true);
+        for (const checkedBox of checkedBoxes) {
+          let lineId = checkedBox.id.substring("check-".length);
+          lineIds.push(lineId);          
+        }
+
+        let linesToDelete = (this.record!.lineItems!.items as LineItem[]).filter(l => lineIds.includes(l.id));
+        this.record!.lineItems!.items = (this.record!.lineItems!.items as LineItem[]).filter(l => !lineIds.includes(l.id));
+
+        for (const line of linesToDelete) {
+          this.deleteLine(line);
+        }
+
+        this.isLineChecked = false;
+      }
+    });
   }
-  
+
 }

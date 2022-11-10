@@ -1,3 +1,6 @@
+@use '@angular/material' as mat
+@include mat.core()
+
 @import "../../node_modules/@angular/material/theming"
 
 $primary-color: #73000a
@@ -21,3 +24,6 @@ $usc-app-theme: mat-light-theme($usc-app-primary, $usc-app-accent, $usc-app-warn
 @include mat-checkbox-theme($usc-app-theme)
 @include mat-button-theme($usc-app-theme)
 @include mat-dialog-theme($usc-app-theme)
+@include mat-input-theme($usc-app-theme)
+
+@include mat-core-theme($usc-app-theme)
