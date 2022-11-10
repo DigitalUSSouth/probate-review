@@ -121,8 +121,35 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   hideNav() {
-    this.osd!.navigator.element.style.display = "none";
+    this.osd!.navigator.element.style.display = "none";    
     this.isNavigatorVisible = false;
+  }
+
+  enterEditMode() {
+    this.showNav();
+    this.osd!.setControlsEnabled(true);
+    let toolbarElem = document.getElementById('toolbarDiv');
+    if(toolbarElem) {
+      toolbarElem.style.display = "inline-block";
+    }
+  }
+  
+  saveEdit() {
+    this.exitEditMode();
+  }
+
+  cancelEdit() {
+    this.exitEditMode();
+  }
+
+  exitEditMode() {
+    this.hideNav();    
+    let toolbarElem = document.getElementById('toolbarDiv');
+    if(toolbarElem) {
+      toolbarElem.style.display = "none";
+    }
+    this.osd!.clearOverlays();
+    this.osd!.setControlsEnabled(false);
   }
 
   ngAfterViewInit(): void {
@@ -170,6 +197,7 @@ export class UnreviewedDetailComponent implements OnInit {
       gestureSettingsTouch: {
         pinchToZoom: true,
       },
+      autoHideControls: false,
       showNavigator:  true,
       navigatorAutoFade:  false,      
       maxZoomLevel: 5.0,
@@ -180,7 +208,7 @@ export class UnreviewedDetailComponent implements OnInit {
     
     this.osd = new OpenSeadragon.Viewer(options);
     this.osd.addControl("toolbarDiv", {anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT, autoFade: false});
-    this.hideNav();
+    this.exitEditMode();
     
   }
 
@@ -482,7 +510,7 @@ export class UnreviewedDetailComponent implements OnInit {
 
     this.highlightLine(lineItem);
     this.correctText();
-    this.showNav();
+    this.enterEditMode();
   }
 
   highlightLineItemByIndex(index: number): void {
@@ -600,4 +628,6 @@ export class UnreviewedDetailComponent implements OnInit {
   texRect2BoundingBox(rect: Rect): BoundingBox {
     return new BoundingBox(rect.left, rect.top, rect.width, rect.height);
   }
+
+  
 }
