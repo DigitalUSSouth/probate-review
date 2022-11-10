@@ -1,0 +1,13 @@
+<mat-toolbar color="primary">
+    <span>Confirm Delete</span>
+</mat-toolbar>
+<div id="dialog-container">
+    <mat-form-field appearance="fill">
+        <mat-label>Type "delete" to confirm</mat-label>
+        <input matInput [(ngModel)]="confirmation">
+    </mat-form-field>
+</div>
+<div id="button-row">
+    <button mat-raised-button color="primary" (click)="closeDialog()">Confirm</button>
+    <button mat-raised-button color="primary" (click)="cancelDialog()">Cancel</button>
+</div>

@@ -28,6 +28,8 @@ import { UnreviewedDetailComponent } from './unreviewed-detail/unreviewed-detail
 import { AngularSplitModule } from 'angular-split';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import { ConfirmDeleteDialogComponent } from './confirm-delete-dialog/confirm-delete-dialog.component';
+import {MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS} from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -42,6 +44,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     SearchComponent,
     SearchResultsComponent,
     UnreviewedDetailComponent,
+    ConfirmDeleteDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -60,9 +63,12 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     FormsModule,
     AngularSplitModule,
     DragDropModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatDialogModule
   ],
-  providers: [],
+  providers: [
+    {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {hasBackdrop: false}}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -30,6 +30,8 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDropList } from '@a
 import { MatTable } from '@angular/material/table';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 import { BoundingBox } from '../quad-tree';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
 
 interface SubcategoryOptionValue {
   value: string;
@@ -85,7 +87,8 @@ export class UnreviewedDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private probateRecordService: APIService,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    public dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -629,5 +632,21 @@ export class UnreviewedDetailComponent implements OnInit {
     return new BoundingBox(rect.left, rect.top, rect.width, rect.height);
   }
 
+  openDialog(): void {
+    let dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
+      height: '400px',
+      width: '600px',
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      console.log(result);
+    });
+  }
+
+  deleteCheckedLines() {
+    console.log("opening dialog");
+    this.openDialog();
+  }
   
 }
