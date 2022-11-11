@@ -48,7 +48,52 @@ enum DragMode {
   Split,
 }
 
+enum CommandType {
+  BulkDelete,
+  DeleteLine,
+  DeleteWord,
+  CreateWord,
+  CreateLine,
+  AdjustBounds,
+  Unknown
+}
+
+enum OperationType {
+  Create,
+  Delete,
+  Unknown
+}
+
 const InputBoxHeight = 20;
+
+interface Command {
+  type: CommandType;
+  wasDirtyBeforeCommand: boolean;
+}
+
+interface BulkLineItemCommand extends Command {
+  lineItems: LineItem[];
+  wordMap: Map<string, Word[]>;
+  lineItemIndexMap: Map<string, number>;
+  operation: OperationType;
+}
+
+interface LineItemCommand extends Command {
+  lineItem: LineItem;
+  words: Word[];
+  operation: OperationType;
+}
+
+interface WordCommand extends Command {
+  word: Word;
+  lineItemId: string;
+  operation: OperationType;
+}
+
+
+
+
+
 
 @Component({
   selector: 'app-unreviewed-detail',
@@ -93,6 +138,8 @@ export class UnreviewedDetailComponent implements OnInit {
   categoryMap: Map<string, Array<SubcategoryOptionValue>> =
     this.objToStrMap(data);
 
+  // Commands
+  commands: Array<BulkLineItemCommand | LineItemCommand | WordCommand>  = [];
 
 
   constructor(
@@ -679,6 +726,49 @@ export class UnreviewedDetailComponent implements OnInit {
 
   }
 
+  // Commands
+  undo() {
+    if(this.commands.length > 0) {
+      let command = this.commands.pop();
+      switch(command!.type) {
+        case CommandType.BulkDelete: {
+          let bulkCommand = command as BulkLineItemCommand;
+          for(const lineItem of bulkCommand.lineItems) {
+            let index = bulkCommand.lineItemIndexMap.get(lineItem.id);            
+            this.record!.lineItems!.items.splice(index!, 0, lineItem);
+            this.record!.words = this.record!.words.concat(bulkCommand.wordMap.get(lineItem.id) as Word[]);
+          }
+        }
+      }
+      this.isDirty = command?.wasDirtyBeforeCommand!;
+      this.table.renderRows();
+    }
+  }
+
+  bulkDeleteLines(lineItemsToDelete: LineItem[]) {
+    let lineItems: LineItem[] = [];
+    let wordMap = new Map<string, Word[]>();
+    let wordIds = new Array<string>();
+    let lineItemIndexMap = new Map<string, number>();
+
+    for(const lineItem of lineItemsToDelete) {
+      lineItems.push({...lineItem});
+      let words = (this.record!.words as Word[]).filter(w => lineItem.wordIds.includes(w.id));
+      wordMap.set(lineItem.id, words);
+      wordIds = wordIds.concat(words.map(w => w.id));
+      const index = this.record!.lineItems!.items.indexOf(lineItem);
+      lineItemIndexMap.set(lineItem.id, index);
+    }
+    this.commands.push({type: CommandType.BulkDelete, operation: OperationType.Delete, wasDirtyBeforeCommand: this.isDirty, lineItems, wordMap, lineItemIndexMap});
+    
+    // Remove LineItems and Words
+    let lineIds = lineItemsToDelete.map(l => l.id);
+    this.record!.lineItems!.items = (this.record!.lineItems!.items as LineItem[]).filter(l => !lineIds.includes(l.id));
+    this.record!.words = (this.record!.words as Word[]).filter(w => !wordIds.includes(w.id));
+    
+    this.isDirty = true;
+  }
+
   deleteCheckedLines() {
     let dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
       height: '260px',
@@ -696,11 +786,7 @@ export class UnreviewedDetailComponent implements OnInit {
         }
 
         let linesToDelete = (this.record!.lineItems!.items as LineItem[]).filter(l => lineIds.includes(l.id));
-        this.record!.lineItems!.items = (this.record!.lineItems!.items as LineItem[]).filter(l => !lineIds.includes(l.id));
-
-        for (const line of linesToDelete) {
-          this.deleteLine(line);
-        }
+        this.bulkDeleteLines(linesToDelete);
 
         this.isLineChecked = false;
       }

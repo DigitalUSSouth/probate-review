@@ -11,7 +11,7 @@
       <div id="review-form" class="flex-child">
         <h1>Enter your corrections below</h1>        
         <button mat-raised-button class="form-button" [disabled]="!isLineChecked" (click)="deleteCheckedLines()">Delete</button>
-        <button mat-raised-button class="form-button" [disabled]="deletedLineWordsMap.size === 0">Undo</button>
+        <button mat-raised-button class="form-button" [disabled]="commands.length === 0" (click)="undo()">Undo</button>
         <button mat-raised-button class="form-button" [disabled]="!isDirty">Save</button>
         <mat-checkbox [(ngModel)]="isReviewed" color="primary">Reviewed</mat-checkbox>
         <div *ngIf="record != null">
