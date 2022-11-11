@@ -39,33 +39,6 @@ interface SubcategoryOptionValue {
   text: string;
 }
 
-enum DragMode {
-  None,
-  Select,
-  Extend,
-  Shorten,
-  Expand,
-  Split,
-}
-
-enum CommandType {
-  BulkDelete,
-  DeleteLine,
-  DeleteWord,
-  CreateWord,
-  CreateLine,
-  AdjustBounds,
-  Unknown
-}
-
-enum OperationType {
-  Create,
-  Delete,
-  Unknown
-}
-
-const InputBoxHeight = 20;
-
 interface Command {
   type: CommandType;
   wasDirtyBeforeCommand: boolean;
@@ -90,10 +63,54 @@ interface WordCommand extends Command {
   operation: OperationType;
 }
 
+interface DragSelect {
+  overlayElement: HTMLElement;
+  startPos: OpenSeadragon.Point;
+  isDragging: boolean;
+  selectionMode: SelectionMode;
+  editMode: EditMode;
+}
+
+enum DragMode {
+  None,
+  Select,
+  Extend,
+  Shorten,
+  Expand,
+  Split,
+}
 
 
+enum SelectionMode {
+  None,
+  Line,
+  Word,
+}
 
+enum EditMode {
+  None,
+  Line,
+  Word,
+  AdjustWord,
+}
 
+enum CommandType {
+  BulkDelete,
+  DeleteLine,
+  DeleteWord,
+  CreateWord,
+  CreateLine,
+  AdjustBounds,
+  Unknown
+}
+
+enum OperationType {
+  Create,
+  Delete,
+  Unknown
+}
+
+const InputBoxHeight = 20;
 
 @Component({
   selector: 'app-unreviewed-detail',
@@ -112,6 +129,14 @@ export class UnreviewedDetailComponent implements OnInit {
   imageSize?: OpenSeadragon.Point;
   aspectRatio = 0.0;
   isNavigatorVisible = false;
+  dragSelect = {
+    overlayElement: null as unknown as HTMLDivElement,
+    startPos: new OpenSeadragon.Point(0, 0),
+    isDragging: false,
+    dragMode: DragMode.Select,
+    selectionMode: SelectionMode.None,
+    editMode: EditMode.None,
+  };
 
   // Data table
   displayedColumns: string[] = ['checked', 'title'];
@@ -215,6 +240,8 @@ export class UnreviewedDetailComponent implements OnInit {
     if (toolbarElem) {
       toolbarElem.style.display = "none";
     }
+    this.dragSelect.dragMode = DragMode.None;
+    this.dragSelect.isDragging = false;
     this.osd!.clearOverlays();
     this.osd!.setControlsEnabled(false);
     this.resetView();
@@ -254,6 +281,15 @@ export class UnreviewedDetailComponent implements OnInit {
     });
   }
 
+  getRelativeMousePosition = function (event: PointerEvent) {
+    let target = event.target;
+    let rect = (target! as HTMLElement).getBoundingClientRect();
+    return {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+    };
+  };
+
   async getImage(id: string): Promise<void> {
     console.log('getting records');
 
@@ -278,7 +314,174 @@ export class UnreviewedDetailComponent implements OnInit {
     this.osd = new OpenSeadragon.Viewer(options);
     this.osd.addControl("toolbarDiv", { anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT, autoFade: false });
     this.exitEditMode();
+    this.selectTracker = new OpenSeadragon.MouseTracker({
+      element: this.osd?.element as Element,
+      clickHandler: (event) => {
+        var target = (event as any).originalTarget as HTMLElement;
+        console.log('click handler fired');
+        console.log(event);
+        if (target!.matches('input')) {
+          this.dragSelect.selectionMode = SelectionMode.None;
+          console.log('focus on ');
+          console.log(target);
+          target.style.display = 'block';
+          target.focus();
+          this.osd!.setMouseNavEnabled(false);
+        }
+      },
+      pressHandler: (event) => {
+        // if (!this.dragMode) {
+        //   return;
+        // }
+        let pos = this.getRelativeMousePosition(event.originalEvent as PointerEvent);
+        
+        // var viewportPos = this.osd!.viewport.viewerElementToViewportCoordinates(
+        //   // event.position
+        //   new OpenSeadragon.Point(pos.x, pos.y)
+        // );
+        let viewportPos = this.osd!.viewport.pointFromPixel(event.position);
+        this.dragSelect!.startPos = viewportPos;
+        
+        let overlayElement: HTMLElement;
+        let line: LineItem;
+        let texRect: Rect;
+        let osdRect: OpenSeadragon.Rect;
 
+        this.dragSelect.dragMode = DragMode.Select;
+        this.dragSelect.isDragging = true;
+        
+        overlayElement = this.createOverlayElement('select');
+        this.dragSelect.overlayElement = overlayElement as HTMLDivElement;
+
+        this.osd!.addOverlay(
+          overlayElement,
+          new OpenSeadragon.Rect(viewportPos.x, viewportPos.y, 0, 0)
+        );
+        
+      },
+      dragHandler: (event) => {
+        if (!this.dragSelect!.isDragging) {
+          return;
+        }
+
+        let pos = this.getRelativeMousePosition(event.originalEvent as PointerEvent);
+        let pointerEvent = event.originalEvent as PointerEvent;
+        // var viewportPos = this.osd!.viewport.viewerElementToViewportCoordinates(
+        //   (event as unknown as OpenSeadragon.CanvasDragEvent).position
+        // );
+        let viewportPos = this.osd!.viewport.pointFromPixel((event as unknown as OpenSeadragon.CanvasDragEvent).position);
+        // let pos = this.getRelativeMousePosition(event.originalEvent as PointerEvent);
+        // var viewportPos = this.osd!.viewport.pointFromPixel(new OpenSeadragon.Point(pos.x, pos.y));
+        var diffX = viewportPos.x - this.dragSelect!.startPos.x;
+        var diffY = viewportPos.y - this.dragSelect!.startPos.y;
+
+        let location: OpenSeadragon.Rect;
+        let line: LineItem;
+
+        switch (this.dragSelect.dragMode) {
+          case DragMode.Select:
+            location = new OpenSeadragon.Rect(
+              Math.min(
+                this.dragSelect!.startPos.x,
+                this.dragSelect!.startPos.x + diffX
+              ),
+              Math.min(
+                this.dragSelect!.startPos.y,
+                this.dragSelect!.startPos.y + diffY
+              ),
+              Math.abs(diffX),
+              Math.abs(diffY)
+            );
+
+            if (this.dragSelect.editMode === EditMode.Word) {
+              // do not allow user to select word bounds outside line item bounds
+              let selectedLineBoundingBox = this.osd!.getOverlayById(
+                `boundingBox-${this.selectedLines[0].id}`
+              ).getBounds(this.osd!.viewport);
+              if (
+                !this.osdRectangleContainsOsdRectangle(
+                  selectedLineBoundingBox,
+                  location
+                )
+              ) {
+                break;
+              }
+            }
+            this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);
+            break;
+          case DragMode.Shorten:
+            line = this.selectedLines[0];
+            location = this.texRect2osdRect(line.boundingBox!);
+            if (diffX > 0) {
+              location.x += diffX;
+            }
+            location.width -= Math.abs(diffX);
+            this.osd!.updateOverlay(`boundingBox-${line.id}`, location);
+            break;
+          case DragMode.Extend:
+            line = this.selectedLines[0];
+            location = this.texRect2osdRect(line.boundingBox!);
+            if (diffX < 0) {
+              location.x += diffX;
+            }
+            location.width += Math.abs(diffX);
+            this.osd!.updateOverlay(`boundingBox-${line.id}`, location);
+            break;
+          case DragMode.Expand:
+            line = this.selectedLines[0];
+            location = this.texRect2osdRect(line.boundingBox!);
+            if (diffX < 0) {
+              location.x += diffX;
+            }
+            location.width += Math.abs(diffX);
+            if (diffY < 0) {
+              location.y += diffY;
+            }
+            location.height += Math.abs(diffY);
+            this.osd!.updateOverlay(`boundingBox-${line.id}`, location);
+            break;
+          case DragMode.Split:
+            line = this.selectedLines[0];
+            let boundingBox1Id = `boundingBox-${line.id}`;
+            let boundingBox2Id = `boundingBox-${line.id}-2`;
+            location = this.osd!.getOverlayById(boundingBox1Id).getBounds(
+              this.osd!.viewport
+            );
+            let location2 = this.osd!.getOverlayById(boundingBox2Id).getBounds(
+              this.osd!.viewport
+            );
+            location.width += diffX;
+            location2.width -= diffX;
+            location2.x += diffX;
+            this.osd!.updateOverlay(boundingBox1Id, location);
+            this.osd!.updateOverlay(boundingBox2Id, location2);
+            this.dragSelect!.startPos.x = viewportPos.x;
+            this.dragSelect!.startPos.y = viewportPos.y;
+            break;
+        }
+      },
+      releaseHandler: (event) => {
+        var viewportPos = this.osd!.viewport.pointFromPixel(
+          (event as unknown as OpenSeadragon.CanvasDragEvent).position
+        );
+        var diffX = viewportPos.x - this.dragSelect!.startPos.x;
+        var diffY = viewportPos.y - this.dragSelect!.startPos.y;
+        let location = new OpenSeadragon.Rect(
+          Math.min(
+            this.dragSelect!.startPos.x,
+            this.dragSelect!.startPos.x + diffX
+          ),
+          Math.min(
+            this.dragSelect!.startPos.y,
+            this.dragSelect!.startPos.y + diffY
+          ),
+          Math.abs(diffX),
+          Math.abs(diffY)
+        );
+
+       
+      },
+    });
   }
 
   sortLineItems(): void {
@@ -602,10 +805,11 @@ export class UnreviewedDetailComponent implements OnInit {
     this.selectedLines = [];
   }
 
-  createOverlayElement(id: string, className = 'highlight'): HTMLElement {
+  createOverlayElement(id: string, className = 'highlighted-line'): HTMLElement {
     let overlay = document.getElementById(id);
     if (overlay) {
       this.osd?.removeOverlay(id);
+      overlay.remove();
     }
 
     overlay = this.renderer.createElement('div');
@@ -638,6 +842,7 @@ export class UnreviewedDetailComponent implements OnInit {
 
   resetView() {
     this.osd!.viewport.goHome();
+    this.osd!.clearOverlays();
   }
 
 
