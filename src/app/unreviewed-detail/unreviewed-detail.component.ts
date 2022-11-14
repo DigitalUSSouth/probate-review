@@ -334,12 +334,13 @@ export class UnreviewedDetailComponent implements OnInit {
         //   return;
         // }
         let pos = this.getRelativeMousePosition(event.originalEvent as PointerEvent);
-        
-        // var viewportPos = this.osd!.viewport.viewerElementToViewportCoordinates(
+        console.log(pos);
+        let pointerEvent = event.originalEvent as PointerEvent;
+        let viewportPos = this.osd!.viewport.pointFromPixel(new OpenSeadragon.Point(pos.x, pos.y));
+        // let viewportPos = this.osd!.viewport.viewerElementToViewportCoordinates(
         //   // event.position
-        //   new OpenSeadragon.Point(pos.x, pos.y)
+        //   new OpenSeadragon.Point(pointerEvent.x, pointerEvent.y)
         // );
-        let viewportPos = this.osd!.viewport.pointFromPixel(event.position);
         this.dragSelect!.startPos = viewportPos;
         
         let overlayElement: HTMLElement;
@@ -360,18 +361,13 @@ export class UnreviewedDetailComponent implements OnInit {
         
       },
       dragHandler: (event) => {
-        if (!this.dragSelect!.isDragging) {
-          return;
-        }
-
+        
+        let pointerEvent = event.originalEvent as PointerEvent;        
         let pos = this.getRelativeMousePosition(event.originalEvent as PointerEvent);
-        let pointerEvent = event.originalEvent as PointerEvent;
-        // var viewportPos = this.osd!.viewport.viewerElementToViewportCoordinates(
-        //   (event as unknown as OpenSeadragon.CanvasDragEvent).position
-        // );
-        let viewportPos = this.osd!.viewport.pointFromPixel((event as unknown as OpenSeadragon.CanvasDragEvent).position);
-        // let pos = this.getRelativeMousePosition(event.originalEvent as PointerEvent);
-        // var viewportPos = this.osd!.viewport.pointFromPixel(new OpenSeadragon.Point(pos.x, pos.y));
+        var overlayOffset = OpenSeadragon.getElementOffset(this.dragSelect.overlayElement);
+        
+        let viewportPos = this.osd!.viewport.viewerElementToViewportCoordinates(new OpenSeadragon.Point(pos.x, pos.y));
+        console.log(viewportPos);
         var diffX = viewportPos.x - this.dragSelect!.startPos.x;
         var diffY = viewportPos.y - this.dragSelect!.startPos.y;
 
@@ -392,21 +388,21 @@ export class UnreviewedDetailComponent implements OnInit {
               Math.abs(diffX),
               Math.abs(diffY)
             );
-
-            if (this.dragSelect.editMode === EditMode.Word) {
-              // do not allow user to select word bounds outside line item bounds
-              let selectedLineBoundingBox = this.osd!.getOverlayById(
-                `boundingBox-${this.selectedLines[0].id}`
-              ).getBounds(this.osd!.viewport);
-              if (
-                !this.osdRectangleContainsOsdRectangle(
-                  selectedLineBoundingBox,
-                  location
-                )
-              ) {
-                break;
-              }
-            }
+            
+            // if (this.dragSelect.editMode === EditMode.Word) {
+            //   // do not allow user to select word bounds outside line item bounds
+            //   let selectedLineBoundingBox = this.osd!.getOverlayById(
+            //     `boundingBox-${this.selectedLines[0].id}`
+            //   ).getBounds(this.osd!.viewport);
+            //   if (
+            //     !this.osdRectangleContainsOsdRectangle(
+            //       selectedLineBoundingBox,
+            //       location
+            //     )
+            //   ) {
+            //     break;
+            //   }
+            // }
             this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);
             break;
           case DragMode.Shorten:
