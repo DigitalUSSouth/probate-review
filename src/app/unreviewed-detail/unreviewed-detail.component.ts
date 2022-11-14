@@ -281,9 +281,9 @@ export class UnreviewedDetailComponent implements OnInit {
     });
   }
 
-  getRelativeMousePosition = function (event: PointerEvent) {
-    let target = event.target;
-    let rect = (target! as HTMLElement).getBoundingClientRect();
+  getRelativeMousePosition = function (event: PointerEvent, target: HTMLElement | null | undefined = undefined) {
+    let pointTarget = target || event.target;
+    let rect = (pointTarget! as HTMLElement).getBoundingClientRect();
     return {
       x: event.clientX - rect.left,
       y: event.clientY - rect.top,
@@ -330,17 +330,11 @@ export class UnreviewedDetailComponent implements OnInit {
         }
       },
       pressHandler: (event) => {
-        // if (!this.dragMode) {
-        //   return;
-        // }
-        let pos = this.getRelativeMousePosition(event.originalEvent as PointerEvent);
+        let pos = this.getRelativeMousePosition(event.originalEvent as PointerEvent, this.osd!.canvas);
+        console.log("pos");
         console.log(pos);
-        let pointerEvent = event.originalEvent as PointerEvent;
-        let viewportPos = this.osd!.viewport.pointFromPixel(new OpenSeadragon.Point(pos.x, pos.y));
-        // let viewportPos = this.osd!.viewport.viewerElementToViewportCoordinates(
-        //   // event.position
-        //   new OpenSeadragon.Point(pointerEvent.x, pointerEvent.y)
-        // );
+        let viewportPos = this.osd!.viewport.viewerElementToViewportCoordinates(new OpenSeadragon.Point(pos.x, pos.y));
+
         this.dragSelect!.startPos = viewportPos;
         
         let overlayElement: HTMLElement;
@@ -361,13 +355,9 @@ export class UnreviewedDetailComponent implements OnInit {
         
       },
       dragHandler: (event) => {
-        
-        let pointerEvent = event.originalEvent as PointerEvent;        
-        let pos = this.getRelativeMousePosition(event.originalEvent as PointerEvent);
-        var overlayOffset = OpenSeadragon.getElementOffset(this.dragSelect.overlayElement);
-        
+        let pos = this.getRelativeMousePosition(event.originalEvent as PointerEvent, this.osd!.canvas);
         let viewportPos = this.osd!.viewport.viewerElementToViewportCoordinates(new OpenSeadragon.Point(pos.x, pos.y));
-        console.log(viewportPos);
+        // console.log(viewportPos);
         var diffX = viewportPos.x - this.dragSelect!.startPos.x;
         var diffY = viewportPos.y - this.dragSelect!.startPos.y;
 
@@ -756,7 +746,6 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   correctText(): void {
-    // this.osd!.clearOverlays();
     let words = this.getWordsOfLine(this.selectedLines[0]);
     console.log(words);
     if (words.length > 0) {
