@@ -32,7 +32,7 @@ import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 import { BoundingBox } from '../quad-tree';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
-import { deleteLine } from 'src/graphql/mutations';
+import { deleteLine, deleteWord } from 'src/graphql/mutations';
 import { MatButton } from '@angular/material/button';
 
 interface SubcategoryOptionValue {
@@ -175,7 +175,7 @@ export class UnreviewedDetailComponent implements OnInit {
 
   // Lines, Words
   selectedLine: LineItem | null = null;
-  selectedWord: Word | null = null;
+  selectedWord: Word | null | undefined = null;
   selectedLines: LineItem[] = [];
 
   // UI mode
@@ -317,9 +317,8 @@ export class UnreviewedDetailComponent implements OnInit {
       lineItems$.subscribe((lineItems) => {
         this.record!.lineItems!.items =
           lineItems.items as unknown as LineItem[];
-        this.sortLineItems();
-      });
-
+        // this.sortLineItems();
+      });      
       // get our associated image     
       this.getImage(id);
     });
@@ -533,7 +532,7 @@ export class UnreviewedDetailComponent implements OnInit {
 
 
       },
-    });
+    });    
   }
 
   sortLineItems(): void {
@@ -548,7 +547,7 @@ export class UnreviewedDetailComponent implements OnInit {
     }
   }
 
-  displayContextMenu(event: any): void {
+  displayContextMenu(event: any): void {    
     this.isDisplayContextMenu = true;
     console.log(event);
     switch (this.selectedLines.length) {
@@ -563,6 +562,8 @@ export class UnreviewedDetailComponent implements OnInit {
 
       case 1:
         if (event.target.id.startsWith('wordInput-')) {
+          let wordId = event.target.id.substring('wordInput-'.length);          
+          this.selectedWord = (this.record!.words as Word[]).filter(w => w.id == wordId).pop();          
           let inputElem = document.getElementById(
             event.target.id
           ) as HTMLInputElement;
@@ -690,6 +691,25 @@ export class UnreviewedDetailComponent implements OnInit {
     return word;
   }
 
+  deleteWord(word: Word) {
+    this.record!.words = (this.record!.words as Word[]).filter(w => w.id != word.id);
+    for(const line of (this.record!.lineItems!.items as LineItem[])) {
+      if(line.wordIds.includes(word.id)) {
+        line.wordIds = line.wordIds.filter(id => id != word.id);
+        this.updateLineItemText(line);
+      }
+    }
+
+    if(this.isEditing()) {
+      // remove our existing overlay
+      this.osd!.removeOverlay(`wordInput-${word.id}`);
+      let words = (this.record!.words as Word[]).filter(w => this.selectedLines[0].wordIds.includes(w.id));      
+      this.showInputsForWords(words);
+    }
+
+    this.table.renderRows();
+  }
+
   focusOnWord(word: Word) {
     let inputElem = document.getElementById(`wordInput-${word.id}`);
     if (inputElem) {
@@ -727,17 +747,18 @@ export class UnreviewedDetailComponent implements OnInit {
     }
     return this.texRect2osdRect(boundingBox);
   }
+
   handleMenuItemClick(event: any) {
     console.log("menu click event");
     console.log(event);
-    let location = this.osd!.getOverlayById('select').getBounds(
+    let selectOverlay = this.osd!.getOverlayById('select');
+    let location = (selectOverlay) ? this.osd!.getOverlayById('select').getBounds(
       this.osd!.viewport
-    );
+    ) : new OpenSeadragon.Rect(0, 0, 0, 0);
     console.log('location');
     console.log(location);
     switch (event.data) {
       case 'create word':
-
         let snapToLocation = this.getSnapToLocation(location);
         let word = this.createWordAtLocation(snapToLocation);
         this.focusOnWord(word);
@@ -746,6 +767,15 @@ export class UnreviewedDetailComponent implements OnInit {
         this.isDirty = true;
         this.table.renderRows();
         console.log('created word');
+        break;
+      case 'delete word':
+        if(this.selectedWord) {          
+          this.deleteWord(this.selectedWord);
+          this.commands.push({ type: CommandType.DeleteWord, operation: OperationType.Delete, wasDirtyBeforeCommand: this.isDirty, word: this.selectedWord, lineItemId: this.selectedLines[0].id });
+          this.selectedWord = null;
+          this.isDirty = true;
+          this.table.renderRows();
+        }
         break;
     }
     this.isDisplayContextMenu = false;
@@ -848,13 +878,7 @@ export class UnreviewedDetailComponent implements OnInit {
       // if we don't have a value
       console.log(inputElem);
       let value = console.log((inputElem as HTMLInputElement).value);
-      console.log(value);
-      // if (!inputElem.value) {
-      //   this.callDeleteWord(word);
-      // } else {
-      //   this.updateLineItemText(this.selectedLines[0]);
-      //   this.correctText();
-      // }
+      console.log(value);      
     });
 
     this.renderer.listen(inputElem, 'focus', () => {
@@ -901,7 +925,7 @@ export class UnreviewedDetailComponent implements OnInit {
     inputElem!.focus();
   }
 
-  showInputsForWords(words: Word[]): void {
+  showInputsForWords(words: Word[]): void {    
     const isInputAbove = words[0].boundingBox!.top > 0.5;
 
     // calculate height of input element
@@ -962,7 +986,7 @@ export class UnreviewedDetailComponent implements OnInit {
         console.log(rect);
         this.osd!.addOverlay(inputElem!, rect);
       }
-    }
+    }    
   }
 
   correctText(): void {
@@ -1221,6 +1245,12 @@ export class UnreviewedDetailComponent implements OnInit {
           }
 
         }
+        break;
+        case CommandType.DeleteWord: {
+          let wordCommand = command as WordCommand;
+
+        }
+        break;
       }
       this.isDirty = command?.wasDirtyBeforeCommand!;
       this.table.renderRows();
