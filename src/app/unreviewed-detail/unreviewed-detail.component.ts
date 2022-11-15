@@ -152,7 +152,7 @@ export class UnreviewedDetailComponent implements OnInit {
   isLineChecked = false;
   isDirty = false;
   isReviewed = false;
-  selectedLines: LineItem[] = [];
+  
   wordMap = new Map<string, Word>();
 
   // Deleted data
@@ -166,6 +166,10 @@ export class UnreviewedDetailComponent implements OnInit {
   // Commands
   commands: Array<BulkLineItemCommand | LineItemCommand | WordCommand>  = [];
 
+  // Lines, Words
+  selectedLine: LineItem | null = null;
+  selectedWord: Word | null = null;
+  selectedLines: LineItem[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -328,12 +332,15 @@ export class UnreviewedDetailComponent implements OnInit {
           target.focus();
           this.osd!.setMouseNavEnabled(false);
         }
+        else if(target!.matches('button') || target!.matches('span.mat-button-wrapper')) {
+          target.click();
+        }
       },
       pressHandler: (event) => {
-        let pos = this.getRelativeMousePosition(event.originalEvent as PointerEvent, this.osd!.canvas);
-        console.log("pos");
-        console.log(pos);
+        let pos = this.getRelativeMousePosition(event.originalEvent as PointerEvent, this.osd!.canvas);        
         let viewportPos = this.osd!.viewport.viewerElementToViewportCoordinates(new OpenSeadragon.Point(pos.x, pos.y));
+        
+        // check if we are in edit mode
 
         this.dragSelect!.startPos = viewportPos;
         
@@ -342,11 +349,27 @@ export class UnreviewedDetailComponent implements OnInit {
         let texRect: Rect;
         let osdRect: OpenSeadragon.Rect;
 
-        this.dragSelect.dragMode = DragMode.Select;
+        
         this.dragSelect.isDragging = true;
         
         overlayElement = this.createOverlayElement('select');
         this.dragSelect.overlayElement = overlayElement as HTMLDivElement;
+        if(this.dragSelect.editMode === EditMode.Line) {
+          let selectedLineBoundingBox = this.osd!.getOverlayById(
+            `boundingBox-${this.selectedLines[0].id}`
+          ).getBounds(this.osd!.viewport);
+          if (
+            !this.osdRectangleContainsOsdPoint(
+              selectedLineBoundingBox,
+              viewportPos
+            )
+          ) {
+            return;
+          }
+          else {
+            console.log('press in bounding box');
+          } 
+        }
 
         this.osd!.addOverlay(
           overlayElement,
@@ -379,20 +402,23 @@ export class UnreviewedDetailComponent implements OnInit {
               Math.abs(diffY)
             );
             
-            // if (this.dragSelect.editMode === EditMode.Word) {
-            //   // do not allow user to select word bounds outside line item bounds
-            //   let selectedLineBoundingBox = this.osd!.getOverlayById(
-            //     `boundingBox-${this.selectedLines[0].id}`
-            //   ).getBounds(this.osd!.viewport);
-            //   if (
-            //     !this.osdRectangleContainsOsdRectangle(
-            //       selectedLineBoundingBox,
-            //       location
-            //     )
-            //   ) {
-            //     break;
-            //   }
-            // }
+            if (this.dragSelect.editMode === EditMode.Line) {
+              // do not allow user to select word bounds outside line item bounds
+              let selectedLineBoundingBox = this.osd!.getOverlayById(
+                `boundingBox-${this.selectedLines[0].id}`
+              ).getBounds(this.osd!.viewport);
+              if (
+                !this.osdRectangleContainsOsdRectangle(
+                  selectedLineBoundingBox,
+                  location
+                )
+              ) {
+                break;
+              }
+              else {
+                console.log('drag inside of bounding box');
+              }
+            }
             this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);
             break;
           case DragMode.Shorten:
@@ -765,6 +791,14 @@ export class UnreviewedDetailComponent implements OnInit {
       throw 'Invalid line index';
     }
 
+    this.selectedLine = lineItem;
+    this.selectedLines = [];
+    this.selectedLines.push(lineItem);
+
+    this.dragSelect.dragMode = DragMode.Select;
+    this.dragSelect.selectionMode = SelectionMode.Word;
+    this.dragSelect.editMode = EditMode.Line;
+
     this.highlightLine(lineItem);
     this.correctText();
     this.enterEditMode();
@@ -860,6 +894,18 @@ export class UnreviewedDetailComponent implements OnInit {
       a.y <= b.y &&
       a.x + a.width >= b.x + b.width &&
       a.y + a.height >= b.y + b.height
+    );
+  }
+
+  osdRectangleContainsOsdPoint(
+    a: OpenSeadragon.Rect,
+    b: OpenSeadragon.Point
+  ) {
+    return (
+      a.x <= b.x &&
+      a.y <= b.y &&
+      a.x + a.width >= b.x &&
+      a.y + a.height >= b.y
     );
   }
 
