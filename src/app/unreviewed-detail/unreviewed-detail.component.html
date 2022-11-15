@@ -9,7 +9,8 @@
     </as-split-area>
     <as-split-area [size]="30">
       <div id="review-form" class="flex-child">
-        <h1>Enter your corrections below</h1>        
+        <h1>Enter your corrections below</h1>
+        <button #selectButton mat-raised-button class="form-button" (click)="toggleSelectionMode()">{{isSelecting() ? 'Exit' : 'Select'}}</button>        
         <button mat-raised-button class="form-button" [disabled]="!isLineChecked" (click)="deleteCheckedLines()">Delete</button>
         <button mat-raised-button class="form-button" [disabled]="commands.length === 0" (click)="undo()">Undo</button>
         <button mat-raised-button class="form-button" [disabled]="!isDirty">Save</button>

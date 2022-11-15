@@ -33,6 +33,7 @@ import { BoundingBox } from '../quad-tree';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
 import { deleteLine } from 'src/graphql/mutations';
+import { MatButton } from '@angular/material/button';
 
 interface SubcategoryOptionValue {
   value: string;
@@ -122,7 +123,7 @@ export class UnreviewedDetailComponent implements OnInit {
   @ViewChild('viewer') viewer!: ElementRef;
   @ViewChild('table') table!: MatTable<LineItem>;
   @ViewChildren('checkbox') checkBoxes?: QueryList<MatCheckbox>;
-
+  
   // Image
   osd?: OpenSeadragon.Viewer;
   selectTracker?: OpenSeadragon.MouseTracker;
@@ -147,8 +148,7 @@ export class UnreviewedDetailComponent implements OnInit {
   rightClickMenuPositionX = 0;
   rightClickMenuPositionY = 0;
 
-  // Data
-  //recordsChecked() === 0
+  // Data  
   isLineChecked = false;
   isDirty = false;
   isReviewed = false;
@@ -171,6 +171,9 @@ export class UnreviewedDetailComponent implements OnInit {
   selectedWord: Word | null = null;
   selectedLines: LineItem[] = [];
 
+  // UI mode
+  
+
   constructor(
     private route: ActivatedRoute,
     private probateRecordService: APIService,
@@ -192,6 +195,10 @@ export class UnreviewedDetailComponent implements OnInit {
   checkedCheckBoxesFilterFunction(checkBox: MatCheckbox): boolean {
     return checkBox.checked;
   }
+
+  isSelecting() {
+    return this.dragSelect.dragMode === DragMode.Select;
+  } 
 
   toggleAllChecks(event: MatCheckboxChange): void {
     if (this.checkBoxes) {
@@ -245,11 +252,32 @@ export class UnreviewedDetailComponent implements OnInit {
       toolbarElem.style.display = "none";
     }
     this.dragSelect.dragMode = DragMode.None;
-    this.dragSelect.isDragging = false;
-    this.osd!.clearOverlays();
-    this.osd!.setControlsEnabled(false);
+    this.dragSelect.isDragging = false;    
     this.resetView();
-    this.osd!.setMouseNavEnabled(true);
+  }
+
+  enterSelectionMode() {    
+    this.exitEditMode();
+    this.osd!.setMouseNavEnabled(false);
+    this.dragSelect.dragMode = DragMode.Select;
+    this.dragSelect.selectionMode = SelectionMode.Line;
+    this.dragSelect.editMode = EditMode.None;
+  }
+
+  exitSelectionMode() {    
+    this.dragSelect.dragMode = DragMode.None;
+    this.dragSelect.selectionMode = SelectionMode.None;
+    this.dragSelect.isDragging = false;    
+    this.resetView();
+  }
+
+  toggleSelectionMode() {
+    if(this.isSelecting()) {
+      this.exitSelectionMode();
+    }
+    else {
+      this.enterSelectionMode();  
+    }
   }
 
   ngAfterViewInit(): void {
@@ -316,8 +344,8 @@ export class UnreviewedDetailComponent implements OnInit {
 
 
     this.osd = new OpenSeadragon.Viewer(options);
-    this.osd.addControl("toolbarDiv", { anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT, autoFade: false });
-    this.exitEditMode();
+    this.osd.addControl("toolbarDiv", { anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT, autoFade: false });    
+    this.exitEditMode();    
     this.selectTracker = new OpenSeadragon.MouseTracker({
       element: this.osd?.element as Element,
       clickHandler: (event) => {
@@ -862,6 +890,8 @@ export class UnreviewedDetailComponent implements OnInit {
   resetView() {
     this.osd!.viewport.goHome();
     this.osd!.clearOverlays();
+    this.osd!.setControlsEnabled(false);
+    this.osd!.setMouseNavEnabled(true);
   }
 
 
