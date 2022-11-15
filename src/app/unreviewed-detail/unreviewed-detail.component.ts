@@ -198,7 +198,11 @@ export class UnreviewedDetailComponent implements OnInit {
 
   isSelecting() {
     return this.dragSelect.dragMode === DragMode.Select;
-  } 
+  }
+  
+  isEditing() {
+    return this.dragSelect.editMode != EditMode.None;
+  }
 
   toggleAllChecks(event: MatCheckboxChange): void {
     if (this.checkBoxes) {
@@ -252,6 +256,7 @@ export class UnreviewedDetailComponent implements OnInit {
       toolbarElem.style.display = "none";
     }
     this.dragSelect.dragMode = DragMode.None;
+    this.dragSelect.editMode = EditMode.None;
     this.dragSelect.isDragging = false;    
     this.resetView();
   }
