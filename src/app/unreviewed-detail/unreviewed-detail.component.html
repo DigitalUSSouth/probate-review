@@ -6,6 +6,12 @@
         #viewer
         (contextmenu)="displayContextMenu($event)"
       ></div>
+      <app-context-menu
+        *ngIf="rightClickMenuItems.length > 0 && isDisplayContextMenu"
+        [ngStyle]="getRightClickMenuStyle()"
+        [contextMenuItems]="rightClickMenuItems"
+        (onContextMenuItemClick)="handleMenuItemClick($event)"
+      ></app-context-menu>
     </as-split-area>
     <as-split-area [size]="30">
       <div id="review-form" class="flex-child">
