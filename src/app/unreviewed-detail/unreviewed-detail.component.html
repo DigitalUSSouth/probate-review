@@ -138,6 +138,6 @@
 </div>
 <div id="toolbarDiv" style="margin: auto; text-align: center;">
     <button mat-raised-button class="form-button" (click)="saveEdit()" >Exit Edit</button>
-    <button mat-raised-button class="form-button" (click)="cancelEdit()">Adjust Box</button>
-    <button mat-raised-button class="form-button" (click)="cancelEdit()">Split</button>
+    <button mat-raised-button class="form-button" [disabled]="true" (click)="cancelEdit()">Adjust Box</button>
+    <button mat-raised-button class="form-button" [disabled]="true" (click)="cancelEdit()">Split</button>
 </div>
