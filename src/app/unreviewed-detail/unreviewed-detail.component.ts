@@ -54,7 +54,7 @@ interface BulkLineItemCommand extends Command {
 
 interface LineItemCommand extends Command {
   lineItem: LineItem;
-  words: Word[];
+  words?: Word[];
   operation: OperationType;
 }
 
@@ -77,6 +77,12 @@ interface DragSelect {
   selectionMode: SelectionMode;
   editMode: EditMode;
 }
+
+interface LineItemResult {
+  lineItem?: LineItem;
+  rect?: Rect;
+}
+
 
 enum DragMode {
   None,
@@ -171,7 +177,7 @@ export class UnreviewedDetailComponent implements OnInit {
     this.objToStrMap(data);
 
   // Commands
-  commands: Array<BulkLineItemCommand | LineItemCommand | WordCommand> = [];
+  commands: Array<BulkLineItemCommand | LineItemCommand | WordCommand | MoveLineItemCommand> = [];
 
   // Lines, Words
   selectedLine: LineItem | null = null;
@@ -246,6 +252,9 @@ export class UnreviewedDetailComponent implements OnInit {
       toolbarElem.style.display = "inline-block";
     }
     this.osd!.setMouseNavEnabled(false);
+    this.dragSelect.dragMode = DragMode.Select;
+    this.dragSelect.editMode = EditMode.Line;
+    this.dragSelect.selectionMode = SelectionMode.Word;
   }
 
   saveEdit() {
@@ -265,6 +274,7 @@ export class UnreviewedDetailComponent implements OnInit {
     this.dragSelect.dragMode = DragMode.None;
     this.dragSelect.editMode = EditMode.None;
     this.dragSelect.isDragging = false;
+    this.selectedLines = [];
     this.resetView();
   }
 
@@ -318,10 +328,83 @@ export class UnreviewedDetailComponent implements OnInit {
         this.record!.lineItems!.items =
           lineItems.items as unknown as LineItem[];
         // this.sortLineItems();
-      });      
+      });
       // get our associated image     
       this.getImage(id);
     });
+  }
+
+  rectanglesIntersect(
+    minAx: number,
+    minAy: number,
+    maxAx: number,
+    maxAy: number,
+    minBx: number,
+    minBy: number,
+    maxBx: number,
+    maxBy: number
+  ): boolean {
+    return maxAx >= minBx && minAx <= maxBx && minAy <= maxBy && maxAy >= minBy;
+  }
+
+
+  // A line
+  // B selection rect
+  verticallyOverlapped(
+    minAy: number,
+    maxAy: number,
+    minBy: number,
+    maxBy: number
+  ) {
+    const threshold = 0.6;
+    let heightA = maxAy - minAy;
+    let allowedAmount = (1.0 - threshold) * heightA;
+    let isOverlapped = false;
+    if (minBy <= minAy) {
+      isOverlapped = maxBy > minAy && maxAy - maxBy < allowedAmount;
+    } else {
+      isOverlapped =
+        (minBy < maxAy && maxBy < maxAy) || minBy - minAy < allowedAmount;
+    }
+
+    return isOverlapped;
+  }
+
+
+  getSelectedLines(selectRect: OpenSeadragon.Rect): LineItem[] {
+    if (this.aspectRatio === 0.0) {
+      this.calculateAspectRatio();
+    }
+
+    let lines = new Array<LineItem>();
+    for (const line of this.record!.lineItems!.items) {
+      const boundingBox = line!.boundingBox;
+
+      const lineRect = this.texRect2osdRect(boundingBox!);
+      if (
+        line &&
+        this.rectanglesIntersect(
+          lineRect.x,
+          lineRect.y,
+          lineRect.x + lineRect.width,
+          lineRect.y + lineRect.height,
+          selectRect.x,
+          selectRect.y,
+          selectRect.x + selectRect.width,
+          selectRect.y + selectRect.height
+        ) &&
+        this.verticallyOverlapped(
+          lineRect.y,
+          lineRect.y + lineRect.height,
+          selectRect.y,
+          selectRect.y + selectRect.height
+        )
+      ) {
+        lines.push(line);
+      }
+    }
+
+    return lines;
   }
 
   getRelativeMousePosition = function (event: PointerEvent, target: HTMLElement | null | undefined = undefined) {
@@ -361,8 +444,6 @@ export class UnreviewedDetailComponent implements OnInit {
       element: this.osd?.element as Element,
       clickHandler: (event) => {
         var target = (event as any).originalTarget as HTMLElement;
-        console.log('click handler fired');
-        console.log(event);
         if (target!.matches('input')) {
           this.dragSelect.selectionMode = SelectionMode.None;
           console.log('focus on ');
@@ -512,9 +593,8 @@ export class UnreviewedDetailComponent implements OnInit {
         }
       },
       releaseHandler: (event) => {
-        var viewportPos = this.osd!.viewport.pointFromPixel(
-          (event as unknown as OpenSeadragon.CanvasDragEvent).position
-        );
+        let pos = this.getRelativeMousePosition(event.originalEvent as PointerEvent, this.osd!.canvas);
+        let viewportPos = this.osd!.viewport.viewerElementToViewportCoordinates(new OpenSeadragon.Point(pos.x, pos.y));
         var diffX = viewportPos.x - this.dragSelect!.startPos.x;
         var diffY = viewportPos.y - this.dragSelect!.startPos.y;
         let location = new OpenSeadragon.Rect(
@@ -530,9 +610,28 @@ export class UnreviewedDetailComponent implements OnInit {
           Math.abs(diffY)
         );
 
+        switch (this.dragSelect.dragMode) {
+          case DragMode.Select:
+            switch (this.dragSelect.selectionMode) {
+              case SelectionMode.Line:
+                this.selectedLines = this.getSelectedLines(location);
+                for (const line of this.selectedLines) {
+                  const selectElem = this.createOverlayElement(
+                    `boundingBox-${line.id}`,
+                    'selected-line'
+                  );
+                  this.osd!.addOverlay(
+                    selectElem,
+                    this.texRect2osdRect(line.boundingBox!)
+                  );
+                }
+                break;
+            }
+            break;
+        }
 
       },
-    });    
+    });
   }
 
   sortLineItems(): void {
@@ -547,23 +646,23 @@ export class UnreviewedDetailComponent implements OnInit {
     }
   }
 
-  displayContextMenu(event: any): void {    
+  displayContextMenu(event: any): void {
     this.isDisplayContextMenu = true;
     console.log(event);
     switch (this.selectedLines.length) {
       case 0:
         this.rightClickMenuItems = [
           {
-            menuText: 'Create',
-            menuEvent: 'create',
+            menuText: 'Create Line',
+            menuEvent: 'create line',
           },
         ];
         break;
 
       case 1:
         if (event.target.id.startsWith('wordInput-')) {
-          let wordId = event.target.id.substring('wordInput-'.length);          
-          this.selectedWord = (this.record!.words as Word[]).filter(w => w.id == wordId).pop();          
+          let wordId = event.target.id.substring('wordInput-'.length);
+          this.selectedWord = (this.record!.words as Word[]).filter(w => w.id == wordId).pop();
           let inputElem = document.getElementById(
             event.target.id
           ) as HTMLInputElement;
@@ -693,17 +792,17 @@ export class UnreviewedDetailComponent implements OnInit {
 
   deleteWord(word: Word) {
     this.record!.words = (this.record!.words as Word[]).filter(w => w.id != word.id);
-    for(const line of (this.record!.lineItems!.items as LineItem[])) {
-      if(line.wordIds.includes(word.id)) {
+    for (const line of (this.record!.lineItems!.items as LineItem[])) {
+      if (line.wordIds.includes(word.id)) {
         line.wordIds = line.wordIds.filter(id => id != word.id);
         this.updateLineItemText(line);
       }
     }
 
-    if(this.isEditing()) {
+    if (this.isEditing()) {
       // remove our existing overlay
       this.osd!.removeOverlay(`wordInput-${word.id}`);
-      let words = (this.record!.words as Word[]).filter(w => this.selectedLines[0].wordIds.includes(w.id));      
+      let words = (this.record!.words as Word[]).filter(w => this.selectedLines[0].wordIds.includes(w.id));
       this.showInputsForWords(words);
     }
 
@@ -748,15 +847,73 @@ export class UnreviewedDetailComponent implements OnInit {
     return this.texRect2osdRect(boundingBox);
   }
 
+  createLineItem(
+    lineItem: LineItem | null | undefined = undefined,
+    rect: Rect | undefined = undefined
+  ) {
+    let newLineItem = {
+      id: uuidv4() as string,
+      probateId: this.record!.id,
+      description: '',
+      title: '',
+      category: '',
+      subcategory: '',
+      value: 0.0,
+      quantity: 0,
+      attributeForId: '',
+      wordIds: [],
+      boundingBox: {
+        left: rect?.left || 0,
+        top: rect?.top || 0,
+        width: rect?.width || 0,
+        height: rect?.height || 0,
+      },
+      confidence: 1.0,
+      lowerTitle: '',
+    };
+
+    this.probateRecordService.CreateLineItem(
+      { ...newLineItem, ...lineItem }
+    ).then((addedLineItem) => {
+      this.record!.lineItems?.items.push(addedLineItem);
+
+    });
+
+  }
+
+  createLineItemAtLocation(rect: Rect | undefined): LineItem {
+    // Use as const with __typename https://github.com/dotansimha/graphql-code-generator/issues/3610
+    let newLineItem = {
+      __typename: 'LineItem' as const,
+      id: uuidv4() as string,
+      probateId: '',
+      wordIds: new Array<string>(),
+      title: '',
+      description: '',
+      category: '',
+      subcategory: '',
+      quantity: 0,
+      value: 0,
+      boundingBox: {
+        __typename: 'Rect' as const,
+        left: rect?.left || 0,
+        top: rect?.top || 0,
+        width: rect?.width || 0,
+        height: rect?.height || 0,
+      },
+      attributeForId: '',
+      createdAt: '0',
+      updatedAt: '0',
+    };
+
+    return newLineItem;
+  }
+
   handleMenuItemClick(event: any) {
-    console.log("menu click event");
-    console.log(event);
     let selectOverlay = this.osd!.getOverlayById('select');
     let location = (selectOverlay) ? this.osd!.getOverlayById('select').getBounds(
       this.osd!.viewport
     ) : new OpenSeadragon.Rect(0, 0, 0, 0);
-    console.log('location');
-    console.log(location);
     switch (event.data) {
       case 'create word':
         let snapToLocation = this.getSnapToLocation(location);
@@ -769,13 +926,28 @@ export class UnreviewedDetailComponent implements OnInit {
         console.log('created word');
         break;
       case 'delete word':
-        if(this.selectedWord) {          
+        if (this.selectedWord) {
           this.deleteWord(this.selectedWord);
           this.commands.push({ type: CommandType.DeleteWord, operation: OperationType.Delete, wasDirtyBeforeCommand: this.isDirty, word: this.selectedWord, lineItemId: this.selectedLines[0].id });
           this.selectedWord = null;
           this.isDirty = true;
           this.table.renderRows();
         }
+        break;
+      case 'create line': {
+        let lineItem = this.createLineItemAtLocation(this.osdRect2texRect(location));
+        console.log('lineItem created');
+        console.log(lineItem);
+        this.record!.lineItems!.items.push(lineItem);
+        this.commands.push({ type: CommandType.CreateLine, operation: OperationType.Create, wasDirtyBeforeCommand: this.isDirty, lineItem });
+        this.isDirty = true;
+        this.table.renderRows();
+        this.exitSelectionMode();
+        this.selectedLines = [];
+        this.selectedLines.push(lineItem);
+        this.highlightLine(lineItem);
+        this.enterEditMode();
+      }
         break;
     }
     this.isDisplayContextMenu = false;
@@ -878,7 +1050,7 @@ export class UnreviewedDetailComponent implements OnInit {
       // if we don't have a value
       console.log(inputElem);
       let value = console.log((inputElem as HTMLInputElement).value);
-      console.log(value);      
+      console.log(value);
     });
 
     this.renderer.listen(inputElem, 'focus', () => {
@@ -925,7 +1097,7 @@ export class UnreviewedDetailComponent implements OnInit {
     inputElem!.focus();
   }
 
-  showInputsForWords(words: Word[]): void {    
+  showInputsForWords(words: Word[]): void {
     const isInputAbove = words[0].boundingBox!.top > 0.5;
 
     // calculate height of input element
@@ -986,7 +1158,7 @@ export class UnreviewedDetailComponent implements OnInit {
         console.log(rect);
         this.osd!.addOverlay(inputElem!, rect);
       }
-    }    
+    }
   }
 
   correctText(): void {
@@ -1106,6 +1278,7 @@ export class UnreviewedDetailComponent implements OnInit {
       `boundingBox-${line.id}`,
       'highlighted-line'
     );
+    console.log(selectElem);
     this.osd!.addOverlay(selectElem, this.texRect2osdRect(line.boundingBox!));
     this.selectedLines = [];
     this.selectedLines.push(line);
@@ -1123,7 +1296,10 @@ export class UnreviewedDetailComponent implements OnInit {
   onSubcategoryChanged(lineIndex: number): void { }
 
   drop(event: CdkDragDrop<LineItem[]>) {
+    let lineItem = this.record!.lineItems!.items[event.previousIndex] as LineItem;
     moveItemInArray(this.record!.lineItems!.items, event.previousIndex, event.currentIndex);
+
+    this.commands.push({ type: CommandType.MoveLine, lineItem, wasDirtyBeforeCommand: this.isDirty, oldIndex: event.previousIndex, newIndex: event.currentIndex });
     this.isDirty = true;
     this.table.renderRows();
   }
@@ -1245,25 +1421,41 @@ export class UnreviewedDetailComponent implements OnInit {
           }
 
         }
-        break;
+          break;
         case CommandType.DeleteWord: {
           let wordCommand = command as WordCommand;
           let word = wordCommand.word;
           this.record!.words.push(word);
           let lineItem = (this.record!.lineItems!.items as LineItem[]).find(l => l.id === wordCommand.lineItemId);
-          if(lineItem) {
+          if (lineItem) {
             lineItem.wordIds.push(word.id);
             let orderedWords = this.getOrderedWordsForLineItem(lineItem);
             lineItem.wordIds = orderedWords.map(w => w.id);
             this.updateLineItemText(lineItem);
 
-            if(this.isEditing()) {
+            if (this.isEditing()) {
               this.showInputsForWords(orderedWords);
             }
           }
 
         }
-        break;
+          break;
+
+        case CommandType.CreateLine: {
+          let lineItemCommand = command as LineItemCommand;
+          let line = lineItemCommand.lineItem;
+          this.record!.words = (this.record!.words as Word[]).filter(w => !line.wordIds.includes(w.id));
+          this.record!.lineItems!.items = (this.record!.lineItems!.items as LineItem[]).filter(l => l.id != line.id);
+        }
+          break;
+        case CommandType.MoveLine: {
+          let moveLineItemCommand = command as MoveLineItemCommand;
+          let currentIndex = (this.record!.lineItems!.items as LineItem[]).indexOf(moveLineItemCommand.lineItem);
+          if (currentIndex >= 0) {
+            moveItemInArray(this.record!.lineItems!.items, currentIndex, moveLineItemCommand.oldIndex);
+          }
+        }
+          break;
       }
       this.isDirty = command?.wasDirtyBeforeCommand!;
       this.table.renderRows();
