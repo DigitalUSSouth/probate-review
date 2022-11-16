@@ -1178,6 +1178,7 @@ export class UnreviewedDetailComponent implements OnInit {
     updatedText = updatedText.trim();
     line.title = updatedText;
 
+    this.isDirty = true;
     this.updatedLineIds.add(line.id);
   }
 
