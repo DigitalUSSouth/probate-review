@@ -20,7 +20,7 @@
         <button #selectButton mat-raised-button class="form-button" [disabled]="isEditing()" (click)="toggleSelectionMode()">{{isSelecting() ? 'Exit' : 'Select'}}</button>        
         <button mat-raised-button class="form-button" [disabled]="!isLineChecked" (click)="deleteCheckedLines()">Delete</button>
         <button mat-raised-button class="form-button" [disabled]="commands.length === 0" (click)="undo()">Undo</button>
-        <button mat-raised-button class="form-button" [disabled]="!isDirty">Save</button>
+        <button mat-raised-button class="form-button" [disabled]="!isDirty" (click)="save()">Save</button>
         <mat-checkbox [(ngModel)]="isReviewed" color="primary">Reviewed</mat-checkbox>
         <div *ngIf="record != null">
           <table
@@ -60,7 +60,7 @@
                       matNativeControl
                       required
                       (change)="populateSubcategory(i)"
-                      [value]="line?.category"
+                      [value]="line!.category"
                     >
                       <option value="n-a">N/A</option>
                       <option value="identity">Identity</option>

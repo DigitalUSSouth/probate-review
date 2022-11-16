@@ -183,6 +183,10 @@ export class UnreviewedDetailComponent implements OnInit {
   selectedLine: LineItem | null = null;
   selectedWord: Word | null | undefined = null;
   selectedLines: LineItem[] = [];
+  newLineIds = new Set<string>();
+  existingLineIds = new Set<string>();
+  updatedLineIds = new Set<string>();
+  deletedLineIds = new Set<string>();
 
   // UI mode
 
@@ -328,6 +332,9 @@ export class UnreviewedDetailComponent implements OnInit {
         this.record!.lineItems!.items =
           lineItems.items as unknown as LineItem[];
         // this.sortLineItems();
+        for (const lineItem of lineItems.items as LineItem[]) {
+          this.existingLineIds.add(lineItem.id);
+        }
       });
       // get our associated image     
       this.getImage(id);
@@ -672,10 +679,10 @@ export class UnreviewedDetailComponent implements OnInit {
                 menuText: 'Delete Word',
                 menuEvent: 'delete word',
               },
-              {
-                menuText: 'Adjust Box',
-                menuEvent: 'adjust word box',
-              },
+              // {
+              //   menuText: 'Adjust Box',
+              //   menuEvent: 'adjust word box',
+              // },
               {
                 menuText: 'Cancel',
                 menuEvent: 'cancel',
@@ -847,39 +854,6 @@ export class UnreviewedDetailComponent implements OnInit {
     return this.texRect2osdRect(boundingBox);
   }
 
-  createLineItem(
-    lineItem: LineItem | null | undefined = undefined,
-    rect: Rect | undefined = undefined
-  ) {
-    let newLineItem = {
-      id: uuidv4() as string,
-      probateId: this.record!.id,
-      description: '',
-      title: '',
-      category: '',
-      subcategory: '',
-      value: 0.0,
-      quantity: 0,
-      attributeForId: '',
-      wordIds: [],
-      boundingBox: {
-        left: rect?.left || 0,
-        top: rect?.top || 0,
-        width: rect?.width || 0,
-        height: rect?.height || 0,
-      },
-      confidence: 1.0,
-      lowerTitle: '',
-    };
-
-    this.probateRecordService.CreateLineItem(
-      { ...newLineItem, ...lineItem }
-    ).then((addedLineItem) => {
-      this.record!.lineItems?.items.push(addedLineItem);
-
-    });
-
-  }
 
   createLineItemAtLocation(rect: Rect | undefined): LineItem {
     // Use as const with __typename https://github.com/dotansimha/graphql-code-generator/issues/3610
@@ -906,6 +880,7 @@ export class UnreviewedDetailComponent implements OnInit {
       updatedAt: '0',
     };
 
+    this.newLineIds.add(newLineItem.id);
     return newLineItem;
   }
 
@@ -987,7 +962,10 @@ export class UnreviewedDetailComponent implements OnInit {
         subcategorySelect?.appendChild(optionElement);
       }
     }
-    // this.updateLineItemByIndex(lineIndex, 'category', category);
+    let lineItem = this.record!.lineItems!.items[lineIndex];
+    lineItem!.category = selectObject.value;
+    this.isDirty = true; 
+    this.updatedLineIds.add(lineItem!.id);
   }
 
   getWordsOfLine(line: LineItem): Word[] {
@@ -1200,10 +1178,7 @@ export class UnreviewedDetailComponent implements OnInit {
     updatedText = updatedText.trim();
     line.title = updatedText;
 
-    // Remove blank words
-    // this.record!.words = this.record!.words.filter(
-    //   (w) => !wordIdsToRemove.includes(w!.id)
-    // ) as Word[];
+    this.updatedLineIds.add(line.id);
   }
 
   editLineItemByIndex(index: number): void {
@@ -1293,7 +1268,13 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
 
-  onSubcategoryChanged(lineIndex: number): void { }
+  onSubcategoryChanged(lineIndex: number): void {    
+    let lineItem = this.record!.lineItems!.items[lineIndex];
+    let subcategoryElem = document.getElementById(`subcategory-${lineIndex}`) as HTMLInputElement;
+    lineItem!.subcategory = subcategoryElem.value;
+    this.isDirty = true; 
+    this.updatedLineIds.add(lineItem!.id);
+  }
 
   drop(event: CdkDragDrop<LineItem[]>) {
     let lineItem = this.record!.lineItems!.items[event.previousIndex] as LineItem;
@@ -1390,7 +1371,13 @@ export class UnreviewedDetailComponent implements OnInit {
     let wordsToDelete = (this.record!.words as Word[]).filter(w => lineItem.wordIds.includes(w.id));
     this.deletedLineWordsMap.set(lineItem.id, wordsToDelete);
     this.record!.words = (this.record!.words as Word[]).filter(w => !lineItem.wordIds.includes(w.id));
-
+    if (this.newLineIds.has(lineItem.id)) {
+      this.newLineIds.delete(lineItem.id);
+    }
+    if (this.updatedLineIds.has(lineItem.id)) {
+      this.updatedLineIds.delete(lineItem.id);
+    }
+    this.deletedLineIds.add(lineItem.id);
   }
 
   // Commands
@@ -1404,6 +1391,12 @@ export class UnreviewedDetailComponent implements OnInit {
             let index = bulkCommand.lineItemIndexMap.get(lineItem.id);
             this.record!.lineItems!.items.splice(index!, 0, lineItem);
             this.record!.words = this.record!.words.concat(bulkCommand.wordMap.get(lineItem.id) as Word[]);
+            if (!this.existingLineIds.has(lineItem.id)) {
+              this.newLineIds.add(lineItem.id);
+            }
+            else {
+              this.updatedLineIds.add(lineItem.id);
+            }
           }
         }
           break;
@@ -1443,9 +1436,10 @@ export class UnreviewedDetailComponent implements OnInit {
 
         case CommandType.CreateLine: {
           let lineItemCommand = command as LineItemCommand;
-          let line = lineItemCommand.lineItem;
-          this.record!.words = (this.record!.words as Word[]).filter(w => !line.wordIds.includes(w.id));
-          this.record!.lineItems!.items = (this.record!.lineItems!.items as LineItem[]).filter(l => l.id != line.id);
+          let lineItem = lineItemCommand.lineItem;
+          this.record!.words = (this.record!.words as Word[]).filter(w => !lineItem.wordIds.includes(w.id));
+          this.record!.lineItems!.items = (this.record!.lineItems!.items as LineItem[]).filter(l => l.id != lineItem.id);
+          this.newLineIds.delete(lineItem.id);
         }
           break;
         case CommandType.MoveLine: {
@@ -1510,4 +1504,50 @@ export class UnreviewedDetailComponent implements OnInit {
     });
   }
 
+  async save() {
+    // update line items
+    let updateLineItems = (this.record!.lineItems!.items as LineItem[]).filter(l => this.updatedLineIds.has(l.id));
+    let updatedLineItemInputs = updateLineItems.map(l => ({
+      id: l.id,
+      probateId: this.record!.id,
+      wordIds: l.wordIds,
+      title: l.title,
+      description: l.description,
+      category: l.category,
+      subcategory: l.subcategory,
+      quantity: l.quantity,
+      value: l.value,
+      boundingBox: {left: l.boundingBox!.left, top: l.boundingBox!.top, width: l.boundingBox!.width, height: l.boundingBox!.height},
+      attributeForId: l.attributeForId,
+    }));
+    console.log('updating ' + updateLineItems.length + ' lines');
+    for(const updatedLineItemInput of updatedLineItemInputs) {
+      let response = await this.probateRecordService.UpdateLineItem(updatedLineItemInput);
+      console.log(response);
+    }
+
+    // update record
+    let updatedWords = (Array.from(this.record!.words) as Word[]).map((w) => ({
+      id: w.id,
+      text: w.text,
+      boundingBox: {
+        left: w.boundingBox!.left,
+        top: w.boundingBox!.top,
+        width: w.boundingBox!.width,
+        height: w.boundingBox!.height,
+      },
+      // confidence: w.confidence,
+      // lowerText: w.lowerText
+    }));
+    let reviewCount = this.record!.reviewCount;
+    if (this.isReviewed) {
+      reviewCount++;
+    }
+    let item = { id: this.record!.id, reviewCount, words: updatedWords };
+    let response = await this.probateRecordService.UpdateProbateRecord(
+      item
+    );
+    console.log(response);
+    alert('record updated');
+  }
 }
