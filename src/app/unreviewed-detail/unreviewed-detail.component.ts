@@ -657,7 +657,7 @@ export class UnreviewedDetailComponent implements OnInit {
     let rows = this.getRowsOfText(words);
     let orderedWords: Word[] = [];
     for (const row of rows) {
-      orderedWords.concat(row);
+      orderedWords = orderedWords.concat(row);
     }
 
     return orderedWords;
@@ -1248,6 +1248,19 @@ export class UnreviewedDetailComponent implements OnInit {
         break;
         case CommandType.DeleteWord: {
           let wordCommand = command as WordCommand;
+          let word = wordCommand.word;
+          this.record!.words.push(word);
+          let lineItem = (this.record!.lineItems!.items as LineItem[]).find(l => l.id === wordCommand.lineItemId);
+          if(lineItem) {
+            lineItem.wordIds.push(word.id);
+            let orderedWords = this.getOrderedWordsForLineItem(lineItem);
+            lineItem.wordIds = orderedWords.map(w => w.id);
+            this.updateLineItemText(lineItem);
+
+            if(this.isEditing()) {
+              this.showInputsForWords(orderedWords);
+            }
+          }
 
         }
         break;
