@@ -56,6 +56,7 @@ interface LineItemCommand extends Command {
   lineItem: LineItem;
   words?: Word[];
   operation: OperationType;
+  rowIndex?: number;
 }
 
 interface WordCommand extends Command {
@@ -320,7 +321,6 @@ export class UnreviewedDetailComponent implements OnInit {
     );
 
     record$.subscribe((record) => {
-      console.log(record);
       this.record = record as ProbateRecord;
       for (const word of this.record.words) {
         if (word) {
@@ -424,7 +424,6 @@ export class UnreviewedDetailComponent implements OnInit {
   };
 
   async getImage(id: string): Promise<void> {
-    console.log('getting records');
 
     const infoUrl = `https://d2ai2qpooo3jtj.cloudfront.net/iiif/2/${id}/info.json`;
 
@@ -452,9 +451,7 @@ export class UnreviewedDetailComponent implements OnInit {
       clickHandler: (event) => {
         var target = (event as any).originalTarget as HTMLElement;
         if (target!.matches('input')) {
-          this.dragSelect.selectionMode = SelectionMode.None;
-          console.log('focus on ');
-          console.log(target);
+          this.dragSelect.selectionMode = SelectionMode.None;          
           target.style.display = 'block';
           target.focus();
           this.osd!.setMouseNavEnabled(false);
@@ -493,9 +490,7 @@ export class UnreviewedDetailComponent implements OnInit {
           ) {
             return;
           }
-          else {
-            console.log('press in bounding box');
-          }
+          
         }
 
         this.osd!.addOverlay(
@@ -507,7 +502,6 @@ export class UnreviewedDetailComponent implements OnInit {
       dragHandler: (event) => {
         let pos = this.getRelativeMousePosition(event.originalEvent as PointerEvent, this.osd!.canvas);
         let viewportPos = this.osd!.viewport.viewerElementToViewportCoordinates(new OpenSeadragon.Point(pos.x, pos.y));
-        // console.log(viewportPos);
         var diffX = viewportPos.x - this.dragSelect!.startPos.x;
         var diffY = viewportPos.y - this.dragSelect!.startPos.y;
 
@@ -542,61 +536,59 @@ export class UnreviewedDetailComponent implements OnInit {
               ) {
                 break;
               }
-              else {
-                console.log('drag inside of bounding box');
-              }
+              
             }
             this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);
             break;
-          case DragMode.Shorten:
-            line = this.selectedLines[0];
-            location = this.texRect2osdRect(line.boundingBox!);
-            if (diffX > 0) {
-              location.x += diffX;
-            }
-            location.width -= Math.abs(diffX);
-            this.osd!.updateOverlay(`boundingBox-${line.id}`, location);
-            break;
-          case DragMode.Extend:
-            line = this.selectedLines[0];
-            location = this.texRect2osdRect(line.boundingBox!);
-            if (diffX < 0) {
-              location.x += diffX;
-            }
-            location.width += Math.abs(diffX);
-            this.osd!.updateOverlay(`boundingBox-${line.id}`, location);
-            break;
-          case DragMode.Expand:
-            line = this.selectedLines[0];
-            location = this.texRect2osdRect(line.boundingBox!);
-            if (diffX < 0) {
-              location.x += diffX;
-            }
-            location.width += Math.abs(diffX);
-            if (diffY < 0) {
-              location.y += diffY;
-            }
-            location.height += Math.abs(diffY);
-            this.osd!.updateOverlay(`boundingBox-${line.id}`, location);
-            break;
-          case DragMode.Split:
-            line = this.selectedLines[0];
-            let boundingBox1Id = `boundingBox-${line.id}`;
-            let boundingBox2Id = `boundingBox-${line.id}-2`;
-            location = this.osd!.getOverlayById(boundingBox1Id).getBounds(
-              this.osd!.viewport
-            );
-            let location2 = this.osd!.getOverlayById(boundingBox2Id).getBounds(
-              this.osd!.viewport
-            );
-            location.width += diffX;
-            location2.width -= diffX;
-            location2.x += diffX;
-            this.osd!.updateOverlay(boundingBox1Id, location);
-            this.osd!.updateOverlay(boundingBox2Id, location2);
-            this.dragSelect!.startPos.x = viewportPos.x;
-            this.dragSelect!.startPos.y = viewportPos.y;
-            break;
+          // case DragMode.Shorten:
+          //   line = this.selectedLines[0];
+          //   location = this.texRect2osdRect(line.boundingBox!);
+          //   if (diffX > 0) {
+          //     location.x += diffX;
+          //   }
+          //   location.width -= Math.abs(diffX);
+          //   this.osd!.updateOverlay(`boundingBox-${line.id}`, location);
+          //   break;
+          // case DragMode.Extend:
+          //   line = this.selectedLines[0];
+          //   location = this.texRect2osdRect(line.boundingBox!);
+          //   if (diffX < 0) {
+          //     location.x += diffX;
+          //   }
+          //   location.width += Math.abs(diffX);
+          //   this.osd!.updateOverlay(`boundingBox-${line.id}`, location);
+          //   break;
+          // case DragMode.Expand:
+          //   line = this.selectedLines[0];
+          //   location = this.texRect2osdRect(line.boundingBox!);
+          //   if (diffX < 0) {
+          //     location.x += diffX;
+          //   }
+          //   location.width += Math.abs(diffX);
+          //   if (diffY < 0) {
+          //     location.y += diffY;
+          //   }
+          //   location.height += Math.abs(diffY);
+          //   this.osd!.updateOverlay(`boundingBox-${line.id}`, location);
+          //   break;
+          // case DragMode.Split:
+          //   line = this.selectedLines[0];
+          //   let boundingBox1Id = `boundingBox-${line.id}`;
+          //   let boundingBox2Id = `boundingBox-${line.id}-2`;
+          //   location = this.osd!.getOverlayById(boundingBox1Id).getBounds(
+          //     this.osd!.viewport
+          //   );
+          //   let location2 = this.osd!.getOverlayById(boundingBox2Id).getBounds(
+          //     this.osd!.viewport
+          //   );
+          //   location.width += diffX;
+          //   location2.width -= diffX;
+          //   location2.x += diffX;
+          //   this.osd!.updateOverlay(boundingBox1Id, location);
+          //   this.osd!.updateOverlay(boundingBox2Id, location2);
+          //   this.dragSelect!.startPos.x = viewportPos.x;
+          //   this.dragSelect!.startPos.y = viewportPos.y;
+          //   break;
         }
       },
       releaseHandler: (event) => {
@@ -655,7 +647,6 @@ export class UnreviewedDetailComponent implements OnInit {
 
   displayContextMenu(event: any): void {
     this.isDisplayContextMenu = true;
-    console.log(event);
     switch (this.selectedLines.length) {
       case 0:
         this.rightClickMenuItems = [
@@ -703,27 +694,27 @@ export class UnreviewedDetailComponent implements OnInit {
           ];
         }
         else {
-          console.log('showing select lines context menu');
+          // console.log('showing select lines context menu');
           this.rightClickMenuItems = [
-            {
-              menuText: 'Split',
-              menuEvent: 'split',
-            },
-            {
-              menuText: 'Extend',
-              menuEvent: 'extend',
-            },
-            {
-              menuText: 'Shorten',
-              menuEvent: 'shorten',
-            },
-            {
-              menuText: 'Expand',
-              menuEvent: 'expand',
-            },
+            // {
+            //   menuText: 'Split',
+            //   menuEvent: 'split',
+            // },
+            // {
+            //   menuText: 'Extend',
+            //   menuEvent: 'extend',
+            // },
+            // {
+            //   menuText: 'Shorten',
+            //   menuEvent: 'shorten',
+            // },
+            // {
+            //   menuText: 'Expand',
+            //   menuEvent: 'expand',
+            // },
             {
               menuText: 'Correct Text',
-              menuEvent: 'correct',
+              menuEvent: 'correct text',
             },
             {
               menuText: 'Delete Line',
@@ -736,13 +727,13 @@ export class UnreviewedDetailComponent implements OnInit {
           ];
         }
         break;
-      default:
-        this.rightClickMenuItems = [
-          {
-            menuText: 'Combine',
-            menuEvent: 'combine',
-          },
-        ];
+      // default:
+      //   this.rightClickMenuItems = [
+      //     {
+      //       menuText: 'Combine',
+      //       menuEvent: 'combine',
+      //     },
+      //   ];
     }
     this.rightClickMenuPositionX = event.clientX;
     this.rightClickMenuPositionY = event.clientY;
@@ -778,19 +769,12 @@ export class UnreviewedDetailComponent implements OnInit {
     } as unknown as Word;
     this.record!.words.push(word);
     this.selectedLines[0].wordIds.push(word.id);
-
-    let words = (this.record!.words as Word[]).filter(w => this.selectedLines[0].wordIds.includes(w.id));
-    console.log('words after word creation');
-    console.log(words);
-    let rows = this.getRowsOfText(words);
-    console.log('rows');
-    console.log(rows);
+    let words = (this.record!.words as Word[]).filter(w => this.selectedLines[0].wordIds.includes(w.id));    
+    let rows = this.getRowsOfText(words);    
     let orderedIds: string[] = [];
     for (const row of rows) {
       orderedIds = orderedIds.concat(row.map(w => w.id));
-    }
-    console.log('orderedIds');
-    console.log(orderedIds);
+    }    
     this.selectedLines[0].wordIds = orderedIds;
     this.showInputsForWords(words);
     this.table.renderRows();
@@ -884,6 +868,11 @@ export class UnreviewedDetailComponent implements OnInit {
     return newLineItem;
   }
 
+  showWordInputsForLine(lineItem: LineItem) {
+    let words = (this.record!.words as Word[]).filter(w => lineItem.wordIds.includes(w.id));    
+    this.showInputsForWords(words);
+  }
+
   handleMenuItemClick(event: any) {
     let selectOverlay = this.osd!.getOverlayById('select');
     let location = (selectOverlay) ? this.osd!.getOverlayById('select').getBounds(
@@ -898,7 +887,6 @@ export class UnreviewedDetailComponent implements OnInit {
         this.commands.push({ type: CommandType.CreateWord, operation: OperationType.Create, wasDirtyBeforeCommand: this.isDirty, word, lineItemId: this.selectedLines[0].id });
         this.isDirty = true;
         this.table.renderRows();
-        console.log('created word');
         break;
       case 'delete word':
         if (this.selectedWord) {
@@ -910,9 +898,7 @@ export class UnreviewedDetailComponent implements OnInit {
         }
         break;
       case 'create line': {
-        let lineItem = this.createLineItemAtLocation(this.osdRect2texRect(location));
-        console.log('lineItem created');
-        console.log(lineItem);
+        let lineItem = this.createLineItemAtLocation(this.osdRect2texRect(location));       
         this.record!.lineItems!.items.push(lineItem);
         this.commands.push({ type: CommandType.CreateLine, operation: OperationType.Create, wasDirtyBeforeCommand: this.isDirty, lineItem });
         this.isDirty = true;
@@ -924,6 +910,17 @@ export class UnreviewedDetailComponent implements OnInit {
         this.enterEditMode();
       }
         break;
+      case 'delete line': {        
+        this.bulkDeleteLines(this.selectedLines);
+        this.osd!.clearOverlays();
+      }
+      break;
+      case 'correct text':
+        this.highlightLine(this.selectedLines[0]);
+        this.showWordInputsForLine(this.selectedLines[0]);
+        this.enterEditMode();
+        break;
+      
     }
     this.isDisplayContextMenu = false;
   }
@@ -1398,6 +1395,9 @@ export class UnreviewedDetailComponent implements OnInit {
             else {
               this.updatedLineIds.add(lineItem.id);
             }
+            if(this.deletedLineIds.has(lineItem.id)) {
+              this.deletedLineIds.delete(lineItem.id);
+            }
           }
         }
           break;
@@ -1451,6 +1451,10 @@ export class UnreviewedDetailComponent implements OnInit {
           }
         }
           break;
+        case CommandType.DeleteLine: {
+
+        }
+          break;
       }
       this.isDirty = command?.wasDirtyBeforeCommand!;
       this.table.renderRows();
@@ -1462,7 +1466,7 @@ export class UnreviewedDetailComponent implements OnInit {
     let wordMap = new Map<string, Word[]>();
     let wordIds = new Array<string>();
     let lineItemIndexMap = new Map<string, number>();
-
+    console.log(lineItemsToDelete);
     for (const lineItem of lineItemsToDelete) {
       lineItems.push({ ...lineItem });
       let words = (this.record!.words as Word[]).filter(w => lineItem.wordIds.includes(w.id));
@@ -1470,6 +1474,7 @@ export class UnreviewedDetailComponent implements OnInit {
       wordIds = wordIds.concat(words.map(w => w.id));
       const index = this.record!.lineItems!.items.indexOf(lineItem);
       lineItemIndexMap.set(lineItem.id, index);
+      this.deletedLineIds.add(lineItem.id);
     }
     this.commands.push({ type: CommandType.BulkDelete, operation: OperationType.Delete, wasDirtyBeforeCommand: this.isDirty, lineItems, wordMap, lineItemIndexMap });
 
@@ -1505,10 +1510,8 @@ export class UnreviewedDetailComponent implements OnInit {
     });
   }
 
-  async save() {
-    // update line items
-    let updateLineItems = (this.record!.lineItems!.items as LineItem[]).filter(l => this.updatedLineIds.has(l.id));
-    let updatedLineItemInputs = updateLineItems.map(l => ({
+  mapToUpdateLineItemInput(lineItems: LineItem []): UpdateLineItemInput[] | CreateLineItemInput {
+    return lineItems ? lineItems.map(l => ({
       id: l.id,
       probateId: this.record!.id,
       wordIds: l.wordIds,
@@ -1520,13 +1523,33 @@ export class UnreviewedDetailComponent implements OnInit {
       value: l.value,
       boundingBox: {left: l.boundingBox!.left, top: l.boundingBox!.top, width: l.boundingBox!.width, height: l.boundingBox!.height},
       attributeForId: l.attributeForId,
-    }));
+    })) : [];
+  }
+
+  async save() {
+    // create line items
+    let createLineItems = (this.record!.lineItems!.items as LineItem[]).filter(l => this.newLineIds.has(l.id));
+    let createLineItemInputs = this.mapToUpdateLineItemInput(createLineItems) as CreateLineItemInput[];
+    for(const createdLineItemInput of createLineItemInputs) {
+      let response = await this.probateRecordService.CreateLineItem(createdLineItemInput);
+      console.log(response);
+    }
+
+    // update line items
+    let updateLineItems = (this.record!.lineItems!.items as LineItem[]).filter(l => this.updatedLineIds.has(l.id));
+    let updatedLineItemInputs = this.mapToUpdateLineItemInput(updateLineItems) as UpdateLineItemInput[]; 
     console.log('updating ' + updateLineItems.length + ' lines');
     for(const updatedLineItemInput of updatedLineItemInputs) {
       let response = await this.probateRecordService.UpdateLineItem(updatedLineItemInput);
       console.log(response);
     }
 
+    // delete line items
+    this.deletedLineIds.forEach(async (id) => {
+      let response = await this.probateRecordService.DeleteLineItem({id});
+      console.log(response);
+    });
+    
     // update record
     let updatedWords = (Array.from(this.record!.words) as Word[]).map((w) => ({
       id: w.id,
@@ -1548,6 +1571,7 @@ export class UnreviewedDetailComponent implements OnInit {
     let response = await this.probateRecordService.UpdateProbateRecord(
       item
     );
+    this.isDirty = false;
     console.log(response);
     alert('record updated');
   }
