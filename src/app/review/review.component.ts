@@ -155,23 +155,27 @@ export class ReviewComponent implements OnInit {
   }
 
   setupListeners(): void {
-    // window.addEventListener('keyup', (ev) => {
-    //   console.log('keyup');
-    //   if (ev.ctrlKey) {
-    //     switch (ev.key) {
-    //       case 'z':
-    //         console.log('undo has been called');
-    //         this.undo();
-    //         break;
+    window.addEventListener('keyup', (ev) => {
+      
+      if ((ev.target as HTMLInputElement).localName != 'input') {
+        console.log('keyup');
+        console.log(ev.target as HTMLElement);
+        if (ev.ctrlKey) {
+          switch (ev.key) {
+            case 'z':
+              console.log('undo has been called');
+              this.undo();
+              break;
 
-    //       case 'y': {
-    //         console.log('redo has been called');
-    //         this.redo();
-    //       }
-    //     }
-    //   }
-    //   ev.preventDefault();
-    // });
+            case 'y': {
+              console.log('redo has been called');
+              this.redo();
+            }
+          }
+        }
+        ev.preventDefault();
+      }
+    });
   }
 
   displayContextMenu(event: any): void {
@@ -485,12 +489,12 @@ export class ReviewComponent implements OnInit {
         let minMax = this.selectedLines.reduce((acc, val) => {
           acc[0] =
             acc[0] === undefined ||
-            val.boundingBox!.top < acc[0].boundingBox!.top
+              val.boundingBox!.top < acc[0].boundingBox!.top
               ? val
               : acc[0];
           acc[1] =
             acc[1] === undefined ||
-            val.boundingBox!.top + val.boundingBox!.height >
+              val.boundingBox!.top + val.boundingBox!.height >
               acc[1].boundingBox!.top + acc[1].boundingBox!.height
               ? val
               : acc[1];
@@ -507,12 +511,12 @@ export class ReviewComponent implements OnInit {
         minMax = this.selectedLines.reduce((acc, val) => {
           acc[0] =
             acc[0] === undefined ||
-            val.boundingBox!.left < acc[0].boundingBox!.left
+              val.boundingBox!.left < acc[0].boundingBox!.left
               ? val
               : acc[0];
           acc[1] =
             acc[1] === undefined ||
-            val.boundingBox!.left + val.boundingBox!.width >
+              val.boundingBox!.left + val.boundingBox!.width >
               acc[1].boundingBox!.left + acc[1].boundingBox!.width
               ? val
               : acc[1];
@@ -1398,7 +1402,7 @@ export class ReviewComponent implements OnInit {
                       return;
                     }
                     // do not create a new word if clicking outside of line bounding box
-                    
+
 
                     console.log('creating word');
                     // create new word
@@ -1414,7 +1418,7 @@ export class ReviewComponent implements OnInit {
                     // create input box above boundingBox
                     this.createInputBoxForWord(word, this.selectedLines[0]);
                   }
-                  else if(this.dragSelect.editMode === EditMode.AdjustWord) {
+                  else if (this.dragSelect.editMode === EditMode.AdjustWord) {
                     this.callAdjustBoundingBoxForWord(this.activeWord!.id, this.activeWord!.boundingBox!, this.osdRect2texRect(location));
                     this.correctText();
                   }

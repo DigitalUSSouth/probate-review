@@ -1,3 +1,4 @@
+import Auth from '@aws-amplify/auth';
 import { Component, OnInit } from '@angular/core';
 import { Document, ProbateRecord, APIService, ListProbateRecordsQuery, ModelProbateRecordFilterInput} from '../API.service';
 import {PageEvent} from '@angular/material/paginator';
@@ -20,7 +21,10 @@ export class RecordsComponent implements OnInit {
   displayedColumns: string[] = ['thumbnail', 'title', 'description'];
   nextToken: string | undefined;
 
-  constructor(private recordService: APIService) { }  
+  constructor(private recordService: APIService) {
+    // https://stackoverflow.com/questions/52494919/mattabledatasource-cannot-read-property-length-of-undefined
+    this.records = [];
+  }  
 
   setPageSizeOptions(setPageSizeOptionsInput: string) {
     if (setPageSizeOptionsInput) {
@@ -28,7 +32,12 @@ export class RecordsComponent implements OnInit {
     }
   }
 
-  ngOnInit(): void {    
+  ngOnInit(): void { 
+    Auth.currentAuthenticatedUser().then((user) => {
+      console.log(user);
+      this.displayedColumns.push('move');
+    });
+
     this.fetchRcords();    
   }
 
@@ -53,5 +62,14 @@ export class RecordsComponent implements OnInit {
     }
     this.pageIndex = event.pageIndex;
     this.fetchRcords();
+  }
+
+  async moveRecordToUnreviewed(id: string) {
+    let record = (this.records as ProbateRecord[]).find(r => r.id === id);
+    if(record) {
+      await this.recordService.UpdateProbateRecord({id: id, reviewCount: 0});
+      this.records = (this.records as ProbateRecord[]).filter(r => r.id != id);      
+    }
+
   }
 }

@@ -24,6 +24,12 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import { SearchComponent } from './search/search.component';
 import { FormsModule } from '@angular/forms';
 import { SearchResultsComponent } from './search-results/search-results.component';
+import { UnreviewedDetailComponent } from './unreviewed-detail/unreviewed-detail.component';
+import { AngularSplitModule } from 'angular-split';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import { ConfirmDeleteDialogComponent } from './confirm-delete-dialog/confirm-delete-dialog.component';
+import {MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS} from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -36,7 +42,9 @@ import { SearchResultsComponent } from './search-results/search-results.componen
     ContextMenuComponent,
     UnreviewedComponent,
     SearchComponent,
-    SearchResultsComponent
+    SearchResultsComponent,
+    UnreviewedDetailComponent,
+    ConfirmDeleteDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -52,9 +60,15 @@ import { SearchResultsComponent } from './search-results/search-results.componen
     MatProgressSpinnerModule,
     MatMenuModule,
     MatToolbarModule,
-    FormsModule
+    FormsModule,
+    AngularSplitModule,
+    DragDropModule,
+    MatCheckboxModule,
+    MatDialogModule
   ],
-  providers: [],
+  providers: [
+    {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {hasBackdrop: false}}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,6 +1,29 @@
+@use '@angular/material' as mat
+@include mat.core()
+
+@import "../../node_modules/@angular/material/theming"
+
 $primary-color: #73000a
 $secondary-color: #000
 $even-row-color: #dbe1f1
 $odd-row-color: #96adfc
 $cell-text-color: black
 $primary-text-color: white
+
+// https://stackoverflow.com/questions/66124756/sasserror-expected
+$usc-palette:(50: #f5e5e8, 100: #e7c0c4, 200: #c88586, 300: #af585a, 400: #b03638, 500: #ac1f1f, 600: #9f171e, 700: #900e19, 800: #830713, 900: #73000a,  contrast: (50 : #000000, 100 : #000000, 200 : #000000, 300 : #ffffff, 400 : #ffffff, 500 : #ffffff, 600 : #ffffff, 700 : #ffffff, 800 : #ffffff, 900 : #ffffff))
+
+$usc-app-primary: mat-palette($usc-palette, 900)
+$usc-app-accent: mat-palette($mat-grey, 600, 500, 900)
+$usc-app-warn: mat-palette($mat-orange)
+
+// Create the theme object (a Sass map containing all of the palettes).
+$usc-app-theme: mat-light-theme($usc-app-primary, $usc-app-accent, $usc-app-warn)
+
+// here I am only calling checkbox mixin because i only want to change the checkbox color     
+@include mat-checkbox-theme($usc-app-theme)
+@include mat-button-theme($usc-app-theme)
+@include mat-dialog-theme($usc-app-theme)
+@include mat-input-theme($usc-app-theme)
+
+@include mat-core-theme($usc-app-theme)

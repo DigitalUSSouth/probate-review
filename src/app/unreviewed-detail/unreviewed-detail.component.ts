@@ -1,0 +1,1554 @@
+import {
+  Component,
+  OnInit,
+  Input,
+  ViewChild,
+  ElementRef,
+  Renderer2,
+  HostListener,
+  ViewChildren,
+  QueryList
+} from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import OpenSeadragon from 'openseadragon';
+import {
+  ProbateRecord,
+  UpdateLineItemInput,
+  APIService,
+  UpdateProbateRecordInput,
+  LineItem,
+  Word,
+  WordInput,
+  Rect,
+  CreateLineItemInput,
+} from '../API.service';
+import data from '../categories.json';
+import { from } from 'rxjs';
+import { ContextMenuModel } from '../interfaces/context-menu-model';
+import { v4 as uuidv4 } from 'uuid';
+import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDropList } from '@angular/cdk/drag-drop';
+import { MatTable } from '@angular/material/table';
+import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
+import { BoundingBox } from '../quad-tree';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
+import { deleteLine, deleteWord } from 'src/graphql/mutations';
+import { MatButton } from '@angular/material/button';
+
+interface SubcategoryOptionValue {
+  value: string;
+  text: string;
+}
+
+interface Command {
+  type: CommandType;
+  wasDirtyBeforeCommand: boolean;
+}
+
+interface BulkLineItemCommand extends Command {
+  lineItems: LineItem[];
+  wordMap: Map<string, Word[]>;
+  lineItemIndexMap: Map<string, number>;
+  operation: OperationType;
+}
+
+interface LineItemCommand extends Command {
+  lineItem: LineItem;
+  words?: Word[];
+  operation: OperationType;
+}
+
+interface WordCommand extends Command {
+  word: Word;
+  lineItemId: string;
+  operation: OperationType;
+}
+
+interface MoveLineItemCommand extends Command {
+  lineItem: LineItem;
+  oldIndex: number;
+  newIndex: number;
+}
+
+interface DragSelect {
+  overlayElement: HTMLElement;
+  startPos: OpenSeadragon.Point;
+  isDragging: boolean;
+  selectionMode: SelectionMode;
+  editMode: EditMode;
+}
+
+interface LineItemResult {
+  lineItem?: LineItem;
+  rect?: Rect;
+}
+
+
+enum DragMode {
+  None,
+  Select,
+  Extend,
+  Shorten,
+  Expand,
+  Split,
+}
+
+
+enum SelectionMode {
+  None,
+  Line,
+  Word,
+}
+
+enum EditMode {
+  None,
+  Line,
+  Word,
+  AdjustWord,
+}
+
+enum CommandType {
+  BulkDelete,
+  DeleteLine,
+  DeleteWord,
+  CreateWord,
+  CreateLine,
+  AdjustBounds,
+  MoveLine,
+  Unknown
+}
+
+enum OperationType {
+  Create,
+  Delete,
+  Unknown
+}
+
+const InputBoxHeight = 20;
+
+@Component({
+  selector: 'app-unreviewed-detail',
+  templateUrl: './unreviewed-detail.component.html',
+  styleUrls: ['./unreviewed-detail.component.sass']
+})
+export class UnreviewedDetailComponent implements OnInit {
+  @Input() record?: ProbateRecord;
+  @ViewChild('viewer') viewer!: ElementRef;
+  @ViewChild('table') table!: MatTable<LineItem>;
+  @ViewChildren('checkbox') checkBoxes?: QueryList<MatCheckbox>;
+
+  // Image
+  osd?: OpenSeadragon.Viewer;
+  selectTracker?: OpenSeadragon.MouseTracker;
+  imageSize?: OpenSeadragon.Point;
+  aspectRatio = 0.0;
+  isNavigatorVisible = false;
+  dragSelect = {
+    overlayElement: null as unknown as HTMLDivElement,
+    startPos: new OpenSeadragon.Point(0, 0),
+    isDragging: false,
+    dragMode: DragMode.Select,
+    selectionMode: SelectionMode.None,
+    editMode: EditMode.None,
+  };
+
+  // Data table
+  displayedColumns: string[] = ['checked', 'title'];
+
+  // Context Menu
+  isDisplayContextMenu = false;
+  rightClickMenuItems: Array<ContextMenuModel> = [];
+  rightClickMenuPositionX = 0;
+  rightClickMenuPositionY = 0;
+
+  // Data  
+  isLineChecked = false;
+  isDirty = false;
+  isReviewed = false;
+
+  wordMap = new Map<string, Word>();
+
+  // Deleted data
+  deletedLines: LineItem[] = [];
+  deletedLineWordsMap = new Map<string, Word[]>();
+
+  // Categories
+  categoryMap: Map<string, Array<SubcategoryOptionValue>> =
+    this.objToStrMap(data);
+
+  // Commands
+  commands: Array<BulkLineItemCommand | LineItemCommand | WordCommand | MoveLineItemCommand> = [];
+
+  // Lines, Words
+  selectedLine: LineItem | null = null;
+  selectedWord: Word | null | undefined = null;
+  selectedLines: LineItem[] = [];
+  newLineIds = new Set<string>();
+  existingLineIds = new Set<string>();
+  updatedLineIds = new Set<string>();
+  deletedLineIds = new Set<string>();
+
+  // UI mode
+
+
+  constructor(
+    private route: ActivatedRoute,
+    private probateRecordService: APIService,
+    private renderer: Renderer2,
+    public dialog: MatDialog
+  ) { }
+
+  ngOnInit(): void {
+  }
+
+  recordsChecked(): number {
+    return this.checkBoxes ? (this.checkBoxes as QueryList<MatCheckbox>).filter((c: MatCheckbox) => c.checked == true).length : 0;
+  }
+
+  checkRow() {
+    this.isLineChecked = this.recordsChecked() > 0;
+  }
+
+  checkedCheckBoxesFilterFunction(checkBox: MatCheckbox): boolean {
+    return checkBox.checked;
+  }
+
+  isSelecting() {
+    return this.dragSelect.dragMode === DragMode.Select;
+  }
+
+  isEditing() {
+    return this.dragSelect.editMode != EditMode.None;
+  }
+
+  toggleAllChecks(event: MatCheckboxChange): void {
+    if (this.checkBoxes) {
+      for (const checkBox of this.checkBoxes) {
+        checkBox.checked = event.checked;
+      }
+      this.isLineChecked = event.checked;
+    }
+  }
+
+  toggleNav() {
+    if (this.isNavigatorVisible)
+      this.osd!.navigator.element.style.display = "none";
+    else
+      this.osd!.navigator.element.style.display = "inline-block";
+    this.isNavigatorVisible = !this.isNavigatorVisible;
+  }
+
+  showNav() {
+    this.osd!.navigator.element.style.display = "inline-block";
+    this.isNavigatorVisible = true;
+  }
+
+  hideNav() {
+    this.osd!.navigator.element.style.display = "none";
+    this.isNavigatorVisible = false;
+  }
+
+  enterEditMode() {
+    this.showNav();
+    this.osd!.setControlsEnabled(true);
+    let toolbarElem = document.getElementById('toolbarDiv');
+    if (toolbarElem) {
+      toolbarElem.style.display = "inline-block";
+    }
+    this.osd!.setMouseNavEnabled(false);
+    this.dragSelect.dragMode = DragMode.Select;
+    this.dragSelect.editMode = EditMode.Line;
+    this.dragSelect.selectionMode = SelectionMode.Word;
+  }
+
+  saveEdit() {
+    this.exitEditMode();
+  }
+
+  cancelEdit() {
+    this.exitEditMode();
+  }
+
+  exitEditMode() {
+    this.hideNav();
+    let toolbarElem = document.getElementById('toolbarDiv');
+    if (toolbarElem) {
+      toolbarElem.style.display = "none";
+    }
+    this.dragSelect.dragMode = DragMode.None;
+    this.dragSelect.editMode = EditMode.None;
+    this.dragSelect.isDragging = false;
+    this.selectedLines = [];
+    this.resetView();
+  }
+
+  enterSelectionMode() {
+    this.exitEditMode();
+    this.osd!.setMouseNavEnabled(false);
+    this.dragSelect.dragMode = DragMode.Select;
+    this.dragSelect.selectionMode = SelectionMode.Line;
+    this.dragSelect.editMode = EditMode.None;
+  }
+
+  exitSelectionMode() {
+    this.dragSelect.dragMode = DragMode.None;
+    this.dragSelect.selectionMode = SelectionMode.None;
+    this.dragSelect.isDragging = false;
+    this.resetView();
+  }
+
+  toggleSelectionMode() {
+    if (this.isSelecting()) {
+      this.exitSelectionMode();
+    }
+    else {
+      this.enterSelectionMode();
+    }
+  }
+
+  ngAfterViewInit(): void {
+    const id = String(this.route.snapshot.paramMap.get('id'));
+
+    let record$ = from(this.probateRecordService.GetProbateRecord(id));
+    let lineItems$ = from(
+      this.probateRecordService.LineItemByProbateRecord(
+        id,
+        undefined,
+        undefined,
+        1000
+      )
+    );
+
+    record$.subscribe((record) => {
+      console.log(record);
+      this.record = record as ProbateRecord;
+      for (const word of this.record.words) {
+        if (word) {
+          this.wordMap.set(word.id, word);
+        }
+      }
+
+      lineItems$.subscribe((lineItems) => {
+        this.record!.lineItems!.items =
+          lineItems.items as unknown as LineItem[];
+        // this.sortLineItems();
+        for (const lineItem of lineItems.items as LineItem[]) {
+          this.existingLineIds.add(lineItem.id);
+        }
+      });
+      // get our associated image     
+      this.getImage(id);
+    });
+  }
+
+  rectanglesIntersect(
+    minAx: number,
+    minAy: number,
+    maxAx: number,
+    maxAy: number,
+    minBx: number,
+    minBy: number,
+    maxBx: number,
+    maxBy: number
+  ): boolean {
+    return maxAx >= minBx && minAx <= maxBx && minAy <= maxBy && maxAy >= minBy;
+  }
+
+
+  // A line
+  // B selection rect
+  verticallyOverlapped(
+    minAy: number,
+    maxAy: number,
+    minBy: number,
+    maxBy: number
+  ) {
+    const threshold = 0.6;
+    let heightA = maxAy - minAy;
+    let allowedAmount = (1.0 - threshold) * heightA;
+    let isOverlapped = false;
+    if (minBy <= minAy) {
+      isOverlapped = maxBy > minAy && maxAy - maxBy < allowedAmount;
+    } else {
+      isOverlapped =
+        (minBy < maxAy && maxBy < maxAy) || minBy - minAy < allowedAmount;
+    }
+
+    return isOverlapped;
+  }
+
+
+  getSelectedLines(selectRect: OpenSeadragon.Rect): LineItem[] {
+    if (this.aspectRatio === 0.0) {
+      this.calculateAspectRatio();
+    }
+
+    let lines = new Array<LineItem>();
+    for (const line of this.record!.lineItems!.items) {
+      const boundingBox = line!.boundingBox;
+
+      const lineRect = this.texRect2osdRect(boundingBox!);
+      if (
+        line &&
+        this.rectanglesIntersect(
+          lineRect.x,
+          lineRect.y,
+          lineRect.x + lineRect.width,
+          lineRect.y + lineRect.height,
+          selectRect.x,
+          selectRect.y,
+          selectRect.x + selectRect.width,
+          selectRect.y + selectRect.height
+        ) &&
+        this.verticallyOverlapped(
+          lineRect.y,
+          lineRect.y + lineRect.height,
+          selectRect.y,
+          selectRect.y + selectRect.height
+        )
+      ) {
+        lines.push(line);
+      }
+    }
+
+    return lines;
+  }
+
+  getRelativeMousePosition = function (event: PointerEvent, target: HTMLElement | null | undefined = undefined) {
+    let pointTarget = target || event.target;
+    let rect = (pointTarget! as HTMLElement).getBoundingClientRect();
+    return {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+    };
+  };
+
+  async getImage(id: string): Promise<void> {
+    console.log('getting records');
+
+    const infoUrl = `https://d2ai2qpooo3jtj.cloudfront.net/iiif/2/${id}/info.json`;
+
+    let options = {
+      element: this.viewer.nativeElement,
+      showRotationControl: true,
+      // Enable touch rotation on tactile devices
+      gestureSettingsTouch: {
+        pinchToZoom: true,
+      },
+      autoHideControls: false,
+      showNavigator: true,
+      navigatorAutoFade: false,
+      maxZoomLevel: 5.0,
+      prefixUrl: '//openseadragon.github.io/openseadragon/images/',
+      tileSources: infoUrl,
+    };
+
+
+    this.osd = new OpenSeadragon.Viewer(options);
+    this.osd.addControl("toolbarDiv", { anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT, autoFade: false });
+    this.exitEditMode();
+    this.selectTracker = new OpenSeadragon.MouseTracker({
+      element: this.osd?.element as Element,
+      clickHandler: (event) => {
+        var target = (event as any).originalTarget as HTMLElement;
+        if (target!.matches('input')) {
+          this.dragSelect.selectionMode = SelectionMode.None;
+          console.log('focus on ');
+          console.log(target);
+          target.style.display = 'block';
+          target.focus();
+          this.osd!.setMouseNavEnabled(false);
+        }
+        else if (target!.matches('button') || target!.matches('span.mat-button-wrapper')) {
+          target.click();
+        }
+      },
+      pressHandler: (event) => {
+        let pos = this.getRelativeMousePosition(event.originalEvent as PointerEvent, this.osd!.canvas);
+        let viewportPos = this.osd!.viewport.viewerElementToViewportCoordinates(new OpenSeadragon.Point(pos.x, pos.y));
+
+        // check if we are in edit mode
+
+        this.dragSelect!.startPos = viewportPos;
+
+        let overlayElement: HTMLElement;
+        let line: LineItem;
+        let texRect: Rect;
+        let osdRect: OpenSeadragon.Rect;
+
+
+        this.dragSelect.isDragging = true;
+
+        overlayElement = this.createOverlayElement('select');
+        this.dragSelect.overlayElement = overlayElement as HTMLDivElement;
+        if (this.dragSelect.editMode === EditMode.Line) {
+          let selectedLineBoundingBox = this.osd!.getOverlayById(
+            `boundingBox-${this.selectedLines[0].id}`
+          ).getBounds(this.osd!.viewport);
+          if (
+            !this.osdRectangleContainsOsdPoint(
+              selectedLineBoundingBox,
+              viewportPos
+            )
+          ) {
+            return;
+          }
+          else {
+            console.log('press in bounding box');
+          }
+        }
+
+        this.osd!.addOverlay(
+          overlayElement,
+          new OpenSeadragon.Rect(viewportPos.x, viewportPos.y, 0, 0)
+        );
+
+      },
+      dragHandler: (event) => {
+        let pos = this.getRelativeMousePosition(event.originalEvent as PointerEvent, this.osd!.canvas);
+        let viewportPos = this.osd!.viewport.viewerElementToViewportCoordinates(new OpenSeadragon.Point(pos.x, pos.y));
+        // console.log(viewportPos);
+        var diffX = viewportPos.x - this.dragSelect!.startPos.x;
+        var diffY = viewportPos.y - this.dragSelect!.startPos.y;
+
+        let location: OpenSeadragon.Rect;
+        let line: LineItem;
+
+        switch (this.dragSelect.dragMode) {
+          case DragMode.Select:
+            location = new OpenSeadragon.Rect(
+              Math.min(
+                this.dragSelect!.startPos.x,
+                this.dragSelect!.startPos.x + diffX
+              ),
+              Math.min(
+                this.dragSelect!.startPos.y,
+                this.dragSelect!.startPos.y + diffY
+              ),
+              Math.abs(diffX),
+              Math.abs(diffY)
+            );
+
+            if (this.dragSelect.editMode === EditMode.Line) {
+              // do not allow user to select word bounds outside line item bounds
+              let selectedLineBoundingBox = this.osd!.getOverlayById(
+                `boundingBox-${this.selectedLines[0].id}`
+              ).getBounds(this.osd!.viewport);
+              if (
+                !this.osdRectangleContainsOsdRectangle(
+                  selectedLineBoundingBox,
+                  location
+                )
+              ) {
+                break;
+              }
+              else {
+                console.log('drag inside of bounding box');
+              }
+            }
+            this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);
+            break;
+          case DragMode.Shorten:
+            line = this.selectedLines[0];
+            location = this.texRect2osdRect(line.boundingBox!);
+            if (diffX > 0) {
+              location.x += diffX;
+            }
+            location.width -= Math.abs(diffX);
+            this.osd!.updateOverlay(`boundingBox-${line.id}`, location);
+            break;
+          case DragMode.Extend:
+            line = this.selectedLines[0];
+            location = this.texRect2osdRect(line.boundingBox!);
+            if (diffX < 0) {
+              location.x += diffX;
+            }
+            location.width += Math.abs(diffX);
+            this.osd!.updateOverlay(`boundingBox-${line.id}`, location);
+            break;
+          case DragMode.Expand:
+            line = this.selectedLines[0];
+            location = this.texRect2osdRect(line.boundingBox!);
+            if (diffX < 0) {
+              location.x += diffX;
+            }
+            location.width += Math.abs(diffX);
+            if (diffY < 0) {
+              location.y += diffY;
+            }
+            location.height += Math.abs(diffY);
+            this.osd!.updateOverlay(`boundingBox-${line.id}`, location);
+            break;
+          case DragMode.Split:
+            line = this.selectedLines[0];
+            let boundingBox1Id = `boundingBox-${line.id}`;
+            let boundingBox2Id = `boundingBox-${line.id}-2`;
+            location = this.osd!.getOverlayById(boundingBox1Id).getBounds(
+              this.osd!.viewport
+            );
+            let location2 = this.osd!.getOverlayById(boundingBox2Id).getBounds(
+              this.osd!.viewport
+            );
+            location.width += diffX;
+            location2.width -= diffX;
+            location2.x += diffX;
+            this.osd!.updateOverlay(boundingBox1Id, location);
+            this.osd!.updateOverlay(boundingBox2Id, location2);
+            this.dragSelect!.startPos.x = viewportPos.x;
+            this.dragSelect!.startPos.y = viewportPos.y;
+            break;
+        }
+      },
+      releaseHandler: (event) => {
+        let pos = this.getRelativeMousePosition(event.originalEvent as PointerEvent, this.osd!.canvas);
+        let viewportPos = this.osd!.viewport.viewerElementToViewportCoordinates(new OpenSeadragon.Point(pos.x, pos.y));
+        var diffX = viewportPos.x - this.dragSelect!.startPos.x;
+        var diffY = viewportPos.y - this.dragSelect!.startPos.y;
+        let location = new OpenSeadragon.Rect(
+          Math.min(
+            this.dragSelect!.startPos.x,
+            this.dragSelect!.startPos.x + diffX
+          ),
+          Math.min(
+            this.dragSelect!.startPos.y,
+            this.dragSelect!.startPos.y + diffY
+          ),
+          Math.abs(diffX),
+          Math.abs(diffY)
+        );
+
+        switch (this.dragSelect.dragMode) {
+          case DragMode.Select:
+            switch (this.dragSelect.selectionMode) {
+              case SelectionMode.Line:
+                this.selectedLines = this.getSelectedLines(location);
+                for (const line of this.selectedLines) {
+                  const selectElem = this.createOverlayElement(
+                    `boundingBox-${line.id}`,
+                    'selected-line'
+                  );
+                  this.osd!.addOverlay(
+                    selectElem,
+                    this.texRect2osdRect(line.boundingBox!)
+                  );
+                }
+                break;
+            }
+            break;
+        }
+
+      },
+    });
+  }
+
+  sortLineItems(): void {
+    if (this.record?.lineItems?.items) {
+      let items: Array<LineItem> = Array.from(
+        this.record.lineItems.items as LineItem[]
+      );
+      let sortedLineItems = items.sort(
+        (a, b) => a!.boundingBox!.top - b!.boundingBox!.top
+      );
+      this.record.lineItems.items = sortedLineItems;
+    }
+  }
+
+  displayContextMenu(event: any): void {
+    this.isDisplayContextMenu = true;
+    console.log(event);
+    switch (this.selectedLines.length) {
+      case 0:
+        this.rightClickMenuItems = [
+          {
+            menuText: 'Create Line',
+            menuEvent: 'create line',
+          },
+        ];
+        break;
+
+      case 1:
+        if (event.target.id.startsWith('wordInput-')) {
+          let wordId = event.target.id.substring('wordInput-'.length);
+          this.selectedWord = (this.record!.words as Word[]).filter(w => w.id == wordId).pop();
+          let inputElem = document.getElementById(
+            event.target.id
+          ) as HTMLInputElement;
+          if (inputElem === document.activeElement) {
+            this.rightClickMenuItems = [
+              {
+                menuText: 'Delete Word',
+                menuEvent: 'delete word',
+              },
+              // {
+              //   menuText: 'Adjust Box',
+              //   menuEvent: 'adjust word box',
+              // },
+              {
+                menuText: 'Cancel',
+                menuEvent: 'cancel',
+              },
+            ];
+          }
+        }
+        else if (event.target.id == 'select') {
+          this.rightClickMenuItems = [
+            {
+              menuText: 'Create Word',
+              menuEvent: 'create word',
+            },
+            {
+              menuText: 'Cancel',
+              menuEvent: 'cancel',
+            }
+          ];
+        }
+        else {
+          console.log('showing select lines context menu');
+          this.rightClickMenuItems = [
+            {
+              menuText: 'Split',
+              menuEvent: 'split',
+            },
+            {
+              menuText: 'Extend',
+              menuEvent: 'extend',
+            },
+            {
+              menuText: 'Shorten',
+              menuEvent: 'shorten',
+            },
+            {
+              menuText: 'Expand',
+              menuEvent: 'expand',
+            },
+            {
+              menuText: 'Correct Text',
+              menuEvent: 'correct',
+            },
+            {
+              menuText: 'Delete Line',
+              menuEvent: 'delete line',
+            },
+            {
+              menuText: 'Cancel',
+              menuEvent: 'cancel',
+            }
+          ];
+        }
+        break;
+      default:
+        this.rightClickMenuItems = [
+          {
+            menuText: 'Combine',
+            menuEvent: 'combine',
+          },
+        ];
+    }
+    this.rightClickMenuPositionX = event.clientX;
+    this.rightClickMenuPositionY = event.clientY;
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  getRightClickMenuStyle() {
+    return {
+      position: 'fixed',
+      left: `${this.rightClickMenuPositionX}px`,
+      top: `${this.rightClickMenuPositionY}px`,
+    };
+  }
+
+  getOrderedWordsForLineItem(line: LineItem): Word[] {
+    let words = (this.record!.words as Word[]).filter(w => this.selectedLines[0].wordIds.includes(w.id));
+    let rows = this.getRowsOfText(words);
+    let orderedWords: Word[] = [];
+    for (const row of rows) {
+      orderedWords = orderedWords.concat(row);
+    }
+
+    return orderedWords;
+  }
+
+  createWordAtLocation(location: OpenSeadragon.Rect): Word {
+    let word = {
+      __typename: 'Word',
+      text: '',
+      id: uuidv4(),
+      boundingBox: this.osdRect2texRect(location),
+    } as unknown as Word;
+    this.record!.words.push(word);
+    this.selectedLines[0].wordIds.push(word.id);
+
+    let words = (this.record!.words as Word[]).filter(w => this.selectedLines[0].wordIds.includes(w.id));
+    console.log('words after word creation');
+    console.log(words);
+    let rows = this.getRowsOfText(words);
+    console.log('rows');
+    console.log(rows);
+    let orderedIds: string[] = [];
+    for (const row of rows) {
+      orderedIds = orderedIds.concat(row.map(w => w.id));
+    }
+    console.log('orderedIds');
+    console.log(orderedIds);
+    this.selectedLines[0].wordIds = orderedIds;
+    this.showInputsForWords(words);
+    this.table.renderRows();
+    return word;
+  }
+
+  deleteWord(word: Word) {
+    this.record!.words = (this.record!.words as Word[]).filter(w => w.id != word.id);
+    for (const line of (this.record!.lineItems!.items as LineItem[])) {
+      if (line.wordIds.includes(word.id)) {
+        line.wordIds = line.wordIds.filter(id => id != word.id);
+        this.updateLineItemText(line);
+      }
+    }
+
+    if (this.isEditing()) {
+      // remove our existing overlay
+      this.osd!.removeOverlay(`wordInput-${word.id}`);
+      let words = (this.record!.words as Word[]).filter(w => this.selectedLines[0].wordIds.includes(w.id));
+      this.showInputsForWords(words);
+    }
+
+    this.table.renderRows();
+  }
+
+  focusOnWord(word: Word) {
+    let inputElem = document.getElementById(`wordInput-${word.id}`);
+    if (inputElem) {
+      inputElem.focus();
+    }
+  }
+
+  getSnapToLocation(location: OpenSeadragon.Rect): OpenSeadragon.Rect {
+    let words = (this.record!.words as Word[]).filter(w => this.selectedLines[0].wordIds.includes(w.id));
+    // check the appropriate row
+    let rows = this.getRowsOfText(words);
+    let closestDistance = 2.0;
+    let boundingBox = this.osdRect2texRect(location);
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const totalTop = row
+        .map((w) => w.boundingBox!.top)
+        .reduce((previousValue, currentValue) => previousValue + currentValue);
+      const avgTop = totalTop / row.length;
+
+      // get average word height
+      const totalHeight = row
+        .map((w) => w.boundingBox!.height)
+        .reduce((previousValue, currentValue) => previousValue + currentValue);
+
+      const avgHeight = totalHeight / row.length;
+
+      let verticalDistance = Math.abs(boundingBox.top - avgTop);
+      if (verticalDistance < closestDistance) {
+        boundingBox.top = avgTop;
+        boundingBox.height = avgHeight;
+        closestDistance = verticalDistance;
+      }
+    }
+    return this.texRect2osdRect(boundingBox);
+  }
+
+
+  createLineItemAtLocation(rect: Rect | undefined): LineItem {
+    // Use as const with __typename https://github.com/dotansimha/graphql-code-generator/issues/3610
+    let newLineItem = {
+      __typename: 'LineItem' as const,
+      id: uuidv4() as string,
+      probateId: '',
+      wordIds: new Array<string>(),
+      title: '',
+      description: '',
+      category: '',
+      subcategory: '',
+      quantity: 0,
+      value: 0,
+      boundingBox: {
+        __typename: 'Rect' as const,
+        left: rect?.left || 0,
+        top: rect?.top || 0,
+        width: rect?.width || 0,
+        height: rect?.height || 0,
+      },
+      attributeForId: '',
+      createdAt: '0',
+      updatedAt: '0',
+    };
+
+    this.newLineIds.add(newLineItem.id);
+    return newLineItem;
+  }
+
+  handleMenuItemClick(event: any) {
+    let selectOverlay = this.osd!.getOverlayById('select');
+    let location = (selectOverlay) ? this.osd!.getOverlayById('select').getBounds(
+      this.osd!.viewport
+    ) : new OpenSeadragon.Rect(0, 0, 0, 0);
+    switch (event.data) {
+      case 'create word':
+        let snapToLocation = this.getSnapToLocation(location);
+        let word = this.createWordAtLocation(snapToLocation);
+        this.focusOnWord(word);
+        this.osd!.removeOverlay('select');
+        this.commands.push({ type: CommandType.CreateWord, operation: OperationType.Create, wasDirtyBeforeCommand: this.isDirty, word, lineItemId: this.selectedLines[0].id });
+        this.isDirty = true;
+        this.table.renderRows();
+        console.log('created word');
+        break;
+      case 'delete word':
+        if (this.selectedWord) {
+          this.deleteWord(this.selectedWord);
+          this.commands.push({ type: CommandType.DeleteWord, operation: OperationType.Delete, wasDirtyBeforeCommand: this.isDirty, word: this.selectedWord, lineItemId: this.selectedLines[0].id });
+          this.selectedWord = null;
+          this.isDirty = true;
+          this.table.renderRows();
+        }
+        break;
+      case 'create line': {
+        let lineItem = this.createLineItemAtLocation(this.osdRect2texRect(location));
+        console.log('lineItem created');
+        console.log(lineItem);
+        this.record!.lineItems!.items.push(lineItem);
+        this.commands.push({ type: CommandType.CreateLine, operation: OperationType.Create, wasDirtyBeforeCommand: this.isDirty, lineItem });
+        this.isDirty = true;
+        this.table.renderRows();
+        this.exitSelectionMode();
+        this.selectedLines = [];
+        this.selectedLines.push(lineItem);
+        this.highlightLine(lineItem);
+        this.enterEditMode();
+      }
+        break;
+    }
+    this.isDisplayContextMenu = false;
+  }
+
+
+  objToStrMap(obj: any) {
+    let strMap = new Map();
+    for (let k of Object.keys(obj)) {
+      let props = Object.getOwnPropertyNames(obj[k]);
+      strMap.set(props[0], obj[k][props[0]]);
+    }
+    return strMap;
+  }
+
+  populateSubcategory(lineIndex: number): void {
+    const selectObject = document.getElementById(
+      'category-' + lineIndex
+    ) as HTMLInputElement;
+    const category = selectObject?.value;
+    let subcategories = this.categoryMap.get(category);
+    console.log(subcategories);
+    let subcategorySelect = document.getElementById(
+      'subcategory-' + lineIndex
+    ) as HTMLInputElement;
+    while (subcategorySelect?.firstChild) {
+      subcategorySelect.removeChild(subcategorySelect.firstChild);
+    }
+    if (subcategories) {
+      for (let i = 0; i < subcategories.length; i++) {
+        let optionJSON = subcategories[i];
+        console.log(optionJSON);
+        let optionElement = document.createElement('option');
+        optionElement.setAttribute('value', optionJSON.value);
+        let textNode = document.createTextNode(optionJSON.text);
+        optionElement.appendChild(textNode);
+        subcategorySelect?.appendChild(optionElement);
+      }
+    }
+    let lineItem = this.record!.lineItems!.items[lineIndex];
+    lineItem!.category = selectObject.value;
+    this.isDirty = true; 
+    this.updatedLineIds.add(lineItem!.id);
+  }
+
+  getWordsOfLine(line: LineItem): Word[] {
+    return (this.record!.words as Word[]).filter((w) =>
+      line.wordIds.includes(w!.id)
+    );
+  }
+
+  getRowsOfText(words: Word[]): Array<Array<Word>> {
+    const rows = new Array<Array<Word>>();
+    if (!words || words.length == 0) {
+      return rows;
+    }
+
+    // get average word height
+    const totalHeight = words
+      .map((w) => w.boundingBox!.height)
+      .reduce((previousValue, currentValue) => previousValue + currentValue);
+
+    const avgHeight = totalHeight / words.length;
+
+    let currentRow = 0;
+    let copyOfWords = [...words];
+    while (copyOfWords.length > 0) {
+      const topMostWord = copyOfWords.reduce((p, c) => {
+        return c.boundingBox!.top < p.boundingBox!.top ? c : p;
+      });
+      const currentTop = topMostWord.boundingBox!.top;
+      let rowOfWords = copyOfWords.filter(
+        (w) => w.boundingBox!.top < currentTop + avgHeight / 2
+      );
+      rowOfWords.sort(
+        (a, b) =>
+          a.boundingBox!.left +
+          a.boundingBox!.width -
+          (b.boundingBox!.left + b.boundingBox!.width)
+      );
+      rows[currentRow++] = [...rowOfWords];
+      // filter out words just added to row
+      copyOfWords = copyOfWords.filter(
+        (w) => !rowOfWords.map((w) => w.id).includes(w.id)
+      );
+    }
+
+    return rows;
+  }
+
+  createInputForWord(word: Word): HTMLInputElement {
+    let inputElem = this.renderer.createElement('input');
+    const inputId = `wordInput-${word.id}`;
+    this.renderer.setProperty(inputElem, 'id', inputId);
+    this.renderer.setAttribute(inputElem, 'value', word.text);
+    this.renderer.listen(inputElem, 'input', () => {
+      word.text = (inputElem! as HTMLInputElement).value;
+      this.updateLineItemText(this.selectedLines[0]);
+    });
+
+    this.renderer.listen(inputElem, 'keyup.enter', () => {
+      console.log('keyup handler called');
+      // if we don't have a value
+      console.log(inputElem);
+      let value = console.log((inputElem as HTMLInputElement).value);
+      console.log(value);
+    });
+
+    this.renderer.listen(inputElem, 'focus', () => {
+      // this.activeWord = word;
+    });
+
+    this.renderer.appendChild(document.body, inputElem);
+    return inputElem;
+  }
+
+  createInputBoxForWord(word: Word) {
+    // clear all other overlays
+    // this.osd!.clearOverlays();
+
+    // check if the element exists
+    const inputId = `wordInput-${word.id}`;
+
+    let inputElem = document.getElementById(inputId);
+
+    if (!inputElem) {
+      inputElem = this.createInputForWord(word);
+    }
+
+    const osdInputRect = this.texRect2osdRect(word.boundingBox!);
+    const pixel = this.osd!.viewport.pixelFromPoint(
+      new OpenSeadragon.Point(osdInputRect.x, osdInputRect.y)
+    );
+    pixel.y -= InputBoxHeight; // give input box height of 20 pixels
+    const osdInputPoint = this.osd!.viewport.pointFromPixel(pixel);
+
+    let inputHeight = osdInputRect.y - osdInputPoint.y;
+    let inputTop: number;
+    if (word.boundingBox!.top < 0.5) {
+      inputTop =
+        word.boundingBox!.top / this.aspectRatio +
+        word.boundingBox!.height / this.aspectRatio;
+    } else {
+      inputTop = word.boundingBox!.top / this.aspectRatio - inputHeight;
+    }
+    const rect = this.texRect2osdRect(word.boundingBox!);
+    rect.y = inputTop;
+    rect.height = inputHeight;
+    this.osd!.addOverlay(inputElem!, rect);
+    inputElem!.focus();
+  }
+
+  showInputsForWords(words: Word[]): void {
+    const isInputAbove = words[0].boundingBox!.top > 0.5;
+
+    // calculate height of input element
+    const osdAnyWordRect = this.texRect2osdRect(words[0].boundingBox!);
+    const pixel = this.osd!.viewport.pixelFromPoint(
+      new OpenSeadragon.Point(osdAnyWordRect.x, osdAnyWordRect.y)
+    );
+    pixel.y -= InputBoxHeight; // give input box height of 20 pixels
+    const osdInputPoint = this.osd!.viewport.pointFromPixel(pixel);
+    let inputHeight = osdAnyWordRect.y - osdInputPoint.y;
+
+    const rows = this.getRowsOfText(words);
+    let top: number;
+
+    for (const row of rows) {
+      if (isInputAbove) {
+        const topMostWord = row.reduce((p, c) => {
+          return c.boundingBox!.top < p.boundingBox!.top ? c : p;
+        });
+        top = topMostWord.boundingBox!.top;
+      } else {
+        const tallest = words.reduce((p, c) =>
+          c.boundingBox!.height > p.boundingBox!.height ? c : p
+        );
+        const lowestWord = row.reduce((p, c) =>
+          c.boundingBox!.top > p.boundingBox!.top ? c : p
+        );
+
+        top = lowestWord.boundingBox!.top + tallest.boundingBox!.height;
+      }
+      top /= this.aspectRatio;
+
+      for (const word of row) {
+        const selectElem = this.createOverlayElement(
+          `wordBoundingBox-${word.id}`,
+          'word-select'
+        );
+        const rect = this.texRect2osdRect(word.boundingBox!);
+        console.log('word rect');
+        console.log(rect);
+
+        this.osd!.addOverlay(selectElem, rect);
+
+        // check if the element exists
+        const inputId = `wordInput-${word.id}`;
+
+        let inputElem = document.getElementById(inputId);
+        if (!inputElem) {
+          inputElem = this.createInputForWord(word);
+        }
+
+        rect.y = top;
+        if (isInputAbove) {
+          rect.y -= inputHeight;
+        }
+        rect.height = inputHeight;
+        console.log('input rect');
+        console.log(rect);
+        this.osd!.addOverlay(inputElem!, rect);
+      }
+    }
+  }
+
+  correctText(): void {
+    let words = this.getWordsOfLine(this.selectedLines[0]);
+    console.log(words);
+    if (words.length > 0) {
+      this.showInputsForWords(words);
+    }
+
+    this.osd!.setMouseNavEnabled(false);
+  }
+
+  updateLineItemText(line: LineItem): void {
+    // update line text
+    let updatedWords = this.record!.words.filter((w) =>
+      line.wordIds.includes(w!.id)
+    ) as Word[];
+
+    let rows = this.getRowsOfText(updatedWords);
+    console.log('rows: ');
+    console.log(rows);
+
+    let wordIdsToRemove = [] as string[];
+
+    let updatedText = '';
+    for (const row of rows) {
+      for (const word of row) {
+        if (!word.text) {
+          wordIdsToRemove.push(word.id);
+          continue;
+        }
+        updatedText += word.text;
+        updatedText += ' ';
+      }
+      updatedText.trim();
+      updatedText += '\n';
+    }
+
+    updatedText = updatedText.trim();
+    line.title = updatedText;
+
+    this.isDirty = true;
+    this.updatedLineIds.add(line.id);
+  }
+
+  editLineItemByIndex(index: number): void {
+    let lineItem = null;
+    if (this.record && this.record.lineItems) {
+      lineItem = this.record.lineItems.items[index];
+    }
+
+    if (!lineItem) {
+      throw 'Invalid line index';
+    }
+
+    this.selectedLine = lineItem;
+    this.selectedLines = [];
+    this.selectedLines.push(lineItem);
+
+    this.dragSelect.dragMode = DragMode.Select;
+    this.dragSelect.selectionMode = SelectionMode.Word;
+    this.dragSelect.editMode = EditMode.Line;
+
+    this.highlightLine(lineItem);
+    this.correctText();
+    this.enterEditMode();
+  }
+
+  highlightLineItemByIndex(index: number): void {
+    const line = this.record!.lineItems!.items[index] as LineItem;
+    this.highlightLine(line);
+  }
+
+  deleteLineItemByIndex(index: number): void { }
+
+  calculateAspectRatio() {
+    this.imageSize = this.osd!.world.getItemAt(0).getContentSize();
+
+    this.aspectRatio = this.imageSize!.x / this.imageSize!.y;
+    console.log(`aspect ratio is ${this.aspectRatio}`);
+  }
+
+  clearSelection() {
+    this.osd!.clearOverlays();
+    this.osd!.setMouseNavEnabled(true);
+    this.selectedLines = [];
+  }
+
+  createOverlayElement(id: string, className = 'highlighted-line'): HTMLElement {
+    let overlay = document.getElementById(id);
+    if (overlay) {
+      this.osd?.removeOverlay(id);
+      overlay.remove();
+    }
+
+    overlay = this.renderer.createElement('div');
+    this.renderer.setProperty(overlay, 'id', id);
+    this.renderer.setProperty(overlay, 'className', className);
+    this.renderer.appendChild(document.body, overlay);
+
+    return overlay!;
+  }
+
+  highlightLine(line: LineItem): void {
+    if (this.aspectRatio === 0.0) {
+      this.calculateAspectRatio();
+    }
+    this.clearSelection();
+
+    const boundingBox = line!.boundingBox;
+    const rect = this.texRect2osdRect(boundingBox!);
+
+    this.osd!.clearOverlays();
+    const selectElem = this.createOverlayElement(
+      `boundingBox-${line.id}`,
+      'highlighted-line'
+    );
+    console.log(selectElem);
+    this.osd!.addOverlay(selectElem, this.texRect2osdRect(line.boundingBox!));
+    this.selectedLines = [];
+    this.selectedLines.push(line);
+    this.osd?.viewport.fitBoundsWithConstraints(rect);
+  }
+
+  resetView() {
+    this.osd!.viewport.goHome();
+    this.osd!.clearOverlays();
+    this.osd!.setControlsEnabled(false);
+    this.osd!.setMouseNavEnabled(true);
+  }
+
+
+  onSubcategoryChanged(lineIndex: number): void {    
+    let lineItem = this.record!.lineItems!.items[lineIndex];
+    let subcategoryElem = document.getElementById(`subcategory-${lineIndex}`) as HTMLInputElement;
+    lineItem!.subcategory = subcategoryElem.value;
+    this.isDirty = true; 
+    this.updatedLineIds.add(lineItem!.id);
+  }
+
+  drop(event: CdkDragDrop<LineItem[]>) {
+    let lineItem = this.record!.lineItems!.items[event.previousIndex] as LineItem;
+    moveItemInArray(this.record!.lineItems!.items, event.previousIndex, event.currentIndex);
+
+    this.commands.push({ type: CommandType.MoveLine, lineItem, wasDirtyBeforeCommand: this.isDirty, oldIndex: event.previousIndex, newIndex: event.currentIndex });
+    this.isDirty = true;
+    this.table.renderRows();
+  }
+
+  texRect2osdRect(rect: Rect): OpenSeadragon.Rect {
+    if (this.aspectRatio === 0.0) {
+      this.calculateAspectRatio();
+    }
+    return new OpenSeadragon.Rect(
+      rect.left,
+      rect.top / this.aspectRatio,
+      rect.width,
+      rect.height / this.aspectRatio
+    );
+  }
+
+  osdRectangleContainsOsdRectangle(
+    a: OpenSeadragon.Rect,
+    b: OpenSeadragon.Rect
+  ) {
+    return (
+      a.x <= b.x &&
+      a.y <= b.y &&
+      a.x + a.width >= b.x + b.width &&
+      a.y + a.height >= b.y + b.height
+    );
+  }
+
+  osdRectangleContainsOsdPoint(
+    a: OpenSeadragon.Rect,
+    b: OpenSeadragon.Point
+  ) {
+    return (
+      a.x <= b.x &&
+      a.y <= b.y &&
+      a.x + a.width >= b.x &&
+      a.y + a.height >= b.y
+    );
+  }
+
+  osdRect2texRect(rect: OpenSeadragon.Rect): Rect {
+    if (this.aspectRatio === 0.0) {
+      this.calculateAspectRatio();
+    }
+    return {
+      __typename: 'Rect',
+      left: rect.x,
+      top: rect.y * this.aspectRatio,
+      width: rect.width,
+      height: rect.height * this.aspectRatio,
+    };
+  }
+
+  osdRect2BoundingBox(rect: OpenSeadragon.Rect): BoundingBox {
+    if (this.aspectRatio === 0.0) {
+      this.calculateAspectRatio();
+    }
+    return new BoundingBox(
+      rect.x,
+      rect.y * this.aspectRatio,
+      rect.width,
+      rect.height * this.aspectRatio
+    );
+  }
+
+  texRect2BoundingBox(rect: Rect): BoundingBox {
+    return new BoundingBox(rect.left, rect.top, rect.width, rect.height);
+  }
+
+  openDialog(): string {
+    let dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
+      height: '400px',
+      width: '600px',
+    });
+
+    let confirmation = "";
+    dialogRef.afterClosed().subscribe(result => {
+      confirmation = result;
+    });
+
+    return confirmation;
+  }
+
+
+  deleteLine(lineItem: LineItem) {
+    this.isDirty = true;
+    this.deletedLines.push(lineItem);
+    let wordsToDelete = (this.record!.words as Word[]).filter(w => lineItem.wordIds.includes(w.id));
+    this.deletedLineWordsMap.set(lineItem.id, wordsToDelete);
+    this.record!.words = (this.record!.words as Word[]).filter(w => !lineItem.wordIds.includes(w.id));
+    if (this.newLineIds.has(lineItem.id)) {
+      this.newLineIds.delete(lineItem.id);
+    }
+    if (this.updatedLineIds.has(lineItem.id)) {
+      this.updatedLineIds.delete(lineItem.id);
+    }
+    this.deletedLineIds.add(lineItem.id);
+  }
+
+  // Commands
+  undo() {
+    if (this.commands.length > 0) {
+      let command = this.commands.pop();
+      switch (command!.type) {
+        case CommandType.BulkDelete: {
+          let bulkCommand = command as BulkLineItemCommand;
+          for (const lineItem of bulkCommand.lineItems) {
+            let index = bulkCommand.lineItemIndexMap.get(lineItem.id);
+            this.record!.lineItems!.items.splice(index!, 0, lineItem);
+            this.record!.words = this.record!.words.concat(bulkCommand.wordMap.get(lineItem.id) as Word[]);
+            if (!this.existingLineIds.has(lineItem.id)) {
+              this.newLineIds.add(lineItem.id);
+            }
+            else {
+              this.updatedLineIds.add(lineItem.id);
+            }
+          }
+        }
+          break;
+        case CommandType.CreateWord: {
+          let wordCommand = command as WordCommand;
+          this.record!.words = (this.record!.words as Word[]).filter(w => w.id != wordCommand.word.id);
+          for (const lineItem of (this.record!.lineItems!.items as LineItem[])) {
+            if (lineItem.wordIds.includes(wordCommand.word.id)) {
+              lineItem.wordIds = (lineItem.wordIds as string[]).filter(id => id != wordCommand.word.id);
+              this.updateLineItemText(lineItem);
+            }
+          }
+          if (this.isEditing()) {
+            this.osd!.removeOverlay(`wordInput-${wordCommand.word.id}`);
+          }
+
+        }
+          break;
+        case CommandType.DeleteWord: {
+          let wordCommand = command as WordCommand;
+          let word = wordCommand.word;
+          this.record!.words.push(word);
+          let lineItem = (this.record!.lineItems!.items as LineItem[]).find(l => l.id === wordCommand.lineItemId);
+          if (lineItem) {
+            lineItem.wordIds.push(word.id);
+            let orderedWords = this.getOrderedWordsForLineItem(lineItem);
+            lineItem.wordIds = orderedWords.map(w => w.id);
+            this.updateLineItemText(lineItem);
+
+            if (this.isEditing()) {
+              this.showInputsForWords(orderedWords);
+            }
+          }
+
+        }
+          break;
+
+        case CommandType.CreateLine: {
+          let lineItemCommand = command as LineItemCommand;
+          let lineItem = lineItemCommand.lineItem;
+          this.record!.words = (this.record!.words as Word[]).filter(w => !lineItem.wordIds.includes(w.id));
+          this.record!.lineItems!.items = (this.record!.lineItems!.items as LineItem[]).filter(l => l.id != lineItem.id);
+          this.newLineIds.delete(lineItem.id);
+        }
+          break;
+        case CommandType.MoveLine: {
+          let moveLineItemCommand = command as MoveLineItemCommand;
+          let currentIndex = (this.record!.lineItems!.items as LineItem[]).indexOf(moveLineItemCommand.lineItem);
+          if (currentIndex >= 0) {
+            moveItemInArray(this.record!.lineItems!.items, currentIndex, moveLineItemCommand.oldIndex);
+          }
+        }
+          break;
+      }
+      this.isDirty = command?.wasDirtyBeforeCommand!;
+      this.table.renderRows();
+    }
+  }
+
+  bulkDeleteLines(lineItemsToDelete: LineItem[]) {
+    let lineItems: LineItem[] = [];
+    let wordMap = new Map<string, Word[]>();
+    let wordIds = new Array<string>();
+    let lineItemIndexMap = new Map<string, number>();
+
+    for (const lineItem of lineItemsToDelete) {
+      lineItems.push({ ...lineItem });
+      let words = (this.record!.words as Word[]).filter(w => lineItem.wordIds.includes(w.id));
+      wordMap.set(lineItem.id, words);
+      wordIds = wordIds.concat(words.map(w => w.id));
+      const index = this.record!.lineItems!.items.indexOf(lineItem);
+      lineItemIndexMap.set(lineItem.id, index);
+    }
+    this.commands.push({ type: CommandType.BulkDelete, operation: OperationType.Delete, wasDirtyBeforeCommand: this.isDirty, lineItems, wordMap, lineItemIndexMap });
+
+    // Remove LineItems and Words
+    let lineIds = lineItemsToDelete.map(l => l.id);
+    this.record!.lineItems!.items = (this.record!.lineItems!.items as LineItem[]).filter(l => !lineIds.includes(l.id));
+    this.record!.words = (this.record!.words as Word[]).filter(w => !wordIds.includes(w.id));
+
+    this.isDirty = true;
+  }
+
+  deleteCheckedLines() {
+    let dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
+      height: '260px',
+      width: '400px',
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === "delete") {
+        let lineIds: string[] = [];
+        // get checked checkboxes
+        let checkedBoxes = (this.checkBoxes as QueryList<MatCheckbox>).filter((c: MatCheckbox) => c.checked == true);
+        for (const checkedBox of checkedBoxes) {
+          let lineId = checkedBox.id.substring("check-".length);
+          lineIds.push(lineId);
+        }
+
+        let linesToDelete = (this.record!.lineItems!.items as LineItem[]).filter(l => lineIds.includes(l.id));
+        this.bulkDeleteLines(linesToDelete);
+
+        this.isLineChecked = false;
+      }
+    });
+  }
+
+  async save() {
+    // update line items
+    let updateLineItems = (this.record!.lineItems!.items as LineItem[]).filter(l => this.updatedLineIds.has(l.id));
+    let updatedLineItemInputs = updateLineItems.map(l => ({
+      id: l.id,
+      probateId: this.record!.id,
+      wordIds: l.wordIds,
+      title: l.title,
+      description: l.description,
+      category: l.category,
+      subcategory: l.subcategory,
+      quantity: l.quantity,
+      value: l.value,
+      boundingBox: {left: l.boundingBox!.left, top: l.boundingBox!.top, width: l.boundingBox!.width, height: l.boundingBox!.height},
+      attributeForId: l.attributeForId,
+    }));
+    console.log('updating ' + updateLineItems.length + ' lines');
+    for(const updatedLineItemInput of updatedLineItemInputs) {
+      let response = await this.probateRecordService.UpdateLineItem(updatedLineItemInput);
+      console.log(response);
+    }
+
+    // update record
+    let updatedWords = (Array.from(this.record!.words) as Word[]).map((w) => ({
+      id: w.id,
+      text: w.text,
+      boundingBox: {
+        left: w.boundingBox!.left,
+        top: w.boundingBox!.top,
+        width: w.boundingBox!.width,
+        height: w.boundingBox!.height,
+      },
+      // confidence: w.confidence,
+      // lowerText: w.lowerText
+    }));
+    let reviewCount = this.record!.reviewCount;
+    if (this.isReviewed) {
+      reviewCount++;
+    }
+    let item = { id: this.record!.id, reviewCount, words: updatedWords };
+    let response = await this.probateRecordService.UpdateProbateRecord(
+      item
+    );
+    console.log(response);
+    alert('record updated');
+  }
+}
