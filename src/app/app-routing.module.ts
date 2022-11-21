@@ -9,15 +9,16 @@ import { SearchComponent } from './search/search.component';
 import { UnreviewedComponent } from './unreviewed/unreviewed.component';
 import { UploadComponent } from './upload/upload.component';
 import { UnreviewedDetailComponent } from './unreviewed-detail/unreviewed-detail.component';
+import { MaintenanceComponent } from './maintenance/maintenance.component';
 
 const routes: Routes = [
-  {path: 'records', component: RecordsComponent},
-  {path: 'record/:id', component: RecordDetailComponent},
-  {path: 'review/:id', component: UnreviewedDetailComponent, canActivate: [AuthGuard]},
-  {path: 'unreviewed', component: UnreviewedComponent, canActivate: [AuthGuard ]},
-  {path: 'upload', component: UploadComponent, canActivate: [AuthGuard]},
-  {path: '', component: SearchComponent},
-  {path: 'search/:q', component: SearchResultsComponent}
+  {path: 'records', component: MaintenanceComponent},
+  {path: 'record/:id', component: MaintenanceComponent},
+  {path: 'review/:id', component: MaintenanceComponent, canActivate: [AuthGuard]},
+  {path: 'unreviewed', component: MaintenanceComponent, canActivate: [AuthGuard ]},
+  {path: 'upload', component: MaintenanceComponent, canActivate: [AuthGuard]},
+  {path: '', component: MaintenanceComponent},
+  {path: 'search/:q', component: MaintenanceComponent}
 ];
 
 @NgModule({
