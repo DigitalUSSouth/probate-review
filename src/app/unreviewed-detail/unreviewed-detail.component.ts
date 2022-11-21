@@ -155,7 +155,7 @@ export class UnreviewedDetailComponent implements OnInit {
   };
 
   // Data table
-  displayedColumns: string[] = ['checked', 'title'];
+  displayedColumns: string[] = ['checked', 'title', 'category', 'subcategory', 'quantity', 'value'];
 
   // Context Menu
   isDisplayContextMenu = false;
@@ -337,7 +337,6 @@ export class UnreviewedDetailComponent implements OnInit {
         for (const lineItem of lineItems.items as LineItem[]) {
           this.existingLineIds.add(lineItem.id);
         }
-        console.log(this.record!.lineItems!.items);
         let lineItemIndex = (this.record!.lineItems!.items as LineItem[]).findIndex(l => l.rowIndex == -1);
         if(lineItemIndex >= 0) {
           this.sortLineItems();
@@ -641,7 +640,6 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   sortLineItems(): void {
-    console.log('sort items called');
     if (this.record?.lineItems?.items) {
       let items: Array<LineItem> = Array.from(
         this.record.lineItems.items as LineItem[]
@@ -649,7 +647,6 @@ export class UnreviewedDetailComponent implements OnInit {
       let sortedLineItems = items.sort(
         (a, b) => {
           if(a.rowIndex != -1 && b.rowIndex != -1) {
-            console.log('sorting by row index');
             return a.rowIndex - b.rowIndex;
           }
           else {
@@ -1563,7 +1560,6 @@ export class UnreviewedDetailComponent implements OnInit {
     let createLineItemInputs = this.mapToUpdateLineItemInput(createLineItems) as CreateLineItemInput[];
     for(const createdLineItemInput of createLineItemInputs) {
       let response = await this.probateRecordService.CreateLineItem(createdLineItemInput);
-      console.log(response);
     }
 
     // update line items
@@ -1572,13 +1568,11 @@ export class UnreviewedDetailComponent implements OnInit {
     console.log('updating ' + updateLineItems.length + ' lines');
     for(const updatedLineItemInput of updatedLineItemInputs) {
       let response = await this.probateRecordService.UpdateLineItem(updatedLineItemInput);
-      console.log(response);
     }
 
     // delete line items
     this.deletedLineIds.forEach(async (id) => {
       let response = await this.probateRecordService.DeleteLineItem({id});
-      console.log(response);
     });
     
     // update record
