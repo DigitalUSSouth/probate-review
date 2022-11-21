@@ -35,7 +35,7 @@ type Rect {
 
 type LineItem @model @auth(rules: [{allow: private}]) {
   id: ID!
-  probateId: ID! @index(name: "byProbate", queryField: "lineItemByProbateRecord")
+  probateId: ID! @index(name: "byProbate", sortKeyFields:["rowIndex"], queryField: "lineItemByProbateRecord")
   wordIds: [ID]!
   title: String!
   description: String!
@@ -43,6 +43,9 @@ type LineItem @model @auth(rules: [{allow: private}]) {
   subcategory: String!
   quantity: Int!
   value: Float!
+  confidence: Float!
+  rowIndex: Int!
+  lowerTitle: String!
   boundingBox: Rect 
   attributeForId: ID!  
 }
@@ -57,6 +60,9 @@ type Line {
   id: ID!
   wordIds: [ID]!
   boundingBox: Rect!
+  confidence: Float!
+  rowIndex: Int!
+  lowerText: String!
 }
 
 type Word {

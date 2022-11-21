@@ -21,6 +21,9 @@ mutation CreateProbateRecord(
         subcategory
         quantity
         value
+        confidence
+        rowIndex
+        lowerTitle
         boundingBox {
           left
           top
@@ -72,6 +75,9 @@ mutation UpdateProbateRecord(
         subcategory
         quantity
         value
+        confidence
+        rowIndex
+        lowerTitle
         boundingBox {
           left
           top
@@ -123,6 +129,9 @@ mutation DeleteProbateRecord(
         subcategory
         quantity
         value
+        confidence
+        rowIndex
+        lowerTitle
         boundingBox {
           left
           top
@@ -166,6 +175,9 @@ mutation CreateLineItem(
     subcategory
     quantity
     value
+    confidence
+    rowIndex
+    lowerTitle
     boundingBox {
       left
       top
@@ -191,6 +203,9 @@ mutation UpdateLineItem(
     subcategory
     quantity
     value
+    confidence
+    rowIndex
+    lowerTitle
     boundingBox {
       left
       top
@@ -216,6 +231,9 @@ mutation DeleteLineItem(
     subcategory
     quantity
     value
+    confidence
+    rowIndex
+    lowerTitle
     boundingBox {
       left
       top
@@ -242,6 +260,9 @@ mutation CreateDocument(
         width
         height
       }
+      confidence
+      rowIndex
+      lowerText
     }
     words {
       id
@@ -272,6 +293,9 @@ mutation UpdateDocument(
         width
         height
       }
+      confidence
+      rowIndex
+      lowerText
     }
     words {
       id
@@ -302,6 +326,9 @@ mutation DeleteDocument(
         width
         height
       }
+      confidence
+      rowIndex
+      lowerText
     }
     words {
       id

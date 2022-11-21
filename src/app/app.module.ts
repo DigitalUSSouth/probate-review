@@ -11,7 +11,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatButtonModule} from '@angular/material/button';
 import {MatInputModule} from '@angular/material/input';
 import {MatIconModule} from '@angular/material/icon';
-import { ReviewComponent } from './review/review.component';
 import { UploadComponent } from './upload/upload.component';
 import { AuthComponent } from './auth/auth.component';
 import { ContextMenuComponent } from './context-menu/context-menu.component';
@@ -36,7 +35,6 @@ import {MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS} from '@angular/material/dia
     AppComponent,
     RecordsComponent,
     RecordDetailComponent,
-    ReviewComponent,
     UploadComponent,
     AuthComponent,
     ContextMenuComponent,

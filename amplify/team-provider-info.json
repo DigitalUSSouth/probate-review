@@ -23,7 +23,7 @@
         },
         "probateAddDynamodbRecord": {
           "deploymentBucketName": "amplify-probatereview-staging-142826-deployment",
-          "s3Key": "amplify-builds/probateAddDynamodbRecord-7353322f706271756f76-build.zip"
+          "s3Key": "amplify-builds/probateAddDynamodbRecord-54644c71627532545344-build.zip"
         }
       },
       "auth": {

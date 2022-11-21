@@ -21,6 +21,7 @@ import {
   WordInput,
   Rect,
   CreateLineItemInput,
+  ModelSortDirection,
 } from '../API.service';
 import data from '../categories.json';
 import { from } from 'rxjs';
@@ -315,6 +316,7 @@ export class UnreviewedDetailComponent implements OnInit {
       this.probateRecordService.LineItemByProbateRecord(
         id,
         undefined,
+        ModelSortDirection.ASC,
         undefined,
         1000
       )
@@ -331,9 +333,14 @@ export class UnreviewedDetailComponent implements OnInit {
       lineItems$.subscribe((lineItems) => {
         this.record!.lineItems!.items =
           lineItems.items as unknown as LineItem[];
-        // this.sortLineItems();
+          
         for (const lineItem of lineItems.items as LineItem[]) {
           this.existingLineIds.add(lineItem.id);
+        }
+        console.log(this.record!.lineItems!.items);
+        let lineItemIndex = (this.record!.lineItems!.items as LineItem[]).findIndex(l => l.rowIndex == -1);
+        if(lineItemIndex >= 0) {
+          this.sortLineItems();
         }
       });
       // get our associated image     
@@ -634,14 +641,31 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   sortLineItems(): void {
+    console.log('sort items called');
     if (this.record?.lineItems?.items) {
       let items: Array<LineItem> = Array.from(
         this.record.lineItems.items as LineItem[]
       );
       let sortedLineItems = items.sort(
-        (a, b) => a!.boundingBox!.top - b!.boundingBox!.top
+        (a, b) => {
+          if(a.rowIndex != -1 && b.rowIndex != -1) {
+            console.log('sorting by row index');
+            return a.rowIndex - b.rowIndex;
+          }
+          else {
+            return a.boundingBox!.top - b.boundingBox!.top;
+          }
+        }
       );
+      
+      for(let i = 0; i < sortedLineItems.length; i++ ) {
+        let lineItem = sortedLineItems[i];
+        lineItem.rowIndex = i;
+        this.updatedLineIds.add(lineItem.id);
+      }
+
       this.record.lineItems.items = sortedLineItems;
+      this.isDirty = true;
     }
   }
 
@@ -852,6 +876,9 @@ export class UnreviewedDetailComponent implements OnInit {
       subcategory: '',
       quantity: 0,
       value: 0,
+      confidence: 0,
+      rowIndex: this.record!.lineItems?.items.length as number,
+      lowerTitle: '',
       boundingBox: {
         __typename: 'Rect' as const,
         left: rect?.left || 0,
@@ -1276,8 +1303,9 @@ export class UnreviewedDetailComponent implements OnInit {
 
   drop(event: CdkDragDrop<LineItem[]>) {
     let lineItem = this.record!.lineItems!.items[event.previousIndex] as LineItem;
+    lineItem.rowIndex = event.currentIndex;
+    this.updatedLineIds.add(lineItem.id);
     moveItemInArray(this.record!.lineItems!.items, event.previousIndex, event.currentIndex);
-
     this.commands.push({ type: CommandType.MoveLine, lineItem, wasDirtyBeforeCommand: this.isDirty, oldIndex: event.previousIndex, newIndex: event.currentIndex });
     this.isDirty = true;
     this.table.renderRows();
@@ -1523,6 +1551,9 @@ export class UnreviewedDetailComponent implements OnInit {
       value: l.value,
       boundingBox: {left: l.boundingBox!.left, top: l.boundingBox!.top, width: l.boundingBox!.width, height: l.boundingBox!.height},
       attributeForId: l.attributeForId,
+      rowIndex: l.rowIndex,
+      confidence: l.confidence,
+      lowerTitle: l.lowerTitle,
     })) : [];
   }
 

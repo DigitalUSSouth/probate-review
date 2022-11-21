@@ -18,6 +18,9 @@ query GetProbateRecord($id: ID!) {
         subcategory
         quantity
         value
+        confidence
+        rowIndex
+        lowerTitle
         boundingBox {
           left
           top
@@ -79,6 +82,9 @@ query ListProbateRecords(
           subcategory
           quantity
           value
+          confidence
+          rowIndex
+          lowerTitle
           boundingBox {
             left
             top
@@ -123,6 +129,9 @@ query GetLineItem($id: ID!) {
     subcategory
     quantity
     value
+    confidence
+    rowIndex
+    lowerTitle
     boundingBox {
       left
       top
@@ -150,6 +159,9 @@ query ListLineItems(
       subcategory
       quantity
       value
+      confidence
+      rowIndex
+      lowerTitle
       boundingBox {
         left
         top
@@ -165,6 +177,7 @@ query ListLineItems(
 }
 query LineItemByProbateRecord(
   $probateId: ID!
+  $rowIndex: ModelIntKeyConditionInput
   $sortDirection: ModelSortDirection
   $filter: ModelLineItemFilterInput
   $limit: Int
@@ -172,6 +185,7 @@ query LineItemByProbateRecord(
 ) {
   lineItemByProbateRecord(
     probateId: $probateId
+    rowIndex: $rowIndex
     sortDirection: $sortDirection
     filter: $filter
     limit: $limit
@@ -187,6 +201,9 @@ query LineItemByProbateRecord(
       subcategory
       quantity
       value
+      confidence
+      rowIndex
+      lowerTitle
       boundingBox {
         left
         top
@@ -212,6 +229,9 @@ query GetDocument($id: ID!) {
         width
         height
       }
+      confidence
+      rowIndex
+      lowerText
     }
     words {
       id
@@ -244,6 +264,9 @@ query ListDocuments(
           width
           height
         }
+        confidence
+        rowIndex
+        lowerText
       }
       words {
         id

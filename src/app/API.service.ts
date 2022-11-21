@@ -180,6 +180,9 @@ export type LineItem = {
   subcategory: string;
   quantity: number;
   value: number;
+  confidence: number;
+  rowIndex: number;
+  lowerTitle: string;
   boundingBox?: Rect | null;
   attributeForId: string;
   createdAt: string;
@@ -228,6 +231,9 @@ export type CreateLineItemInput = {
   subcategory: string;
   quantity: number;
   value: number;
+  confidence: number;
+  rowIndex: number;
+  lowerTitle: string;
   boundingBox?: RectInput | null;
   attributeForId: string;
 };
@@ -241,6 +247,9 @@ export type ModelLineItemConditionInput = {
   subcategory?: ModelStringInput | null;
   quantity?: ModelIntInput | null;
   value?: ModelFloatInput | null;
+  confidence?: ModelFloatInput | null;
+  rowIndex?: ModelIntInput | null;
+  lowerTitle?: ModelStringInput | null;
   attributeForId?: ModelIDInput | null;
   and?: Array<ModelLineItemConditionInput | null> | null;
   or?: Array<ModelLineItemConditionInput | null> | null;
@@ -257,6 +266,9 @@ export type UpdateLineItemInput = {
   subcategory?: string | null;
   quantity?: number | null;
   value?: number | null;
+  confidence?: number | null;
+  rowIndex?: number | null;
+  lowerTitle?: string | null;
   boundingBox?: RectInput | null;
   attributeForId?: string | null;
 };
@@ -275,6 +287,9 @@ export type LineInput = {
   id?: string | null;
   wordIds: Array<string | null>;
   boundingBox: RectInput;
+  confidence: number;
+  rowIndex: number;
+  lowerText: string;
 };
 
 export type ModelDocumentConditionInput = {
@@ -297,6 +312,9 @@ export type Line = {
   id: string;
   wordIds: Array<string | null>;
   boundingBox: Rect;
+  confidence: number;
+  rowIndex: number;
+  lowerText: string;
 };
 
 export type UpdateDocumentInput = {
@@ -463,10 +481,22 @@ export type ModelLineItemFilterInput = {
   subcategory?: ModelStringInput | null;
   quantity?: ModelIntInput | null;
   value?: ModelFloatInput | null;
+  confidence?: ModelFloatInput | null;
+  rowIndex?: ModelIntInput | null;
+  lowerTitle?: ModelStringInput | null;
   attributeForId?: ModelIDInput | null;
   and?: Array<ModelLineItemFilterInput | null> | null;
   or?: Array<ModelLineItemFilterInput | null> | null;
   not?: ModelLineItemFilterInput | null;
+};
+
+export type ModelIntKeyConditionInput = {
+  eq?: number | null;
+  le?: number | null;
+  lt?: number | null;
+  ge?: number | null;
+  gt?: number | null;
+  between?: Array<number | null> | null;
 };
 
 export type ModelDocumentFilterInput = {
@@ -538,6 +568,9 @@ export type CreateProbateRecordMutation = {
       subcategory: string;
       quantity: number;
       value: number;
+      confidence: number;
+      rowIndex: number;
+      lowerTitle: string;
       boundingBox?: {
         __typename: "Rect";
         left: number;
@@ -591,6 +624,9 @@ export type UpdateProbateRecordMutation = {
       subcategory: string;
       quantity: number;
       value: number;
+      confidence: number;
+      rowIndex: number;
+      lowerTitle: string;
       boundingBox?: {
         __typename: "Rect";
         left: number;
@@ -644,6 +680,9 @@ export type DeleteProbateRecordMutation = {
       subcategory: string;
       quantity: number;
       value: number;
+      confidence: number;
+      rowIndex: number;
+      lowerTitle: string;
       boundingBox?: {
         __typename: "Rect";
         left: number;
@@ -687,6 +726,9 @@ export type CreateLineItemMutation = {
   subcategory: string;
   quantity: number;
   value: number;
+  confidence: number;
+  rowIndex: number;
+  lowerTitle: string;
   boundingBox?: {
     __typename: "Rect";
     left: number;
@@ -710,6 +752,9 @@ export type UpdateLineItemMutation = {
   subcategory: string;
   quantity: number;
   value: number;
+  confidence: number;
+  rowIndex: number;
+  lowerTitle: string;
   boundingBox?: {
     __typename: "Rect";
     left: number;
@@ -733,6 +778,9 @@ export type DeleteLineItemMutation = {
   subcategory: string;
   quantity: number;
   value: number;
+  confidence: number;
+  rowIndex: number;
+  lowerTitle: string;
   boundingBox?: {
     __typename: "Rect";
     left: number;
@@ -759,6 +807,9 @@ export type CreateDocumentMutation = {
       width: number;
       height: number;
     };
+    confidence: number;
+    rowIndex: number;
+    lowerText: string;
   } | null>;
   words: Array<{
     __typename: "Word";
@@ -790,6 +841,9 @@ export type UpdateDocumentMutation = {
       width: number;
       height: number;
     };
+    confidence: number;
+    rowIndex: number;
+    lowerText: string;
   } | null>;
   words: Array<{
     __typename: "Word";
@@ -821,6 +875,9 @@ export type DeleteDocumentMutation = {
       width: number;
       height: number;
     };
+    confidence: number;
+    rowIndex: number;
+    lowerText: string;
   } | null>;
   words: Array<{
     __typename: "Word";
@@ -928,6 +985,9 @@ export type GetProbateRecordQuery = {
       subcategory: string;
       quantity: number;
       value: number;
+      confidence: number;
+      rowIndex: number;
+      lowerTitle: string;
       boundingBox?: {
         __typename: "Rect";
         left: number;
@@ -983,6 +1043,9 @@ export type ListProbateRecordsQuery = {
         subcategory: string;
         quantity: number;
         value: number;
+        confidence: number;
+        rowIndex: number;
+        lowerTitle: string;
         boundingBox?: {
           __typename: "Rect";
           left: number;
@@ -1030,6 +1093,9 @@ export type GetLineItemQuery = {
   subcategory: string;
   quantity: number;
   value: number;
+  confidence: number;
+  rowIndex: number;
+  lowerTitle: string;
   boundingBox?: {
     __typename: "Rect";
     left: number;
@@ -1055,6 +1121,9 @@ export type ListLineItemsQuery = {
     subcategory: string;
     quantity: number;
     value: number;
+    confidence: number;
+    rowIndex: number;
+    lowerTitle: string;
     boundingBox?: {
       __typename: "Rect";
       left: number;
@@ -1082,6 +1151,9 @@ export type LineItemByProbateRecordQuery = {
     subcategory: string;
     quantity: number;
     value: number;
+    confidence: number;
+    rowIndex: number;
+    lowerTitle: string;
     boundingBox?: {
       __typename: "Rect";
       left: number;
@@ -1110,6 +1182,9 @@ export type GetDocumentQuery = {
       width: number;
       height: number;
     };
+    confidence: number;
+    rowIndex: number;
+    lowerText: string;
   } | null>;
   words: Array<{
     __typename: "Word";
@@ -1143,6 +1218,9 @@ export type ListDocumentsQuery = {
         width: number;
         height: number;
       };
+      confidence: number;
+      rowIndex: number;
+      lowerText: string;
     } | null>;
     words: Array<{
       __typename: "Word";
@@ -1237,6 +1315,9 @@ export type OnCreateProbateRecordSubscription = {
       subcategory: string;
       quantity: number;
       value: number;
+      confidence: number;
+      rowIndex: number;
+      lowerTitle: string;
       boundingBox?: {
         __typename: "Rect";
         left: number;
@@ -1290,6 +1371,9 @@ export type OnUpdateProbateRecordSubscription = {
       subcategory: string;
       quantity: number;
       value: number;
+      confidence: number;
+      rowIndex: number;
+      lowerTitle: string;
       boundingBox?: {
         __typename: "Rect";
         left: number;
@@ -1343,6 +1427,9 @@ export type OnDeleteProbateRecordSubscription = {
       subcategory: string;
       quantity: number;
       value: number;
+      confidence: number;
+      rowIndex: number;
+      lowerTitle: string;
       boundingBox?: {
         __typename: "Rect";
         left: number;
@@ -1386,6 +1473,9 @@ export type OnCreateLineItemSubscription = {
   subcategory: string;
   quantity: number;
   value: number;
+  confidence: number;
+  rowIndex: number;
+  lowerTitle: string;
   boundingBox?: {
     __typename: "Rect";
     left: number;
@@ -1409,6 +1499,9 @@ export type OnUpdateLineItemSubscription = {
   subcategory: string;
   quantity: number;
   value: number;
+  confidence: number;
+  rowIndex: number;
+  lowerTitle: string;
   boundingBox?: {
     __typename: "Rect";
     left: number;
@@ -1432,6 +1525,9 @@ export type OnDeleteLineItemSubscription = {
   subcategory: string;
   quantity: number;
   value: number;
+  confidence: number;
+  rowIndex: number;
+  lowerTitle: string;
   boundingBox?: {
     __typename: "Rect";
     left: number;
@@ -1458,6 +1554,9 @@ export type OnCreateDocumentSubscription = {
       width: number;
       height: number;
     };
+    confidence: number;
+    rowIndex: number;
+    lowerText: string;
   } | null>;
   words: Array<{
     __typename: "Word";
@@ -1489,6 +1588,9 @@ export type OnUpdateDocumentSubscription = {
       width: number;
       height: number;
     };
+    confidence: number;
+    rowIndex: number;
+    lowerText: string;
   } | null>;
   words: Array<{
     __typename: "Word";
@@ -1520,6 +1622,9 @@ export type OnDeleteDocumentSubscription = {
       width: number;
       height: number;
     };
+    confidence: number;
+    rowIndex: number;
+    lowerText: string;
   } | null>;
   words: Array<{
     __typename: "Word";
@@ -1636,6 +1741,9 @@ export class APIService {
               subcategory
               quantity
               value
+              confidence
+              rowIndex
+              lowerTitle
               boundingBox {
                 __typename
                 left
@@ -1705,6 +1813,9 @@ export class APIService {
               subcategory
               quantity
               value
+              confidence
+              rowIndex
+              lowerTitle
               boundingBox {
                 __typename
                 left
@@ -1774,6 +1885,9 @@ export class APIService {
               subcategory
               quantity
               value
+              confidence
+              rowIndex
+              lowerTitle
               boundingBox {
                 __typename
                 left
@@ -1833,6 +1947,9 @@ export class APIService {
           subcategory
           quantity
           value
+          confidence
+          rowIndex
+          lowerTitle
           boundingBox {
             __typename
             left
@@ -1872,6 +1989,9 @@ export class APIService {
           subcategory
           quantity
           value
+          confidence
+          rowIndex
+          lowerTitle
           boundingBox {
             __typename
             left
@@ -1911,6 +2031,9 @@ export class APIService {
           subcategory
           quantity
           value
+          confidence
+          rowIndex
+          lowerTitle
           boundingBox {
             __typename
             left
@@ -1953,6 +2076,9 @@ export class APIService {
               width
               height
             }
+            confidence
+            rowIndex
+            lowerText
           }
           words {
             __typename
@@ -2000,6 +2126,9 @@ export class APIService {
               width
               height
             }
+            confidence
+            rowIndex
+            lowerText
           }
           words {
             __typename
@@ -2047,6 +2176,9 @@ export class APIService {
               width
               height
             }
+            confidence
+            rowIndex
+            lowerText
           }
           words {
             __typename
@@ -2269,6 +2401,9 @@ export class APIService {
               subcategory
               quantity
               value
+              confidence
+              rowIndex
+              lowerTitle
               boundingBox {
                 __typename
                 left
@@ -2340,6 +2475,9 @@ export class APIService {
                 subcategory
                 quantity
                 value
+                confidence
+                rowIndex
+                lowerTitle
                 boundingBox {
                   __typename
                   left
@@ -2410,6 +2548,9 @@ export class APIService {
           subcategory
           quantity
           value
+          confidence
+          rowIndex
+          lowerTitle
           boundingBox {
             __typename
             left
@@ -2449,6 +2590,9 @@ export class APIService {
             subcategory
             quantity
             value
+            confidence
+            rowIndex
+            lowerTitle
             boundingBox {
               __typename
               left
@@ -2480,13 +2624,14 @@ export class APIService {
   }
   async LineItemByProbateRecord(
     probateId: string,
+    rowIndex?: ModelIntKeyConditionInput,
     sortDirection?: ModelSortDirection,
     filter?: ModelLineItemFilterInput,
     limit?: number,
     nextToken?: string
   ): Promise<LineItemByProbateRecordQuery> {
-    const statement = `query LineItemByProbateRecord($probateId: ID!, $sortDirection: ModelSortDirection, $filter: ModelLineItemFilterInput, $limit: Int, $nextToken: String) {
-        lineItemByProbateRecord(probateId: $probateId, sortDirection: $sortDirection, filter: $filter, limit: $limit, nextToken: $nextToken) {
+    const statement = `query LineItemByProbateRecord($probateId: ID!, $rowIndex: ModelIntKeyConditionInput, $sortDirection: ModelSortDirection, $filter: ModelLineItemFilterInput, $limit: Int, $nextToken: String) {
+        lineItemByProbateRecord(probateId: $probateId, rowIndex: $rowIndex, sortDirection: $sortDirection, filter: $filter, limit: $limit, nextToken: $nextToken) {
           __typename
           items {
             __typename
@@ -2499,6 +2644,9 @@ export class APIService {
             subcategory
             quantity
             value
+            confidence
+            rowIndex
+            lowerTitle
             boundingBox {
               __typename
               left
@@ -2516,6 +2664,9 @@ export class APIService {
     const gqlAPIServiceArguments: any = {
       probateId
     };
+    if (rowIndex) {
+      gqlAPIServiceArguments.rowIndex = rowIndex;
+    }
     if (sortDirection) {
       gqlAPIServiceArguments.sortDirection = sortDirection;
     }
@@ -2549,6 +2700,9 @@ export class APIService {
               width
               height
             }
+            confidence
+            rowIndex
+            lowerText
           }
           words {
             __typename
@@ -2596,6 +2750,9 @@ export class APIService {
                 width
                 height
               }
+              confidence
+              rowIndex
+              lowerText
             }
             words {
               __typename
@@ -2776,6 +2933,9 @@ export class APIService {
               subcategory
               quantity
               value
+              confidence
+              rowIndex
+              lowerTitle
               boundingBox {
                 __typename
                 left
@@ -2839,6 +2999,9 @@ export class APIService {
               subcategory
               quantity
               value
+              confidence
+              rowIndex
+              lowerTitle
               boundingBox {
                 __typename
                 left
@@ -2902,6 +3065,9 @@ export class APIService {
               subcategory
               quantity
               value
+              confidence
+              rowIndex
+              lowerTitle
               boundingBox {
                 __typename
                 left
@@ -2955,6 +3121,9 @@ export class APIService {
           subcategory
           quantity
           value
+          confidence
+          rowIndex
+          lowerTitle
           boundingBox {
             __typename
             left
@@ -2988,6 +3157,9 @@ export class APIService {
           subcategory
           quantity
           value
+          confidence
+          rowIndex
+          lowerTitle
           boundingBox {
             __typename
             left
@@ -3021,6 +3193,9 @@ export class APIService {
           subcategory
           quantity
           value
+          confidence
+          rowIndex
+          lowerTitle
           boundingBox {
             __typename
             left
@@ -3057,6 +3232,9 @@ export class APIService {
               width
               height
             }
+            confidence
+            rowIndex
+            lowerText
           }
           words {
             __typename
@@ -3098,6 +3276,9 @@ export class APIService {
               width
               height
             }
+            confidence
+            rowIndex
+            lowerText
           }
           words {
             __typename
@@ -3139,6 +3320,9 @@ export class APIService {
               width
               height
             }
+            confidence
+            rowIndex
+            lowerText
           }
           words {
             __typename
