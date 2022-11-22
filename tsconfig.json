@@ -25,7 +25,9 @@
       "es2020",
       "dom"
     ],
-    "useDefineForClassFields": false
+    "skipLibCheck":true, // https://github.com/aws-amplify/amplify-js/issues/8955
+    "useDefineForClassFields": false,
+    "noImplicitAny": false,
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

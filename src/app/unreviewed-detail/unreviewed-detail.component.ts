@@ -1229,7 +1229,7 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   editLineItemByIndex(index: number): void {
-    let lineItem = null;
+    let lineItem: LineItem | null = null;
     if (this.record && this.record.lineItems) {
       lineItem = this.record.lineItems.items[index];
     }
