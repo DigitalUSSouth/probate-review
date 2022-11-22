@@ -33,13 +33,13 @@ import {
   transferArrayItem,
   CdkDropList,
 } from '@angular/cdk/drag-drop';
-import { MatTable } from '@angular/material/table';
-import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
+import { MatLegacyTable as MatTable } from '@angular/material/legacy-table';
+import { MatLegacyCheckbox as MatCheckbox, MatLegacyCheckboxChange as MatCheckboxChange } from '@angular/material/legacy-checkbox';
 import { BoundingBox } from '../quad-tree';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
 import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
 import { deleteLine, deleteWord } from 'src/graphql/mutations';
-import { MatButton } from '@angular/material/button';
+import { MatLegacyButton as MatButton } from '@angular/material/legacy-button';
 
 interface SubcategoryOptionValue {
   value: string;

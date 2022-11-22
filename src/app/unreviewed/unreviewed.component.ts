@@ -6,7 +6,7 @@ import {
   ListProbateRecordsQuery,
   ModelProbateRecordFilterInput,
 } from '../API.service';
-import { PageEvent } from '@angular/material/paginator';
+import { LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
 @Component({
   selector: 'app-unreviewed',
   templateUrl: './unreviewed.component.html',

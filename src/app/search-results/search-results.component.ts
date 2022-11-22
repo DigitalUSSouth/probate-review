@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { APIService, ListProbateRecordsQuery, ListLineItemsQuery, ModelLineItemFilterInput, ModelProbateRecordFilterInput, ProbateRecord, ModelIDInput } from '../API.service';
-import { PageEvent } from '@angular/material/paginator';
+import { LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
 import { LineItem } from 'src/models';
 import { urlSafeDecode } from '@aws-amplify/core';
 
