@@ -7,7 +7,7 @@ import {
   Renderer2,
   HostListener,
   ViewChildren,
-  QueryList
+  QueryList,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import OpenSeadragon from 'openseadragon';
@@ -27,7 +27,12 @@ import data from '../categories.json';
 import { from } from 'rxjs';
 import { ContextMenuModel } from '../interfaces/context-menu-model';
 import { v4 as uuidv4 } from 'uuid';
-import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDropList } from '@angular/cdk/drag-drop';
+import {
+  CdkDragDrop,
+  moveItemInArray,
+  transferArrayItem,
+  CdkDropList,
+} from '@angular/cdk/drag-drop';
 import { MatTable } from '@angular/material/table';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 import { BoundingBox } from '../quad-tree';
@@ -85,7 +90,6 @@ interface LineItemResult {
   rect?: Rect;
 }
 
-
 enum DragMode {
   None,
   Select,
@@ -94,7 +98,6 @@ enum DragMode {
   Expand,
   Split,
 }
-
 
 enum SelectionMode {
   None,
@@ -117,13 +120,13 @@ enum CommandType {
   CreateLine,
   AdjustBounds,
   MoveLine,
-  Unknown
+  Unknown,
 }
 
 enum OperationType {
   Create,
   Delete,
-  Unknown
+  Unknown,
 }
 
 const InputBoxHeight = 20;
@@ -131,7 +134,7 @@ const InputBoxHeight = 20;
 @Component({
   selector: 'app-unreviewed-detail',
   templateUrl: './unreviewed-detail.component.html',
-  styleUrls: ['./unreviewed-detail.component.sass']
+  styleUrls: ['./unreviewed-detail.component.sass'],
 })
 export class UnreviewedDetailComponent implements OnInit {
   @Input() record?: ProbateRecord;
@@ -155,7 +158,14 @@ export class UnreviewedDetailComponent implements OnInit {
   };
 
   // Data table
-  displayedColumns: string[] = ['checked', 'title', 'category', 'subcategory', 'quantity', 'value'];
+  displayedColumns: string[] = [
+    'checked',
+    'title',
+    'category',
+    'subcategory',
+    'quantity',
+    'value',
+  ];
 
   // Context Menu
   isDisplayContextMenu = false;
@@ -163,7 +173,7 @@ export class UnreviewedDetailComponent implements OnInit {
   rightClickMenuPositionX = 0;
   rightClickMenuPositionY = 0;
 
-  // Data  
+  // Data
   isLineChecked = false;
   isDirty = false;
   isReviewed = false;
@@ -179,7 +189,9 @@ export class UnreviewedDetailComponent implements OnInit {
     this.objToStrMap(data);
 
   // Commands
-  commands: Array<BulkLineItemCommand | LineItemCommand | WordCommand | MoveLineItemCommand> = [];
+  commands: Array<
+    BulkLineItemCommand | LineItemCommand | WordCommand | MoveLineItemCommand
+  > = [];
 
   // Lines, Words
   selectedLine: LineItem | null = null;
@@ -192,19 +204,21 @@ export class UnreviewedDetailComponent implements OnInit {
 
   // UI mode
 
-
   constructor(
     private route: ActivatedRoute,
     private probateRecordService: APIService,
     private renderer: Renderer2,
     public dialog: MatDialog
-  ) { }
+  ) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   recordsChecked(): number {
-    return this.checkBoxes ? (this.checkBoxes as QueryList<MatCheckbox>).filter((c: MatCheckbox) => c.checked == true).length : 0;
+    return this.checkBoxes
+      ? (this.checkBoxes as QueryList<MatCheckbox>).filter(
+          (c: MatCheckbox) => c.checked == true
+        ).length
+      : 0;
   }
 
   checkRow() {
@@ -234,19 +248,18 @@ export class UnreviewedDetailComponent implements OnInit {
 
   toggleNav() {
     if (this.isNavigatorVisible)
-      this.osd!.navigator.element.style.display = "none";
-    else
-      this.osd!.navigator.element.style.display = "inline-block";
+      this.osd!.navigator.element.style.display = 'none';
+    else this.osd!.navigator.element.style.display = 'inline-block';
     this.isNavigatorVisible = !this.isNavigatorVisible;
   }
 
   showNav() {
-    this.osd!.navigator.element.style.display = "inline-block";
+    this.osd!.navigator.element.style.display = 'inline-block';
     this.isNavigatorVisible = true;
   }
 
   hideNav() {
-    this.osd!.navigator.element.style.display = "none";
+    this.osd!.navigator.element.style.display = 'none';
     this.isNavigatorVisible = false;
   }
 
@@ -255,7 +268,7 @@ export class UnreviewedDetailComponent implements OnInit {
     this.osd!.setControlsEnabled(true);
     let toolbarElem = document.getElementById('toolbarDiv');
     if (toolbarElem) {
-      toolbarElem.style.display = "inline-block";
+      toolbarElem.style.display = 'inline-block';
     }
     this.osd!.setMouseNavEnabled(false);
     this.dragSelect.dragMode = DragMode.Select;
@@ -275,7 +288,7 @@ export class UnreviewedDetailComponent implements OnInit {
     this.hideNav();
     let toolbarElem = document.getElementById('toolbarDiv');
     if (toolbarElem) {
-      toolbarElem.style.display = "none";
+      toolbarElem.style.display = 'none';
     }
     this.dragSelect.dragMode = DragMode.None;
     this.dragSelect.editMode = EditMode.None;
@@ -302,8 +315,7 @@ export class UnreviewedDetailComponent implements OnInit {
   toggleSelectionMode() {
     if (this.isSelecting()) {
       this.exitSelectionMode();
-    }
-    else {
+    } else {
       this.enterSelectionMode();
     }
   }
@@ -333,16 +345,18 @@ export class UnreviewedDetailComponent implements OnInit {
       lineItems$.subscribe((lineItems) => {
         this.record!.lineItems!.items =
           lineItems.items as unknown as LineItem[];
-          
+
         for (const lineItem of lineItems.items as LineItem[]) {
           this.existingLineIds.add(lineItem.id);
         }
-        let lineItemIndex = (this.record!.lineItems!.items as LineItem[]).findIndex(l => l.rowIndex == -1);
-        if(lineItemIndex >= 0) {
+        let lineItemIndex = (
+          this.record!.lineItems!.items as LineItem[]
+        ).findIndex((l) => l.rowIndex == -1);
+        if (lineItemIndex >= 0) {
           this.sortLineItems();
         }
       });
-      // get our associated image     
+      // get our associated image
       this.getImage(id);
     });
   }
@@ -359,7 +373,6 @@ export class UnreviewedDetailComponent implements OnInit {
   ): boolean {
     return maxAx >= minBx && minAx <= maxBx && minAy <= maxBy && maxAy >= minBy;
   }
-
 
   // A line
   // B selection rect
@@ -382,7 +395,6 @@ export class UnreviewedDetailComponent implements OnInit {
 
     return isOverlapped;
   }
-
 
   getSelectedLines(selectRect: OpenSeadragon.Rect): LineItem[] {
     if (this.aspectRatio === 0.0) {
@@ -420,7 +432,10 @@ export class UnreviewedDetailComponent implements OnInit {
     return lines;
   }
 
-  getRelativeMousePosition = function (event: PointerEvent, target: HTMLElement | null | undefined = undefined) {
+  getRelativeMousePosition = function (
+    event: PointerEvent,
+    target: HTMLElement | null | undefined = undefined
+  ) {
     let pointTarget = target || event.target;
     let rect = (pointTarget! as HTMLElement).getBoundingClientRect();
     return {
@@ -430,7 +445,6 @@ export class UnreviewedDetailComponent implements OnInit {
   };
 
   async getImage(id: string): Promise<void> {
-
     const infoUrl = `https://d2ai2qpooo3jtj.cloudfront.net/iiif/2/${id}/info.json`;
 
     let options = {
@@ -448,27 +462,36 @@ export class UnreviewedDetailComponent implements OnInit {
       tileSources: infoUrl,
     };
 
-
     this.osd = new OpenSeadragon.Viewer(options);
-    this.osd.addControl("toolbarDiv", { anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT, autoFade: false });
+    this.osd.addControl('toolbarDiv', {
+      anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT,
+      autoFade: false,
+    });
     this.exitEditMode();
     this.selectTracker = new OpenSeadragon.MouseTracker({
       element: this.osd?.element as Element,
       clickHandler: (event) => {
         var target = (event as any).originalTarget as HTMLElement;
         if (target!.matches('input')) {
-          this.dragSelect.selectionMode = SelectionMode.None;          
+          this.dragSelect.selectionMode = SelectionMode.None;
           target.style.display = 'block';
           target.focus();
           this.osd!.setMouseNavEnabled(false);
-        }
-        else if (target!.matches('button') || target!.matches('span.mat-button-wrapper')) {
+        } else if (
+          target!.matches('button') ||
+          target!.matches('span.mat-button-wrapper')
+        ) {
           target.click();
         }
       },
       pressHandler: (event) => {
-        let pos = this.getRelativeMousePosition(event.originalEvent as PointerEvent, this.osd!.canvas);
-        let viewportPos = this.osd!.viewport.viewerElementToViewportCoordinates(new OpenSeadragon.Point(pos.x, pos.y));
+        let pos = this.getRelativeMousePosition(
+          event.originalEvent as PointerEvent,
+          this.osd!.canvas
+        );
+        let viewportPos = this.osd!.viewport.viewerElementToViewportCoordinates(
+          new OpenSeadragon.Point(pos.x, pos.y)
+        );
 
         // check if we are in edit mode
 
@@ -478,7 +501,6 @@ export class UnreviewedDetailComponent implements OnInit {
         let line: LineItem;
         let texRect: Rect;
         let osdRect: OpenSeadragon.Rect;
-
 
         this.dragSelect.isDragging = true;
 
@@ -496,18 +518,21 @@ export class UnreviewedDetailComponent implements OnInit {
           ) {
             return;
           }
-          
         }
 
         this.osd!.addOverlay(
           overlayElement,
           new OpenSeadragon.Rect(viewportPos.x, viewportPos.y, 0, 0)
         );
-
       },
       dragHandler: (event) => {
-        let pos = this.getRelativeMousePosition(event.originalEvent as PointerEvent, this.osd!.canvas);
-        let viewportPos = this.osd!.viewport.viewerElementToViewportCoordinates(new OpenSeadragon.Point(pos.x, pos.y));
+        let pos = this.getRelativeMousePosition(
+          event.originalEvent as PointerEvent,
+          this.osd!.canvas
+        );
+        let viewportPos = this.osd!.viewport.viewerElementToViewportCoordinates(
+          new OpenSeadragon.Point(pos.x, pos.y)
+        );
         var diffX = viewportPos.x - this.dragSelect!.startPos.x;
         var diffY = viewportPos.y - this.dragSelect!.startPos.y;
 
@@ -542,7 +567,6 @@ export class UnreviewedDetailComponent implements OnInit {
               ) {
                 break;
               }
-              
             }
             this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);
             break;
@@ -598,8 +622,13 @@ export class UnreviewedDetailComponent implements OnInit {
         }
       },
       releaseHandler: (event) => {
-        let pos = this.getRelativeMousePosition(event.originalEvent as PointerEvent, this.osd!.canvas);
-        let viewportPos = this.osd!.viewport.viewerElementToViewportCoordinates(new OpenSeadragon.Point(pos.x, pos.y));
+        let pos = this.getRelativeMousePosition(
+          event.originalEvent as PointerEvent,
+          this.osd!.canvas
+        );
+        let viewportPos = this.osd!.viewport.viewerElementToViewportCoordinates(
+          new OpenSeadragon.Point(pos.x, pos.y)
+        );
         var diffX = viewportPos.x - this.dragSelect!.startPos.x;
         var diffY = viewportPos.y - this.dragSelect!.startPos.y;
         let location = new OpenSeadragon.Rect(
@@ -634,7 +663,6 @@ export class UnreviewedDetailComponent implements OnInit {
             }
             break;
         }
-
       },
     });
   }
@@ -644,18 +672,15 @@ export class UnreviewedDetailComponent implements OnInit {
       let items: Array<LineItem> = Array.from(
         this.record.lineItems.items as LineItem[]
       );
-      let sortedLineItems = items.sort(
-        (a, b) => {
-          if(a.rowIndex != -1 && b.rowIndex != -1) {
-            return a.rowIndex - b.rowIndex;
-          }
-          else {
-            return a.boundingBox!.top - b.boundingBox!.top;
-          }
+      let sortedLineItems = items.sort((a, b) => {
+        if (a.rowIndex != -1 && b.rowIndex != -1) {
+          return a.rowIndex - b.rowIndex;
+        } else {
+          return a.boundingBox!.top - b.boundingBox!.top;
         }
-      );
-      
-      for(let i = 0; i < sortedLineItems.length; i++ ) {
+      });
+
+      for (let i = 0; i < sortedLineItems.length; i++) {
         let lineItem = sortedLineItems[i];
         lineItem.rowIndex = i;
         this.updatedLineIds.add(lineItem.id);
@@ -681,7 +706,9 @@ export class UnreviewedDetailComponent implements OnInit {
       case 1:
         if (event.target.id.startsWith('wordInput-')) {
           let wordId = event.target.id.substring('wordInput-'.length);
-          this.selectedWord = (this.record!.words as Word[]).filter(w => w.id == wordId).pop();
+          this.selectedWord = (this.record!.words as Word[])
+            .filter((w) => w.id == wordId)
+            .pop();
           let inputElem = document.getElementById(
             event.target.id
           ) as HTMLInputElement;
@@ -701,8 +728,7 @@ export class UnreviewedDetailComponent implements OnInit {
               },
             ];
           }
-        }
-        else if (event.target.id == 'select') {
+        } else if (event.target.id == 'select') {
           this.rightClickMenuItems = [
             {
               menuText: 'Create Word',
@@ -711,10 +737,9 @@ export class UnreviewedDetailComponent implements OnInit {
             {
               menuText: 'Cancel',
               menuEvent: 'cancel',
-            }
+            },
           ];
-        }
-        else {
+        } else {
           // console.log('showing select lines context menu');
           this.rightClickMenuItems = [
             // {
@@ -744,7 +769,7 @@ export class UnreviewedDetailComponent implements OnInit {
             {
               menuText: 'Cancel',
               menuEvent: 'cancel',
-            }
+            },
           ];
         }
         break;
@@ -771,7 +796,9 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   getOrderedWordsForLineItem(line: LineItem): Word[] {
-    let words = (this.record!.words as Word[]).filter(w => this.selectedLines[0].wordIds.includes(w.id));
+    let words = (this.record!.words as Word[]).filter((w) =>
+      this.selectedLines[0].wordIds.includes(w.id)
+    );
     let rows = this.getRowsOfText(words);
     let orderedWords: Word[] = [];
     for (const row of rows) {
@@ -790,12 +817,14 @@ export class UnreviewedDetailComponent implements OnInit {
     } as unknown as Word;
     this.record!.words.push(word);
     this.selectedLines[0].wordIds.push(word.id);
-    let words = (this.record!.words as Word[]).filter(w => this.selectedLines[0].wordIds.includes(w.id));    
-    let rows = this.getRowsOfText(words);    
+    let words = (this.record!.words as Word[]).filter((w) =>
+      this.selectedLines[0].wordIds.includes(w.id)
+    );
+    let rows = this.getRowsOfText(words);
     let orderedIds: string[] = [];
     for (const row of rows) {
-      orderedIds = orderedIds.concat(row.map(w => w.id));
-    }    
+      orderedIds = orderedIds.concat(row.map((w) => w.id));
+    }
     this.selectedLines[0].wordIds = orderedIds;
     this.showInputsForWords(words);
     this.table.renderRows();
@@ -803,10 +832,12 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   deleteWord(word: Word) {
-    this.record!.words = (this.record!.words as Word[]).filter(w => w.id != word.id);
-    for (const line of (this.record!.lineItems!.items as LineItem[])) {
+    this.record!.words = (this.record!.words as Word[]).filter(
+      (w) => w.id != word.id
+    );
+    for (const line of this.record!.lineItems!.items as LineItem[]) {
       if (line.wordIds.includes(word.id)) {
-        line.wordIds = line.wordIds.filter(id => id != word.id);
+        line.wordIds = line.wordIds.filter((id) => id != word.id);
         this.updateLineItemText(line);
       }
     }
@@ -814,7 +845,9 @@ export class UnreviewedDetailComponent implements OnInit {
     if (this.isEditing()) {
       // remove our existing overlay
       this.osd!.removeOverlay(`wordInput-${word.id}`);
-      let words = (this.record!.words as Word[]).filter(w => this.selectedLines[0].wordIds.includes(w.id));
+      let words = (this.record!.words as Word[]).filter((w) =>
+        this.selectedLines[0].wordIds.includes(w.id)
+      );
       this.showInputsForWords(words);
     }
 
@@ -829,7 +862,9 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   getSnapToLocation(location: OpenSeadragon.Rect): OpenSeadragon.Rect {
-    let words = (this.record!.words as Word[]).filter(w => this.selectedLines[0].wordIds.includes(w.id));
+    let words = (this.record!.words as Word[]).filter((w) =>
+      this.selectedLines[0].wordIds.includes(w.id)
+    );
     // check the appropriate row
     let rows = this.getRowsOfText(words);
     let closestDistance = 2.0;
@@ -858,7 +893,6 @@ export class UnreviewedDetailComponent implements OnInit {
     }
     return this.texRect2osdRect(boundingBox);
   }
-
 
   createLineItemAtLocation(rect: Rect | undefined): LineItem {
     // Use as const with __typename https://github.com/dotansimha/graphql-code-generator/issues/3610
@@ -893,62 +927,83 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   showWordInputsForLine(lineItem: LineItem) {
-    let words = (this.record!.words as Word[]).filter(w => lineItem.wordIds.includes(w.id));    
+    let words = (this.record!.words as Word[]).filter((w) =>
+      lineItem.wordIds.includes(w.id)
+    );
     this.showInputsForWords(words);
   }
 
   handleMenuItemClick(event: any) {
     let selectOverlay = this.osd!.getOverlayById('select');
-    let location = (selectOverlay) ? this.osd!.getOverlayById('select').getBounds(
-      this.osd!.viewport
-    ) : new OpenSeadragon.Rect(0, 0, 0, 0);
+    let location = selectOverlay
+      ? this.osd!.getOverlayById('select').getBounds(this.osd!.viewport)
+      : new OpenSeadragon.Rect(0, 0, 0, 0);
     switch (event.data) {
       case 'create word':
         let snapToLocation = this.getSnapToLocation(location);
         let word = this.createWordAtLocation(snapToLocation);
         this.focusOnWord(word);
         this.osd!.removeOverlay('select');
-        this.commands.push({ type: CommandType.CreateWord, operation: OperationType.Create, wasDirtyBeforeCommand: this.isDirty, word, lineItemId: this.selectedLines[0].id });
+        this.commands.push({
+          type: CommandType.CreateWord,
+          operation: OperationType.Create,
+          wasDirtyBeforeCommand: this.isDirty,
+          word,
+          lineItemId: this.selectedLines[0].id,
+        });
         this.isDirty = true;
         this.table.renderRows();
         break;
       case 'delete word':
         if (this.selectedWord) {
           this.deleteWord(this.selectedWord);
-          this.commands.push({ type: CommandType.DeleteWord, operation: OperationType.Delete, wasDirtyBeforeCommand: this.isDirty, word: this.selectedWord, lineItemId: this.selectedLines[0].id });
+          this.commands.push({
+            type: CommandType.DeleteWord,
+            operation: OperationType.Delete,
+            wasDirtyBeforeCommand: this.isDirty,
+            word: this.selectedWord,
+            lineItemId: this.selectedLines[0].id,
+          });
           this.selectedWord = null;
           this.isDirty = true;
           this.table.renderRows();
         }
         break;
-      case 'create line': {
-        let lineItem = this.createLineItemAtLocation(this.osdRect2texRect(location));       
-        this.record!.lineItems!.items.push(lineItem);
-        this.commands.push({ type: CommandType.CreateLine, operation: OperationType.Create, wasDirtyBeforeCommand: this.isDirty, lineItem });
-        this.isDirty = true;
-        this.table.renderRows();
-        this.exitSelectionMode();
-        this.selectedLines = [];
-        this.selectedLines.push(lineItem);
-        this.highlightLine(lineItem);
-        this.enterEditMode();
-      }
+      case 'create line':
+        {
+          let lineItem = this.createLineItemAtLocation(
+            this.osdRect2texRect(location)
+          );
+          this.record!.lineItems!.items.push(lineItem);
+          this.commands.push({
+            type: CommandType.CreateLine,
+            operation: OperationType.Create,
+            wasDirtyBeforeCommand: this.isDirty,
+            lineItem,
+          });
+          this.isDirty = true;
+          this.table.renderRows();
+          this.exitSelectionMode();
+          this.selectedLines = [];
+          this.selectedLines.push(lineItem);
+          this.highlightLine(lineItem);
+          this.enterEditMode();
+        }
         break;
-      case 'delete line': {        
-        this.bulkDeleteLines(this.selectedLines);
-        this.osd!.clearOverlays();
-      }
-      break;
+      case 'delete line':
+        {
+          this.bulkDeleteLines(this.selectedLines);
+          this.osd!.clearOverlays();
+        }
+        break;
       case 'correct text':
         this.highlightLine(this.selectedLines[0]);
         this.showWordInputsForLine(this.selectedLines[0]);
         this.enterEditMode();
         break;
-      
     }
     this.isDisplayContextMenu = false;
   }
-
 
   objToStrMap(obj: any) {
     let strMap = new Map();
@@ -957,36 +1012,6 @@ export class UnreviewedDetailComponent implements OnInit {
       strMap.set(props[0], obj[k][props[0]]);
     }
     return strMap;
-  }
-
-  populateSubcategory(lineIndex: number): void {
-    const selectObject = document.getElementById(
-      'category-' + lineIndex
-    ) as HTMLInputElement;
-    const category = selectObject?.value;
-    let subcategories = this.categoryMap.get(category);
-    console.log(subcategories);
-    let subcategorySelect = document.getElementById(
-      'subcategory-' + lineIndex
-    ) as HTMLInputElement;
-    while (subcategorySelect?.firstChild) {
-      subcategorySelect.removeChild(subcategorySelect.firstChild);
-    }
-    if (subcategories) {
-      for (let i = 0; i < subcategories.length; i++) {
-        let optionJSON = subcategories[i];
-        console.log(optionJSON);
-        let optionElement = document.createElement('option');
-        optionElement.setAttribute('value', optionJSON.value);
-        let textNode = document.createTextNode(optionJSON.text);
-        optionElement.appendChild(textNode);
-        subcategorySelect?.appendChild(optionElement);
-      }
-    }
-    let lineItem = this.record!.lineItems!.items[lineIndex];
-    lineItem!.category = selectObject.value;
-    this.isDirty = true; 
-    this.updatedLineIds.add(lineItem!.id);
   }
 
   getWordsOfLine(line: LineItem): Word[] {
@@ -1231,7 +1256,7 @@ export class UnreviewedDetailComponent implements OnInit {
     this.highlightLine(line);
   }
 
-  deleteLineItemByIndex(index: number): void { }
+  deleteLineItemByIndex(index: number): void {}
 
   calculateAspectRatio() {
     this.imageSize = this.osd!.world.getItemAt(0).getContentSize();
@@ -1246,7 +1271,10 @@ export class UnreviewedDetailComponent implements OnInit {
     this.selectedLines = [];
   }
 
-  createOverlayElement(id: string, className = 'highlighted-line'): HTMLElement {
+  createOverlayElement(
+    id: string,
+    className = 'highlighted-line'
+  ): HTMLElement {
     let overlay = document.getElementById(id);
     if (overlay) {
       this.osd?.removeOverlay(id);
@@ -1289,21 +1317,97 @@ export class UnreviewedDetailComponent implements OnInit {
     this.osd!.setMouseNavEnabled(true);
   }
 
+  onUpdatedLineItem(lineItemId: string) {
+    this.updatedLineIds.add(lineItemId);
+    this.isDirty = true;
+  }
 
-  onSubcategoryChanged(lineIndex: number): void {    
-    let lineItem = this.record!.lineItems!.items[lineIndex];
-    let subcategoryElem = document.getElementById(`subcategory-${lineIndex}`) as HTMLInputElement;
-    lineItem!.subcategory = subcategoryElem.value;
-    this.isDirty = true; 
-    this.updatedLineIds.add(lineItem!.id);
+  onCategoryChanged(event: Event): void {
+    let selectElem = (event.target as HTMLSelectElement);
+    let lineItemId = selectElem.id.substring('category-'.length);
+    const category = selectElem.value;
+    let subcategories = this.categoryMap.get(category);
+    console.log(subcategories);
+    let subcategorySelect = document.getElementById(
+      'subcategory-' + lineItemId
+    ) as HTMLInputElement;
+    while (subcategorySelect?.firstChild) {
+      subcategorySelect.removeChild(subcategorySelect.firstChild);
+    }
+    if (subcategories) {
+      for (let i = 0; i < subcategories.length; i++) {
+        let optionJSON = subcategories[i];
+        console.log(optionJSON);
+        let optionElement = document.createElement('option');
+        optionElement.setAttribute('value', optionJSON.value);
+        let textNode = document.createTextNode(optionJSON.text);
+        optionElement.appendChild(textNode);
+        subcategorySelect?.appendChild(optionElement);
+      }
+    }
+    let lineItem = (this.record!.lineItems!.items as LineItem[]).find(
+      (l) => (l.id === lineItemId)
+    );
+    if (lineItem) {
+      lineItem.category = category;
+      this.onUpdatedLineItem(lineItemId);
+    }
+  }
+
+  onSubcategoryChanged(event: Event): void {
+    let selectElem = (event.target as HTMLSelectElement);
+    let lineItemId = selectElem.id.substring('subcategory-'.length);
+    let lineItem = (this.record!.lineItems!.items as LineItem[]).find(
+      (l) => (l.id === lineItemId)
+    );
+    if (lineItem) {
+      lineItem!.subcategory = selectElem.value;
+      this.onUpdatedLineItem(lineItemId);
+    }
+  }
+
+  onQuantityChanged(event: Event): void {
+    let inputElem = event.target as HTMLInputElement;
+    let lineItemId = inputElem.id.substring('quantity-'.length);
+    let lineItem = (this.record!.lineItems!.items as LineItem[]).find(
+      (l) => (l.id === lineItemId)
+    );
+    if (lineItem) {
+      lineItem!.quantity = Number.parseInt(inputElem.value);
+      this.onUpdatedLineItem(lineItemId);
+    }
+  }
+
+  onValueChanged(event: Event): void {
+    let inputElem = event.target as HTMLInputElement;
+    let lineItemId = inputElem.id.substring('value-'.length);
+    let lineItem = (this.record!.lineItems!.items as LineItem[]).find(
+      (l) => (l.id === lineItemId)
+    );
+    if (lineItem) {
+      lineItem.value = Number.parseFloat(inputElem.value);
+      this.onUpdatedLineItem(lineItemId);
+    }
   }
 
   drop(event: CdkDragDrop<LineItem[]>) {
-    let lineItem = this.record!.lineItems!.items[event.previousIndex] as LineItem;
+    let lineItem = this.record!.lineItems!.items[
+      event.previousIndex
+    ] as LineItem;
     lineItem.rowIndex = event.currentIndex;
     this.updatedLineIds.add(lineItem.id);
-    moveItemInArray(this.record!.lineItems!.items, event.previousIndex, event.currentIndex);
-    this.commands.push({ type: CommandType.MoveLine, lineItem, wasDirtyBeforeCommand: this.isDirty, oldIndex: event.previousIndex, newIndex: event.currentIndex });
+    moveItemInArray(
+      this.record!.lineItems!.items,
+      event.previousIndex,
+      event.currentIndex
+    );
+    this.commands.push({
+      type: CommandType.MoveLine,
+      lineItem,
+      wasDirtyBeforeCommand: this.isDirty,
+      oldIndex: event.previousIndex,
+      newIndex: event.currentIndex,
+    });
     this.isDirty = true;
     this.table.renderRows();
   }
@@ -1332,15 +1436,9 @@ export class UnreviewedDetailComponent implements OnInit {
     );
   }
 
-  osdRectangleContainsOsdPoint(
-    a: OpenSeadragon.Rect,
-    b: OpenSeadragon.Point
-  ) {
+  osdRectangleContainsOsdPoint(a: OpenSeadragon.Rect, b: OpenSeadragon.Point) {
     return (
-      a.x <= b.x &&
-      a.y <= b.y &&
-      a.x + a.width >= b.x &&
-      a.y + a.height >= b.y
+      a.x <= b.x && a.y <= b.y && a.x + a.width >= b.x && a.y + a.height >= b.y
     );
   }
 
@@ -1379,21 +1477,24 @@ export class UnreviewedDetailComponent implements OnInit {
       width: '600px',
     });
 
-    let confirmation = "";
-    dialogRef.afterClosed().subscribe(result => {
+    let confirmation = '';
+    dialogRef.afterClosed().subscribe((result) => {
       confirmation = result;
     });
 
     return confirmation;
   }
 
-
   deleteLine(lineItem: LineItem) {
     this.isDirty = true;
     this.deletedLines.push(lineItem);
-    let wordsToDelete = (this.record!.words as Word[]).filter(w => lineItem.wordIds.includes(w.id));
+    let wordsToDelete = (this.record!.words as Word[]).filter((w) =>
+      lineItem.wordIds.includes(w.id)
+    );
     this.deletedLineWordsMap.set(lineItem.id, wordsToDelete);
-    this.record!.words = (this.record!.words as Word[]).filter(w => !lineItem.wordIds.includes(w.id));
+    this.record!.words = (this.record!.words as Word[]).filter(
+      (w) => !lineItem.wordIds.includes(w.id)
+    );
     if (this.newLineIds.has(lineItem.id)) {
       this.newLineIds.delete(lineItem.id);
     }
@@ -1408,77 +1509,98 @@ export class UnreviewedDetailComponent implements OnInit {
     if (this.commands.length > 0) {
       let command = this.commands.pop();
       switch (command!.type) {
-        case CommandType.BulkDelete: {
-          let bulkCommand = command as BulkLineItemCommand;
-          for (const lineItem of bulkCommand.lineItems) {
-            let index = bulkCommand.lineItemIndexMap.get(lineItem.id);
-            this.record!.lineItems!.items.splice(index!, 0, lineItem);
-            this.record!.words = this.record!.words.concat(bulkCommand.wordMap.get(lineItem.id) as Word[]);
-            if (!this.existingLineIds.has(lineItem.id)) {
-              this.newLineIds.add(lineItem.id);
-            }
-            else {
-              this.updatedLineIds.add(lineItem.id);
-            }
-            if(this.deletedLineIds.has(lineItem.id)) {
-              this.deletedLineIds.delete(lineItem.id);
+        case CommandType.BulkDelete:
+          {
+            let bulkCommand = command as BulkLineItemCommand;
+            for (const lineItem of bulkCommand.lineItems) {
+              let index = bulkCommand.lineItemIndexMap.get(lineItem.id);
+              this.record!.lineItems!.items.splice(index!, 0, lineItem);
+              this.record!.words = this.record!.words.concat(
+                bulkCommand.wordMap.get(lineItem.id) as Word[]
+              );
+              if (!this.existingLineIds.has(lineItem.id)) {
+                this.newLineIds.add(lineItem.id);
+              } else {
+                this.updatedLineIds.add(lineItem.id);
+              }
+              if (this.deletedLineIds.has(lineItem.id)) {
+                this.deletedLineIds.delete(lineItem.id);
+              }
             }
           }
-        }
           break;
-        case CommandType.CreateWord: {
-          let wordCommand = command as WordCommand;
-          this.record!.words = (this.record!.words as Word[]).filter(w => w.id != wordCommand.word.id);
-          for (const lineItem of (this.record!.lineItems!.items as LineItem[])) {
-            if (lineItem.wordIds.includes(wordCommand.word.id)) {
-              lineItem.wordIds = (lineItem.wordIds as string[]).filter(id => id != wordCommand.word.id);
-              this.updateLineItemText(lineItem);
+        case CommandType.CreateWord:
+          {
+            let wordCommand = command as WordCommand;
+            this.record!.words = (this.record!.words as Word[]).filter(
+              (w) => w.id != wordCommand.word.id
+            );
+            for (const lineItem of this.record!.lineItems!
+              .items as LineItem[]) {
+              if (lineItem.wordIds.includes(wordCommand.word.id)) {
+                lineItem.wordIds = (lineItem.wordIds as string[]).filter(
+                  (id) => id != wordCommand.word.id
+                );
+                this.updateLineItemText(lineItem);
+              }
             }
-          }
-          if (this.isEditing()) {
-            this.osd!.removeOverlay(`wordInput-${wordCommand.word.id}`);
-          }
-
-        }
-          break;
-        case CommandType.DeleteWord: {
-          let wordCommand = command as WordCommand;
-          let word = wordCommand.word;
-          this.record!.words.push(word);
-          let lineItem = (this.record!.lineItems!.items as LineItem[]).find(l => l.id === wordCommand.lineItemId);
-          if (lineItem) {
-            lineItem.wordIds.push(word.id);
-            let orderedWords = this.getOrderedWordsForLineItem(lineItem);
-            lineItem.wordIds = orderedWords.map(w => w.id);
-            this.updateLineItemText(lineItem);
-
             if (this.isEditing()) {
-              this.showInputsForWords(orderedWords);
+              this.osd!.removeOverlay(`wordInput-${wordCommand.word.id}`);
             }
           }
-
-        }
           break;
+        case CommandType.DeleteWord:
+          {
+            let wordCommand = command as WordCommand;
+            let word = wordCommand.word;
+            this.record!.words.push(word);
+            let lineItem = (this.record!.lineItems!.items as LineItem[]).find(
+              (l) => l.id === wordCommand.lineItemId
+            );
+            if (lineItem) {
+              lineItem.wordIds.push(word.id);
+              let orderedWords = this.getOrderedWordsForLineItem(lineItem);
+              lineItem.wordIds = orderedWords.map((w) => w.id);
+              this.updateLineItemText(lineItem);
 
-        case CommandType.CreateLine: {
-          let lineItemCommand = command as LineItemCommand;
-          let lineItem = lineItemCommand.lineItem;
-          this.record!.words = (this.record!.words as Word[]).filter(w => !lineItem.wordIds.includes(w.id));
-          this.record!.lineItems!.items = (this.record!.lineItems!.items as LineItem[]).filter(l => l.id != lineItem.id);
-          this.newLineIds.delete(lineItem.id);
-        }
-          break;
-        case CommandType.MoveLine: {
-          let moveLineItemCommand = command as MoveLineItemCommand;
-          let currentIndex = (this.record!.lineItems!.items as LineItem[]).indexOf(moveLineItemCommand.lineItem);
-          if (currentIndex >= 0) {
-            moveItemInArray(this.record!.lineItems!.items, currentIndex, moveLineItemCommand.oldIndex);
+              if (this.isEditing()) {
+                this.showInputsForWords(orderedWords);
+              }
+            }
           }
-        }
           break;
-        case CommandType.DeleteLine: {
 
-        }
+        case CommandType.CreateLine:
+          {
+            let lineItemCommand = command as LineItemCommand;
+            let lineItem = lineItemCommand.lineItem;
+            this.record!.words = (this.record!.words as Word[]).filter(
+              (w) => !lineItem.wordIds.includes(w.id)
+            );
+            this.record!.lineItems!.items = (
+              this.record!.lineItems!.items as LineItem[]
+            ).filter((l) => l.id != lineItem.id);
+            this.newLineIds.delete(lineItem.id);
+          }
+          break;
+        case CommandType.MoveLine:
+          {
+            let moveLineItemCommand = command as MoveLineItemCommand;
+            let currentIndex = (
+              this.record!.lineItems!.items as LineItem[]
+            ).indexOf(moveLineItemCommand.lineItem);
+            if (currentIndex >= 0) {
+              moveItemInArray(
+                this.record!.lineItems!.items,
+                currentIndex,
+                moveLineItemCommand.oldIndex
+              );
+            }
+          }
+          break;
+        case CommandType.DeleteLine:
+          {
+          }
           break;
       }
       this.isDirty = command?.wasDirtyBeforeCommand!;
@@ -1494,19 +1616,32 @@ export class UnreviewedDetailComponent implements OnInit {
     console.log(lineItemsToDelete);
     for (const lineItem of lineItemsToDelete) {
       lineItems.push({ ...lineItem });
-      let words = (this.record!.words as Word[]).filter(w => lineItem.wordIds.includes(w.id));
+      let words = (this.record!.words as Word[]).filter((w) =>
+        lineItem.wordIds.includes(w.id)
+      );
       wordMap.set(lineItem.id, words);
-      wordIds = wordIds.concat(words.map(w => w.id));
+      wordIds = wordIds.concat(words.map((w) => w.id));
       const index = this.record!.lineItems!.items.indexOf(lineItem);
       lineItemIndexMap.set(lineItem.id, index);
       this.deletedLineIds.add(lineItem.id);
     }
-    this.commands.push({ type: CommandType.BulkDelete, operation: OperationType.Delete, wasDirtyBeforeCommand: this.isDirty, lineItems, wordMap, lineItemIndexMap });
+    this.commands.push({
+      type: CommandType.BulkDelete,
+      operation: OperationType.Delete,
+      wasDirtyBeforeCommand: this.isDirty,
+      lineItems,
+      wordMap,
+      lineItemIndexMap,
+    });
 
     // Remove LineItems and Words
-    let lineIds = lineItemsToDelete.map(l => l.id);
-    this.record!.lineItems!.items = (this.record!.lineItems!.items as LineItem[]).filter(l => !lineIds.includes(l.id));
-    this.record!.words = (this.record!.words as Word[]).filter(w => !wordIds.includes(w.id));
+    let lineIds = lineItemsToDelete.map((l) => l.id);
+    this.record!.lineItems!.items = (
+      this.record!.lineItems!.items as LineItem[]
+    ).filter((l) => !lineIds.includes(l.id));
+    this.record!.words = (this.record!.words as Word[]).filter(
+      (w) => !wordIds.includes(w.id)
+    );
 
     this.isDirty = true;
   }
@@ -1517,17 +1652,21 @@ export class UnreviewedDetailComponent implements OnInit {
       width: '400px',
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === "delete") {
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'delete') {
         let lineIds: string[] = [];
         // get checked checkboxes
-        let checkedBoxes = (this.checkBoxes as QueryList<MatCheckbox>).filter((c: MatCheckbox) => c.checked == true);
+        let checkedBoxes = (this.checkBoxes as QueryList<MatCheckbox>).filter(
+          (c: MatCheckbox) => c.checked == true
+        );
         for (const checkedBox of checkedBoxes) {
-          let lineId = checkedBox.id.substring("check-".length);
+          let lineId = checkedBox.id.substring('check-'.length);
           lineIds.push(lineId);
         }
 
-        let linesToDelete = (this.record!.lineItems!.items as LineItem[]).filter(l => lineIds.includes(l.id));
+        let linesToDelete = (
+          this.record!.lineItems!.items as LineItem[]
+        ).filter((l) => lineIds.includes(l.id));
         this.bulkDeleteLines(linesToDelete);
 
         this.isLineChecked = false;
@@ -1535,46 +1674,68 @@ export class UnreviewedDetailComponent implements OnInit {
     });
   }
 
-  mapToUpdateLineItemInput(lineItems: LineItem []): UpdateLineItemInput[] | CreateLineItemInput {
-    return lineItems ? lineItems.map(l => ({
-      id: l.id,
-      probateId: this.record!.id,
-      wordIds: l.wordIds,
-      title: l.title,
-      description: l.description,
-      category: l.category,
-      subcategory: l.subcategory,
-      quantity: l.quantity,
-      value: l.value,
-      boundingBox: {left: l.boundingBox!.left, top: l.boundingBox!.top, width: l.boundingBox!.width, height: l.boundingBox!.height},
-      attributeForId: l.attributeForId,
-      rowIndex: l.rowIndex,
-      confidence: l.confidence,
-      lowerTitle: l.lowerTitle,
-    })) : [];
+  mapToUpdateLineItemInput(
+    lineItems: LineItem[]
+  ): UpdateLineItemInput[] | CreateLineItemInput {
+    return lineItems
+      ? lineItems.map((l) => ({
+          id: l.id,
+          probateId: this.record!.id,
+          wordIds: l.wordIds,
+          title: l.title,
+          description: l.description,
+          category: l.category,
+          subcategory: l.subcategory,
+          quantity: l.quantity,
+          value: l.value,
+          boundingBox: {
+            left: l.boundingBox!.left,
+            top: l.boundingBox!.top,
+            width: l.boundingBox!.width,
+            height: l.boundingBox!.height,
+          },
+          attributeForId: l.attributeForId,
+          rowIndex: l.rowIndex,
+          confidence: l.confidence,
+          lowerTitle: l.lowerTitle,
+        }))
+      : [];
   }
 
   async save() {
     // create line items
-    let createLineItems = (this.record!.lineItems!.items as LineItem[]).filter(l => this.newLineIds.has(l.id));
-    let createLineItemInputs = this.mapToUpdateLineItemInput(createLineItems) as CreateLineItemInput[];
-    for(const createdLineItemInput of createLineItemInputs) {
-      let response = await this.probateRecordService.CreateLineItem(createdLineItemInput);
+    let createLineItems = (this.record!.lineItems!.items as LineItem[]).filter(
+      (l) => this.newLineIds.has(l.id)
+    );
+    let createLineItemInputs = this.mapToUpdateLineItemInput(
+      createLineItems
+    ) as CreateLineItemInput[];
+    for (const createdLineItemInput of createLineItemInputs) {
+      let response = await this.probateRecordService.CreateLineItem(
+        createdLineItemInput
+      );
     }
 
     // update line items
-    let updateLineItems = (this.record!.lineItems!.items as LineItem[]).filter(l => this.updatedLineIds.has(l.id));
-    let updatedLineItemInputs = this.mapToUpdateLineItemInput(updateLineItems) as UpdateLineItemInput[]; 
+    let updateLineItems = (this.record!.lineItems!.items as LineItem[]).filter(
+      (l) => this.updatedLineIds.has(l.id)
+    );
+    let updatedLineItemInputs = this.mapToUpdateLineItemInput(
+      updateLineItems
+    ) as UpdateLineItemInput[];
     console.log('updating ' + updateLineItems.length + ' lines');
-    for(const updatedLineItemInput of updatedLineItemInputs) {
-      let response = await this.probateRecordService.UpdateLineItem(updatedLineItemInput);
+    for (const updatedLineItemInput of updatedLineItemInputs) {
+      let response = await this.probateRecordService.UpdateLineItem(
+        updatedLineItemInput
+      );
+      console.log(response);
     }
 
     // delete line items
     this.deletedLineIds.forEach(async (id) => {
-      let response = await this.probateRecordService.DeleteLineItem({id});
+      let response = await this.probateRecordService.DeleteLineItem({ id });
     });
-    
+
     // update record
     let updatedWords = (Array.from(this.record!.words) as Word[]).map((w) => ({
       id: w.id,
@@ -1593,9 +1754,7 @@ export class UnreviewedDetailComponent implements OnInit {
       reviewCount++;
     }
     let item = { id: this.record!.id, reviewCount, words: updatedWords };
-    let response = await this.probateRecordService.UpdateProbateRecord(
-      item
-    );
+    let response = await this.probateRecordService.UpdateProbateRecord(item);
     this.isDirty = false;
     console.log(response);
     alert('record updated');
