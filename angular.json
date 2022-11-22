@@ -39,7 +39,17 @@
             ],
             "scripts": [
               
-            ]
+            ],
+            "allowedCommonJsDependencies": [
+              "uuid",
+              "lodash",
+              "url",
+              "buffer",
+              "cookie",
+              "js-cookie",
+              "openseadragon",
+              "@aws-crypto"
+           ]
           },
           "configurations": {
             "production": {
