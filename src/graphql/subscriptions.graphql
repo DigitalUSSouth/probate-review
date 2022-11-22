@@ -18,6 +18,9 @@ subscription OnCreateProbateRecord {
         subcategory
         quantity
         value
+        confidence
+        rowIndex
+        lowerTitle
         boundingBox {
           left
           top
@@ -66,6 +69,9 @@ subscription OnUpdateProbateRecord {
         subcategory
         quantity
         value
+        confidence
+        rowIndex
+        lowerTitle
         boundingBox {
           left
           top
@@ -114,6 +120,9 @@ subscription OnDeleteProbateRecord {
         subcategory
         quantity
         value
+        confidence
+        rowIndex
+        lowerTitle
         boundingBox {
           left
           top
@@ -154,6 +163,9 @@ subscription OnCreateLineItem {
     subcategory
     quantity
     value
+    confidence
+    rowIndex
+    lowerTitle
     boundingBox {
       left
       top
@@ -176,6 +188,9 @@ subscription OnUpdateLineItem {
     subcategory
     quantity
     value
+    confidence
+    rowIndex
+    lowerTitle
     boundingBox {
       left
       top
@@ -198,6 +213,9 @@ subscription OnDeleteLineItem {
     subcategory
     quantity
     value
+    confidence
+    rowIndex
+    lowerTitle
     boundingBox {
       left
       top
@@ -221,6 +239,9 @@ subscription OnCreateDocument {
         width
         height
       }
+      confidence
+      rowIndex
+      lowerText
     }
     words {
       id
@@ -248,6 +269,9 @@ subscription OnUpdateDocument {
         width
         height
       }
+      confidence
+      rowIndex
+      lowerText
     }
     words {
       id
@@ -275,6 +299,9 @@ subscription OnDeleteDocument {
         width
         height
       }
+      confidence
+      rowIndex
+      lowerText
     }
     words {
       id
