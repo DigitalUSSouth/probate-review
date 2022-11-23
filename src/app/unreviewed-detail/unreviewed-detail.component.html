@@ -18,7 +18,7 @@
       <div id="review-form" class="flex-child">
         <h1>Enter your corrections below</h1>
         <button #selectButton mat-raised-button class="form-button" color="primary" [disabled]="isEditing()" (click)="toggleSelectionMode()">{{isSelecting() ? 'Exit' : 'Select'}}</button>        
-        <button mat-raised-button class="form-button" color="primary" [disabled]="!isLineChecked" (click)="createLineItem()">Create</button>
+        <button mat-raised-button class="form-button" color="primary" (click)="onCreateLineItem()">Create</button>
         <button mat-raised-button class="form-button" color="primary" [disabled]="!isLineChecked" (click)="deleteCheckedLines()">Delete</button>
         <button mat-raised-button class="form-button" color="primary" [disabled]="commands.length === 0" (click)="undo()">Undo</button>
         <button mat-raised-button class="form-button" color="primary" [disabled]="!isDirty" (click)="save()">Save</button>
@@ -155,6 +155,7 @@
   </as-split>
 </div>
 <div id="toolbarDiv" style="margin: auto; text-align: center;">
+    <!-- <button mat-raised-button class="form-button" color="primary" (click)="onCreateWord()">Create Word</button> -->
     <button mat-raised-button class="form-button" color="primary" (click)="saveEdit()" >Exit Edit</button>
     <button mat-raised-button class="form-button" color="primary" [disabled]="true" (click)="cancelEdit()">Adjust Box</button>
     <button mat-raised-button class="form-button" color="primary" [disabled]="true" (click)="cancelEdit()">Split</button>

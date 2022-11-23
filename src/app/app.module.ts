@@ -33,6 +33,7 @@ import {
   MAT_DIALOG_DEFAULT_OPTIONS,
 } from '@angular/material/dialog';
 import { HelpDialogComponent } from './help-dialog/help-dialog.component';
+import { CookieService } from 'ngx-cookie-service';
 
 
 @NgModule({
@@ -72,6 +73,7 @@ import { HelpDialogComponent } from './help-dialog/help-dialog.component';
   ],
   providers: [
     { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: false } },
+    CookieService,
   ],
   bootstrap: [AppComponent],
 })

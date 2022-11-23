@@ -40,6 +40,8 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
 import { deleteLine, deleteWord } from 'src/graphql/mutations';
 import { MatButton } from '@angular/material/button';
+import { CookieService } from 'ngx-cookie-service';
+import { HelpDialogComponent } from '../help-dialog/help-dialog.component';
 
 interface SubcategoryOptionValue {
   value: string;
@@ -110,6 +112,8 @@ enum EditMode {
   Line,
   Word,
   AdjustWord,
+  CreateLine,
+  CreateWord,
 }
 
 enum CommandType {
@@ -208,7 +212,8 @@ export class UnreviewedDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private probateRecordService: APIService,
     private renderer: Renderer2,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private cookieService: CookieService
   ) {}
 
   ngOnInit(): void {}
@@ -472,6 +477,7 @@ export class UnreviewedDetailComponent implements OnInit {
       element: this.osd?.element as Element,
       clickHandler: (event) => {
         var target = (event as any).originalTarget as HTMLElement;
+        console.log(target);
         if (target!.matches('input')) {
           this.dragSelect.selectionMode = SelectionMode.None;
           target.style.display = 'block';
@@ -648,16 +654,32 @@ export class UnreviewedDetailComponent implements OnInit {
           case DragMode.Select:
             switch (this.dragSelect.selectionMode) {
               case SelectionMode.Line:
-                this.selectedLines = this.getSelectedLines(location);
-                for (const line of this.selectedLines) {
-                  const selectElem = this.createOverlayElement(
-                    `boundingBox-${line.id}`,
-                    'selected-line'
-                  );
-                  this.osd!.addOverlay(
-                    selectElem,
-                    this.texRect2osdRect(line.boundingBox!)
-                  );
+                switch (this.dragSelect.editMode) {
+                  case EditMode.CreateLine:
+                    this.createLineItemAtLocationCommand(location);
+                    break;
+                  default:
+                    this.selectedLines = this.getSelectedLines(location);
+                    for (const line of this.selectedLines) {
+                      const selectElem = this.createOverlayElement(
+                        `boundingBox-${line.id}`,
+                        'selected-line'
+                      );
+                      this.osd!.addOverlay(
+                        selectElem,
+                        this.texRect2osdRect(line.boundingBox!)
+                      );
+                    }
+                }
+                break;
+              case SelectionMode.Word:
+                switch (this.dragSelect.editMode) {
+                  case EditMode.CreateWord:
+                    console.log('creating word');
+                    this.createWordAtLocation(location);
+                    this.dragSelect.selectionMode = SelectionMode.Line;
+                    this.dragSelect.editMode = EditMode.Line;
+                    break;
                 }
                 break;
             }
@@ -933,6 +955,26 @@ export class UnreviewedDetailComponent implements OnInit {
     this.showInputsForWords(words);
   }
 
+  createLineItemAtLocationCommand(location: OpenSeadragon.Rect) {
+    let lineItem = this.createLineItemAtLocation(
+      this.osdRect2texRect(location)
+    );
+    this.record!.lineItems!.items.push(lineItem);
+    this.commands.push({
+      type: CommandType.CreateLine,
+      operation: OperationType.Create,
+      wasDirtyBeforeCommand: this.isDirty,
+      lineItem,
+    });
+    this.isDirty = true;
+    this.table.renderRows();
+    this.exitSelectionMode();
+    this.selectedLines = [];
+    this.selectedLines.push(lineItem);
+    this.highlightLine(lineItem);
+    this.enterEditMode();
+  }
+
   handleMenuItemClick(event: any) {
     let selectOverlay = this.osd!.getOverlayById('select');
     let location = selectOverlay
@@ -971,23 +1013,7 @@ export class UnreviewedDetailComponent implements OnInit {
         break;
       case 'create line':
         {
-          let lineItem = this.createLineItemAtLocation(
-            this.osdRect2texRect(location)
-          );
-          this.record!.lineItems!.items.push(lineItem);
-          this.commands.push({
-            type: CommandType.CreateLine,
-            operation: OperationType.Create,
-            wasDirtyBeforeCommand: this.isDirty,
-            lineItem,
-          });
-          this.isDirty = true;
-          this.table.renderRows();
-          this.exitSelectionMode();
-          this.selectedLines = [];
-          this.selectedLines.push(lineItem);
-          this.highlightLine(lineItem);
-          this.enterEditMode();
+          this.createLineItemAtLocationCommand(location);
         }
         break;
       case 'delete line':
@@ -1323,7 +1349,7 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   onCategoryChanged(event: Event): void {
-    let selectElem = (event.target as HTMLSelectElement);
+    let selectElem = event.target as HTMLSelectElement;
     let lineItemId = selectElem.id.substring('category-'.length);
     const category = selectElem.value;
     let subcategories = this.categoryMap.get(category);
@@ -1346,7 +1372,7 @@ export class UnreviewedDetailComponent implements OnInit {
       }
     }
     let lineItem = (this.record!.lineItems!.items as LineItem[]).find(
-      (l) => (l.id === lineItemId)
+      (l) => l.id === lineItemId
     );
     if (lineItem) {
       lineItem.category = category;
@@ -1355,10 +1381,10 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   onSubcategoryChanged(event: Event): void {
-    let selectElem = (event.target as HTMLSelectElement);
+    let selectElem = event.target as HTMLSelectElement;
     let lineItemId = selectElem.id.substring('subcategory-'.length);
     let lineItem = (this.record!.lineItems!.items as LineItem[]).find(
-      (l) => (l.id === lineItemId)
+      (l) => l.id === lineItemId
     );
     if (lineItem) {
       lineItem!.subcategory = selectElem.value;
@@ -1370,7 +1396,7 @@ export class UnreviewedDetailComponent implements OnInit {
     let inputElem = event.target as HTMLInputElement;
     let lineItemId = inputElem.id.substring('quantity-'.length);
     let lineItem = (this.record!.lineItems!.items as LineItem[]).find(
-      (l) => (l.id === lineItemId)
+      (l) => l.id === lineItemId
     );
     if (lineItem) {
       lineItem!.quantity = Number.parseInt(inputElem.value);
@@ -1382,7 +1408,7 @@ export class UnreviewedDetailComponent implements OnInit {
     let inputElem = event.target as HTMLInputElement;
     let lineItemId = inputElem.id.substring('value-'.length);
     let lineItem = (this.record!.lineItems!.items as LineItem[]).find(
-      (l) => (l.id === lineItemId)
+      (l) => l.id === lineItemId
     );
     if (lineItem) {
       lineItem.value = Number.parseFloat(inputElem.value);
@@ -1674,8 +1700,41 @@ export class UnreviewedDetailComponent implements OnInit {
     });
   }
 
-  createLineItem() {
-    
+  onCreateLineItem() {
+    const doNotShowCreateLineHelp =
+      this.cookieService.get('doNotShowCreateLineHelp')?.toLocaleLowerCase() ===
+      'true';
+    if (!doNotShowCreateLineHelp) {
+      let dialogRef = this.dialog.open(HelpDialogComponent, {
+        height: '260px',
+        width: '400px',
+        data: 'Drag select the bounding box for the new line item',
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        this.cookieService.set('doNotShowCreateLineHelp', result);
+      });
+    }
+    this.enterSelectionMode();
+    this.dragSelect.editMode = EditMode.CreateLine;
+  }
+
+  onCreateWord() {
+    const doNotShowCreateLineHelp =
+      this.cookieService.get('doNotShowCreateWordHelp')?.toLocaleLowerCase() ===
+      'true';
+    if (!doNotShowCreateLineHelp) {
+      let dialogRef = this.dialog.open(HelpDialogComponent, {
+        height: '260px',
+        width: '400px',
+        data: 'Drag select the bounding box for the new word',
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        this.cookieService.set('doNotShowCreateWordHelp', result);
+      });
+    }
+    this.dragSelect.editMode = EditMode.CreateWord;
   }
 
   mapToUpdateLineItemInput(

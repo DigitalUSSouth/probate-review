@@ -29,6 +29,7 @@
     "angular-split": "^14.1.0",
     "aws-amplify": "^5.0.3",
     "aws-sdk": "^2.1260.0",
+    "ngx-cookie-service": "^15.0.0",
     "openseadragon": "^3.0.0",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",

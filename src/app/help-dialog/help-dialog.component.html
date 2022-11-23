@@ -5,10 +5,10 @@
   {{text}}
 </div>
 <div id="button-row">
-  <button mat-raised-button color="primary" (click)="closeDialog()">OK</button>
+  <button mat-raised-button color="primary" [mat-dialog-close]="doNotShowAgain" (click)="closeDialog()">OK</button>
   <mat-checkbox
   id="check-all"
   [(ngModel)]="doNotShowAgain"
   color="primary"
-></mat-checkbox>
+>Do not show again</mat-checkbox>
 </div>
