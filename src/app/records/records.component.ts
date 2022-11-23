@@ -1,7 +1,7 @@
 import Auth from '@aws-amplify/auth';
 import { Component, OnInit } from '@angular/core';
 import { Document, ProbateRecord, APIService, ListProbateRecordsQuery, ModelProbateRecordFilterInput} from '../API.service';
-import {LegacyPageEvent as PageEvent} from '@angular/material/legacy-paginator';
+import {PageEvent} from '@angular/material/paginator';
 
 @Component({
   selector: 'app-records',

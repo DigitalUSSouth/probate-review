@@ -17,10 +17,10 @@
     <as-split-area [size]="30">
       <div id="review-form" class="flex-child">
         <h1>Enter your corrections below</h1>
-        <button #selectButton mat-raised-button class="form-button" [disabled]="isEditing()" (click)="toggleSelectionMode()">{{isSelecting() ? 'Exit' : 'Select'}}</button>        
-        <button mat-raised-button class="form-button" [disabled]="!isLineChecked" (click)="deleteCheckedLines()">Delete</button>
-        <button mat-raised-button class="form-button" [disabled]="commands.length === 0" (click)="undo()">Undo</button>
-        <button mat-raised-button class="form-button" [disabled]="!isDirty" (click)="save()">Save</button>
+        <button #selectButton mat-raised-button class="form-button" color="primary" [disabled]="isEditing()" (click)="toggleSelectionMode()">{{isSelecting() ? 'Exit' : 'Select'}}</button>        
+        <button mat-raised-button class="form-button" color="primary" [disabled]="!isLineChecked" (click)="deleteCheckedLines()">Delete</button>
+        <button mat-raised-button class="form-button" color="primary" [disabled]="commands.length === 0" (click)="undo()">Undo</button>
+        <button mat-raised-button class="form-button" color="primary" [disabled]="!isDirty" (click)="save()">Save</button>
         <mat-checkbox [(ngModel)]="isReviewed" color="primary">Reviewed</mat-checkbox>
         <div *ngIf="record != null">
           <table
@@ -154,7 +154,7 @@
   </as-split>
 </div>
 <div id="toolbarDiv" style="margin: auto; text-align: center;">
-    <button mat-raised-button class="form-button" (click)="saveEdit()" >Exit Edit</button>
-    <button mat-raised-button class="form-button" [disabled]="true" (click)="cancelEdit()">Adjust Box</button>
-    <button mat-raised-button class="form-button" [disabled]="true" (click)="cancelEdit()">Split</button>
+    <button mat-raised-button class="form-button" color="primary" (click)="saveEdit()" >Exit Edit</button>
+    <button mat-raised-button class="form-button" color="primary" [disabled]="true" (click)="cancelEdit()">Adjust Box</button>
+    <button mat-raised-button class="form-button" color="primary" [disabled]="true" (click)="cancelEdit()">Split</button>
 </div>
