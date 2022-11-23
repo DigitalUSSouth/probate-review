@@ -1674,6 +1674,10 @@ export class UnreviewedDetailComponent implements OnInit {
     });
   }
 
+  createLineItem() {
+    
+  }
+
   mapToUpdateLineItemInput(
     lineItems: LineItem[]
   ): UpdateLineItemInput[] | CreateLineItemInput {

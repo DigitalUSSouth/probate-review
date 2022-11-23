@@ -18,6 +18,7 @@
       <div id="review-form" class="flex-child">
         <h1>Enter your corrections below</h1>
         <button #selectButton mat-raised-button class="form-button" color="primary" [disabled]="isEditing()" (click)="toggleSelectionMode()">{{isSelecting() ? 'Exit' : 'Select'}}</button>        
+        <button mat-raised-button class="form-button" color="primary" [disabled]="!isLineChecked" (click)="createLineItem()">Create</button>
         <button mat-raised-button class="form-button" color="primary" [disabled]="!isLineChecked" (click)="deleteCheckedLines()">Delete</button>
         <button mat-raised-button class="form-button" color="primary" [disabled]="commands.length === 0" (click)="undo()">Undo</button>
         <button mat-raised-button class="form-button" color="primary" [disabled]="!isDirty" (click)="save()">Save</button>

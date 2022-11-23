@@ -1,1 +1,14 @@
-<p>help-dialog works!</p>
+<mat-toolbar color="primary">
+  <span>Help</span>
+</mat-toolbar>
+<div id="dialog-container">
+  {{text}}
+</div>
+<div id="button-row">
+  <button mat-raised-button color="primary" (click)="closeDialog()">OK</button>
+  <mat-checkbox
+  id="check-all"
+  [(ngModel)]="doNotShowAgain"
+  color="primary"
+></mat-checkbox>
+</div>
