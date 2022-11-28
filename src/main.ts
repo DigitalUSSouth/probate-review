@@ -4,7 +4,7 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
 
-import Amplify, { API, Auth, graphqlOperation } from 'aws-amplify';
+import {Amplify, API, Auth, graphqlOperation } from 'aws-amplify';
 import awsconfig from './aws-exports';
 
 

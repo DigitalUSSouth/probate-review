@@ -8,27 +8,33 @@ import { AppComponent } from './app.component';
 import { RecordsComponent } from './records/records.component';
 import { RecordDetailComponent } from './record-detail/record-detail.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {MatButtonModule} from '@angular/material/button';
-import {MatInputModule} from '@angular/material/input';
-import {MatIconModule} from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
 import { UploadComponent } from './upload/upload.component';
 import { AuthComponent } from './auth/auth.component';
 import { ContextMenuComponent } from './context-menu/context-menu.component';
-import {MatPaginatorModule} from '@angular/material/paginator';
-import {MatTableModule} from '@angular/material/table';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableModule } from '@angular/material/table';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { UnreviewedComponent } from './unreviewed/unreviewed.component';
-import {MatMenuModule} from '@angular/material/menu';
-import {MatToolbarModule} from '@angular/material/toolbar';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { SearchComponent } from './search/search.component';
 import { FormsModule } from '@angular/forms';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { UnreviewedDetailComponent } from './unreviewed-detail/unreviewed-detail.component';
 import { AngularSplitModule } from 'angular-split';
-import {DragDropModule} from '@angular/cdk/drag-drop';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ConfirmDeleteDialogComponent } from './confirm-delete-dialog/confirm-delete-dialog.component';
-import {MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS} from '@angular/material/dialog';
+import {
+  MatDialogModule,
+  MAT_DIALOG_DEFAULT_OPTIONS,
+} from '@angular/material/dialog';
+import { HelpDialogComponent } from './help-dialog/help-dialog.component';
+import { CookieService } from 'ngx-cookie-service';
+
 
 @NgModule({
   declarations: [
@@ -43,6 +49,7 @@ import {MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS} from '@angular/material/dia
     SearchResultsComponent,
     UnreviewedDetailComponent,
     ConfirmDeleteDialogComponent,
+    HelpDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -62,11 +69,12 @@ import {MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS} from '@angular/material/dia
     AngularSplitModule,
     DragDropModule,
     MatCheckboxModule,
-    MatDialogModule
+    MatDialogModule,
   ],
   providers: [
-    {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {hasBackdrop: false}}
+    { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: false } },
+    CookieService,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

@@ -1,10 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { Document, ProbateRecord, APIService, ListProbateRecordsQuery, ModelProbateRecordFilterInput} from '../API.service';
-import {PageEvent} from '@angular/material/paginator';
+import {
+  Document,
+  ProbateRecord,
+  APIService,
+  ListProbateRecordsQuery,
+  ModelProbateRecordFilterInput,
+} from '../API.service';
+import { PageEvent } from '@angular/material/paginator';
 @Component({
   selector: 'app-unreviewed',
   templateUrl: './unreviewed.component.html',
-  styleUrls: ['./unreviewed.component.sass']
+  styleUrls: ['./unreviewed.component.sass'],
 })
 export class UnreviewedComponent implements OnInit {
   records?: ProbateRecord[];
@@ -18,30 +24,54 @@ export class UnreviewedComponent implements OnInit {
   pageEvent?: PageEvent;
   displayedColumns: string[] = ['thumbnail', 'title', 'description'];
   nextToken: string | undefined;
-  constructor(private recordService: APIService) { }
+  constructor(private recordService: APIService) {}
 
   ngOnInit(): void {
     this.fetchRcords();
   }
 
-  fetchRcords(): void {
+  async fetchRcords() {
     let filter: ModelProbateRecordFilterInput;
-    this.recordService.ListProbateRecords(undefined, {reviewCount: {lt: 2}}, this.pageSize, this.nextToken).then((recordsQuery: ListProbateRecordsQuery) => {
-      console.log(recordsQuery);
-      console.log(recordsQuery!.items);
-      this.records = recordsQuery!.items!.map(x => x as ProbateRecord);
-      this.length = this.records.length;
-      
-      this.nextToken = (recordsQuery.nextToken) ? recordsQuery.nextToken : undefined;
-      console.log('next token: ' + this.nextToken);
-    });
+    let recordsQuery: ListProbateRecordsQuery =
+      await this.recordService.ListProbateRecords(
+        undefined,
+        { reviewCount: { lt: 2 } },
+        this.pageSize,
+        this.nextToken
+      ); 
+    this.records = recordsQuery!.items!.map((x) => x as ProbateRecord);
+    this.nextToken = recordsQuery.nextToken
+        ? recordsQuery.nextToken
+        : undefined;
+    while (this.nextToken && this.records.length < this.pageSize) {
+      recordsQuery = await this.recordService.ListProbateRecords(
+        undefined,
+        { reviewCount: { lt: 2 } },
+        this.pageSize,
+        this.nextToken
+      );
+      let recordsToAdd = recordsQuery!.items!.map((x) => x as ProbateRecord);
+      if (recordsToAdd.length + this.records!.length > this.pageSize) {
+        recordsToAdd = recordsToAdd.slice(
+          0,
+          recordsToAdd.length - this.pageSize
+        );
+      }
+      this.records = this.records!.concat(recordsToAdd);
+      this.nextToken = recordsQuery.nextToken
+        ? recordsQuery.nextToken
+        : undefined;
+    }
+
+    
+    this.length = this.records.length;
   }
 
   handlePageEvent(event: PageEvent) {
     this.length = event.length;
-    if(this.pageSize != event.pageSize) {
+    if (this.pageSize != event.pageSize) {
       this.pageSize = event.pageSize;
-      this.nextToken = undefined;      
+      this.nextToken = undefined;
     }
     this.pageIndex = event.pageIndex;
     this.fetchRcords();
