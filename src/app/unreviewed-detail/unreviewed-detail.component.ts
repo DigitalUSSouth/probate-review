@@ -479,9 +479,13 @@ export class UnreviewedDetailComponent implements OnInit {
         var target = (event as any).originalTarget as HTMLElement;
         console.log(target);
         if (target!.matches('input')) {
-          this.dragSelect.selectionMode = SelectionMode.None;
+          
           target.style.display = 'block';
           target.focus();
+          this.dragSelect.selectionMode = SelectionMode.None;
+          this.dragSelect.editMode = EditMode.Word;
+          this.dragSelect.dragMode = DragMode.None;
+          this.osd!.removeOverlay('select');
           this.osd!.setMouseNavEnabled(false);
         } else if (
           target!.matches('button') ||
@@ -677,14 +681,15 @@ export class UnreviewedDetailComponent implements OnInit {
                   case EditMode.CreateWord:
                     console.log('creating word');
                     this.createWordAtLocation(location);
-                    this.dragSelect.selectionMode = SelectionMode.Line;
-                    this.dragSelect.editMode = EditMode.Line;
+                    this.dragSelect.selectionMode = SelectionMode.None;
+                    this.dragSelect.editMode = EditMode.None;
                     break;
                 }
                 break;
             }
             break;
         }
+        this.dragSelect.dragMode = DragMode.None;
       },
     });
   }
@@ -1735,6 +1740,8 @@ export class UnreviewedDetailComponent implements OnInit {
       });
     }
     this.dragSelect.editMode = EditMode.CreateWord;
+    this.dragSelect.selectionMode = SelectionMode.Word;
+    this.dragSelect.dragMode = DragMode.Select;
   }
 
   mapToUpdateLineItemInput(
