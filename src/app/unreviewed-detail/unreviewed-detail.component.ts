@@ -679,10 +679,21 @@ export class UnreviewedDetailComponent implements OnInit {
               case SelectionMode.Word:
                 switch (this.dragSelect.editMode) {
                   case EditMode.CreateWord:
-                    console.log('creating word');
-                    this.createWordAtLocation(location);
                     this.dragSelect.selectionMode = SelectionMode.None;
-                    this.dragSelect.editMode = EditMode.None;
+                    this.dragSelect.editMode = EditMode.Line;
+                    let snapToLocation = this.getSnapToLocation(location);
+                    let word = this.createWordAtLocation(snapToLocation);
+                    this.focusOnWord(word);
+                    this.osd!.removeOverlay('select');
+                    this.commands.push({
+                      type: CommandType.CreateWord,
+                      operation: OperationType.Create,
+                      wasDirtyBeforeCommand: this.isDirty,
+                      word,
+                      lineItemId: this.selectedLines[0].id,
+                    });
+                    this.isDirty = true;
+                    this.table.renderRows();
                     break;
                 }
                 break;
@@ -755,17 +766,6 @@ export class UnreviewedDetailComponent implements OnInit {
               },
             ];
           }
-        } else if (event.target.id == 'select') {
-          this.rightClickMenuItems = [
-            {
-              menuText: 'Create Word',
-              menuEvent: 'create word',
-            },
-            {
-              menuText: 'Cancel',
-              menuEvent: 'cancel',
-            },
-          ];
         } else {
           // console.log('showing select lines context menu');
           this.rightClickMenuItems = [
@@ -1575,8 +1575,11 @@ export class UnreviewedDetailComponent implements OnInit {
                 this.updateLineItemText(lineItem);
               }
             }
+            console.log('is editing is ' + this.isEditing());
             if (this.isEditing()) {
-              this.osd!.removeOverlay(`wordInput-${wordCommand.word.id}`);
+              console.log('removing ');
+              console.log(wordCommand.word);
+              this.osd!.removeOverlay(`wordInput-${wordCommand.word.id}`);              
             }
           }
           break;
@@ -1612,6 +1615,11 @@ export class UnreviewedDetailComponent implements OnInit {
               this.record!.lineItems!.items as LineItem[]
             ).filter((l) => l.id != lineItem.id);
             this.newLineIds.delete(lineItem.id);
+
+            if (this.isEditing()) {
+              this.osd!.removeOverlay(`boundingBox-${lineItem.id}`);
+              this.exitEditMode();
+            }
           }
           break;
         case CommandType.MoveLine:
