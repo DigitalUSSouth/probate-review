@@ -99,6 +99,7 @@ enum DragMode {
   Shorten,
   Expand,
   Split,
+  AdjustBox
 }
 
 enum SelectionMode {
@@ -111,7 +112,7 @@ enum EditMode {
   None,
   Line,
   Word,
-  AdjustWord,
+  AdjustWordBox,
   CreateLine,
   CreateWord,
 }
@@ -134,6 +135,12 @@ enum OperationType {
 }
 
 const InputBoxHeight = 20;
+const AdjustWordBox = 'adjust word box';
+const CorrectText = 'correct text';
+const DeleteLine = 'delete line';
+const CreateLine = 'create line';
+const DeleteWord = 'delete word';
+const CreateWord = 'create word';
 
 @Component({
   selector: 'app-unreviewed-detail',
@@ -153,7 +160,7 @@ export class UnreviewedDetailComponent implements OnInit {
   aspectRatio = 0.0;
   isNavigatorVisible = false;
   dragSelect = {
-    overlayElement: null as unknown as HTMLDivElement,
+    overlayElement: null as unknown as HTMLElement,//HTMLDivElement,
     startPos: new OpenSeadragon.Point(0, 0),
     isDragging: false,
     dragMode: DragMode.Select,
@@ -515,7 +522,7 @@ export class UnreviewedDetailComponent implements OnInit {
         this.dragSelect.isDragging = true;
 
         overlayElement = this.createOverlayElement('select');
-        this.dragSelect.overlayElement = overlayElement as HTMLDivElement;
+        this.dragSelect.overlayElement = overlayElement as HTMLElement;
         if (this.dragSelect.editMode === EditMode.Line) {
           let selectedLineBoundingBox = this.osd!.getOverlayById(
             `boundingBox-${this.selectedLines[0].id}`
@@ -548,22 +555,21 @@ export class UnreviewedDetailComponent implements OnInit {
 
         let location: OpenSeadragon.Rect;
         let line: LineItem;
+        location = new OpenSeadragon.Rect(
+          Math.min(
+            this.dragSelect!.startPos.x,
+            this.dragSelect!.startPos.x + diffX
+          ),
+          Math.min(
+            this.dragSelect!.startPos.y,
+            this.dragSelect!.startPos.y + diffY
+          ),
+          Math.abs(diffX),
+          Math.abs(diffY)
+        );
 
         switch (this.dragSelect.dragMode) {
           case DragMode.Select:
-            location = new OpenSeadragon.Rect(
-              Math.min(
-                this.dragSelect!.startPos.x,
-                this.dragSelect!.startPos.x + diffX
-              ),
-              Math.min(
-                this.dragSelect!.startPos.y,
-                this.dragSelect!.startPos.y + diffY
-              ),
-              Math.abs(diffX),
-              Math.abs(diffY)
-            );
-
             if (this.dragSelect.editMode === EditMode.Line) {
               // do not allow user to select word bounds outside line item bounds
               let selectedLineBoundingBox = this.osd!.getOverlayById(
@@ -580,6 +586,24 @@ export class UnreviewedDetailComponent implements OnInit {
             }
             this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);
             break;
+
+          case DragMode.AdjustBox:
+            switch(this.dragSelect.editMode) {
+              case EditMode.AdjustWordBox:
+                let selectedLineBoundingBox = this.osd!.getOverlayById(
+                  `boundingBox-${this.selectedLines[0].id}`
+                ).getBounds(this.osd!.viewport);
+                if (
+                  this.osdRectangleContainsOsdRectangle(
+                    selectedLineBoundingBox,
+                    location
+                  ) 
+                ) {
+                  this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);
+                }
+                break;
+
+            }
           // case DragMode.Shorten:
           //   line = this.selectedLines[0];
           //   location = this.texRect2osdRect(line.boundingBox!);
@@ -736,7 +760,7 @@ export class UnreviewedDetailComponent implements OnInit {
         this.rightClickMenuItems = [
           {
             menuText: 'Create Line',
-            menuEvent: 'create line',
+            menuEvent: CreateLine,
           },
         ];
         break;
@@ -751,20 +775,22 @@ export class UnreviewedDetailComponent implements OnInit {
             event.target.id
           ) as HTMLInputElement;
           if (inputElem === document.activeElement) {
+            this.selectedWord = this.record!.words.find(w => w!.id === wordId);
             this.rightClickMenuItems = [
               {
                 menuText: 'Delete Word',
-                menuEvent: 'delete word',
+                menuEvent: DeleteWord,
               },
-              // {
-              //   menuText: 'Adjust Box',
-              //   menuEvent: 'adjust word box',
-              // },
+              {
+                menuText: 'Adjust Box',
+                menuEvent: AdjustWordBox,
+              },
               {
                 menuText: 'Cancel',
                 menuEvent: 'cancel',
               },
             ];
+            
           }
         } else {
           // console.log('showing select lines context menu');
@@ -787,11 +813,11 @@ export class UnreviewedDetailComponent implements OnInit {
             // },
             {
               menuText: 'Correct Text',
-              menuEvent: 'correct text',
+              menuEvent: CorrectText,
             },
             {
               menuText: 'Delete Line',
-              menuEvent: 'delete line',
+              menuEvent: DeleteLine,
             },
             {
               menuText: 'Cancel',
@@ -986,7 +1012,7 @@ export class UnreviewedDetailComponent implements OnInit {
       ? this.osd!.getOverlayById('select').getBounds(this.osd!.viewport)
       : new OpenSeadragon.Rect(0, 0, 0, 0);
     switch (event.data) {
-      case 'create word':
+      case CreateWord:
         let snapToLocation = this.getSnapToLocation(location);
         let word = this.createWordAtLocation(snapToLocation);
         this.focusOnWord(word);
@@ -1001,7 +1027,7 @@ export class UnreviewedDetailComponent implements OnInit {
         this.isDirty = true;
         this.table.renderRows();
         break;
-      case 'delete word':
+      case DeleteWord:
         if (this.selectedWord) {
           this.deleteWord(this.selectedWord);
           this.commands.push({
@@ -1016,21 +1042,31 @@ export class UnreviewedDetailComponent implements OnInit {
           this.table.renderRows();
         }
         break;
-      case 'create line':
+      case CreateLine:
         {
           this.createLineItemAtLocationCommand(location);
         }
         break;
-      case 'delete line':
+      case DeleteLine:
         {
           this.bulkDeleteLines(this.selectedLines);
           this.osd!.clearOverlays();
         }
         break;
-      case 'correct text':
+      case CorrectText:
         this.highlightLine(this.selectedLines[0]);
         this.showWordInputsForLine(this.selectedLines[0]);
         this.enterEditMode();
+        break;
+
+      case AdjustWordBox:
+        let selectedWordBoundsElem = this.createOverlayElement(`boundingBox-${this.selectedWord!.id}`, 'highlighted-word');
+        const rect = this.texRect2osdRect(this.selectedWord!.boundingBox!);
+        this.osd!.addOverlay(selectedWordBoundsElem, rect);
+        this.dragSelect.dragMode = DragMode.AdjustBox;
+        this.dragSelect.editMode = EditMode.AdjustWordBox;
+        this.dragSelect.selectionMode = SelectionMode.Word;
+        this.dragSelect.overlayElement = selectedWordBoundsElem;
         break;
     }
     this.isDisplayContextMenu = false;
@@ -1312,7 +1348,7 @@ export class UnreviewedDetailComponent implements OnInit {
       overlay.remove();
     }
 
-    overlay = this.renderer.createElement('div');
+    overlay = this.renderer.createElement('div') as HTMLElement;
     this.renderer.setProperty(overlay, 'id', id);
     this.renderer.setProperty(overlay, 'className', className);
     this.renderer.appendChild(document.body, overlay);
@@ -1333,8 +1369,7 @@ export class UnreviewedDetailComponent implements OnInit {
     const selectElem = this.createOverlayElement(
       `boundingBox-${line.id}`,
       'highlighted-line'
-    );
-    console.log(selectElem);
+    );    
     this.osd!.addOverlay(selectElem, this.texRect2osdRect(line.boundingBox!));
     this.selectedLines = [];
     this.selectedLines.push(line);
