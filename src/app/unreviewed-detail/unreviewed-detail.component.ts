@@ -125,6 +125,8 @@ enum CommandType {
   CreateLine,
   AdjustBounds,
   MoveLine,
+  MarkAsReviewed,
+  UnmarkAsReviewed,
   Unknown,
 }
 
@@ -203,7 +205,7 @@ export class UnreviewedDetailComponent implements OnInit {
     this.objToStrMap(data);
 
   // Commands
-  commands: Array<
+  commands: Array<Command |
     BulkLineItemCommand | LineItemCommand | WordCommand | MoveLineItemCommand
   > = [];
 
@@ -228,41 +230,13 @@ export class UnreviewedDetailComponent implements OnInit {
 
   ngOnInit(): void { }
 
-  onScrollForm(event: Event) {
-    // console.log(event);
-    console.log("form scrolling");
-
-    // if (!this.scrolling) {
-    //   this.scrolling = true;
-    // }
-
-    // let formControls = document.getElementById('form-controls');
-    // let sticky = formControls?.offsetTop;
-    // if (window.pageYOffset >= sticky!) {
-    //   formControls?.classList.add('sticky');
-    // }
-    // else {
-    //   formControls?.classList.remove('sticky');
-    // }
-  }
-
-  @HostListener('window:scroll', ['$event']) onScrollEvent($event: Event) {
-    console.log($event);
-    console.log("scrolling");
-
-    if (!this.scrolling) {
-      this.scrolling = true;
-    }
-
-    let formControls = document.getElementById('form-control');
-    let sticky = formControls?.offsetTop;
-    if (window.pageYOffset >= sticky!) {
-      formControls?.classList.add('sticky');
-    }
-    else {
-      formControls?.classList.remove('sticky');
-    }
-
+  onReviewedChange(event: Event) {
+    const commandType = this.isReviewed ? CommandType.MarkAsReviewed : CommandType.UnmarkAsReviewed;
+    this.commands.push({
+      type: commandType,
+      wasDirtyBeforeCommand: this.isDirty,
+    });
+    this.isDirty = true;
   }
 
   recordsChecked(): number {
@@ -1714,6 +1688,18 @@ export class UnreviewedDetailComponent implements OnInit {
           break;
         case CommandType.DeleteLine:
           {
+          }
+          break;
+
+        case CommandType.MarkAsReviewed:
+          {
+            this.isReviewed = false;
+          }
+          break;
+
+        case CommandType.UnmarkAsReviewed:
+          {
+            this.isReviewed = true;
           }
           break;
       }

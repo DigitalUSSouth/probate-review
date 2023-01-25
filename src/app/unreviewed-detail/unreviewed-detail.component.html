@@ -14,7 +14,7 @@
       ></app-context-menu>
       <!-- Add ✓ somewhere -->
     </as-split-area>
-    <as-split-area [size]="30" id="report-half" (scroll)="onScrollForm($event)">
+    <as-split-area [size]="30" id="report-half">
       <div id="review-form" class="flex-child" >
         <div id="form-controls" class="sticky">
           <h1>Enter your corrections below</h1>
@@ -63,7 +63,7 @@
           >
             Save
           </button>
-          <mat-checkbox [(ngModel)]="isReviewed" color="primary"
+          <mat-checkbox [(ngModel)]="isReviewed" (ngModelChange)="onReviewedChange($event)" color="primary"
             >Reviewed</mat-checkbox
           >
         </div>
