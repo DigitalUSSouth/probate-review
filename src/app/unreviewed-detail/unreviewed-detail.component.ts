@@ -156,7 +156,8 @@ export class UnreviewedDetailComponent implements OnInit {
   @ViewChildren('checkbox') checkBoxes?: QueryList<MatCheckbox>;
 
   // UI
-  scrolling = false;
+  selectionButtonLabel: 'Select' | 'Exit' = 'Select';
+  isSelecting = false;
 
   // Image
   osd?: OpenSeadragon.Viewer;
@@ -255,9 +256,9 @@ export class UnreviewedDetailComponent implements OnInit {
     return checkBox.checked;
   }
 
-  isSelecting() {
-    return this.dragSelect.dragMode === DragMode.Select;
-  }
+  // isSelecting() {
+  //   return this.dragSelect.dragMode === DragMode.Select;
+  // }
 
   isEditing() {
     return this.dragSelect.editMode != EditMode.None;
@@ -325,6 +326,9 @@ export class UnreviewedDetailComponent implements OnInit {
 
   enterSelectionMode() {
     this.exitEditMode();
+    this.showNav();
+    this.selectionButtonLabel = 'Exit';
+    this.isSelecting = true;
     this.osd!.setMouseNavEnabled(false);
     this.dragSelect.dragMode = DragMode.Select;
     this.dragSelect.selectionMode = SelectionMode.Line;
@@ -332,6 +336,9 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   exitSelectionMode() {
+    this.hideNav();
+    this.selectionButtonLabel = 'Select';
+    this.isSelecting = false;
     this.dragSelect.dragMode = DragMode.None;
     this.dragSelect.selectionMode = SelectionMode.None;
     this.dragSelect.isDragging = false;
@@ -339,7 +346,7 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   toggleSelectionMode() {
-    if (this.isSelecting()) {
+    if (this.isSelecting) {
       this.exitSelectionMode();
     } else {
       this.enterSelectionMode();
