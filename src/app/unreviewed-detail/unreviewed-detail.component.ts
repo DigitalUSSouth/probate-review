@@ -153,6 +153,9 @@ export class UnreviewedDetailComponent implements OnInit {
   @ViewChild('table') table!: MatTable<LineItem>;
   @ViewChildren('checkbox') checkBoxes?: QueryList<MatCheckbox>;
 
+  // UI
+  scrolling = false;
+
   // Image
   osd?: OpenSeadragon.Viewer;
   selectTracker?: OpenSeadragon.MouseTracker;
@@ -221,15 +224,52 @@ export class UnreviewedDetailComponent implements OnInit {
     private renderer: Renderer2,
     public dialog: MatDialog,
     private cookieService: CookieService
-  ) {}
+  ) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
+
+  onScrollForm(event: Event) {
+    // console.log(event);
+    console.log("form scrolling");
+
+    // if (!this.scrolling) {
+    //   this.scrolling = true;
+    // }
+
+    // let formControls = document.getElementById('form-controls');
+    // let sticky = formControls?.offsetTop;
+    // if (window.pageYOffset >= sticky!) {
+    //   formControls?.classList.add('sticky');
+    // }
+    // else {
+    //   formControls?.classList.remove('sticky');
+    // }
+  }
+
+  @HostListener('window:scroll', ['$event']) onScrollEvent($event: Event) {
+    console.log($event);
+    console.log("scrolling");
+
+    if (!this.scrolling) {
+      this.scrolling = true;
+    }
+
+    let formControls = document.getElementById('form-control');
+    let sticky = formControls?.offsetTop;
+    if (window.pageYOffset >= sticky!) {
+      formControls?.classList.add('sticky');
+    }
+    else {
+      formControls?.classList.remove('sticky');
+    }
+
+  }
 
   recordsChecked(): number {
     return this.checkBoxes
       ? (this.checkBoxes as QueryList<MatCheckbox>).filter(
-          (c: MatCheckbox) => c.checked == true
-        ).length
+        (c: MatCheckbox) => c.checked == true
+      ).length
       : 0;
   }
 
@@ -486,7 +526,7 @@ export class UnreviewedDetailComponent implements OnInit {
         var target = (event as any).originalTarget as HTMLElement;
         console.log(target);
         if (target!.matches('input')) {
-          
+
           target.style.display = 'block';
           target.focus();
           this.dragSelect.selectionMode = SelectionMode.None;
@@ -588,7 +628,7 @@ export class UnreviewedDetailComponent implements OnInit {
             break;
 
           case DragMode.AdjustBox:
-            switch(this.dragSelect.editMode) {
+            switch (this.dragSelect.editMode) {
               case EditMode.AdjustWordBox:
                 let selectedLineBoundingBox = this.osd!.getOverlayById(
                   `boundingBox-${this.selectedLines[0].id}`
@@ -597,7 +637,7 @@ export class UnreviewedDetailComponent implements OnInit {
                   this.osdRectangleContainsOsdRectangle(
                     selectedLineBoundingBox,
                     location
-                  ) 
+                  )
                 ) {
                   this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);
                 }
@@ -790,7 +830,7 @@ export class UnreviewedDetailComponent implements OnInit {
                 menuEvent: 'cancel',
               },
             ];
-            
+
           }
         } else {
           // console.log('showing select lines context menu');
@@ -1323,7 +1363,7 @@ export class UnreviewedDetailComponent implements OnInit {
     this.highlightLine(line);
   }
 
-  deleteLineItemByIndex(index: number): void {}
+  deleteLineItemByIndex(index: number): void { }
 
   calculateAspectRatio() {
     this.imageSize = this.osd!.world.getItemAt(0).getContentSize();
@@ -1369,7 +1409,7 @@ export class UnreviewedDetailComponent implements OnInit {
     const selectElem = this.createOverlayElement(
       `boundingBox-${line.id}`,
       'highlighted-line'
-    );    
+    );
     this.osd!.addOverlay(selectElem, this.texRect2osdRect(line.boundingBox!));
     this.selectedLines = [];
     this.selectedLines.push(line);
@@ -1614,7 +1654,7 @@ export class UnreviewedDetailComponent implements OnInit {
             if (this.isEditing()) {
               console.log('removing ');
               console.log(wordCommand.word);
-              this.osd!.removeOverlay(`wordInput-${wordCommand.word.id}`);              
+              this.osd!.removeOverlay(`wordInput-${wordCommand.word.id}`);
             }
           }
           break;
@@ -1792,26 +1832,26 @@ export class UnreviewedDetailComponent implements OnInit {
   ): UpdateLineItemInput[] | CreateLineItemInput {
     return lineItems
       ? lineItems.map((l) => ({
-          id: l.id,
-          probateId: this.record!.id,
-          wordIds: l.wordIds,
-          title: l.title,
-          description: l.description,
-          category: l.category,
-          subcategory: l.subcategory,
-          quantity: l.quantity,
-          value: l.value,
-          boundingBox: {
-            left: l.boundingBox!.left,
-            top: l.boundingBox!.top,
-            width: l.boundingBox!.width,
-            height: l.boundingBox!.height,
-          },
-          attributeForId: l.attributeForId,
-          rowIndex: l.rowIndex,
-          confidence: l.confidence,
-          lowerTitle: l.lowerTitle,
-        }))
+        id: l.id,
+        probateId: this.record!.id,
+        wordIds: l.wordIds,
+        title: l.title,
+        description: l.description,
+        category: l.category,
+        subcategory: l.subcategory,
+        quantity: l.quantity,
+        value: l.value,
+        boundingBox: {
+          left: l.boundingBox!.left,
+          top: l.boundingBox!.top,
+          width: l.boundingBox!.width,
+          height: l.boundingBox!.height,
+        },
+        attributeForId: l.attributeForId,
+        rowIndex: l.rowIndex,
+        confidence: l.confidence,
+        lowerTitle: l.lowerTitle,
+      }))
       : [];
   }
 
