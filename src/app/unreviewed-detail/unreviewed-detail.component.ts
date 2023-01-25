@@ -1849,6 +1849,7 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   async save() {
+    try {
     // create line items
     let createLineItems = (this.record!.lineItems!.items as LineItem[]).filter(
       (l) => this.newLineIds.has(l.id)
@@ -1904,5 +1905,11 @@ export class UnreviewedDetailComponent implements OnInit {
     this.isDirty = false;
     console.log(response);
     alert('record updated');
+  }
+  catch(e) {
+    if(e instanceof Error) {
+      alert((e as Error).message);
+    }
+  }
   }
 }
