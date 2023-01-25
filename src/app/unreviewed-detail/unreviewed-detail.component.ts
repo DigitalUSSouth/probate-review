@@ -345,6 +345,12 @@ export class UnreviewedDetailComponent implements OnInit {
     this.resetView();
   }
 
+  adjustLineItemBounds() {
+    this.dragSelect.dragMode = DragMode.AdjustBox;
+    this.dragSelect.editMode = EditMode.Line;
+    console.log('this.adjustLineItemBounds');
+  }
+
   toggleSelectionMode() {
     if (this.isSelecting) {
       this.exitSelectionMode();
@@ -610,6 +616,23 @@ export class UnreviewedDetailComponent implements OnInit {
 
           case DragMode.AdjustBox:
             switch (this.dragSelect.editMode) {
+              case EditMode.Line:
+                {
+                  console.log('adjusting line item box');
+                  let selectedLineOverlayName = `boundingBox-${this.selectedLines[0].id}`;
+                  let selectedLineBoundingBox = this.osd!.getOverlayById(selectedLineOverlayName
+                  ).getBounds(this.osd!.viewport);
+                  if (viewportPos.x < selectedLineBoundingBox.x + selectedLineBoundingBox.width / 2) {
+                    selectedLineBoundingBox.x += diffX / 2;
+                    selectedLineBoundingBox.width -= diffX / 2;
+
+                  }
+                  else {
+                    selectedLineBoundingBox.width += diffX / 2;
+                  }
+                  this.osd!.updateOverlay(selectedLineOverlayName, selectedLineBoundingBox);
+                }
+                break;
               case EditMode.AdjustWordBox:
                 let selectedLineBoundingBox = this.osd!.getOverlayById(
                   `boundingBox-${this.selectedLines[0].id}`
@@ -741,6 +764,21 @@ export class UnreviewedDetailComponent implements OnInit {
                     this.table.renderRows();
                     break;
                 }
+                break;
+            }
+            break;
+          case DragMode.AdjustBox:
+            switch (this.dragSelect.editMode) {
+              case EditMode.Line:
+                {
+                  let selectedLineBoundingBox = this.osd!.getOverlayById(
+                    `boundingBox-${this.selectedLines[0].id}`
+                  ).getBounds(this.osd!.viewport);
+                  //TODO: replace with command
+                  console.log('updating bounding box');
+                  this.selectedLines[0].boundingBox = this.osdRect2texRect(selectedLineBoundingBox);
+                }
+
                 break;
             }
             break;
@@ -1850,66 +1888,66 @@ export class UnreviewedDetailComponent implements OnInit {
 
   async save() {
     try {
-    // create line items
-    let createLineItems = (this.record!.lineItems!.items as LineItem[]).filter(
-      (l) => this.newLineIds.has(l.id)
-    );
-    let createLineItemInputs = this.mapToUpdateLineItemInput(
-      createLineItems
-    ) as CreateLineItemInput[];
-    for (const createdLineItemInput of createLineItemInputs) {
-      let response = await this.probateRecordService.CreateLineItem(
-        createdLineItemInput
+      // create line items
+      let createLineItems = (this.record!.lineItems!.items as LineItem[]).filter(
+        (l) => this.newLineIds.has(l.id)
       );
-    }
+      let createLineItemInputs = this.mapToUpdateLineItemInput(
+        createLineItems
+      ) as CreateLineItemInput[];
+      for (const createdLineItemInput of createLineItemInputs) {
+        let response = await this.probateRecordService.CreateLineItem(
+          createdLineItemInput
+        );
+      }
 
-    // update line items
-    let updateLineItems = (this.record!.lineItems!.items as LineItem[]).filter(
-      (l) => this.updatedLineIds.has(l.id)
-    );
-    let updatedLineItemInputs = this.mapToUpdateLineItemInput(
-      updateLineItems
-    ) as UpdateLineItemInput[];
-    console.log('updating ' + updateLineItems.length + ' lines');
-    for (const updatedLineItemInput of updatedLineItemInputs) {
-      let response = await this.probateRecordService.UpdateLineItem(
-        updatedLineItemInput
+      // update line items
+      let updateLineItems = (this.record!.lineItems!.items as LineItem[]).filter(
+        (l) => this.updatedLineIds.has(l.id)
       );
+      let updatedLineItemInputs = this.mapToUpdateLineItemInput(
+        updateLineItems
+      ) as UpdateLineItemInput[];
+      console.log('updating ' + updateLineItems.length + ' lines');
+      for (const updatedLineItemInput of updatedLineItemInputs) {
+        let response = await this.probateRecordService.UpdateLineItem(
+          updatedLineItemInput
+        );
+        console.log(response);
+      }
+
+      // delete line items
+      this.deletedLineIds.forEach(async (id) => {
+        let response = await this.probateRecordService.DeleteLineItem({ id });
+      });
+
+      // update record
+      let updatedWords = (Array.from(this.record!.words) as Word[]).map((w) => ({
+        id: w.id,
+        text: w.text,
+        boundingBox: {
+          left: w.boundingBox!.left,
+          top: w.boundingBox!.top,
+          width: w.boundingBox!.width,
+          height: w.boundingBox!.height,
+        },
+        // confidence: w.confidence,
+        // lowerText: w.lowerText
+      }));
+      let reviewCount = this.record!.reviewCount;
+      if (this.isReviewed) {
+        reviewCount++;
+      }
+      let item = { id: this.record!.id, reviewCount, words: updatedWords };
+      let response = await this.probateRecordService.UpdateProbateRecord(item);
+      this.isDirty = false;
       console.log(response);
+      alert('record updated');
     }
-
-    // delete line items
-    this.deletedLineIds.forEach(async (id) => {
-      let response = await this.probateRecordService.DeleteLineItem({ id });
-    });
-
-    // update record
-    let updatedWords = (Array.from(this.record!.words) as Word[]).map((w) => ({
-      id: w.id,
-      text: w.text,
-      boundingBox: {
-        left: w.boundingBox!.left,
-        top: w.boundingBox!.top,
-        width: w.boundingBox!.width,
-        height: w.boundingBox!.height,
-      },
-      // confidence: w.confidence,
-      // lowerText: w.lowerText
-    }));
-    let reviewCount = this.record!.reviewCount;
-    if (this.isReviewed) {
-      reviewCount++;
+    catch (e) {
+      if (e instanceof Error) {
+        alert((e as Error).message);
+      }
     }
-    let item = { id: this.record!.id, reviewCount, words: updatedWords };
-    let response = await this.probateRecordService.UpdateProbateRecord(item);
-    this.isDirty = false;
-    console.log(response);
-    alert('record updated');
-  }
-  catch(e) {
-    if(e instanceof Error) {
-      alert((e as Error).message);
-    }
-  }
   }
 }
