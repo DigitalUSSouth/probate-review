@@ -79,6 +79,12 @@ interface MoveLineItemCommand extends Command {
   newIndex: number;
 }
 
+interface AdjustLineItemBoundsCommand extends Command {
+  lineItem: LineItem;
+  oldBoundingBox: Rect;
+  newBoundingBox: Rect;
+}
+
 interface DragSelect {
   overlayElement: HTMLElement;
   startPos: OpenSeadragon.Point;
@@ -99,6 +105,7 @@ enum DragMode {
   Shorten,
   Expand,
   Split,
+  AdjustBox
 }
 
 enum SelectionMode {
@@ -111,7 +118,7 @@ enum EditMode {
   None,
   Line,
   Word,
-  AdjustWord,
+  AdjustWordBox,
   CreateLine,
   CreateWord,
 }
@@ -122,8 +129,10 @@ enum CommandType {
   DeleteWord,
   CreateWord,
   CreateLine,
-  AdjustBounds,
+  AdjustLineItemBounds,
   MoveLine,
+  MarkAsReviewed,
+  UnmarkAsReviewed,
   Unknown,
 }
 
@@ -134,6 +143,12 @@ enum OperationType {
 }
 
 const InputBoxHeight = 20;
+const AdjustWordBox = 'adjust word box';
+const CorrectText = 'correct text';
+const DeleteLine = 'delete line';
+const CreateLine = 'create line';
+const DeleteWord = 'delete word';
+const CreateWord = 'create word';
 
 @Component({
   selector: 'app-unreviewed-detail',
@@ -146,6 +161,11 @@ export class UnreviewedDetailComponent implements OnInit {
   @ViewChild('table') table!: MatTable<LineItem>;
   @ViewChildren('checkbox') checkBoxes?: QueryList<MatCheckbox>;
 
+  // UI
+  selectionButtonLabel: 'Select' | 'Exit' = 'Select';
+  isSelecting = false;
+  isAdjustingBoundingBox = false;
+
   // Image
   osd?: OpenSeadragon.Viewer;
   selectTracker?: OpenSeadragon.MouseTracker;
@@ -153,7 +173,7 @@ export class UnreviewedDetailComponent implements OnInit {
   aspectRatio = 0.0;
   isNavigatorVisible = false;
   dragSelect = {
-    overlayElement: null as unknown as HTMLDivElement,
+    overlayElement: null as unknown as HTMLElement,//HTMLDivElement,
     startPos: new OpenSeadragon.Point(0, 0),
     isDragging: false,
     dragMode: DragMode.Select,
@@ -193,8 +213,8 @@ export class UnreviewedDetailComponent implements OnInit {
     this.objToStrMap(data);
 
   // Commands
-  commands: Array<
-    BulkLineItemCommand | LineItemCommand | WordCommand | MoveLineItemCommand
+  commands: Array<Command |
+    BulkLineItemCommand | LineItemCommand | WordCommand | MoveLineItemCommand | AdjustLineItemBoundsCommand
   > = [];
 
   // Lines, Words
@@ -214,15 +234,24 @@ export class UnreviewedDetailComponent implements OnInit {
     private renderer: Renderer2,
     public dialog: MatDialog,
     private cookieService: CookieService
-  ) {}
+  ) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
+
+  onReviewedChange(event: Event) {
+    const commandType = this.isReviewed ? CommandType.MarkAsReviewed : CommandType.UnmarkAsReviewed;
+    this.commands.push({
+      type: commandType,
+      wasDirtyBeforeCommand: this.isDirty,
+    });
+    this.isDirty = true;
+  }
 
   recordsChecked(): number {
     return this.checkBoxes
       ? (this.checkBoxes as QueryList<MatCheckbox>).filter(
-          (c: MatCheckbox) => c.checked == true
-        ).length
+        (c: MatCheckbox) => c.checked == true
+      ).length
       : 0;
   }
 
@@ -234,9 +263,9 @@ export class UnreviewedDetailComponent implements OnInit {
     return checkBox.checked;
   }
 
-  isSelecting() {
-    return this.dragSelect.dragMode === DragMode.Select;
-  }
+  // isSelecting() {
+  //   return this.dragSelect.dragMode === DragMode.Select;
+  // }
 
   isEditing() {
     return this.dragSelect.editMode != EditMode.None;
@@ -304,6 +333,9 @@ export class UnreviewedDetailComponent implements OnInit {
 
   enterSelectionMode() {
     this.exitEditMode();
+    this.showNav();
+    this.selectionButtonLabel = 'Exit';
+    this.isSelecting = true;
     this.osd!.setMouseNavEnabled(false);
     this.dragSelect.dragMode = DragMode.Select;
     this.dragSelect.selectionMode = SelectionMode.Line;
@@ -311,14 +343,24 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   exitSelectionMode() {
+    this.hideNav();
+    this.selectionButtonLabel = 'Select';
+    this.isSelecting = false;
     this.dragSelect.dragMode = DragMode.None;
     this.dragSelect.selectionMode = SelectionMode.None;
     this.dragSelect.isDragging = false;
     this.resetView();
   }
 
+  adjustLineItemBounds() {
+    this.dragSelect.dragMode = DragMode.AdjustBox;
+    this.dragSelect.editMode = EditMode.Line;
+    this.isAdjustingBoundingBox = true;
+    console.log('this.adjustLineItemBounds');
+  }
+
   toggleSelectionMode() {
-    if (this.isSelecting()) {
+    if (this.isSelecting) {
       this.exitSelectionMode();
     } else {
       this.enterSelectionMode();
@@ -479,7 +521,7 @@ export class UnreviewedDetailComponent implements OnInit {
         var target = (event as any).originalTarget as HTMLElement;
         console.log(target);
         if (target!.matches('input')) {
-          
+
           target.style.display = 'block';
           target.focus();
           this.dragSelect.selectionMode = SelectionMode.None;
@@ -515,7 +557,7 @@ export class UnreviewedDetailComponent implements OnInit {
         this.dragSelect.isDragging = true;
 
         overlayElement = this.createOverlayElement('select');
-        this.dragSelect.overlayElement = overlayElement as HTMLDivElement;
+        this.dragSelect.overlayElement = overlayElement as HTMLElement;
         if (this.dragSelect.editMode === EditMode.Line) {
           let selectedLineBoundingBox = this.osd!.getOverlayById(
             `boundingBox-${this.selectedLines[0].id}`
@@ -548,22 +590,21 @@ export class UnreviewedDetailComponent implements OnInit {
 
         let location: OpenSeadragon.Rect;
         let line: LineItem;
+        location = new OpenSeadragon.Rect(
+          Math.min(
+            this.dragSelect!.startPos.x,
+            this.dragSelect!.startPos.x + diffX
+          ),
+          Math.min(
+            this.dragSelect!.startPos.y,
+            this.dragSelect!.startPos.y + diffY
+          ),
+          Math.abs(diffX),
+          Math.abs(diffY)
+        );
 
         switch (this.dragSelect.dragMode) {
           case DragMode.Select:
-            location = new OpenSeadragon.Rect(
-              Math.min(
-                this.dragSelect!.startPos.x,
-                this.dragSelect!.startPos.x + diffX
-              ),
-              Math.min(
-                this.dragSelect!.startPos.y,
-                this.dragSelect!.startPos.y + diffY
-              ),
-              Math.abs(diffX),
-              Math.abs(diffY)
-            );
-
             if (this.dragSelect.editMode === EditMode.Line) {
               // do not allow user to select word bounds outside line item bounds
               let selectedLineBoundingBox = this.osd!.getOverlayById(
@@ -580,6 +621,42 @@ export class UnreviewedDetailComponent implements OnInit {
             }
             this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);
             break;
+
+          case DragMode.AdjustBox:
+            switch (this.dragSelect.editMode) {
+              case EditMode.Line:
+                {
+                  console.log('adjusting line item box');
+                  let selectedLineOverlayName = `boundingBox-${this.selectedLines[0].id}`;
+                  let selectedLineBoundingBox = this.osd!.getOverlayById(selectedLineOverlayName
+                  ).getBounds(this.osd!.viewport);
+                  
+                  if (viewportPos.x < selectedLineBoundingBox.x + selectedLineBoundingBox.width / 2) {
+                    selectedLineBoundingBox.width += (selectedLineBoundingBox.x - viewportPos.x);
+                    selectedLineBoundingBox.x = viewportPos.x;
+                  }
+                  else {
+                    selectedLineBoundingBox.width -= (selectedLineBoundingBox.x + selectedLineBoundingBox.width - viewportPos.x);
+                  }
+                  
+                  this.osd!.updateOverlay(selectedLineOverlayName, selectedLineBoundingBox);
+                }
+                break;
+              case EditMode.AdjustWordBox:
+                let selectedLineBoundingBox = this.osd!.getOverlayById(
+                  `boundingBox-${this.selectedLines[0].id}`
+                ).getBounds(this.osd!.viewport);
+                if (
+                  this.osdRectangleContainsOsdRectangle(
+                    selectedLineBoundingBox,
+                    location
+                  )
+                ) {
+                  this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);
+                }
+                break;
+
+            }
           // case DragMode.Shorten:
           //   line = this.selectedLines[0];
           //   location = this.texRect2osdRect(line.boundingBox!);
@@ -699,8 +776,33 @@ export class UnreviewedDetailComponent implements OnInit {
                 break;
             }
             break;
+          case DragMode.AdjustBox:
+            switch (this.dragSelect.editMode) {
+              case EditMode.Line:
+                {
+                  let selectedLineBoundingBox = this.osd!.getOverlayById(
+                    `boundingBox-${this.selectedLines[0].id}`
+                  ).getBounds(this.osd!.viewport);
+                  console.log('updating bounding box');
+                  let newBoundingBox = this.osdRect2texRect(selectedLineBoundingBox);
+                  this.commands.push({
+                    type: CommandType.AdjustLineItemBounds,
+                    wasDirtyBeforeCommand: this.isDirty,
+                    lineItem: this.selectedLines[0],
+                    oldBoundingBox: this.selectedLines[0].boundingBox!,
+                    newBoundingBox
+                  });
+                  this.selectedLines[0].boundingBox = newBoundingBox;
+                  this.updatedLineIds.add(this.selectedLines[0].id);
+                  this.isDirty = true;                  
+                }
+
+                break;
+            }
+            break;
         }
         this.dragSelect.dragMode = DragMode.None;
+        this.isAdjustingBoundingBox = false;
       },
     });
   }
@@ -736,7 +838,7 @@ export class UnreviewedDetailComponent implements OnInit {
         this.rightClickMenuItems = [
           {
             menuText: 'Create Line',
-            menuEvent: 'create line',
+            menuEvent: CreateLine,
           },
         ];
         break;
@@ -751,20 +853,22 @@ export class UnreviewedDetailComponent implements OnInit {
             event.target.id
           ) as HTMLInputElement;
           if (inputElem === document.activeElement) {
+            this.selectedWord = this.record!.words.find(w => w!.id === wordId);
             this.rightClickMenuItems = [
               {
                 menuText: 'Delete Word',
-                menuEvent: 'delete word',
+                menuEvent: DeleteWord,
               },
-              // {
-              //   menuText: 'Adjust Box',
-              //   menuEvent: 'adjust word box',
-              // },
+              {
+                menuText: 'Adjust Box',
+                menuEvent: AdjustWordBox,
+              },
               {
                 menuText: 'Cancel',
                 menuEvent: 'cancel',
               },
             ];
+
           }
         } else {
           // console.log('showing select lines context menu');
@@ -787,11 +891,11 @@ export class UnreviewedDetailComponent implements OnInit {
             // },
             {
               menuText: 'Correct Text',
-              menuEvent: 'correct text',
+              menuEvent: CorrectText,
             },
             {
               menuText: 'Delete Line',
-              menuEvent: 'delete line',
+              menuEvent: DeleteLine,
             },
             {
               menuText: 'Cancel',
@@ -986,7 +1090,7 @@ export class UnreviewedDetailComponent implements OnInit {
       ? this.osd!.getOverlayById('select').getBounds(this.osd!.viewport)
       : new OpenSeadragon.Rect(0, 0, 0, 0);
     switch (event.data) {
-      case 'create word':
+      case CreateWord:
         let snapToLocation = this.getSnapToLocation(location);
         let word = this.createWordAtLocation(snapToLocation);
         this.focusOnWord(word);
@@ -1001,7 +1105,7 @@ export class UnreviewedDetailComponent implements OnInit {
         this.isDirty = true;
         this.table.renderRows();
         break;
-      case 'delete word':
+      case DeleteWord:
         if (this.selectedWord) {
           this.deleteWord(this.selectedWord);
           this.commands.push({
@@ -1016,21 +1120,31 @@ export class UnreviewedDetailComponent implements OnInit {
           this.table.renderRows();
         }
         break;
-      case 'create line':
+      case CreateLine:
         {
           this.createLineItemAtLocationCommand(location);
         }
         break;
-      case 'delete line':
+      case DeleteLine:
         {
           this.bulkDeleteLines(this.selectedLines);
           this.osd!.clearOverlays();
         }
         break;
-      case 'correct text':
+      case CorrectText:
         this.highlightLine(this.selectedLines[0]);
         this.showWordInputsForLine(this.selectedLines[0]);
         this.enterEditMode();
+        break;
+
+      case AdjustWordBox:
+        let selectedWordBoundsElem = this.createOverlayElement(`boundingBox-${this.selectedWord!.id}`, 'highlighted-word');
+        const rect = this.texRect2osdRect(this.selectedWord!.boundingBox!);
+        this.osd!.addOverlay(selectedWordBoundsElem, rect);
+        this.dragSelect.dragMode = DragMode.AdjustBox;
+        this.dragSelect.editMode = EditMode.AdjustWordBox;
+        this.dragSelect.selectionMode = SelectionMode.Word;
+        this.dragSelect.overlayElement = selectedWordBoundsElem;
         break;
     }
     this.isDisplayContextMenu = false;
@@ -1287,7 +1401,7 @@ export class UnreviewedDetailComponent implements OnInit {
     this.highlightLine(line);
   }
 
-  deleteLineItemByIndex(index: number): void {}
+  deleteLineItemByIndex(index: number): void { }
 
   calculateAspectRatio() {
     this.imageSize = this.osd!.world.getItemAt(0).getContentSize();
@@ -1312,7 +1426,7 @@ export class UnreviewedDetailComponent implements OnInit {
       overlay.remove();
     }
 
-    overlay = this.renderer.createElement('div');
+    overlay = this.renderer.createElement('div') as HTMLElement;
     this.renderer.setProperty(overlay, 'id', id);
     this.renderer.setProperty(overlay, 'className', className);
     this.renderer.appendChild(document.body, overlay);
@@ -1334,7 +1448,6 @@ export class UnreviewedDetailComponent implements OnInit {
       `boundingBox-${line.id}`,
       'highlighted-line'
     );
-    console.log(selectElem);
     this.osd!.addOverlay(selectElem, this.texRect2osdRect(line.boundingBox!));
     this.selectedLines = [];
     this.selectedLines.push(line);
@@ -1579,7 +1692,7 @@ export class UnreviewedDetailComponent implements OnInit {
             if (this.isEditing()) {
               console.log('removing ');
               console.log(wordCommand.word);
-              this.osd!.removeOverlay(`wordInput-${wordCommand.word.id}`);              
+              this.osd!.removeOverlay(`wordInput-${wordCommand.word.id}`);
             }
           }
           break;
@@ -1639,6 +1752,27 @@ export class UnreviewedDetailComponent implements OnInit {
           break;
         case CommandType.DeleteLine:
           {
+          }
+          break;
+
+        case CommandType.MarkAsReviewed:
+          {
+            this.isReviewed = false;
+          }
+          break;
+
+        case CommandType.UnmarkAsReviewed:
+          {
+            this.isReviewed = true;
+          }
+          break;
+        case CommandType.AdjustLineItemBounds:
+          {
+            let adjustLineItemBoundsCommand = command as AdjustLineItemBoundsCommand;
+            adjustLineItemBoundsCommand.lineItem.boundingBox = adjustLineItemBoundsCommand.oldBoundingBox;
+            // update overlay
+            this.osd!.updateOverlay(`boundingBox-${adjustLineItemBoundsCommand.lineItem.id}`, this.texRect2osdRect(adjustLineItemBoundsCommand.lineItem.boundingBox));
+            console.log('undoing box adjustment');
           }
           break;
       }
@@ -1757,84 +1891,91 @@ export class UnreviewedDetailComponent implements OnInit {
   ): UpdateLineItemInput[] | CreateLineItemInput {
     return lineItems
       ? lineItems.map((l) => ({
-          id: l.id,
-          probateId: this.record!.id,
-          wordIds: l.wordIds,
-          title: l.title,
-          description: l.description,
-          category: l.category,
-          subcategory: l.subcategory,
-          quantity: l.quantity,
-          value: l.value,
-          boundingBox: {
-            left: l.boundingBox!.left,
-            top: l.boundingBox!.top,
-            width: l.boundingBox!.width,
-            height: l.boundingBox!.height,
-          },
-          attributeForId: l.attributeForId,
-          rowIndex: l.rowIndex,
-          confidence: l.confidence,
-          lowerTitle: l.lowerTitle,
-        }))
+        id: l.id,
+        probateId: this.record!.id,
+        wordIds: l.wordIds,
+        title: l.title,
+        description: l.description,
+        category: l.category,
+        subcategory: l.subcategory,
+        quantity: l.quantity,
+        value: l.value,
+        boundingBox: {
+          left: l.boundingBox!.left,
+          top: l.boundingBox!.top,
+          width: l.boundingBox!.width,
+          height: l.boundingBox!.height,
+        },
+        attributeForId: l.attributeForId,
+        rowIndex: l.rowIndex,
+        confidence: l.confidence,
+        lowerTitle: l.lowerTitle,
+      }))
       : [];
   }
 
   async save() {
-    // create line items
-    let createLineItems = (this.record!.lineItems!.items as LineItem[]).filter(
-      (l) => this.newLineIds.has(l.id)
-    );
-    let createLineItemInputs = this.mapToUpdateLineItemInput(
-      createLineItems
-    ) as CreateLineItemInput[];
-    for (const createdLineItemInput of createLineItemInputs) {
-      let response = await this.probateRecordService.CreateLineItem(
-        createdLineItemInput
+    try {
+      // create line items
+      let createLineItems = (this.record!.lineItems!.items as LineItem[]).filter(
+        (l) => this.newLineIds.has(l.id)
       );
-    }
+      let createLineItemInputs = this.mapToUpdateLineItemInput(
+        createLineItems
+      ) as CreateLineItemInput[];
+      for (const createdLineItemInput of createLineItemInputs) {
+        let response = await this.probateRecordService.CreateLineItem(
+          createdLineItemInput
+        );
+      }
 
-    // update line items
-    let updateLineItems = (this.record!.lineItems!.items as LineItem[]).filter(
-      (l) => this.updatedLineIds.has(l.id)
-    );
-    let updatedLineItemInputs = this.mapToUpdateLineItemInput(
-      updateLineItems
-    ) as UpdateLineItemInput[];
-    console.log('updating ' + updateLineItems.length + ' lines');
-    for (const updatedLineItemInput of updatedLineItemInputs) {
-      let response = await this.probateRecordService.UpdateLineItem(
-        updatedLineItemInput
+      // update line items
+      let updateLineItems = (this.record!.lineItems!.items as LineItem[]).filter(
+        (l) => this.updatedLineIds.has(l.id)
       );
+      let updatedLineItemInputs = this.mapToUpdateLineItemInput(
+        updateLineItems
+      ) as UpdateLineItemInput[];
+      console.log('updating ' + updateLineItems.length + ' lines');
+      for (const updatedLineItemInput of updatedLineItemInputs) {
+        let response = await this.probateRecordService.UpdateLineItem(
+          updatedLineItemInput
+        );
+        console.log(response);
+      }
+
+      // delete line items
+      this.deletedLineIds.forEach(async (id) => {
+        let response = await this.probateRecordService.DeleteLineItem({ id });
+      });
+
+      // update record
+      let updatedWords = (Array.from(this.record!.words) as Word[]).map((w) => ({
+        id: w.id,
+        text: w.text,
+        boundingBox: {
+          left: w.boundingBox!.left,
+          top: w.boundingBox!.top,
+          width: w.boundingBox!.width,
+          height: w.boundingBox!.height,
+        },
+        // confidence: w.confidence,
+        // lowerText: w.lowerText
+      }));
+      let reviewCount = this.record!.reviewCount;
+      if (this.isReviewed) {
+        reviewCount++;
+      }
+      let item = { id: this.record!.id, reviewCount, words: updatedWords };
+      let response = await this.probateRecordService.UpdateProbateRecord(item);
+      this.isDirty = false;
       console.log(response);
+      alert('record updated');
     }
-
-    // delete line items
-    this.deletedLineIds.forEach(async (id) => {
-      let response = await this.probateRecordService.DeleteLineItem({ id });
-    });
-
-    // update record
-    let updatedWords = (Array.from(this.record!.words) as Word[]).map((w) => ({
-      id: w.id,
-      text: w.text,
-      boundingBox: {
-        left: w.boundingBox!.left,
-        top: w.boundingBox!.top,
-        width: w.boundingBox!.width,
-        height: w.boundingBox!.height,
-      },
-      // confidence: w.confidence,
-      // lowerText: w.lowerText
-    }));
-    let reviewCount = this.record!.reviewCount;
-    if (this.isReviewed) {
-      reviewCount++;
+    catch (e) {
+      if (e instanceof Error) {
+        alert((e as Error).message);
+      }
     }
-    let item = { id: this.record!.id, reviewCount, words: updatedWords };
-    let response = await this.probateRecordService.UpdateProbateRecord(item);
-    this.isDirty = false;
-    console.log(response);
-    alert('record updated');
   }
 }
