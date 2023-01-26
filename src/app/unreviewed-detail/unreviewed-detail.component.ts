@@ -1916,6 +1916,7 @@ export class UnreviewedDetailComponent implements OnInit {
 
   async save() {
     try {
+      console.log('starting save');
       // create line items
       let createLineItems = (this.record!.lineItems!.items as LineItem[]).filter(
         (l) => this.newLineIds.has(l.id)
@@ -1975,6 +1976,9 @@ export class UnreviewedDetailComponent implements OnInit {
     catch (e) {
       if (e instanceof Error) {
         alert((e as Error).message);
+      }
+      else {
+        alert('An error has occurred during save');
       }
     }
   }
