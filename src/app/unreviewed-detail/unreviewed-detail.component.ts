@@ -79,6 +79,12 @@ interface MoveLineItemCommand extends Command {
   newIndex: number;
 }
 
+interface AdjustLineItemBoundsCommand extends Command {
+  lineItem: LineItem;
+  oldBoundingBox: Rect;
+  newBoundingBox: Rect;
+}
+
 interface DragSelect {
   overlayElement: HTMLElement;
   startPos: OpenSeadragon.Point;
@@ -123,7 +129,7 @@ enum CommandType {
   DeleteWord,
   CreateWord,
   CreateLine,
-  AdjustBounds,
+  AdjustLineItemBounds,
   MoveLine,
   MarkAsReviewed,
   UnmarkAsReviewed,
@@ -158,6 +164,7 @@ export class UnreviewedDetailComponent implements OnInit {
   // UI
   selectionButtonLabel: 'Select' | 'Exit' = 'Select';
   isSelecting = false;
+  isAdjustingBoundingBox = false;
 
   // Image
   osd?: OpenSeadragon.Viewer;
@@ -207,7 +214,7 @@ export class UnreviewedDetailComponent implements OnInit {
 
   // Commands
   commands: Array<Command |
-    BulkLineItemCommand | LineItemCommand | WordCommand | MoveLineItemCommand
+    BulkLineItemCommand | LineItemCommand | WordCommand | MoveLineItemCommand | AdjustLineItemBoundsCommand
   > = [];
 
   // Lines, Words
@@ -348,6 +355,7 @@ export class UnreviewedDetailComponent implements OnInit {
   adjustLineItemBounds() {
     this.dragSelect.dragMode = DragMode.AdjustBox;
     this.dragSelect.editMode = EditMode.Line;
+    this.isAdjustingBoundingBox = true;
     console.log('this.adjustLineItemBounds');
   }
 
@@ -622,14 +630,15 @@ export class UnreviewedDetailComponent implements OnInit {
                   let selectedLineOverlayName = `boundingBox-${this.selectedLines[0].id}`;
                   let selectedLineBoundingBox = this.osd!.getOverlayById(selectedLineOverlayName
                   ).getBounds(this.osd!.viewport);
+                  
                   if (viewportPos.x < selectedLineBoundingBox.x + selectedLineBoundingBox.width / 2) {
-                    selectedLineBoundingBox.x += diffX / 2;
-                    selectedLineBoundingBox.width -= diffX / 2;
-
+                    selectedLineBoundingBox.width += (selectedLineBoundingBox.x - viewportPos.x);
+                    selectedLineBoundingBox.x = viewportPos.x;
                   }
                   else {
-                    selectedLineBoundingBox.width += diffX / 2;
+                    selectedLineBoundingBox.width -= (selectedLineBoundingBox.x + selectedLineBoundingBox.width - viewportPos.x);
                   }
+                  
                   this.osd!.updateOverlay(selectedLineOverlayName, selectedLineBoundingBox);
                 }
                 break;
@@ -774,9 +783,18 @@ export class UnreviewedDetailComponent implements OnInit {
                   let selectedLineBoundingBox = this.osd!.getOverlayById(
                     `boundingBox-${this.selectedLines[0].id}`
                   ).getBounds(this.osd!.viewport);
-                  //TODO: replace with command
                   console.log('updating bounding box');
-                  this.selectedLines[0].boundingBox = this.osdRect2texRect(selectedLineBoundingBox);
+                  let newBoundingBox = this.osdRect2texRect(selectedLineBoundingBox);
+                  this.commands.push({
+                    type: CommandType.AdjustLineItemBounds,
+                    wasDirtyBeforeCommand: this.isDirty,
+                    lineItem: this.selectedLines[0],
+                    oldBoundingBox: this.selectedLines[0].boundingBox!,
+                    newBoundingBox
+                  });
+                  this.selectedLines[0].boundingBox = newBoundingBox;
+                  this.updatedLineIds.add(this.selectedLines[0].id);
+                  this.isDirty = true;                  
                 }
 
                 break;
@@ -784,6 +802,7 @@ export class UnreviewedDetailComponent implements OnInit {
             break;
         }
         this.dragSelect.dragMode = DragMode.None;
+        this.isAdjustingBoundingBox = false;
       },
     });
   }
@@ -1745,6 +1764,15 @@ export class UnreviewedDetailComponent implements OnInit {
         case CommandType.UnmarkAsReviewed:
           {
             this.isReviewed = true;
+          }
+          break;
+        case CommandType.AdjustLineItemBounds:
+          {
+            let adjustLineItemBoundsCommand = command as AdjustLineItemBoundsCommand;
+            adjustLineItemBoundsCommand.lineItem.boundingBox = adjustLineItemBoundsCommand.oldBoundingBox;
+            // update overlay
+            this.osd!.updateOverlay(`boundingBox-${adjustLineItemBoundsCommand.lineItem.id}`, this.texRect2osdRect(adjustLineItemBoundsCommand.lineItem.boundingBox));
+            console.log('undoing box adjustment');
           }
           break;
       }

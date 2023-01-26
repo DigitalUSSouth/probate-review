@@ -237,7 +237,8 @@
     mat-raised-button
     class="form-button"
     color="primary"
-    [disabled]="false"
+    #adjustBoxButton
+    [disabled]="isAdjustingBoundingBox"
     (click)="adjustLineItemBounds()"
   >
     Adjust Box
