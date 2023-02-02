@@ -247,8 +247,8 @@
     mat-raised-button
     class="form-button"
     color="primary"
-    [disabled]="true"
-    (click)="cancelEdit()"
+    [disabled]="isSplitting"
+    (click)="splitLineItem()"
   >
     Split
   </button>

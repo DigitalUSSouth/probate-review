@@ -85,6 +85,13 @@ interface AdjustLineItemBoundsCommand extends Command {
   newBoundingBox: Rect;
 }
 
+interface SplitLineItemCommand extends Command {
+  lineItem: LineItem;
+  newLineItem: LineItem;
+  oldBoundingBox: Rect;
+  newBoundingBox: Rect;
+}
+
 interface DragSelect {
   overlayElement: HTMLElement;
   startPos: OpenSeadragon.Point;
@@ -132,6 +139,7 @@ enum CommandType {
   AdjustLineItemBounds,
   MoveLine,
   MarkAsReviewed,
+  SplitLine,
   UnmarkAsReviewed,
   Unknown,
 }
@@ -165,6 +173,7 @@ export class UnreviewedDetailComponent implements OnInit {
   selectionButtonLabel: 'Select' | 'Exit' = 'Select';
   isSelecting = false;
   isAdjustingBoundingBox = false;
+  isSplitting = false;
 
   // Image
   osd?: OpenSeadragon.Viewer;
@@ -214,7 +223,7 @@ export class UnreviewedDetailComponent implements OnInit {
 
   // Commands
   commands: Array<Command |
-    BulkLineItemCommand | LineItemCommand | WordCommand | MoveLineItemCommand | AdjustLineItemBoundsCommand
+    BulkLineItemCommand | LineItemCommand | WordCommand | MoveLineItemCommand | AdjustLineItemBoundsCommand | SplitLineItemCommand
   > = [];
 
   // Lines, Words
@@ -356,6 +365,19 @@ export class UnreviewedDetailComponent implements OnInit {
     this.dragSelect.dragMode = DragMode.AdjustBox;
     this.dragSelect.editMode = EditMode.Line;
     this.isAdjustingBoundingBox = true;
+    console.log('this.adjustLineItemBounds');
+  }
+
+  splitLineItem() {
+    this.dragSelect.dragMode = DragMode.Split;
+    this.dragSelect.editMode = EditMode.Line;
+    this.dragSelect.overlayElement = this.createOverlayElement('split', 'split-line');
+    let location = this.osd!.getOverlayById(`boundingBox-${this.selectedLines[0].id}`).getBounds(this.osd!.viewport).clone();
+    location.x += location.width / 2;
+    location.width /= 2;
+    this.osd!.addOverlay('split');
+    this.osd!.updateOverlay('split', location);
+    this.isSplitting = true;
     console.log('this.adjustLineItemBounds');
   }
 
@@ -630,7 +652,7 @@ export class UnreviewedDetailComponent implements OnInit {
                   let selectedLineOverlayName = `boundingBox-${this.selectedLines[0].id}`;
                   let selectedLineBoundingBox = this.osd!.getOverlayById(selectedLineOverlayName
                   ).getBounds(this.osd!.viewport);
-                  
+
                   if (viewportPos.x < selectedLineBoundingBox.x + selectedLineBoundingBox.width / 2) {
                     selectedLineBoundingBox.width += (selectedLineBoundingBox.x - viewportPos.x);
                     selectedLineBoundingBox.x = viewportPos.x;
@@ -638,7 +660,7 @@ export class UnreviewedDetailComponent implements OnInit {
                   else {
                     selectedLineBoundingBox.width -= (selectedLineBoundingBox.x + selectedLineBoundingBox.width - viewportPos.x);
                   }
-                  
+
                   this.osd!.updateOverlay(selectedLineOverlayName, selectedLineBoundingBox);
                 }
                 break;
@@ -657,55 +679,21 @@ export class UnreviewedDetailComponent implements OnInit {
                 break;
 
             }
-          // case DragMode.Shorten:
-          //   line = this.selectedLines[0];
-          //   location = this.texRect2osdRect(line.boundingBox!);
-          //   if (diffX > 0) {
-          //     location.x += diffX;
-          //   }
-          //   location.width -= Math.abs(diffX);
-          //   this.osd!.updateOverlay(`boundingBox-${line.id}`, location);
-          //   break;
-          // case DragMode.Extend:
-          //   line = this.selectedLines[0];
-          //   location = this.texRect2osdRect(line.boundingBox!);
-          //   if (diffX < 0) {
-          //     location.x += diffX;
-          //   }
-          //   location.width += Math.abs(diffX);
-          //   this.osd!.updateOverlay(`boundingBox-${line.id}`, location);
-          //   break;
-          // case DragMode.Expand:
-          //   line = this.selectedLines[0];
-          //   location = this.texRect2osdRect(line.boundingBox!);
-          //   if (diffX < 0) {
-          //     location.x += diffX;
-          //   }
-          //   location.width += Math.abs(diffX);
-          //   if (diffY < 0) {
-          //     location.y += diffY;
-          //   }
-          //   location.height += Math.abs(diffY);
-          //   this.osd!.updateOverlay(`boundingBox-${line.id}`, location);
-          //   break;
-          // case DragMode.Split:
-          //   line = this.selectedLines[0];
-          //   let boundingBox1Id = `boundingBox-${line.id}`;
-          //   let boundingBox2Id = `boundingBox-${line.id}-2`;
-          //   location = this.osd!.getOverlayById(boundingBox1Id).getBounds(
-          //     this.osd!.viewport
-          //   );
-          //   let location2 = this.osd!.getOverlayById(boundingBox2Id).getBounds(
-          //     this.osd!.viewport
-          //   );
-          //   location.width += diffX;
-          //   location2.width -= diffX;
-          //   location2.x += diffX;
-          //   this.osd!.updateOverlay(boundingBox1Id, location);
-          //   this.osd!.updateOverlay(boundingBox2Id, location2);
-          //   this.dragSelect!.startPos.x = viewportPos.x;
-          //   this.dragSelect!.startPos.y = viewportPos.y;
-          //   break;
+            break;
+          case DragMode.Split:
+            {
+              let selectedLineOverlayName = `boundingBox-${this.selectedLines[0].id}`;
+                  let selectedLineBoundingBox = this.osd!.getOverlayById(selectedLineOverlayName
+                  ).getBounds(this.osd!.viewport);
+              if(viewportPos.x > selectedLineBoundingBox.x && viewportPos.x < (selectedLineBoundingBox.x + selectedLineBoundingBox.width)) {
+                let splitBox = this.osd!.getOverlayById('split').getBounds(this.osd!.viewport);
+                splitBox.x = viewportPos.x;
+                splitBox.width = selectedLineBoundingBox.width - (splitBox.x - selectedLineBoundingBox.x);
+                this.osd!.updateOverlay('split', splitBox);
+              }
+                  
+            }
+            break;
         }
       },
       releaseHandler: (event) => {
@@ -794,15 +782,24 @@ export class UnreviewedDetailComponent implements OnInit {
                   });
                   this.selectedLines[0].boundingBox = newBoundingBox;
                   this.updatedLineIds.add(this.selectedLines[0].id);
-                  this.isDirty = true;                  
+                  this.isDirty = true;
                 }
 
                 break;
             }
             break;
+          case DragMode.Split:
+            { 
+              const newLocation = this.osd!.getOverlayById('split').getBounds(this.osd!.viewport);                        
+              // split line item
+              this.splitLineItemAtNewLocation(this.selectedLines[0], newLocation);                    
+
+            }
+            break;
         }
         this.dragSelect.dragMode = DragMode.None;
         this.isAdjustingBoundingBox = false;
+        this.isSplitting = false;
       },
     });
   }
@@ -1082,6 +1079,60 @@ export class UnreviewedDetailComponent implements OnInit {
     this.selectedLines.push(lineItem);
     this.highlightLine(lineItem);
     this.enterEditMode();
+  }
+
+  splitLineItemAtNewLocation(lineItem: LineItem, newLocation: OpenSeadragon.Rect) {
+    const newBoundingBox = this.osdRect2texRect(newLocation);    
+    const oldBoundingBox = {...lineItem.boundingBox!};    
+    lineItem.boundingBox!.width = newBoundingBox.left - lineItem.boundingBox!.left;
+    this.updatedLineIds.add(lineItem.id);
+
+    let newLineItem = this.createLineItemAtLocation(
+      newBoundingBox
+    );
+  
+    // move word ids from existing line item to new line item
+    let wordIdsToKeep: string[] = [];
+    let wordIdsToRemove: string[] = [];
+    const lineToSplit = this.selectedLines[0];
+    for(const id of lineToSplit.wordIds) {
+      const word = this.wordMap.get(id!);
+      if (
+        this.texRectangleContainsTexRectangle(
+          lineToSplit.boundingBox!,
+          word!.boundingBox!
+        )
+      ) {
+        wordIdsToKeep.push(word!.id);
+      } else {
+        wordIdsToRemove.push(word!.id);
+      }
+    }
+    lineItem.wordIds = lineItem.wordIds.filter(w => wordIdsToKeep.includes(w!));
+    lineItem.title = wordIdsToKeep.map(w => this.wordMap.get(w)).map(w => w!.text).join(' ');
+    lineItem.lowerTitle = lineItem.title.toLowerCase();
+    newLineItem.wordIds = wordIdsToRemove;
+    newLineItem.title = wordIdsToRemove.map(w => this.wordMap.get(w)).map(w => w!.text).join(' ');
+    newLineItem.lowerTitle = newLineItem.title.toLowerCase();
+
+    this.record!.lineItems!.items.push(newLineItem);
+    this.commands.push({
+      type: CommandType.SplitLine,
+      wasDirtyBeforeCommand: this.isDirty,
+      lineItem,
+      newLineItem,
+      oldBoundingBox,
+      newBoundingBox
+    });
+    this.isDirty = true;
+    this.table.renderRows();
+    this.exitEditMode();
+    this.selectedLines = [];
+    this.selectedLines.push(newLineItem);
+    this.highlightLine(newLineItem);
+    this.correctText();
+    this.enterEditMode();
+
   }
 
   handleMenuItemClick(event: any) {
@@ -1568,6 +1619,15 @@ export class UnreviewedDetailComponent implements OnInit {
     );
   }
 
+  texRectangleContainsTexRectangle(a: Rect, b: Rect) {
+    return (
+      a.left <= b.left &&
+      a.top <= b.top &&
+      a.left + a.width >= b.left + b.width &&
+      a.top + a.height >= b.top + b.height
+    );
+  }
+
   osdRectangleContainsOsdRectangle(
     a: OpenSeadragon.Rect,
     b: OpenSeadragon.Rect
@@ -1775,6 +1835,36 @@ export class UnreviewedDetailComponent implements OnInit {
             console.log('undoing box adjustment');
           }
           break;
+
+        case CommandType.SplitLine:
+          {
+            let splitLineCommand = command as SplitLineItemCommand;
+            // restore old bounding box
+            splitLineCommand.lineItem.boundingBox = splitLineCommand.oldBoundingBox;
+            this.osd!.updateOverlay(`boundingBox-${splitLineCommand.lineItem.id}`, this.texRect2osdRect(splitLineCommand.lineItem.boundingBox));
+            
+            // move all words from new line item to old line item
+            for(const id of splitLineCommand.newLineItem.wordIds) {
+              splitLineCommand.lineItem.wordIds.push(id);
+            }
+            splitLineCommand.lineItem.title = splitLineCommand.lineItem.wordIds.map(w => this.wordMap.get(w!)).map(w => w!.text).join(' ');
+            splitLineCommand.lineItem.lowerTitle = splitLineCommand.lineItem.title.toLowerCase();
+
+            // remove newly created line
+            const newLineItem = splitLineCommand.newLineItem;
+            this.record!.lineItems!.items = (
+              this.record!.lineItems!.items as LineItem[]
+            ).filter((l) => l.id != newLineItem.id);
+            this.newLineIds.delete(newLineItem.id);
+
+            // remove bounding box for new line
+            if (this.isEditing()) {
+              this.osd!.removeOverlay(`boundingBox-${newLineItem.id}`);
+              this.exitEditMode();
+            }
+
+
+          }
       }
       this.isDirty = command?.wasDirtyBeforeCommand!;
       this.table.renderRows();
