@@ -40,6 +40,15 @@
             mat-raised-button
             class="form-button"
             color="primary"
+            [disabled]="selectedLines.length < 2"
+            (click)="onCombineLineItems()"
+          >
+            Combine
+          </button>
+          <button
+            mat-raised-button
+            class="form-button"
+            color="primary"
             [disabled]="!isLineChecked"
             (click)="deleteCheckedLines()"
           >
