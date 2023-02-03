@@ -1890,6 +1890,9 @@ export class UnreviewedDetailComponent implements OnInit {
             this.record!.lineItems!.items = this.record!.lineItems!.items.concat(combineLineItemsCommand.oldLineItems);
             lineItem.title = lineItem.wordIds.map(w => this.wordMap.get(w!)).map(w => w!.text).join(' ');
             lineItem.lowerTitle = lineItem.title.toLowerCase();
+            for(const deletedLineItem of combineLineItemsCommand.oldLineItems) {
+              this.deletedLineIds.delete(deletedLineItem.id);
+            }
           }
           break;
       }
@@ -2011,8 +2014,13 @@ export class UnreviewedDetailComponent implements OnInit {
     const linesToRemove = this.selectedLines.slice(1);
     const removedLineIds = linesToRemove.map(l => l.id);
 
-    // delete other line items
+    // remove other line items
     this.record!.lineItems!.items = (this.record!.lineItems!.items as LineItem[]).filter(l => !removedLineIds.includes(l.id));
+
+    // mark them for deletion
+    for(const lineToDelete of removedLineIds) {
+      this.deletedLineIds.add(lineToDelete);
+    }
 
     // add command
     this.commands.push({
