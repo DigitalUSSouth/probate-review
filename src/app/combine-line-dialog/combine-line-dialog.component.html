@@ -1,0 +1,15 @@
+<mat-toolbar color="primary">
+  <span mat-dialog-title style="color:white">Combine Lines</span>
+</mat-toolbar>
+<div id="dialog-container" mat-dialog-content>
+Select items to be combined. The rest will be deleted.
+<mat-selection-list #lines>
+  <mat-list-option *ngFor="let lineItem of data" [value]="lineItem">
+    {{lineItem.title}}
+  </mat-list-option>
+</mat-selection-list>
+</div>
+<div id="button-row">
+<button mat-raised-button color="primary" [mat-dialog-close]="getSelected()">Combine</button>
+<button mat-raised-button color="primary" (click)="cancelDialog()">Cancel</button>
+</div>

@@ -35,6 +35,8 @@ import {
 import { HelpDialogComponent } from './help-dialog/help-dialog.component';
 import { CookieService } from 'ngx-cookie-service';
 import { MatSortModule } from '@angular/material/sort';
+import { CombineLineDialogComponent } from './combine-line-dialog/combine-line-dialog.component';
+import {MatListModule} from '@angular/material/list';
 
 @NgModule({
   declarations: [
@@ -50,6 +52,7 @@ import { MatSortModule } from '@angular/material/sort';
     UnreviewedDetailComponent,
     ConfirmDeleteDialogComponent,
     HelpDialogComponent,
+    CombineLineDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -60,6 +63,7 @@ import { MatSortModule } from '@angular/material/sort';
     MatInputModule,
     MatIconModule,
     HttpClientModule,
+    MatListModule,
     MatPaginatorModule,
     MatTableModule,
     MatProgressSpinnerModule,
