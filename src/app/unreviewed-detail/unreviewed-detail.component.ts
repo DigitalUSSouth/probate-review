@@ -42,6 +42,7 @@ import { deleteLine, deleteWord } from 'src/graphql/mutations';
 import { MatButton } from '@angular/material/button';
 import { CookieService } from 'ngx-cookie-service';
 import { HelpDialogComponent } from '../help-dialog/help-dialog.component';
+import { CombineLineDialogComponent } from '../combine-line-dialog/combine-line-dialog.component';
 
 interface SubcategoryOptionValue {
   value: string;
@@ -96,7 +97,7 @@ interface CombineLineItemsCommand extends Command {
   lineItem: LineItem;
   oldLineItems: LineItem[];
   originalWordIds: string[];
-  originalBoundingBox: Rect;  
+  originalBoundingBox: Rect;
 }
 
 interface DragSelect {
@@ -119,7 +120,7 @@ enum DragMode {
   Shorten,
   Expand,
   Split,
-  AdjustBox
+  AdjustBox,
 }
 
 enum SelectionMode {
@@ -190,13 +191,14 @@ export class UnreviewedDetailComponent implements OnInit {
   aspectRatio = 0.0;
   isNavigatorVisible = false;
   dragSelect = {
-    overlayElement: null as unknown as HTMLElement,//HTMLDivElement,
+    overlayElement: null as unknown as HTMLElement, //HTMLDivElement,
     startPos: new OpenSeadragon.Point(0, 0),
     isDragging: false,
     dragMode: DragMode.Select,
     selectionMode: SelectionMode.None,
     editMode: EditMode.None,
   };
+  boundsBeforeEdit?: OpenSeadragon.Rect;
 
   // Data table
   displayedColumns: string[] = [
@@ -230,8 +232,15 @@ export class UnreviewedDetailComponent implements OnInit {
     this.objToStrMap(data);
 
   // Commands
-  commands: Array<Command |
-    BulkLineItemCommand | LineItemCommand | WordCommand | MoveLineItemCommand | AdjustLineItemBoundsCommand | SplitLineItemCommand | CombineLineItemsCommand
+  commands: Array<
+    | Command
+    | BulkLineItemCommand
+    | LineItemCommand
+    | WordCommand
+    | MoveLineItemCommand
+    | AdjustLineItemBoundsCommand
+    | SplitLineItemCommand
+    | CombineLineItemsCommand
   > = [];
 
   // Lines, Words
@@ -251,12 +260,14 @@ export class UnreviewedDetailComponent implements OnInit {
     private renderer: Renderer2,
     public dialog: MatDialog,
     private cookieService: CookieService
-  ) { }
+  ) {}
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 
   onReviewedChange(event: Event) {
-    const commandType = this.isReviewed ? CommandType.MarkAsReviewed : CommandType.UnmarkAsReviewed;
+    const commandType = this.isReviewed
+      ? CommandType.MarkAsReviewed
+      : CommandType.UnmarkAsReviewed;
     this.commands.push({
       type: commandType,
       wasDirtyBeforeCommand: this.isDirty,
@@ -267,8 +278,8 @@ export class UnreviewedDetailComponent implements OnInit {
   recordsChecked(): number {
     return this.checkBoxes
       ? (this.checkBoxes as QueryList<MatCheckbox>).filter(
-        (c: MatCheckbox) => c.checked == true
-      ).length
+          (c: MatCheckbox) => c.checked == true
+        ).length
       : 0;
   }
 
@@ -315,6 +326,7 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   enterEditMode() {
+    this.boundsBeforeEdit = this.osd!.viewport.getBounds();
     this.showNav();
     this.osd!.setControlsEnabled(true);
     let toolbarElem = document.getElementById('toolbarDiv');
@@ -349,6 +361,7 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   enterSelectionMode() {
+    this.boundsBeforeEdit = this.osd!.viewport.getBounds();
     this.exitEditMode();
     this.showNav();
     this.selectionButtonLabel = 'Exit';
@@ -379,8 +392,15 @@ export class UnreviewedDetailComponent implements OnInit {
   splitLineItem() {
     this.dragSelect.dragMode = DragMode.Split;
     this.dragSelect.editMode = EditMode.Line;
-    this.dragSelect.overlayElement = this.createOverlayElement('split', 'split-line');
-    let location = this.osd!.getOverlayById(`boundingBox-${this.selectedLines[0].id}`).getBounds(this.osd!.viewport).clone();
+    this.dragSelect.overlayElement = this.createOverlayElement(
+      'split',
+      'split-line'
+    );
+    let location = this.osd!.getOverlayById(
+      `boundingBox-${this.selectedLines[0].id}`
+    )
+      .getBounds(this.osd!.viewport)
+      .clone();
     location.x += location.width / 2;
     location.width /= 2;
     this.osd!.addOverlay('split');
@@ -550,7 +570,6 @@ export class UnreviewedDetailComponent implements OnInit {
         var target = (event as any).originalTarget as HTMLElement;
         console.log(target);
         if (target!.matches('input')) {
-
           target.style.display = 'block';
           target.focus();
           this.dragSelect.selectionMode = SelectionMode.None;
@@ -657,26 +676,44 @@ export class UnreviewedDetailComponent implements OnInit {
                 {
                   console.log('adjusting line item box');
                   let selectedLineOverlayName = `boundingBox-${this.selectedLines[0].id}`;
-                  let selectedLineBoundingBox = this.osd!.getOverlayById(selectedLineOverlayName
+                  let selectedLineBoundingBox = this.osd!.getOverlayById(
+                    selectedLineOverlayName
                   ).getBounds(this.osd!.viewport);
 
-                  if (viewportPos.x < selectedLineBoundingBox.x + selectedLineBoundingBox.width / 2) {
-                    selectedLineBoundingBox.width += (selectedLineBoundingBox.x - viewportPos.x);
+                  if (
+                    viewportPos.x <
+                    selectedLineBoundingBox.x +
+                      selectedLineBoundingBox.width / 2
+                  ) {
+                    selectedLineBoundingBox.width +=
+                      selectedLineBoundingBox.x - viewportPos.x;
                     selectedLineBoundingBox.x = viewportPos.x;
-                  }
-                  else {
-                    selectedLineBoundingBox.width -= (selectedLineBoundingBox.x + selectedLineBoundingBox.width - viewportPos.x);
+                  } else {
+                    selectedLineBoundingBox.width -=
+                      selectedLineBoundingBox.x +
+                      selectedLineBoundingBox.width -
+                      viewportPos.x;
                   }
 
-                  if (viewportPos.y < selectedLineBoundingBox.y + selectedLineBoundingBox.height / 2) {
-                    selectedLineBoundingBox.height += (selectedLineBoundingBox.y - viewportPos.y);
+                  if (
+                    viewportPos.y <
+                    selectedLineBoundingBox.y +
+                      selectedLineBoundingBox.height / 2
+                  ) {
+                    selectedLineBoundingBox.height +=
+                      selectedLineBoundingBox.y - viewportPos.y;
                     selectedLineBoundingBox.y = viewportPos.y;
-                  }
-                  else {
-                    selectedLineBoundingBox.height -= (selectedLineBoundingBox.y + selectedLineBoundingBox.height - viewportPos.y);
+                  } else {
+                    selectedLineBoundingBox.height -=
+                      selectedLineBoundingBox.y +
+                      selectedLineBoundingBox.height -
+                      viewportPos.y;
                   }
 
-                  this.osd!.updateOverlay(selectedLineOverlayName, selectedLineBoundingBox);
+                  this.osd!.updateOverlay(
+                    selectedLineOverlayName,
+                    selectedLineBoundingBox
+                  );
                 }
                 break;
               case EditMode.AdjustWordBox:
@@ -689,24 +726,34 @@ export class UnreviewedDetailComponent implements OnInit {
                     location
                   )
                 ) {
-                  this.osd!.updateOverlay(this.dragSelect!.overlayElement!, location);
+                  this.osd!.updateOverlay(
+                    this.dragSelect!.overlayElement!,
+                    location
+                  );
                 }
                 break;
-
             }
             break;
           case DragMode.Split:
             {
               let selectedLineOverlayName = `boundingBox-${this.selectedLines[0].id}`;
-                  let selectedLineBoundingBox = this.osd!.getOverlayById(selectedLineOverlayName
-                  ).getBounds(this.osd!.viewport);
-              if(viewportPos.x > selectedLineBoundingBox.x && viewportPos.x < (selectedLineBoundingBox.x + selectedLineBoundingBox.width)) {
-                let splitBox = this.osd!.getOverlayById('split').getBounds(this.osd!.viewport);
+              let selectedLineBoundingBox = this.osd!.getOverlayById(
+                selectedLineOverlayName
+              ).getBounds(this.osd!.viewport);
+              if (
+                viewportPos.x > selectedLineBoundingBox.x &&
+                viewportPos.x <
+                  selectedLineBoundingBox.x + selectedLineBoundingBox.width
+              ) {
+                let splitBox = this.osd!.getOverlayById('split').getBounds(
+                  this.osd!.viewport
+                );
                 splitBox.x = viewportPos.x;
-                splitBox.width = selectedLineBoundingBox.width - (splitBox.x - selectedLineBoundingBox.x);
+                splitBox.width =
+                  selectedLineBoundingBox.width -
+                  (splitBox.x - selectedLineBoundingBox.x);
                 this.osd!.updateOverlay('split', splitBox);
               }
-                  
             }
             break;
         }
@@ -787,13 +834,15 @@ export class UnreviewedDetailComponent implements OnInit {
                     `boundingBox-${this.selectedLines[0].id}`
                   ).getBounds(this.osd!.viewport);
                   console.log('updating bounding box');
-                  let newBoundingBox = this.osdRect2texRect(selectedLineBoundingBox);
+                  let newBoundingBox = this.osdRect2texRect(
+                    selectedLineBoundingBox
+                  );
                   this.commands.push({
                     type: CommandType.AdjustLineItemBounds,
                     wasDirtyBeforeCommand: this.isDirty,
                     lineItem: this.selectedLines[0],
                     oldBoundingBox: this.selectedLines[0].boundingBox!,
-                    newBoundingBox
+                    newBoundingBox,
                   });
                   this.selectedLines[0].boundingBox = newBoundingBox;
                   this.updatedLineIds.add(this.selectedLines[0].id);
@@ -804,11 +853,15 @@ export class UnreviewedDetailComponent implements OnInit {
             }
             break;
           case DragMode.Split:
-            { 
-              const newLocation = this.osd!.getOverlayById('split').getBounds(this.osd!.viewport);                        
+            {
+              const newLocation = this.osd!.getOverlayById('split').getBounds(
+                this.osd!.viewport
+              );
               // split line item
-              this.splitLineItemAtNewLocation(this.selectedLines[0], newLocation);                    
-
+              this.splitLineItemAtNewLocation(
+                this.selectedLines[0],
+                newLocation
+              );
             }
             break;
         }
@@ -865,7 +918,9 @@ export class UnreviewedDetailComponent implements OnInit {
             event.target.id
           ) as HTMLInputElement;
           if (inputElem === document.activeElement) {
-            this.selectedWord = this.record!.words.find(w => w!.id === wordId);
+            this.selectedWord = this.record!.words.find(
+              (w) => w!.id === wordId
+            );
             this.rightClickMenuItems = [
               {
                 menuText: 'Delete Word',
@@ -880,7 +935,6 @@ export class UnreviewedDetailComponent implements OnInit {
                 menuEvent: 'cancel',
               },
             ];
-
           }
         } else {
           // console.log('showing select lines context menu');
@@ -1096,21 +1150,23 @@ export class UnreviewedDetailComponent implements OnInit {
     this.enterEditMode();
   }
 
-  splitLineItemAtNewLocation(lineItem: LineItem, newLocation: OpenSeadragon.Rect) {
-    const newBoundingBox = this.osdRect2texRect(newLocation);    
-    const oldBoundingBox = {...lineItem.boundingBox!};    
-    lineItem.boundingBox!.width = newBoundingBox.left - lineItem.boundingBox!.left;
+  splitLineItemAtNewLocation(
+    lineItem: LineItem,
+    newLocation: OpenSeadragon.Rect
+  ) {
+    const newBoundingBox = this.osdRect2texRect(newLocation);
+    const oldBoundingBox = { ...lineItem.boundingBox! };
+    lineItem.boundingBox!.width =
+      newBoundingBox.left - lineItem.boundingBox!.left;
     this.updatedLineIds.add(lineItem.id);
 
-    let newLineItem = this.createLineItemAtLocation(
-      newBoundingBox
-    );
-  
+    let newLineItem = this.createLineItemAtLocation(newBoundingBox);
+
     // move word ids from existing line item to new line item
     let wordIdsToKeep: string[] = [];
     let wordIdsToRemove: string[] = [];
     const lineToSplit = this.selectedLines[0];
-    for(const id of lineToSplit.wordIds) {
+    for (const id of lineToSplit.wordIds) {
       const word = this.wordMap.get(id!);
       if (
         this.texRectangleContainsTexRectangle(
@@ -1123,11 +1179,19 @@ export class UnreviewedDetailComponent implements OnInit {
         wordIdsToRemove.push(word!.id);
       }
     }
-    lineItem.wordIds = lineItem.wordIds.filter(w => wordIdsToKeep.includes(w!));
-    lineItem.title = wordIdsToKeep.map(w => this.wordMap.get(w)).map(w => w!.text).join(' ');
+    lineItem.wordIds = lineItem.wordIds.filter((w) =>
+      wordIdsToKeep.includes(w!)
+    );
+    lineItem.title = wordIdsToKeep
+      .map((w) => this.wordMap.get(w))
+      .map((w) => w!.text)
+      .join(' ');
     lineItem.lowerTitle = lineItem.title.toLowerCase();
     newLineItem.wordIds = wordIdsToRemove;
-    newLineItem.title = wordIdsToRemove.map(w => this.wordMap.get(w)).map(w => w!.text).join(' ');
+    newLineItem.title = wordIdsToRemove
+      .map((w) => this.wordMap.get(w))
+      .map((w) => w!.text)
+      .join(' ');
     newLineItem.lowerTitle = newLineItem.title.toLowerCase();
 
     this.record!.lineItems!.items.push(newLineItem);
@@ -1137,7 +1201,7 @@ export class UnreviewedDetailComponent implements OnInit {
       lineItem,
       newLineItem,
       oldBoundingBox,
-      newBoundingBox
+      newBoundingBox,
     });
     this.isDirty = true;
     this.table.renderRows();
@@ -1147,7 +1211,6 @@ export class UnreviewedDetailComponent implements OnInit {
     this.highlightLine(newLineItem);
     this.correctText();
     this.enterEditMode();
-
   }
 
   handleMenuItemClick(event: any) {
@@ -1204,7 +1267,10 @@ export class UnreviewedDetailComponent implements OnInit {
         break;
 
       case AdjustWordBox:
-        let selectedWordBoundsElem = this.createOverlayElement(`boundingBox-${this.selectedWord!.id}`, 'highlighted-word');
+        let selectedWordBoundsElem = this.createOverlayElement(
+          `boundingBox-${this.selectedWord!.id}`,
+          'highlighted-word'
+        );
         const rect = this.texRect2osdRect(this.selectedWord!.boundingBox!);
         this.osd!.addOverlay(selectedWordBoundsElem, rect);
         this.dragSelect.dragMode = DragMode.AdjustBox;
@@ -1467,7 +1533,7 @@ export class UnreviewedDetailComponent implements OnInit {
     this.highlightLine(line);
   }
 
-  deleteLineItemByIndex(index: number): void { }
+  deleteLineItemByIndex(index: number): void {}
 
   calculateAspectRatio() {
     this.imageSize = this.osd!.world.getItemAt(0).getContentSize();
@@ -1521,7 +1587,13 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   resetView() {
-    this.osd!.viewport.goHome();
+    if(!this.boundsBeforeEdit) {
+      this.osd!.viewport.goHome();
+      this.boundsBeforeEdit = this.osd!.viewport.getBounds();
+    }
+    else {
+      this.osd!.viewport.fitBounds(this.boundsBeforeEdit);
+    }
     this.osd!.clearOverlays();
     this.osd!.setControlsEnabled(false);
     this.osd!.setMouseNavEnabled(true);
@@ -1843,10 +1915,17 @@ export class UnreviewedDetailComponent implements OnInit {
           break;
         case CommandType.AdjustLineItemBounds:
           {
-            let adjustLineItemBoundsCommand = command as AdjustLineItemBoundsCommand;
-            adjustLineItemBoundsCommand.lineItem.boundingBox = adjustLineItemBoundsCommand.oldBoundingBox;
+            let adjustLineItemBoundsCommand =
+              command as AdjustLineItemBoundsCommand;
+            adjustLineItemBoundsCommand.lineItem.boundingBox =
+              adjustLineItemBoundsCommand.oldBoundingBox;
             // update overlay
-            this.osd!.updateOverlay(`boundingBox-${adjustLineItemBoundsCommand.lineItem.id}`, this.texRect2osdRect(adjustLineItemBoundsCommand.lineItem.boundingBox));
+            this.osd!.updateOverlay(
+              `boundingBox-${adjustLineItemBoundsCommand.lineItem.id}`,
+              this.texRect2osdRect(
+                adjustLineItemBoundsCommand.lineItem.boundingBox
+              )
+            );
             console.log('undoing box adjustment');
           }
           break;
@@ -1855,15 +1934,23 @@ export class UnreviewedDetailComponent implements OnInit {
           {
             let splitLineCommand = command as SplitLineItemCommand;
             // restore old bounding box
-            splitLineCommand.lineItem.boundingBox = splitLineCommand.oldBoundingBox;
-            this.osd!.updateOverlay(`boundingBox-${splitLineCommand.lineItem.id}`, this.texRect2osdRect(splitLineCommand.lineItem.boundingBox));
-            
+            splitLineCommand.lineItem.boundingBox =
+              splitLineCommand.oldBoundingBox;
+            this.osd!.updateOverlay(
+              `boundingBox-${splitLineCommand.lineItem.id}`,
+              this.texRect2osdRect(splitLineCommand.lineItem.boundingBox)
+            );
+
             // move all words from new line item to old line item
-            for(const id of splitLineCommand.newLineItem.wordIds) {
+            for (const id of splitLineCommand.newLineItem.wordIds) {
               splitLineCommand.lineItem.wordIds.push(id);
             }
-            splitLineCommand.lineItem.title = splitLineCommand.lineItem.wordIds.map(w => this.wordMap.get(w!)).map(w => w!.text).join(' ');
-            splitLineCommand.lineItem.lowerTitle = splitLineCommand.lineItem.title.toLowerCase();
+            splitLineCommand.lineItem.title = splitLineCommand.lineItem.wordIds
+              .map((w) => this.wordMap.get(w!))
+              .map((w) => w!.text)
+              .join(' ');
+            splitLineCommand.lineItem.lowerTitle =
+              splitLineCommand.lineItem.title.toLowerCase();
 
             // remove newly created line
             const newLineItem = splitLineCommand.newLineItem;
@@ -1877,8 +1964,6 @@ export class UnreviewedDetailComponent implements OnInit {
               this.osd!.removeOverlay(`boundingBox-${newLineItem.id}`);
               this.exitEditMode();
             }
-
-
           }
           break;
         case CommandType.CombineLineItems:
@@ -1887,10 +1972,16 @@ export class UnreviewedDetailComponent implements OnInit {
             const lineItem = combineLineItemsCommand.lineItem;
             lineItem.wordIds = combineLineItemsCommand.originalWordIds;
             lineItem.boundingBox = combineLineItemsCommand.originalBoundingBox;
-            this.record!.lineItems!.items = this.record!.lineItems!.items.concat(combineLineItemsCommand.oldLineItems);
-            lineItem.title = lineItem.wordIds.map(w => this.wordMap.get(w!)).map(w => w!.text).join(' ');
+            this.record!.lineItems!.items =
+              this.record!.lineItems!.items.concat(
+                combineLineItemsCommand.oldLineItems
+              );
+            lineItem.title = lineItem.wordIds
+              .map((w) => this.wordMap.get(w!))
+              .map((w) => w!.text)
+              .join(' ');
             lineItem.lowerTitle = lineItem.title.toLowerCase();
-            for(const deletedLineItem of combineLineItemsCommand.oldLineItems) {
+            for (const deletedLineItem of combineLineItemsCommand.oldLineItems) {
               this.deletedLineIds.delete(deletedLineItem.id);
             }
           }
@@ -1987,54 +2078,96 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   onCombineLineItems() {
-    // get new bounding box
-    const leftBound = this.selectedLines.map(l => l.boundingBox!.left).reduce((a, c) => Math.min(a, c));
-    const rightBound = this.selectedLines.map(l => l.boundingBox!.left + l.boundingBox!.width).reduce((a, c) => Math.max(a, c));
-    const upperBound = this.selectedLines.map(l => l.boundingBox!.top).reduce((a, c) => Math.min(a, c));
-    const lowerBound = this.selectedLines.map(l => l.boundingBox!.top + l.boundingBox!.height).reduce((a, c) => Math.max(a, c));
-
-    let combinedLineItem = this.selectedLines[0];    
-    let originalWordIds = [...combinedLineItem.wordIds] as string[];
-    let originalBoundingBox = {...combinedLineItem.boundingBox} as Rect;
-
-    combinedLineItem.boundingBox = {__typename: "Rect", left: leftBound, top: upperBound, width: rightBound - leftBound, height: lowerBound - upperBound};
-    let uniqueWords = new Set<string>(this.selectedLines.flatMap(w => w.wordIds as string[]));
-
-    // add all word ids to first line item    
-    // for(let i = 1; i < this.selectedLines.length; i++) {
-    //   combinedLineItem.wordIds = combinedLineItem.wordIds.concat(this.selectedLines[i].wordIds);
-    // }
-    combinedLineItem.wordIds = Array.from(uniqueWords);
-
-    // update text
-    combinedLineItem.title = combinedLineItem.wordIds.map(w => this.wordMap.get(w!)).map(w => w!.text).join(' ');
-    combinedLineItem.lowerTitle = combinedLineItem.title.toLowerCase();
-
-    // remove old lines
-    const linesToRemove = this.selectedLines.slice(1);
-    const removedLineIds = linesToRemove.map(l => l.id);
-
-    // remove other line items
-    this.record!.lineItems!.items = (this.record!.lineItems!.items as LineItem[]).filter(l => !removedLineIds.includes(l.id));
-
-    // mark them for deletion
-    for(const lineToDelete of removedLineIds) {
-      this.deletedLineIds.add(lineToDelete);
-    }
-
-    // add command
-    this.commands.push({
-      type: CommandType.CombineLineItems,
-      wasDirtyBeforeCommand: this.isDirty,
-      lineItem: combinedLineItem,
-      oldLineItems: linesToRemove,
-      originalWordIds,
-      originalBoundingBox
+    // let user select which text to include for combination
+    const dialogRef = this.dialog.open(CombineLineDialogComponent, {
+      data: this.selectedLines,
+      height: '90%',
+      panelClass: 'custom-dialog'
     });
 
-    this.isDirty = true;
-    // refresh our displayed rows
-    this.table.renderRows();
+    dialogRef.afterClosed().subscribe((result) => {
+      if(result.length === 0) {
+        return;
+      }
+      // get new bounding box
+      const leftBound = this.selectedLines
+        .map((l) => l.boundingBox!.left)
+        .reduce((a, c) => Math.min(a, c));
+      const rightBound = this.selectedLines
+        .map((l) => l.boundingBox!.left + l.boundingBox!.width)
+        .reduce((a, c) => Math.max(a, c));
+      const upperBound = this.selectedLines
+        .map((l) => l.boundingBox!.top)
+        .reduce((a, c) => Math.min(a, c));
+      const lowerBound = this.selectedLines
+        .map((l) => l.boundingBox!.top + l.boundingBox!.height)
+        .reduce((a, c) => Math.max(a, c));
+
+      let combinedLineItem = result[0];
+      let originalWordIds = [...combinedLineItem.wordIds] as string[];
+      let originalBoundingBox = { ...combinedLineItem.boundingBox } as Rect;
+
+      combinedLineItem.boundingBox = {
+        __typename: 'Rect',
+        left: leftBound,
+        top: upperBound,
+        width: rightBound - leftBound,
+        height: lowerBound - upperBound,
+      };
+      let uniqueWords = new Set<string>(
+        result.flatMap((w) => w.wordIds as string[])
+      );
+      console.log('words');
+      console.log(uniqueWords);
+
+      // add all word ids to first line item      
+      combinedLineItem.wordIds = Array.from(uniqueWords);
+
+      // update text
+      combinedLineItem.title = combinedLineItem.wordIds
+        .map((w) => this.wordMap.get(w!))
+        .map((w) => w!.text)
+        .join(' ');
+
+      console.log('new title');
+      console.log(combinedLineItem.title);
+      combinedLineItem.lowerTitle = combinedLineItem.title.toLowerCase();
+      this.updatedLineIds.add(combinedLineItem.id);
+
+      // remove old lines
+      const linesToRemove = this.selectedLines.filter(l => l.id != combinedLineItem.id);
+      const removedLineIds = linesToRemove.map((l) => l.id);
+
+      // remove other line items
+      this.record!.lineItems!.items = (
+        this.record!.lineItems!.items as LineItem[]
+      ).filter((l) => !removedLineIds.includes(l.id));
+
+      // mark them for deletion
+      for (const lineToDelete of removedLineIds) {
+        this.deletedLineIds.add(lineToDelete);
+      }
+
+      // add command
+      this.commands.push({
+        type: CommandType.CombineLineItems,
+        wasDirtyBeforeCommand: this.isDirty,
+        lineItem: combinedLineItem,
+        oldLineItems: linesToRemove,
+        originalWordIds,
+        originalBoundingBox,
+      });
+
+      this.isDirty = true;
+      // refresh our displayed rows
+      this.table.renderRows();
+      this.exitEditMode();
+      this.selectedLines = [];
+      this.selectedLines.push(combinedLineItem);
+      this.highlightLine(combinedLineItem);
+      this.correctText();
+      this.enterEditMode();
+    });
   }
 
   onCreateWord() {
@@ -2062,26 +2195,26 @@ export class UnreviewedDetailComponent implements OnInit {
   ): UpdateLineItemInput[] | CreateLineItemInput {
     return lineItems
       ? lineItems.map((l) => ({
-        id: l.id,
-        probateId: this.record!.id,
-        wordIds: l.wordIds,
-        title: l.title,
-        description: l.description,
-        category: l.category,
-        subcategory: l.subcategory,
-        quantity: l.quantity,
-        value: l.value,
-        boundingBox: {
-          left: l.boundingBox!.left,
-          top: l.boundingBox!.top,
-          width: l.boundingBox!.width,
-          height: l.boundingBox!.height,
-        },
-        attributeForId: l.attributeForId,
-        rowIndex: l.rowIndex,
-        confidence: l.confidence,
-        lowerTitle: l.lowerTitle,
-      }))
+          id: l.id,
+          probateId: this.record!.id,
+          wordIds: l.wordIds,
+          title: l.title,
+          description: l.description,
+          category: l.category,
+          subcategory: l.subcategory,
+          quantity: l.quantity,
+          value: l.value,
+          boundingBox: {
+            left: l.boundingBox!.left,
+            top: l.boundingBox!.top,
+            width: l.boundingBox!.width,
+            height: l.boundingBox!.height,
+          },
+          attributeForId: l.attributeForId,
+          rowIndex: l.rowIndex,
+          confidence: l.confidence,
+          lowerTitle: l.lowerTitle,
+        }))
       : [];
   }
 
@@ -2089,9 +2222,9 @@ export class UnreviewedDetailComponent implements OnInit {
     try {
       console.log('starting save');
       // create line items
-      let createLineItems = (this.record!.lineItems!.items as LineItem[]).filter(
-        (l) => this.newLineIds.has(l.id)
-      );
+      let createLineItems = (
+        this.record!.lineItems!.items as LineItem[]
+      ).filter((l) => this.newLineIds.has(l.id));
       let createLineItemInputs = this.mapToUpdateLineItemInput(
         createLineItems
       ) as CreateLineItemInput[];
@@ -2102,9 +2235,9 @@ export class UnreviewedDetailComponent implements OnInit {
       }
 
       // update line items
-      let updateLineItems = (this.record!.lineItems!.items as LineItem[]).filter(
-        (l) => this.updatedLineIds.has(l.id)
-      );
+      let updateLineItems = (
+        this.record!.lineItems!.items as LineItem[]
+      ).filter((l) => this.updatedLineIds.has(l.id));
       let updatedLineItemInputs = this.mapToUpdateLineItemInput(
         updateLineItems
       ) as UpdateLineItemInput[];
@@ -2122,18 +2255,20 @@ export class UnreviewedDetailComponent implements OnInit {
       });
 
       // update record
-      let updatedWords = (Array.from(this.record!.words) as Word[]).map((w) => ({
-        id: w.id,
-        text: w.text,
-        boundingBox: {
-          left: w.boundingBox!.left,
-          top: w.boundingBox!.top,
-          width: w.boundingBox!.width,
-          height: w.boundingBox!.height,
-        },
-        // confidence: w.confidence,
-        // lowerText: w.lowerText
-      }));
+      let updatedWords = (Array.from(this.record!.words) as Word[]).map(
+        (w) => ({
+          id: w.id,
+          text: w.text,
+          boundingBox: {
+            left: w.boundingBox!.left,
+            top: w.boundingBox!.top,
+            width: w.boundingBox!.width,
+            height: w.boundingBox!.height,
+          },
+          // confidence: w.confidence,
+          // lowerText: w.lowerText
+        })
+      );
       let reviewCount = this.record!.reviewCount;
       if (this.isReviewed) {
         reviewCount++;
@@ -2143,12 +2278,10 @@ export class UnreviewedDetailComponent implements OnInit {
       this.isDirty = false;
       console.log(response);
       alert('record updated');
-    }
-    catch (e) {
+    } catch (e) {
       if (e instanceof Error) {
         alert((e as Error).message);
-      }
-      else {
+      } else {
         alert('An error has occurred during save');
       }
     }
