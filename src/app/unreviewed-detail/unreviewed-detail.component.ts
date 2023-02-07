@@ -1409,11 +1409,12 @@ export class UnreviewedDetailComponent implements OnInit {
     pixel.y -= InputBoxHeight; // give input box height of 20 pixels
     const osdInputPoint = this.osd!.viewport.pointFromPixel(pixel);
     let inputHeight = osdAnyWordRect.y - osdInputPoint.y;
-
-    const rows = this.getRowsOfText(words);
+    const selectedLineBoundingBox = this.osd!.getOverlayById(`boundingBox-${this.selectedLines[0].id}`).getBounds(this.osd!.viewport);
+    const rows = this.getRowsOfText(words);        
     let top: number;
 
-    for (const row of rows) {
+    for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+      const row = rows[rowIndex];
       if (isInputAbove) {
         const topMostWord = row.reduce((p, c) => {
           return c.boundingBox!.top < p.boundingBox!.top ? c : p;
@@ -1450,9 +1451,14 @@ export class UnreviewedDetailComponent implements OnInit {
           inputElem = this.createInputForWord(word);
         }
 
-        rect.y = top;
+        // rect.y = top;
+
+        rect.y = selectedLineBoundingBox.y;
         if (isInputAbove) {
-          rect.y -= inputHeight;
+          rect.y -= inputHeight * (rows.length - rowIndex);
+        }
+        else {
+           rect.y += (selectedLineBoundingBox.height + inputHeight * rowIndex);
         }
         rect.height = inputHeight;
         console.log('input rect');
