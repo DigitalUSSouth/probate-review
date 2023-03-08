@@ -1388,6 +1388,9 @@ export class UnreviewedDetailComponent implements OnInit {
         if (isInputAbove) {
           rect.y -= inputHeight;
         }
+        else {          
+          // rect.y = this.texRect2osdRect(this.selectedLines[0]!.boundingBox!).height + top;
+        }
         rect.height = inputHeight;
         console.log('input rect');
         console.log(rect);
