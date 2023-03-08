@@ -107,4 +107,11 @@ enum IssueType {
   bug
   feature_request
 }
+
+type ProbateRecordLock @model @auth(rules: [{allow: private}]) {
+  id: ID!
+  probateId: ID! @index(name: "byProbate", sortKeyFields:["rowIndex"], queryField: "lockByProbateRecord")
+  date: AWSDate!
+  lockedBy: String!
+}
  
