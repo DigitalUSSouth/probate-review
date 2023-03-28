@@ -44,6 +44,10 @@ import { CookieService } from 'ngx-cookie-service';
 import { HelpDialogComponent } from '../help-dialog/help-dialog.component';
 
 import { CombineLineDialogComponent } from '../combine-line-dialog/combine-line-dialog.component';
+import { AmplifyUser } from '@aws-amplify/ui';
+import { AuthenticatorService } from '@aws-amplify/ui-angular';
+import awsExports from 'src/aws-exports';
+import { Amplify } from 'aws-amplify';
 
 interface SubcategoryOptionValue {
   value: string;
