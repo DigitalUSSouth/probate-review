@@ -48,11 +48,6 @@ import awsExports from '../../aws-exports';
 import { AmplifyUser } from '@aws-amplify/ui';
 
 import { CombineLineDialogComponent } from '../combine-line-dialog/combine-line-dialog.component';
-import { AuthenticatorService } from '@aws-amplify/ui-angular';
-import { Amplify } from 'aws-amplify';
-import awsExports from '../../aws-exports';
-import { AmplifyUser } from '@aws-amplify/ui';
-
 
 interface SubcategoryOptionValue {
   value: string;
