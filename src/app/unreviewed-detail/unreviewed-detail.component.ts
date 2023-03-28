@@ -42,10 +42,6 @@ import { deleteLine, deleteWord } from 'src/graphql/mutations';
 import { MatButton } from '@angular/material/button';
 import { CookieService } from 'ngx-cookie-service';
 import { HelpDialogComponent } from '../help-dialog/help-dialog.component';
-import { AuthenticatorService } from '@aws-amplify/ui-angular';
-import { Amplify } from 'aws-amplify';
-import awsExports from '../../aws-exports';
-import { AmplifyUser } from '@aws-amplify/ui';
 
 import { CombineLineDialogComponent } from '../combine-line-dialog/combine-line-dialog.component';
 
