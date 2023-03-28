@@ -34,9 +34,8 @@ import {
 } from '@angular/material/dialog';
 import { HelpDialogComponent } from './help-dialog/help-dialog.component';
 import { CookieService } from 'ngx-cookie-service';
-import { MatSortModule } from '@angular/material/sort';
 import { CombineLineDialogComponent } from './combine-line-dialog/combine-line-dialog.component';
-import {MatListModule} from '@angular/material/list';
+import { MatListModule } from '@angular/material/list';
 import { MatSortModule } from '@angular/material/sort';
 
 @NgModule({
