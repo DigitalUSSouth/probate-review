@@ -1,5 +1,5 @@
 <div class="table-container">
-<table mat-table [dataSource]="records!" class="mat-elevation-z8">
+<table mat-table [dataSource]="dataSource!" matSort class="mat-elevation-z8">
 
   <!--- Note that these columns can be defined in any order.
         The actual rendered columns are set as a property on the row definition" -->
@@ -10,12 +10,12 @@
   </ng-container>
 
   <ng-container matColumnDef="title">
-    <th mat-header-cell *matHeaderCellDef> Title </th>
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> Title </th>
     <td mat-cell *matCellDef="let record"> {{record.title}} </td>
   </ng-container>
 
   <ng-container matColumnDef="description">
-      <th mat-header-cell *matHeaderCellDef> Description </th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
       <td mat-cell *matCellDef="let record"> {{record.description}} </td>
     </ng-container>
 

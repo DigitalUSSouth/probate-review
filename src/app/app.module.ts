@@ -34,7 +34,7 @@ import {
 } from '@angular/material/dialog';
 import { HelpDialogComponent } from './help-dialog/help-dialog.component';
 import { CookieService } from 'ngx-cookie-service';
-
+import { MatSortModule } from '@angular/material/sort';
 
 @NgModule({
   declarations: [
@@ -70,6 +70,7 @@ import { CookieService } from 'ngx-cookie-service';
     DragDropModule,
     MatCheckboxModule,
     MatDialogModule,
+    MatSortModule,
   ],
   providers: [
     { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: false } },

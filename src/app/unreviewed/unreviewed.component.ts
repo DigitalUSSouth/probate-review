@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import {
   Document,
   ProbateRecord,
@@ -7,6 +7,10 @@ import {
   ModelProbateRecordFilterInput,
 } from '../API.service';
 import { PageEvent } from '@angular/material/paginator';
+import {LiveAnnouncer} from '@angular/cdk/a11y';
+import { MatSort, Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+
 @Component({
   selector: 'app-unreviewed',
   templateUrl: './unreviewed.component.html',
@@ -24,10 +28,21 @@ export class UnreviewedComponent implements OnInit {
   pageEvent?: PageEvent;
   displayedColumns: string[] = ['thumbnail', 'title', 'description'];
   nextToken: string | undefined;
-  constructor(private recordService: APIService) {}
+  @ViewChild(MatSort) sort?: MatSort;
+  dataSource?: MatTableDataSource<ProbateRecord>;
+  
+  constructor(private recordService: APIService, private _liveAnnouncer: LiveAnnouncer) {}
+  
+  ngAfterViewInit() {
+    
+  }
 
   ngOnInit(): void {
-    this.fetchRcords();
+    this.fetchRcords().then(() => {
+      console.log('records fetched');
+      this.dataSource = new MatTableDataSource(this.records);
+      this.dataSource.sort = this.sort!;
+    });
   }
 
   async fetchRcords() {
@@ -65,6 +80,7 @@ export class UnreviewedComponent implements OnInit {
 
     
     this.length = this.records.length;
+
   }
 
   handlePageEvent(event: PageEvent) {
@@ -75,5 +91,18 @@ export class UnreviewedComponent implements OnInit {
     }
     this.pageIndex = event.pageIndex;
     this.fetchRcords();
+  }
+
+  /** Announce the change in sort state for assistive technology. */
+  announceSortChange(sortState: Sort) {
+    // This example uses English messages. If your application supports
+    // multiple language, you would internationalize these strings.
+    // Furthermore, you can customize the message to add additional
+    // details about the values being sorted.
+    if (sortState.direction) {
+      this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
+    } else {
+      this._liveAnnouncer.announce('Sorting cleared');
+    }
   }
 }
