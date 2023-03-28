@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ApplicationRef,
+  Component,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import {
   Document,
   ProbateRecord,
@@ -129,7 +135,6 @@ export class UnreviewedComponent implements OnInit {
     }
 
     this.length = this.records.length;
-
   }
 
   handlePageEvent(event: PageEvent) {
