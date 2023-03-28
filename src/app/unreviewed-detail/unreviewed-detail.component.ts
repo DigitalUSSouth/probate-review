@@ -1585,6 +1585,9 @@ export class UnreviewedDetailComponent implements OnInit {
     );
     if (lineItem) {
       lineItem!.quantity = Number.parseInt(inputElem.value);
+      if(isNaN(lineItem!.quantity)) {
+        lineItem!.quantity = 1;
+      }
       this.onUpdatedLineItem(lineItemId);
     }
   }
@@ -1597,6 +1600,9 @@ export class UnreviewedDetailComponent implements OnInit {
     );
     if (lineItem) {
       lineItem.value = Number.parseFloat(inputElem.value);
+      if(isNaN(lineItem.value)) {
+        lineItem.value =  0.0;
+      }
       this.onUpdatedLineItem(lineItemId);
     }
   }
@@ -2103,6 +2109,11 @@ export class UnreviewedDetailComponent implements OnInit {
       ) as UpdateLineItemInput[];
       console.log('updating ' + updateLineItems.length + ' lines');
       for (const updatedLineItemInput of updatedLineItemInputs) {
+        console.log('updatedLineItemInput');
+        console.log(updatedLineItemInput);
+        if(updatedLineItemInput.quantity == null) {
+          console.log('quantity is null');
+        }
         let response = await this.probateRecordService.UpdateLineItem(
           updatedLineItemInput
         );
