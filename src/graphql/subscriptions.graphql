@@ -46,6 +46,8 @@ subscription OnCreateProbateRecord {
     totalValue
     reviewCount
     lowerTitle
+    lockedDate
+    lockedBy
     createdAt
     updatedAt
   }
@@ -97,6 +99,8 @@ subscription OnUpdateProbateRecord {
     totalValue
     reviewCount
     lowerTitle
+    lockedDate
+    lockedBy
     createdAt
     updatedAt
   }
@@ -148,6 +152,8 @@ subscription OnDeleteProbateRecord {
     totalValue
     reviewCount
     lowerTitle
+    lockedDate
+    lockedBy
     createdAt
     updatedAt
   }

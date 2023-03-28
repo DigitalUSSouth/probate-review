@@ -42,6 +42,11 @@ import { deleteLine, deleteWord } from 'src/graphql/mutations';
 import { MatButton } from '@angular/material/button';
 import { CookieService } from 'ngx-cookie-service';
 import { HelpDialogComponent } from '../help-dialog/help-dialog.component';
+import { AuthenticatorService } from '@aws-amplify/ui-angular';
+import { Amplify } from 'aws-amplify';
+import awsExports from '../../aws-exports';
+import { AmplifyUser } from '@aws-amplify/ui';
+
 
 interface SubcategoryOptionValue {
   value: string;
@@ -243,15 +248,22 @@ export class UnreviewedDetailComponent implements OnInit {
   updatedLineIds = new Set<string>();
   deletedLineIds = new Set<string>();
 
+  // User
+  user?: AmplifyUser;
+  lockedByOtherUser = true;
+
   // UI mode
 
   constructor(
+    public authenticator: AuthenticatorService,
     private route: ActivatedRoute,
     private probateRecordService: APIService,
     private renderer: Renderer2,
     public dialog: MatDialog,
     private cookieService: CookieService
-  ) { }
+  ) {
+    Amplify.configure(awsExports);
+   }
 
   ngOnInit(): void { }
 
@@ -397,6 +409,7 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   ngAfterViewInit(): void {
+    this.user = this.authenticator.user;
     const id = String(this.route.snapshot.paramMap.get('id'));
 
     let record$ = from(this.probateRecordService.GetProbateRecord(id));
@@ -434,6 +447,9 @@ export class UnreviewedDetailComponent implements OnInit {
       });
       // get our associated image
       this.getImage(id);
+
+      // check if we are allowed to update this item
+      this.lockedByOtherUser = this.user!.username != record.lockedBy;
     });
   }
 

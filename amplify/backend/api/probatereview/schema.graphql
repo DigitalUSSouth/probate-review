@@ -9,7 +9,9 @@ type ProbateRecord @model @auth(rules: [{allow: private}]) {
   words: [Word]!
   totalValue: Float!
   reviewCount: Int!
-  lowerTitle: String!  
+  lowerTitle: String!
+  lockedDate: AWSDateTime
+  lockedBy: String  
 }
 
 type Filing {
@@ -106,12 +108,7 @@ enum IssueStatus {
 enum IssueType {
   bug
   feature_request
+  change
 }
 
-type ProbateRecordLock @model @auth(rules: [{allow: private}]) {
-  id: ID!
-  probateId: ID! @index(name: "byProbate", sortKeyFields:["date"], queryField: "lockByProbateRecord")
-  date: AWSDate!
-  lockedBy: String!
-}
  

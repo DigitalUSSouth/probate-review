@@ -38,6 +38,8 @@ export type CreateProbateRecordInput = {
   totalValue: number;
   reviewCount: number;
   lowerTitle: string;
+  lockedDate?: string | null;
+  lockedBy?: string | null;
 };
 
 export type WordInput = {
@@ -62,6 +64,8 @@ export type ModelProbateRecordConditionInput = {
   totalValue?: ModelFloatInput | null;
   reviewCount?: ModelIntInput | null;
   lowerTitle?: ModelStringInput | null;
+  lockedDate?: ModelStringInput | null;
+  lockedBy?: ModelStringInput | null;
   and?: Array<ModelProbateRecordConditionInput | null> | null;
   or?: Array<ModelProbateRecordConditionInput | null> | null;
   not?: ModelProbateRecordConditionInput | null;
@@ -159,6 +163,8 @@ export type ProbateRecord = {
   totalValue: number;
   reviewCount: number;
   lowerTitle: string;
+  lockedDate?: string | null;
+  lockedBy?: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -215,6 +221,8 @@ export type UpdateProbateRecordInput = {
   totalValue?: number | null;
   reviewCount?: number | null;
   lowerTitle?: string | null;
+  lockedDate?: string | null;
+  lockedBy?: string | null;
 };
 
 export type DeleteProbateRecordInput = {
@@ -394,7 +402,8 @@ export enum IssueStatus {
 
 export enum IssueType {
   bug = "bug",
-  feature_request = "feature_request"
+  feature_request = "feature_request",
+  change = "change"
 }
 
 export type ModelIssueConditionInput = {
@@ -453,6 +462,8 @@ export type ModelProbateRecordFilterInput = {
   totalValue?: ModelFloatInput | null;
   reviewCount?: ModelIntInput | null;
   lowerTitle?: ModelStringInput | null;
+  lockedDate?: ModelStringInput | null;
+  lockedBy?: ModelStringInput | null;
   and?: Array<ModelProbateRecordFilterInput | null> | null;
   or?: Array<ModelProbateRecordFilterInput | null> | null;
   not?: ModelProbateRecordFilterInput | null;
@@ -599,6 +610,8 @@ export type CreateProbateRecordMutation = {
   totalValue: number;
   reviewCount: number;
   lowerTitle: string;
+  lockedDate?: string | null;
+  lockedBy?: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -655,6 +668,8 @@ export type UpdateProbateRecordMutation = {
   totalValue: number;
   reviewCount: number;
   lowerTitle: string;
+  lockedDate?: string | null;
+  lockedBy?: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -711,6 +726,8 @@ export type DeleteProbateRecordMutation = {
   totalValue: number;
   reviewCount: number;
   lowerTitle: string;
+  lockedDate?: string | null;
+  lockedBy?: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -1016,6 +1033,8 @@ export type GetProbateRecordQuery = {
   totalValue: number;
   reviewCount: number;
   lowerTitle: string;
+  lockedDate?: string | null;
+  lockedBy?: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -1074,6 +1093,8 @@ export type ListProbateRecordsQuery = {
     totalValue: number;
     reviewCount: number;
     lowerTitle: string;
+    lockedDate?: string | null;
+    lockedBy?: string | null;
     createdAt: string;
     updatedAt: string;
   } | null>;
@@ -1346,6 +1367,8 @@ export type OnCreateProbateRecordSubscription = {
   totalValue: number;
   reviewCount: number;
   lowerTitle: string;
+  lockedDate?: string | null;
+  lockedBy?: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -1402,6 +1425,8 @@ export type OnUpdateProbateRecordSubscription = {
   totalValue: number;
   reviewCount: number;
   lowerTitle: string;
+  lockedDate?: string | null;
+  lockedBy?: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -1458,6 +1483,8 @@ export type OnDeleteProbateRecordSubscription = {
   totalValue: number;
   reviewCount: number;
   lowerTitle: string;
+  lockedDate?: string | null;
+  lockedBy?: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -1772,6 +1799,8 @@ export class APIService {
           totalValue
           reviewCount
           lowerTitle
+          lockedDate
+          lockedBy
           createdAt
           updatedAt
         }
@@ -1844,6 +1873,8 @@ export class APIService {
           totalValue
           reviewCount
           lowerTitle
+          lockedDate
+          lockedBy
           createdAt
           updatedAt
         }
@@ -1916,6 +1947,8 @@ export class APIService {
           totalValue
           reviewCount
           lowerTitle
+          lockedDate
+          lockedBy
           createdAt
           updatedAt
         }
@@ -2432,6 +2465,8 @@ export class APIService {
           totalValue
           reviewCount
           lowerTitle
+          lockedDate
+          lockedBy
           createdAt
           updatedAt
         }
@@ -2506,6 +2541,8 @@ export class APIService {
             totalValue
             reviewCount
             lowerTitle
+            lockedDate
+            lockedBy
             createdAt
             updatedAt
           }
@@ -2964,6 +3001,8 @@ export class APIService {
           totalValue
           reviewCount
           lowerTitle
+          lockedDate
+          lockedBy
           createdAt
           updatedAt
         }
@@ -3030,6 +3069,8 @@ export class APIService {
           totalValue
           reviewCount
           lowerTitle
+          lockedDate
+          lockedBy
           createdAt
           updatedAt
         }
@@ -3096,6 +3137,8 @@ export class APIService {
           totalValue
           reviewCount
           lowerTitle
+          lockedDate
+          lockedBy
           createdAt
           updatedAt
         }
