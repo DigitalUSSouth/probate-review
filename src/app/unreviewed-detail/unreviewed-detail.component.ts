@@ -42,7 +42,12 @@ import { deleteLine, deleteWord } from 'src/graphql/mutations';
 import { MatButton } from '@angular/material/button';
 import { CookieService } from 'ngx-cookie-service';
 import { HelpDialogComponent } from '../help-dialog/help-dialog.component';
+
 import { CombineLineDialogComponent } from '../combine-line-dialog/combine-line-dialog.component';
+import { AmplifyUser } from '@aws-amplify/ui';
+import { AuthenticatorService } from '@aws-amplify/ui-angular';
+import awsExports from 'src/aws-exports';
+import { Amplify } from 'aws-amplify';
 
 interface SubcategoryOptionValue {
   value: string;
@@ -252,15 +257,22 @@ export class UnreviewedDetailComponent implements OnInit {
   updatedLineIds = new Set<string>();
   deletedLineIds = new Set<string>();
 
+  // User
+  user?: AmplifyUser;
+  lockedByOtherUser = true;
+
   // UI mode
 
   constructor(
+    public authenticator: AuthenticatorService,
     private route: ActivatedRoute,
     private probateRecordService: APIService,
     private renderer: Renderer2,
     public dialog: MatDialog,
     private cookieService: CookieService
-  ) {}
+  ) {
+    Amplify.configure(awsExports);
+   }
 
   ngOnInit(): void {}
 
@@ -417,6 +429,7 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   ngAfterViewInit(): void {
+    this.user = this.authenticator.user;
     const id = String(this.route.snapshot.paramMap.get('id'));
 
     let record$ = from(this.probateRecordService.GetProbateRecord(id));
@@ -454,6 +467,9 @@ export class UnreviewedDetailComponent implements OnInit {
       });
       // get our associated image
       this.getImage(id);
+
+      // check if we are allowed to update this item
+      this.lockedByOtherUser = this.user!.username != record.lockedBy;
     });
   }
 
@@ -1460,6 +1476,7 @@ export class UnreviewedDetailComponent implements OnInit {
         else {
            rect.y += (selectedLineBoundingBox.height + inputHeight * rowIndex);
         }
+        
         rect.height = inputHeight;
         console.log('input rect');
         console.log(rect);
@@ -1662,6 +1679,9 @@ export class UnreviewedDetailComponent implements OnInit {
     );
     if (lineItem) {
       lineItem!.quantity = Number.parseInt(inputElem.value);
+      if(isNaN(lineItem!.quantity)) {
+        lineItem!.quantity = 1;
+      }
       this.onUpdatedLineItem(lineItemId);
     }
   }
@@ -1674,6 +1694,9 @@ export class UnreviewedDetailComponent implements OnInit {
     );
     if (lineItem) {
       lineItem.value = Number.parseFloat(inputElem.value);
+      if(isNaN(lineItem.value)) {
+        lineItem.value =  0.0;
+      }
       this.onUpdatedLineItem(lineItemId);
     }
   }
@@ -2249,6 +2272,11 @@ export class UnreviewedDetailComponent implements OnInit {
       ) as UpdateLineItemInput[];
       console.log('updating ' + updateLineItems.length + ' lines');
       for (const updatedLineItemInput of updatedLineItemInputs) {
+        console.log('updatedLineItemInput');
+        console.log(updatedLineItemInput);
+        if(updatedLineItemInput.quantity == null) {
+          console.log('quantity is null');
+        }
         let response = await this.probateRecordService.UpdateLineItem(
           updatedLineItemInput
         );

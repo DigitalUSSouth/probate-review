@@ -67,7 +67,7 @@
             mat-raised-button
             class="form-button"
             color="primary"
-            [disabled]="!isDirty"
+            [disabled]="!isDirty || lockedByOtherUser"
             (click)="save()"
           >
             Save

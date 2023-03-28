@@ -35,7 +35,8 @@ import {
 import { HelpDialogComponent } from './help-dialog/help-dialog.component';
 import { CookieService } from 'ngx-cookie-service';
 import { CombineLineDialogComponent } from './combine-line-dialog/combine-line-dialog.component';
-import {MatListModule} from '@angular/material/list';
+import { MatListModule } from '@angular/material/list';
+import { MatSortModule } from '@angular/material/sort';
 
 @NgModule({
   declarations: [
@@ -73,6 +74,7 @@ import {MatListModule} from '@angular/material/list';
     DragDropModule,
     MatCheckboxModule,
     MatDialogModule,
+    MatSortModule,
   ],
   providers: [
     { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: false } },

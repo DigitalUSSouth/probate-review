@@ -49,6 +49,8 @@ mutation CreateProbateRecord(
     totalValue
     reviewCount
     lowerTitle
+    lockedDate
+    lockedBy
     createdAt
     updatedAt
   }
@@ -103,6 +105,8 @@ mutation UpdateProbateRecord(
     totalValue
     reviewCount
     lowerTitle
+    lockedDate
+    lockedBy
     createdAt
     updatedAt
   }
@@ -157,6 +161,8 @@ mutation DeleteProbateRecord(
     totalValue
     reviewCount
     lowerTitle
+    lockedDate
+    lockedBy
     createdAt
     updatedAt
   }

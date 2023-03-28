@@ -9,7 +9,9 @@ type ProbateRecord @model @auth(rules: [{allow: private}]) {
   words: [Word]!
   totalValue: Float!
   reviewCount: Int!
-  lowerTitle: String!  
+  lowerTitle: String!
+  lockedDate: AWSDateTime
+  lockedBy: String  
 }
 
 type Filing {
@@ -106,5 +108,7 @@ enum IssueStatus {
 enum IssueType {
   bug
   feature_request
+  change
 }
+
  

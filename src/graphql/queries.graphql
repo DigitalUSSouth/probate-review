@@ -46,6 +46,8 @@ query GetProbateRecord($id: ID!) {
     totalValue
     reviewCount
     lowerTitle
+    lockedDate
+    lockedBy
     createdAt
     updatedAt
   }
@@ -110,6 +112,8 @@ query ListProbateRecords(
       totalValue
       reviewCount
       lowerTitle
+      lockedDate
+      lockedBy
       createdAt
       updatedAt
     }

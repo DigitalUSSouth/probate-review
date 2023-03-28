@@ -2,7 +2,6 @@ import { Component, ChangeDetectorRef} from '@angular/core';
 import { Router } from '@angular/router';
 // import { onAuthUIStateChange, CognitoUserInterface, AuthState } from '@aws-amplify/ui'; // -components
 import { onAuthUIStateChange, CognitoUserInterface, AuthState } from '@aws-amplify/ui-components';
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
