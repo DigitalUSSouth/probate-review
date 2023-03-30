@@ -37,6 +37,8 @@ import { CookieService } from 'ngx-cookie-service';
 import { CombineLineDialogComponent } from './combine-line-dialog/combine-line-dialog.component';
 import { MatListModule } from '@angular/material/list';
 import { MatSortModule } from '@angular/material/sort';
+import { StorageModule } from './store/storage.module';
+import { ProbateRecordsTableComponent } from './probate-records-table/probate-records-table.component';
 
 @NgModule({
   declarations: [
@@ -53,6 +55,7 @@ import { MatSortModule } from '@angular/material/sort';
     ConfirmDeleteDialogComponent,
     HelpDialogComponent,
     CombineLineDialogComponent,
+    ProbateRecordsTableComponent,
   ],
   imports: [
     BrowserModule,
@@ -75,6 +78,7 @@ import { MatSortModule } from '@angular/material/sort';
     MatCheckboxModule,
     MatDialogModule,
     MatSortModule,
+    StorageModule,
   ],
   providers: [
     { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: false } },

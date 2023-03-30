@@ -8,6 +8,7 @@ import { SearchComponent } from './search/search.component';
 import { UnreviewedComponent } from './unreviewed/unreviewed.component';
 import { UploadComponent } from './upload/upload.component';
 import { UnreviewedDetailComponent } from './unreviewed-detail/unreviewed-detail.component';
+import { ProbateRecordsTableComponent } from './probate-records-table/probate-records-table.component';
 
 const routes: Routes = [
   {path: 'records', component: RecordsComponent},
@@ -16,7 +17,8 @@ const routes: Routes = [
   {path: 'unreviewed', component: UnreviewedComponent, canActivate: [AuthGuard ]},
   {path: 'upload', component: UploadComponent, canActivate: [AuthGuard]},
   {path: '', component: SearchComponent},
-  {path: 'search/:q', component: SearchResultsComponent}
+  {path: 'search/:q', component: SearchResultsComponent},
+  {path: 'table', component: ProbateRecordsTableComponent}
 ];
 
 @NgModule({

@@ -3,6 +3,7 @@ import { API, Auth } from 'aws-amplify';
 import { ProbateRecord } from './probate-record';
 import { Observable, of, from } from 'rxjs';
 import axios, {AxiosError} from 'axios';
+import { ProbateRecordParams } from './models/probate-record-params';
 
 
 const apiName = 'probatemetadataapi';
@@ -63,28 +64,8 @@ export class RecordService {
     
   }
 
-  async getProbateRecords(): Promise<ProbateRecord[]> {
-    console.log('calling API');
-    const data = await API.get(apiName, path, myInit);
-
-    console.log(data);
-    console.log('data received');
-    return [
-      {
-        id: '1234',
-        lines: [
-          {
-            boundingBox: {
-              height: 10,
-              width: 10,
-              left: 0,
-              top: 100
-            },
-            text: 'line 1',            
-          }
-        ]
-      }
-    ];
-  }
+  // async getProbateRecords(params: ProbateRecordParams): Observable<ListProbateRecordsQuery> {
+   
+  // }
 
 }

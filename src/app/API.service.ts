@@ -2486,6 +2486,7 @@ export class APIService {
     nextToken?: string,
     sortDirection?: ModelSortDirection
   ): Promise<ListProbateRecordsQuery> {
+    console.log('list probate records called');
     const statement = `query ListProbateRecords($id: ID, $filter: ModelProbateRecordFilterInput, $limit: Int, $nextToken: String, $sortDirection: ModelSortDirection) {
         listProbateRecords(id: $id, filter: $filter, limit: $limit, nextToken: $nextToken, sortDirection: $sortDirection) {
           __typename
