@@ -443,6 +443,9 @@ export class UnreviewedDetailComponent implements OnInit {
       )
     );
 
+    // get our associated image
+    this.getImage(id);
+    
     record$.subscribe((record) => {
       this.record = record as ProbateRecord;
       for (const word of this.record.words) {
@@ -465,11 +468,10 @@ export class UnreviewedDetailComponent implements OnInit {
           this.sortLineItems();
         }
       });
-      // get our associated image
-      this.getImage(id);
+      
 
       // check if we are allowed to update this item
-      this.lockedByOtherUser = this.user!.username != record.lockedBy;
+      this.lockedByOtherUser = (record.lockedBy != null) && this.user!.username != record.lockedBy;
     });
   }
 
