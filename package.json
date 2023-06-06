@@ -25,6 +25,8 @@
     "@aws-amplify/ui-angular": "^3.1.0",
     "@aws-amplify/ui-components": "^1.9.40",
     "@aws-sdk/client-s3": "^3.215.0",
+    "@ngrx/effects": "^16.0.1",
+    "@ngrx/store": "^16.0.1",
     "@types/openseadragon": "^3.0.3",
     "angular-split": "^14.1.0",
     "aws-amplify": "^5.0.3",
