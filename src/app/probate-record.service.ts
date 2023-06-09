@@ -8,16 +8,31 @@ import { APIService, ListProbateRecordsQuery, ModelProbateRecordFilterInput, Pro
 export class ProbateRecordService {
 
   constructor(private recordService: APIService ) { }  
+  private async getProbateRecordsByCount(filter: ModelProbateRecordFilterInput | undefined, count: number, nextToken?: string) {
+    let result = await this.recordService.ListProbateRecords(undefined, filter, count, nextToken);
+    let newNextToken = result.nextToken;
+    let records = result.items!.map((r) => r as ProbateRecord);
+    while(records.length < count && newNextToken) {
+      result = await this.recordService.ListProbateRecords(undefined, filter, count - records.length, nextToken);
+      records = records.concat(result.items.map((r) => r as ProbateRecord));
+      newNextToken = result.nextToken;
+    }
+    return {records, nextToken: newNextToken};
+  }
+
   getProbateRecords(
     filter: ModelProbateRecordFilterInput | undefined,
     pageSize: number,
     nextToken?: string
   ): Observable<{ probateRecords: ProbateRecord[]; nextToken: string | null }> {
+    console.log('getting probate records');
     return from(
-      this.recordService.ListProbateRecords(undefined, filter, pageSize, nextToken)
+      this.getProbateRecordsByCount(filter, pageSize, nextToken)
     ).pipe(
-      map((result: ListProbateRecordsQuery) => {
-          let records = result!.items!.map((x) => x as ProbateRecord);
+      map((result: {records: ProbateRecord[], nextToken: string | null | undefined}) => {
+          let records = result.records;
+          console.log('records returned');
+          console.log(records);
           return {
             probateRecords: records, 
             nextToken: result.nextToken || null
