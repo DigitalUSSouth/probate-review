@@ -17,6 +17,12 @@ export const loadProbateRecordsSuccess = createAction(
   '[ProbateRecord] Load ProbateRecords Success',
   props<{ probateRecords: ProbateRecord[]; nextToken: string | null }>()
 );
+
+export const loadProbateRecordsSuccessWithHistoryState = createAction(
+  '[ProbateRecord] Load Probate Records Success with History State',
+  props<{ probateRecords: ProbateRecord[] }>()
+);
+
 export const loadProbateRecordsFailure = createAction(
   '[ProbateRecord] Load ProbateRecords Failure',
   props<{ error: any }>()

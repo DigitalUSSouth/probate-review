@@ -42,16 +42,16 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
-  
-  <button mat-button (click)="loadMoreRecords(nextToken!)">Load More</button>
-
-  <!-- <mat-form-field>
-    <mat-label>Page Size</mat-label>
-    <select matNativeControl [(ngModel)]="pageSize" (change)="changePageSize(pageSize)">
-      <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
-    </select>
-  </mat-form-field> -->
+    
 </ng-container>
+<button
+            mat-raised-button
+            class="form-button"
+            color="primary"            
+            (click)="loadMoreRecords(nextToken!)"
+          >
+            Load More
+          </button>
 <mat-paginator (page)="handlePageEvent($event)" [length]="dataSource?.data?.length" [pageSize]="pageSize"
   [pageSizeOptions]="[1, 5, 10, 25, 100]" showFirstLastButtons aria-label="Select page">
 

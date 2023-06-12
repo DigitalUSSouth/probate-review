@@ -69,7 +69,7 @@ export class ProbateRecordListComponent implements OnInit {
     console.log('page size is ' + pageSizeText);
     this.pageSize = parseInt(this.cookieService.get(UNREVIEWED_PAGE_SIZE)) ?? 10; 
     // Dispatch the initial action to load the probate records
-    this.store.dispatch(loadProbateRecords({ pageSize: this.pageSize, filter: { reviewCount: { lt: 2 } } }));
+    
     
     
     // Subscribe to the probate records, page size, and next token
@@ -94,9 +94,16 @@ export class ProbateRecordListComponent implements OnInit {
       }),
       this.loaded$.subscribe(loaded => {
         this.loaded = loaded;
+        if (!loaded) {
+          // Records not loaded, dispatch the load action
+          this.store.dispatch(loadProbateRecords({ pageSize: this.pageSize, filter: { reviewCount: { lt: 2 } } }));
+        }
+        else {
+          console.log('records loaded');
+        }
       })
     );
-  }
+  }  
 
   ngAfterViewInit() {
     this.user = this.authenticator.user;
