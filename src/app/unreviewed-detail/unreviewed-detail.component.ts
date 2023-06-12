@@ -9,7 +9,7 @@ import {
   ViewChildren,
   QueryList,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import OpenSeadragon from 'openseadragon';
 import {
   ProbateRecord,
@@ -24,7 +24,7 @@ import {
   ModelSortDirection,
 } from '../API.service';
 import data from '../categories.json';
-import { from } from 'rxjs';
+import { Subject, from, fromEvent, takeUntil } from 'rxjs';
 import { ContextMenuModel } from '../interfaces/context-menu-model';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -48,6 +48,7 @@ import { AmplifyUser } from '@aws-amplify/ui';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
 import awsExports from 'src/aws-exports';
 import { Amplify } from 'aws-amplify';
+import { LocationStrategy } from '@angular/common';
 
 interface SubcategoryOptionValue {
   value: string;
@@ -263,18 +264,48 @@ export class UnreviewedDetailComponent implements OnInit {
 
   // UI mode
 
+  private unsubscriber : Subject<void> = new Subject<void>();
+
   constructor(
     public authenticator: AuthenticatorService,
     private route: ActivatedRoute,
     private probateRecordService: APIService,
     private renderer: Renderer2,
     public dialog: MatDialog,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private router: Router,
+    private location: LocationStrategy
   ) {
     Amplify.configure(awsExports);
-   }
+    // history.pushState(null, '', window.location.href);
+    // // check if back or forward button is pressed.
+    // this.location.onPopState(() => {
+    //   history.pushState(null, '', window.location.href);
+    //   console.log('navigating to r');
+    //   const delayInMilliseconds = 1000; //1 second
 
-  ngOnInit(): void {}
+    //   setTimeout(function () {
+    //     //your code to be executed after 1 second
+    //   }, delayInMilliseconds);
+    //   router.navigate(['../r'], { relativeTo: this.route });
+    // });
+  }
+
+  ngOnInit(): void {
+    history.pushState(null, '');
+
+    fromEvent(window, 'popstate')
+      .pipe(takeUntil(this.unsubscriber))
+      .subscribe((_) => {
+        history.pushState(null, '');
+        alert(`You can't make changes or go back at this time.`);
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscriber.next();
+    this.unsubscriber.complete();
+  }
 
   onReviewedChange(event: Event) {
     const commandType = this.isReviewed
@@ -445,7 +476,7 @@ export class UnreviewedDetailComponent implements OnInit {
 
     // get our associated image
     this.getImage(id);
-    
+
     record$.subscribe((record) => {
       this.record = record as ProbateRecord;
       for (const word of this.record.words) {
@@ -468,10 +499,10 @@ export class UnreviewedDetailComponent implements OnInit {
           this.sortLineItems();
         }
       });
-      
 
       // check if we are allowed to update this item
-      this.lockedByOtherUser = (record.lockedBy != null) && this.user!.username != record.lockedBy;
+      this.lockedByOtherUser =
+        record.lockedBy != null && this.user!.username != record.lockedBy;
     });
   }
 
@@ -1427,8 +1458,10 @@ export class UnreviewedDetailComponent implements OnInit {
     pixel.y -= InputBoxHeight; // give input box height of 20 pixels
     const osdInputPoint = this.osd!.viewport.pointFromPixel(pixel);
     let inputHeight = osdAnyWordRect.y - osdInputPoint.y;
-    const selectedLineBoundingBox = this.osd!.getOverlayById(`boundingBox-${this.selectedLines[0].id}`).getBounds(this.osd!.viewport);
-    const rows = this.getRowsOfText(words);        
+    const selectedLineBoundingBox = this.osd!.getOverlayById(
+      `boundingBox-${this.selectedLines[0].id}`
+    ).getBounds(this.osd!.viewport);
+    const rows = this.getRowsOfText(words);
     let top: number;
 
     for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
@@ -1474,11 +1507,10 @@ export class UnreviewedDetailComponent implements OnInit {
         rect.y = selectedLineBoundingBox.y;
         if (isInputAbove) {
           rect.y -= inputHeight * (rows.length - rowIndex);
+        } else {
+          rect.y += selectedLineBoundingBox.height + inputHeight * rowIndex;
         }
-        else {
-           rect.y += (selectedLineBoundingBox.height + inputHeight * rowIndex);
-        }
-        
+
         rect.height = inputHeight;
         console.log('input rect');
         console.log(rect);
@@ -1612,11 +1644,10 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   resetView() {
-    if(!this.boundsBeforeEdit) {
+    if (!this.boundsBeforeEdit) {
       this.osd!.viewport.goHome();
       this.boundsBeforeEdit = this.osd!.viewport.getBounds();
-    }
-    else {
+    } else {
       this.osd!.viewport.fitBounds(this.boundsBeforeEdit);
     }
     this.osd!.clearOverlays();
@@ -1681,7 +1712,7 @@ export class UnreviewedDetailComponent implements OnInit {
     );
     if (lineItem) {
       lineItem!.quantity = Number.parseInt(inputElem.value);
-      if(isNaN(lineItem!.quantity)) {
+      if (isNaN(lineItem!.quantity)) {
         lineItem!.quantity = 1;
       }
       this.onUpdatedLineItem(lineItemId);
@@ -1696,8 +1727,8 @@ export class UnreviewedDetailComponent implements OnInit {
     );
     if (lineItem) {
       lineItem.value = Number.parseFloat(inputElem.value);
-      if(isNaN(lineItem.value)) {
-        lineItem.value =  0.0;
+      if (isNaN(lineItem.value)) {
+        lineItem.value = 0.0;
       }
       this.onUpdatedLineItem(lineItemId);
     }
@@ -2113,11 +2144,11 @@ export class UnreviewedDetailComponent implements OnInit {
     const dialogRef = this.dialog.open(CombineLineDialogComponent, {
       data: this.selectedLines,
       height: '90%',
-      panelClass: 'custom-dialog'
+      panelClass: 'custom-dialog',
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if(result.length === 0) {
+      if (result.length === 0) {
         return;
       }
       // get new bounding box
@@ -2151,7 +2182,7 @@ export class UnreviewedDetailComponent implements OnInit {
       console.log('words');
       console.log(uniqueWords);
 
-      // add all word ids to first line item      
+      // add all word ids to first line item
       combinedLineItem.wordIds = Array.from(uniqueWords);
 
       // update text
@@ -2166,7 +2197,9 @@ export class UnreviewedDetailComponent implements OnInit {
       this.updatedLineIds.add(combinedLineItem.id);
 
       // remove old lines
-      const linesToRemove = this.selectedLines.filter(l => l.id != combinedLineItem.id);
+      const linesToRemove = this.selectedLines.filter(
+        (l) => l.id != combinedLineItem.id
+      );
       const removedLineIds = linesToRemove.map((l) => l.id);
 
       // remove other line items
@@ -2276,7 +2309,7 @@ export class UnreviewedDetailComponent implements OnInit {
       for (const updatedLineItemInput of updatedLineItemInputs) {
         console.log('updatedLineItemInput');
         console.log(updatedLineItemInput);
-        if(updatedLineItemInput.quantity == null) {
+        if (updatedLineItemInput.quantity == null) {
           console.log('quantity is null');
         }
         let response = await this.probateRecordService.UpdateLineItem(

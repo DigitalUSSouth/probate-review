@@ -3,6 +3,7 @@ query GetProbateRecord($id: ID!) {
   getProbateRecord(id: $id) {
     id
     title
+    description
     deceasedId
     filingId
     appraiser
@@ -46,6 +47,7 @@ query GetProbateRecord($id: ID!) {
     totalValue
     reviewCount
     lowerTitle
+    lowerDescription
     lockedDate
     lockedBy
     createdAt
@@ -69,6 +71,7 @@ query ListProbateRecords(
     items {
       id
       title
+      description
       deceasedId
       filingId
       appraiser
@@ -112,6 +115,7 @@ query ListProbateRecords(
       totalValue
       reviewCount
       lowerTitle
+      lowerDescription
       lockedDate
       lockedBy
       createdAt

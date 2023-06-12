@@ -1,59 +1,61 @@
 export type AmplifyDependentResourcesAttributes = {
-    "function": {
-        "getProbateMetadata": {
-            "Name": "string",
-            "Arn": "string",
-            "Region": "string",
-            "LambdaExecutionRole": "string"
-        },
-        "probatereviewawsclient": {
-            "Arn": "string"
-        },
-        "probateAddDynamodbRecord": {
-            "Name": "string",
-            "Arn": "string",
-            "Region": "string",
-            "LambdaExecutionRole": "string"
-        }
+  "api": {
+    "probatemetadataapi": {
+      "ApiId": "string",
+      "ApiName": "string",
+      "RootUrl": "string"
     },
-    "api": {
-        "probatemetadataapi": {
-            "RootUrl": "string",
-            "ApiName": "string",
-            "ApiId": "string"
-        },
-        "probatereview": {
-            "GraphQLAPIIdOutput": "string",
-            "GraphQLAPIEndpointOutput": "string"
-        }
-    },
-    "hosting": {
-        "S3AndCloudFront": {
-            "Region": "string",
-            "HostingBucketName": "string",
-            "WebsiteURL": "string",
-            "S3BucketSecureURL": "string",
-            "CloudFrontDistributionID": "string",
-            "CloudFrontDomainName": "string",
-            "CloudFrontSecureURL": "string",
-            "CloudFrontOriginAccessIdentity": "string"
-        }
-    },
-    "auth": {
-        "probatereviewa3991353": {
-            "IdentityPoolId": "string",
-            "IdentityPoolName": "string",
-            "UserPoolId": "string",
-            "UserPoolArn": "string",
-            "UserPoolName": "string",
-            "AppClientIDWeb": "string",
-            "AppClientID": "string"
-        }
-    },
-    "storage": {
-        "uploads": {
-            "BucketName": "string",
-            "Region": "string"
-        }
+    "probatereview": {
+      "GraphQLAPIEndpointOutput": "string",
+      "GraphQLAPIIdOutput": "string"
     }
+  },
+  "auth": {
+    "probatereviewa3991353": {
+      "AppClientID": "string",
+      "AppClientIDWeb": "string",
+      "IdentityPoolId": "string",
+      "IdentityPoolName": "string",
+      "UserPoolArn": "string",
+      "UserPoolId": "string",
+      "UserPoolName": "string"
+    }
+  },
+  "function": {
+    "getProbateMetadata": {
+      "Arn": "string",
+      "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
+      "Name": "string",
+      "Region": "string"
+    },
+    "probateAddDynamodbRecord": {
+      "Arn": "string",
+      "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
+      "Name": "string",
+      "Region": "string"
+    },
+    "probatereviewawsclient": {
+      "Arn": "string"
+    }
+  },
+  "hosting": {
+    "S3AndCloudFront": {
+      "CloudFrontDistributionID": "string",
+      "CloudFrontDomainName": "string",
+      "CloudFrontOriginAccessIdentity": "string",
+      "CloudFrontSecureURL": "string",
+      "HostingBucketName": "string",
+      "Region": "string",
+      "S3BucketSecureURL": "string",
+      "WebsiteURL": "string"
+    }
+  },
+  "storage": {
+    "uploads": {
+      "BucketName": "string",
+      "Region": "string"
+    }
+  }
 }

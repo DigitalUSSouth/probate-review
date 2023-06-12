@@ -1,111 +1,161 @@
 {
-  "function": {
-    "getProbateMetadata": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
-      "dependsOn": [
-        {
-          "category": "function",
-          "resourceName": "probatereviewawsclient",
-          "attributes": [
-            "Arn"
-          ]
-        }
-      ]
-    },
-    "probatereviewawsclient": {
-      "providerPlugin": "awscloudformation",
-      "service": "LambdaLayer",
-      "build": true
-    },
-    "probateAddDynamodbRecord": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    }
-  },
   "api": {
     "probatemetadataapi": {
-      "service": "API Gateway",
-      "providerPlugin": "awscloudformation",
       "dependsOn": [
         {
-          "category": "function",
-          "resourceName": "getProbateMetadata",
           "attributes": [
             "Name",
             "Arn"
-          ]
+          ],
+          "category": "function",
+          "resourceName": "getProbateMetadata"
         }
-      ]
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
     },
     "probatereview": {
-      "service": "AppSync",
-      "providerPlugin": "awscloudformation",
       "dependsOn": [
         {
-          "category": "auth",
-          "resourceName": "probatereviewa3991353",
           "attributes": [
             "UserPoolId"
-          ]
+          ],
+          "category": "auth",
+          "resourceName": "probatereviewa3991353"
         }
       ],
       "output": {
         "authConfig": {
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "AWS_IAM"
+            }
+          ],
           "defaultAuthentication": {
             "authenticationType": "AMAZON_COGNITO_USER_POOLS",
             "userPoolConfig": {
               "userPoolId": "authprobatereviewa3991353"
             }
-          },
-          "additionalAuthenticationProviders": [
-            {
-              "authenticationType": "AWS_IAM"
-            }
-          ]
+          }
         }
-      }
-    }
-  },
-  "hosting": {
-    "S3AndCloudFront": {
-      "service": "S3AndCloudFront",
-      "providerPlugin": "awscloudformation"
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "AppSync"
     }
   },
   "auth": {
     "probatereviewa3991353": {
-      "service": "Cognito",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": [],
       "customAuth": false,
+      "dependsOn": [],
       "frontendAuthConfig": {
-        "socialProviders": [],
-        "usernameAttributes": [],
-        "signupAttributes": [
-          "EMAIL"
-        ],
-        "passwordProtectionSettings": {
-          "passwordPolicyMinLength": 8,
-          "passwordPolicyCharacters": []
-        },
         "mfaConfiguration": "OFF",
         "mfaTypes": [
           "SMS"
         ],
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": [],
+          "passwordPolicyMinLength": 8
+        },
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [],
         "verificationMechanisms": [
           "EMAIL"
         ]
-      }
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito"
+    }
+  },
+  "function": {
+    "getProbateMetadata": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "probatereviewawsclient"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "probateAddDynamodbRecord": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "probatereviewawsclient": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "LambdaLayer"
+    }
+  },
+  "hosting": {
+    "S3AndCloudFront": {
+      "providerPlugin": "awscloudformation",
+      "service": "S3AndCloudFront"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_getProbateMetadata_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "getProbateMetadata"
+        }
+      ]
+    },
+    "AMPLIFY_function_getProbateMetadata_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "getProbateMetadata"
+        }
+      ]
+    },
+    "AMPLIFY_function_probateAddDynamodbRecord_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "probateAddDynamodbRecord"
+        }
+      ]
+    },
+    "AMPLIFY_function_probateAddDynamodbRecord_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "probateAddDynamodbRecord"
+        }
+      ]
+    },
+    "AMPLIFY_function_probatereviewawsclient_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "probatereviewawsclient"
+        }
+      ]
+    },
+    "AMPLIFY_function_probatereviewawsclient_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "probatereviewawsclient"
+        }
+      ]
     }
   },
   "storage": {
     "uploads": {
-      "service": "S3",
+      "dependsOn": [],
       "providerPlugin": "awscloudformation",
-      "dependsOn": []
+      "service": "S3"
     }
   }
 }

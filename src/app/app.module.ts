@@ -37,6 +37,13 @@ import { CookieService } from 'ngx-cookie-service';
 import { CombineLineDialogComponent } from './combine-line-dialog/combine-line-dialog.component';
 import { MatListModule } from '@angular/material/list';
 import { MatSortModule } from '@angular/material/sort';
+import { ProbateRecordListComponent } from './probate-record-list/probate-record-list.component';
+import { StoreModule } from '@ngrx/store';
+import { appReducer } from 'src/state/app.reducer';
+import { probateRecordReducer } from 'src/state/probate-record.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { ProbateRecordEffects } from '../state/probate-record.effects';
+import { ReviewedListComponent } from './reviewed-list/reviewed-list.component';
 
 @NgModule({
   declarations: [
@@ -53,6 +60,8 @@ import { MatSortModule } from '@angular/material/sort';
     ConfirmDeleteDialogComponent,
     HelpDialogComponent,
     CombineLineDialogComponent,
+    ProbateRecordListComponent,
+    ReviewedListComponent,
   ],
   imports: [
     BrowserModule,
@@ -69,12 +78,18 @@ import { MatSortModule } from '@angular/material/sort';
     MatProgressSpinnerModule,
     MatMenuModule,
     MatToolbarModule,
+    MatPaginatorModule,
     FormsModule,
     AngularSplitModule,
     DragDropModule,
     MatCheckboxModule,
     MatDialogModule,
     MatSortModule,
+    StoreModule.forRoot({
+      root: appReducer,
+      probateRecords: probateRecordReducer,
+    }),
+    EffectsModule.forRoot([ProbateRecordEffects]),
   ],
   providers: [
     { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: false } },
