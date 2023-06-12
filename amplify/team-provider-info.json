@@ -67,6 +67,16 @@
       },
       "auth": {
         "probatereviewa3991353": {}
+      },
+      "api": {
+        "probatemetadataapi": {},
+        "probatereview": {}
+      },
+      "hosting": {
+        "S3AndCloudFront": {}
+      },
+      "storage": {
+        "uploads": {}
       }
     }
   }

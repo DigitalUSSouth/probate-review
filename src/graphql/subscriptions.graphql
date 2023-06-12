@@ -1,8 +1,11 @@
 # this is an auto generated file. This will be overwritten
-subscription OnCreateProbateRecord {
-  onCreateProbateRecord {
+subscription OnCreateProbateRecord(
+  $filter: ModelSubscriptionProbateRecordFilterInput
+) {
+  onCreateProbateRecord(filter: $filter) {
     id
     title
+    description
     deceasedId
     filingId
     appraiser
@@ -46,16 +49,20 @@ subscription OnCreateProbateRecord {
     totalValue
     reviewCount
     lowerTitle
+    lowerDescription
     lockedDate
     lockedBy
     createdAt
     updatedAt
   }
 }
-subscription OnUpdateProbateRecord {
-  onUpdateProbateRecord {
+subscription OnUpdateProbateRecord(
+  $filter: ModelSubscriptionProbateRecordFilterInput
+) {
+  onUpdateProbateRecord(filter: $filter) {
     id
     title
+    description
     deceasedId
     filingId
     appraiser
@@ -99,16 +106,20 @@ subscription OnUpdateProbateRecord {
     totalValue
     reviewCount
     lowerTitle
+    lowerDescription
     lockedDate
     lockedBy
     createdAt
     updatedAt
   }
 }
-subscription OnDeleteProbateRecord {
-  onDeleteProbateRecord {
+subscription OnDeleteProbateRecord(
+  $filter: ModelSubscriptionProbateRecordFilterInput
+) {
+  onDeleteProbateRecord(filter: $filter) {
     id
     title
+    description
     deceasedId
     filingId
     appraiser
@@ -152,14 +163,15 @@ subscription OnDeleteProbateRecord {
     totalValue
     reviewCount
     lowerTitle
+    lowerDescription
     lockedDate
     lockedBy
     createdAt
     updatedAt
   }
 }
-subscription OnCreateLineItem {
-  onCreateLineItem {
+subscription OnCreateLineItem($filter: ModelSubscriptionLineItemFilterInput) {
+  onCreateLineItem(filter: $filter) {
     id
     probateId
     wordIds
@@ -183,8 +195,8 @@ subscription OnCreateLineItem {
     updatedAt
   }
 }
-subscription OnUpdateLineItem {
-  onUpdateLineItem {
+subscription OnUpdateLineItem($filter: ModelSubscriptionLineItemFilterInput) {
+  onUpdateLineItem(filter: $filter) {
     id
     probateId
     wordIds
@@ -208,8 +220,8 @@ subscription OnUpdateLineItem {
     updatedAt
   }
 }
-subscription OnDeleteLineItem {
-  onDeleteLineItem {
+subscription OnDeleteLineItem($filter: ModelSubscriptionLineItemFilterInput) {
+  onDeleteLineItem(filter: $filter) {
     id
     probateId
     wordIds
@@ -233,8 +245,8 @@ subscription OnDeleteLineItem {
     updatedAt
   }
 }
-subscription OnCreateDocument {
-  onCreateDocument {
+subscription OnCreateDocument($filter: ModelSubscriptionDocumentFilterInput) {
+  onCreateDocument(filter: $filter) {
     id
     lines {
       id
@@ -263,8 +275,8 @@ subscription OnCreateDocument {
     updatedAt
   }
 }
-subscription OnUpdateDocument {
-  onUpdateDocument {
+subscription OnUpdateDocument($filter: ModelSubscriptionDocumentFilterInput) {
+  onUpdateDocument(filter: $filter) {
     id
     lines {
       id
@@ -293,8 +305,8 @@ subscription OnUpdateDocument {
     updatedAt
   }
 }
-subscription OnDeleteDocument {
-  onDeleteDocument {
+subscription OnDeleteDocument($filter: ModelSubscriptionDocumentFilterInput) {
+  onDeleteDocument(filter: $filter) {
     id
     lines {
       id
@@ -323,8 +335,10 @@ subscription OnDeleteDocument {
     updatedAt
   }
 }
-subscription OnCreateLineItemReviewerNote {
-  onCreateLineItemReviewerNote {
+subscription OnCreateLineItemReviewerNote(
+  $filter: ModelSubscriptionLineItemReviewerNoteFilterInput
+) {
+  onCreateLineItemReviewerNote(filter: $filter) {
     id
     lineItemId
     title
@@ -334,8 +348,10 @@ subscription OnCreateLineItemReviewerNote {
     updatedAt
   }
 }
-subscription OnUpdateLineItemReviewerNote {
-  onUpdateLineItemReviewerNote {
+subscription OnUpdateLineItemReviewerNote(
+  $filter: ModelSubscriptionLineItemReviewerNoteFilterInput
+) {
+  onUpdateLineItemReviewerNote(filter: $filter) {
     id
     lineItemId
     title
@@ -345,8 +361,10 @@ subscription OnUpdateLineItemReviewerNote {
     updatedAt
   }
 }
-subscription OnDeleteLineItemReviewerNote {
-  onDeleteLineItemReviewerNote {
+subscription OnDeleteLineItemReviewerNote(
+  $filter: ModelSubscriptionLineItemReviewerNoteFilterInput
+) {
+  onDeleteLineItemReviewerNote(filter: $filter) {
     id
     lineItemId
     title
@@ -356,8 +374,8 @@ subscription OnDeleteLineItemReviewerNote {
     updatedAt
   }
 }
-subscription OnCreateIssue {
-  onCreateIssue {
+subscription OnCreateIssue($filter: ModelSubscriptionIssueFilterInput) {
+  onCreateIssue(filter: $filter) {
     id
     title
     description
@@ -368,8 +386,8 @@ subscription OnCreateIssue {
     updatedAt
   }
 }
-subscription OnUpdateIssue {
-  onUpdateIssue {
+subscription OnUpdateIssue($filter: ModelSubscriptionIssueFilterInput) {
+  onUpdateIssue(filter: $filter) {
     id
     title
     description
@@ -380,8 +398,8 @@ subscription OnUpdateIssue {
     updatedAt
   }
 }
-subscription OnDeleteIssue {
-  onDeleteIssue {
+subscription OnDeleteIssue($filter: ModelSubscriptionIssueFilterInput) {
+  onDeleteIssue(filter: $filter) {
     id
     title
     description

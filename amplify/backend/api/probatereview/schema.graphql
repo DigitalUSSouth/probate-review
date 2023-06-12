@@ -1,6 +1,7 @@
 type ProbateRecord @model @auth(rules: [{allow: private}]) {
   id: ID! @primaryKey
   title: String!
+  description: String
   deceasedId: ID!
   filingId: ID!
   appraiser: [String]!
@@ -9,7 +10,10 @@ type ProbateRecord @model @auth(rules: [{allow: private}]) {
   words: [Word]!
   totalValue: Float!
   reviewCount: Int!
-  lowerTitle: String!  
+  lowerTitle: String!
+  lowerDescription: String 
+  lockedDate: AWSDateTime
+  lockedBy: String 
 }
 
 type Filing {

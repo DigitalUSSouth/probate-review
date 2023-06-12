@@ -43,6 +43,7 @@ import { appReducer } from 'src/state/app.reducer';
 import { probateRecordReducer } from 'src/state/probate-record.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { ProbateRecordEffects } from '../state/probate-record.effects';
+import { ReviewedListComponent } from './reviewed-list/reviewed-list.component';
 
 @NgModule({
   declarations: [
@@ -60,6 +61,7 @@ import { ProbateRecordEffects } from '../state/probate-record.effects';
     HelpDialogComponent,
     CombineLineDialogComponent,
     ProbateRecordListComponent,
+    ReviewedListComponent,
   ],
   imports: [
     BrowserModule,

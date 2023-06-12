@@ -28,6 +28,8 @@ export const loadProbateRecordsFailure = createAction(
   props<{ error: any }>()
 );
 
+export const clearProbateRecords = createAction('[ProbateRecord] Clear Returned Records');
+
 export const updateProbateRecord = createAction(
   '[Probate Record] Update Probate Record',
   props<{ probateRecord: ProbateRecord }>()

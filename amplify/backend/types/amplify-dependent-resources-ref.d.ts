@@ -25,12 +25,14 @@ export type AmplifyDependentResourcesAttributes = {
     "getProbateMetadata": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
       "Name": "string",
       "Region": "string"
     },
     "probateAddDynamodbRecord": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
       "Name": "string",
       "Region": "string"
     },

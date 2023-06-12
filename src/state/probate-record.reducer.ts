@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { loadProbateRecords, loadProbateRecordsSuccess, loadProbateRecordsFailure, updateProbateRecord } from './probate-record.actions';
+import { loadProbateRecords, loadProbateRecordsSuccess, loadProbateRecordsFailure, updateProbateRecord, clearProbateRecords } from './probate-record.actions';
 import { ModelProbateRecordFilterInput, ProbateRecord } from '../app/API.service';
 
 export interface ProbateRecordState {
@@ -51,5 +51,9 @@ export const probateRecordReducer = createReducer(
     });
 
     return { ...state, probateRecords: updatedRecords };
-  })
+  }),
+  on(clearProbateRecords, (state) => ({
+    ...state,
+    probateRecords: []
+  }))
 );

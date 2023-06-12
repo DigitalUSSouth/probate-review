@@ -30,6 +30,7 @@ export type __SubscriptionContainer = {
 export type CreateProbateRecordInput = {
   id?: string | null;
   title: string;
+  description?: string | null;
   deceasedId: string;
   filingId: string;
   appraiser: Array<string | null>;
@@ -38,12 +39,13 @@ export type CreateProbateRecordInput = {
   totalValue: number;
   reviewCount: number;
   lowerTitle: string;
+  lowerDescription?: string | null;
   lockedDate?: string | null;
   lockedBy?: string | null;
 };
 
 export type WordInput = {
-  id?: string | null;
+  id: string;
   text: string;
   boundingBox?: RectInput | null;
 };
@@ -57,6 +59,7 @@ export type RectInput = {
 
 export type ModelProbateRecordConditionInput = {
   title?: ModelStringInput | null;
+  description?: ModelStringInput | null;
   deceasedId?: ModelIDInput | null;
   filingId?: ModelIDInput | null;
   appraiser?: ModelStringInput | null;
@@ -64,6 +67,7 @@ export type ModelProbateRecordConditionInput = {
   totalValue?: ModelFloatInput | null;
   reviewCount?: ModelIntInput | null;
   lowerTitle?: ModelStringInput | null;
+  lowerDescription?: ModelStringInput | null;
   lockedDate?: ModelStringInput | null;
   lockedBy?: ModelStringInput | null;
   and?: Array<ModelProbateRecordConditionInput | null> | null;
@@ -154,6 +158,7 @@ export type ProbateRecord = {
   __typename: "ProbateRecord";
   id: string;
   title: string;
+  description?: string | null;
   deceasedId: string;
   filingId: string;
   appraiser: Array<string | null>;
@@ -163,6 +168,7 @@ export type ProbateRecord = {
   totalValue: number;
   reviewCount: number;
   lowerTitle: string;
+  lowerDescription?: string | null;
   lockedDate?: string | null;
   lockedBy?: string | null;
   createdAt: string;
@@ -213,6 +219,7 @@ export type Word = {
 export type UpdateProbateRecordInput = {
   id: string;
   title?: string | null;
+  description?: string | null;
   deceasedId?: string | null;
   filingId?: string | null;
   appraiser?: Array<string | null> | null;
@@ -221,6 +228,7 @@ export type UpdateProbateRecordInput = {
   totalValue?: number | null;
   reviewCount?: number | null;
   lowerTitle?: string | null;
+  lowerDescription?: string | null;
   lockedDate?: string | null;
   lockedBy?: string | null;
 };
@@ -292,7 +300,7 @@ export type CreateDocumentInput = {
 };
 
 export type LineInput = {
-  id?: string | null;
+  id: string;
   wordIds: Array<string | null>;
   boundingBox: RectInput;
   confidence: number;
@@ -402,8 +410,7 @@ export enum IssueStatus {
 
 export enum IssueType {
   bug = "bug",
-  feature_request = "feature_request",
-  change = "change"
+  feature_request = "feature_request"
 }
 
 export type ModelIssueConditionInput = {
@@ -455,6 +462,7 @@ export type DeleteIssueInput = {
 export type ModelProbateRecordFilterInput = {
   id?: ModelIDInput | null;
   title?: ModelStringInput | null;
+  description?: ModelStringInput | null;
   deceasedId?: ModelIDInput | null;
   filingId?: ModelIDInput | null;
   appraiser?: ModelStringInput | null;
@@ -462,6 +470,7 @@ export type ModelProbateRecordFilterInput = {
   totalValue?: ModelFloatInput | null;
   reviewCount?: ModelIntInput | null;
   lowerTitle?: ModelStringInput | null;
+  lowerDescription?: ModelStringInput | null;
   lockedDate?: ModelStringInput | null;
   lockedBy?: ModelStringInput | null;
   and?: Array<ModelProbateRecordFilterInput | null> | null;
@@ -558,10 +567,133 @@ export type ModelIssueConnection = {
   nextToken?: string | null;
 };
 
+export type ModelSubscriptionProbateRecordFilterInput = {
+  id?: ModelSubscriptionIDInput | null;
+  title?: ModelSubscriptionStringInput | null;
+  description?: ModelSubscriptionStringInput | null;
+  deceasedId?: ModelSubscriptionIDInput | null;
+  filingId?: ModelSubscriptionIDInput | null;
+  appraiser?: ModelSubscriptionStringInput | null;
+  witness?: ModelSubscriptionStringInput | null;
+  totalValue?: ModelSubscriptionFloatInput | null;
+  reviewCount?: ModelSubscriptionIntInput | null;
+  lowerTitle?: ModelSubscriptionStringInput | null;
+  lowerDescription?: ModelSubscriptionStringInput | null;
+  lockedDate?: ModelSubscriptionStringInput | null;
+  lockedBy?: ModelSubscriptionStringInput | null;
+  and?: Array<ModelSubscriptionProbateRecordFilterInput | null> | null;
+  or?: Array<ModelSubscriptionProbateRecordFilterInput | null> | null;
+};
+
+export type ModelSubscriptionIDInput = {
+  ne?: string | null;
+  eq?: string | null;
+  le?: string | null;
+  lt?: string | null;
+  ge?: string | null;
+  gt?: string | null;
+  contains?: string | null;
+  notContains?: string | null;
+  between?: Array<string | null> | null;
+  beginsWith?: string | null;
+  in?: Array<string | null> | null;
+  notIn?: Array<string | null> | null;
+};
+
+export type ModelSubscriptionStringInput = {
+  ne?: string | null;
+  eq?: string | null;
+  le?: string | null;
+  lt?: string | null;
+  ge?: string | null;
+  gt?: string | null;
+  contains?: string | null;
+  notContains?: string | null;
+  between?: Array<string | null> | null;
+  beginsWith?: string | null;
+  in?: Array<string | null> | null;
+  notIn?: Array<string | null> | null;
+};
+
+export type ModelSubscriptionFloatInput = {
+  ne?: number | null;
+  eq?: number | null;
+  le?: number | null;
+  lt?: number | null;
+  ge?: number | null;
+  gt?: number | null;
+  between?: Array<number | null> | null;
+  in?: Array<number | null> | null;
+  notIn?: Array<number | null> | null;
+};
+
+export type ModelSubscriptionIntInput = {
+  ne?: number | null;
+  eq?: number | null;
+  le?: number | null;
+  lt?: number | null;
+  ge?: number | null;
+  gt?: number | null;
+  between?: Array<number | null> | null;
+  in?: Array<number | null> | null;
+  notIn?: Array<number | null> | null;
+};
+
+export type ModelSubscriptionLineItemFilterInput = {
+  id?: ModelSubscriptionIDInput | null;
+  probateId?: ModelSubscriptionIDInput | null;
+  wordIds?: ModelSubscriptionIDInput | null;
+  title?: ModelSubscriptionStringInput | null;
+  description?: ModelSubscriptionStringInput | null;
+  category?: ModelSubscriptionStringInput | null;
+  subcategory?: ModelSubscriptionStringInput | null;
+  quantity?: ModelSubscriptionIntInput | null;
+  value?: ModelSubscriptionFloatInput | null;
+  confidence?: ModelSubscriptionFloatInput | null;
+  rowIndex?: ModelSubscriptionIntInput | null;
+  lowerTitle?: ModelSubscriptionStringInput | null;
+  attributeForId?: ModelSubscriptionIDInput | null;
+  and?: Array<ModelSubscriptionLineItemFilterInput | null> | null;
+  or?: Array<ModelSubscriptionLineItemFilterInput | null> | null;
+};
+
+export type ModelSubscriptionDocumentFilterInput = {
+  id?: ModelSubscriptionIDInput | null;
+  and?: Array<ModelSubscriptionDocumentFilterInput | null> | null;
+  or?: Array<ModelSubscriptionDocumentFilterInput | null> | null;
+};
+
+export type ModelSubscriptionLineItemReviewerNoteFilterInput = {
+  id?: ModelSubscriptionIDInput | null;
+  lineItemId?: ModelSubscriptionIDInput | null;
+  title?: ModelSubscriptionStringInput | null;
+  reviewed?: ModelSubscriptionBooleanInput | null;
+  reviewer?: ModelSubscriptionStringInput | null;
+  and?: Array<ModelSubscriptionLineItemReviewerNoteFilterInput | null> | null;
+  or?: Array<ModelSubscriptionLineItemReviewerNoteFilterInput | null> | null;
+};
+
+export type ModelSubscriptionBooleanInput = {
+  ne?: boolean | null;
+  eq?: boolean | null;
+};
+
+export type ModelSubscriptionIssueFilterInput = {
+  id?: ModelSubscriptionIDInput | null;
+  title?: ModelSubscriptionStringInput | null;
+  description?: ModelSubscriptionStringInput | null;
+  reporter?: ModelSubscriptionStringInput | null;
+  status?: ModelSubscriptionStringInput | null;
+  type?: ModelSubscriptionStringInput | null;
+  and?: Array<ModelSubscriptionIssueFilterInput | null> | null;
+  or?: Array<ModelSubscriptionIssueFilterInput | null> | null;
+};
+
 export type CreateProbateRecordMutation = {
   __typename: "ProbateRecord";
   id: string;
   title: string;
+  description?: string | null;
   deceasedId: string;
   filingId: string;
   appraiser: Array<string | null>;
@@ -610,6 +742,7 @@ export type CreateProbateRecordMutation = {
   totalValue: number;
   reviewCount: number;
   lowerTitle: string;
+  lowerDescription?: string | null;
   lockedDate?: string | null;
   lockedBy?: string | null;
   createdAt: string;
@@ -620,6 +753,7 @@ export type UpdateProbateRecordMutation = {
   __typename: "ProbateRecord";
   id: string;
   title: string;
+  description?: string | null;
   deceasedId: string;
   filingId: string;
   appraiser: Array<string | null>;
@@ -668,6 +802,7 @@ export type UpdateProbateRecordMutation = {
   totalValue: number;
   reviewCount: number;
   lowerTitle: string;
+  lowerDescription?: string | null;
   lockedDate?: string | null;
   lockedBy?: string | null;
   createdAt: string;
@@ -678,6 +813,7 @@ export type DeleteProbateRecordMutation = {
   __typename: "ProbateRecord";
   id: string;
   title: string;
+  description?: string | null;
   deceasedId: string;
   filingId: string;
   appraiser: Array<string | null>;
@@ -726,6 +862,7 @@ export type DeleteProbateRecordMutation = {
   totalValue: number;
   reviewCount: number;
   lowerTitle: string;
+  lowerDescription?: string | null;
   lockedDate?: string | null;
   lockedBy?: string | null;
   createdAt: string;
@@ -985,6 +1122,7 @@ export type GetProbateRecordQuery = {
   __typename: "ProbateRecord";
   id: string;
   title: string;
+  description?: string | null;
   deceasedId: string;
   filingId: string;
   appraiser: Array<string | null>;
@@ -1033,6 +1171,7 @@ export type GetProbateRecordQuery = {
   totalValue: number;
   reviewCount: number;
   lowerTitle: string;
+  lowerDescription?: string | null;
   lockedDate?: string | null;
   lockedBy?: string | null;
   createdAt: string;
@@ -1045,6 +1184,7 @@ export type ListProbateRecordsQuery = {
     __typename: "ProbateRecord";
     id: string;
     title: string;
+    description?: string | null;
     deceasedId: string;
     filingId: string;
     appraiser: Array<string | null>;
@@ -1093,6 +1233,7 @@ export type ListProbateRecordsQuery = {
     totalValue: number;
     reviewCount: number;
     lowerTitle: string;
+    lowerDescription?: string | null;
     lockedDate?: string | null;
     lockedBy?: string | null;
     createdAt: string;
@@ -1319,6 +1460,7 @@ export type OnCreateProbateRecordSubscription = {
   __typename: "ProbateRecord";
   id: string;
   title: string;
+  description?: string | null;
   deceasedId: string;
   filingId: string;
   appraiser: Array<string | null>;
@@ -1367,6 +1509,7 @@ export type OnCreateProbateRecordSubscription = {
   totalValue: number;
   reviewCount: number;
   lowerTitle: string;
+  lowerDescription?: string | null;
   lockedDate?: string | null;
   lockedBy?: string | null;
   createdAt: string;
@@ -1377,6 +1520,7 @@ export type OnUpdateProbateRecordSubscription = {
   __typename: "ProbateRecord";
   id: string;
   title: string;
+  description?: string | null;
   deceasedId: string;
   filingId: string;
   appraiser: Array<string | null>;
@@ -1425,6 +1569,7 @@ export type OnUpdateProbateRecordSubscription = {
   totalValue: number;
   reviewCount: number;
   lowerTitle: string;
+  lowerDescription?: string | null;
   lockedDate?: string | null;
   lockedBy?: string | null;
   createdAt: string;
@@ -1435,6 +1580,7 @@ export type OnDeleteProbateRecordSubscription = {
   __typename: "ProbateRecord";
   id: string;
   title: string;
+  description?: string | null;
   deceasedId: string;
   filingId: string;
   appraiser: Array<string | null>;
@@ -1483,6 +1629,7 @@ export type OnDeleteProbateRecordSubscription = {
   totalValue: number;
   reviewCount: number;
   lowerTitle: string;
+  lowerDescription?: string | null;
   lockedDate?: string | null;
   lockedBy?: string | null;
   createdAt: string;
@@ -1751,6 +1898,7 @@ export class APIService {
           __typename
           id
           title
+          description
           deceasedId
           filingId
           appraiser
@@ -1799,6 +1947,7 @@ export class APIService {
           totalValue
           reviewCount
           lowerTitle
+          lowerDescription
           lockedDate
           lockedBy
           createdAt
@@ -1825,6 +1974,7 @@ export class APIService {
           __typename
           id
           title
+          description
           deceasedId
           filingId
           appraiser
@@ -1873,6 +2023,7 @@ export class APIService {
           totalValue
           reviewCount
           lowerTitle
+          lowerDescription
           lockedDate
           lockedBy
           createdAt
@@ -1899,6 +2050,7 @@ export class APIService {
           __typename
           id
           title
+          description
           deceasedId
           filingId
           appraiser
@@ -1947,6 +2099,7 @@ export class APIService {
           totalValue
           reviewCount
           lowerTitle
+          lowerDescription
           lockedDate
           lockedBy
           createdAt
@@ -2417,6 +2570,7 @@ export class APIService {
           __typename
           id
           title
+          description
           deceasedId
           filingId
           appraiser
@@ -2465,6 +2619,7 @@ export class APIService {
           totalValue
           reviewCount
           lowerTitle
+          lowerDescription
           lockedDate
           lockedBy
           createdAt
@@ -2487,12 +2642,19 @@ export class APIService {
     sortDirection?: ModelSortDirection
   ): Promise<ListProbateRecordsQuery> {
     const statement = `query ListProbateRecords($id: ID, $filter: ModelProbateRecordFilterInput, $limit: Int, $nextToken: String, $sortDirection: ModelSortDirection) {
-        listProbateRecords(id: $id, filter: $filter, limit: $limit, nextToken: $nextToken, sortDirection: $sortDirection) {
+        listProbateRecords(
+          id: $id
+          filter: $filter
+          limit: $limit
+          nextToken: $nextToken
+          sortDirection: $sortDirection
+        ) {
           __typename
           items {
             __typename
             id
             title
+            description
             deceasedId
             filingId
             appraiser
@@ -2541,6 +2703,7 @@ export class APIService {
             totalValue
             reviewCount
             lowerTitle
+            lowerDescription
             lockedDate
             lockedBy
             createdAt
@@ -2668,7 +2831,14 @@ export class APIService {
     nextToken?: string
   ): Promise<LineItemByProbateRecordQuery> {
     const statement = `query LineItemByProbateRecord($probateId: ID!, $rowIndex: ModelIntKeyConditionInput, $sortDirection: ModelSortDirection, $filter: ModelLineItemFilterInput, $limit: Int, $nextToken: String) {
-        lineItemByProbateRecord(probateId: $probateId, rowIndex: $rowIndex, sortDirection: $sortDirection, filter: $filter, limit: $limit, nextToken: $nextToken) {
+        lineItemByProbateRecord(
+          probateId: $probateId
+          rowIndex: $rowIndex
+          sortDirection: $sortDirection
+          filter: $filter
+          limit: $limit
+          nextToken: $nextToken
+        ) {
           __typename
           items {
             __typename
@@ -2944,15 +3114,17 @@ export class APIService {
     )) as any;
     return <ListIssuesQuery>response.data.listIssues;
   }
-  OnCreateProbateRecordListener: Observable<
+  OnCreateProbateRecordListener(
+    filter?: ModelSubscriptionProbateRecordFilterInput
+  ): Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateProbateRecord">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnCreateProbateRecord {
-        onCreateProbateRecord {
+  > {
+    const statement = `subscription OnCreateProbateRecord($filter: ModelSubscriptionProbateRecordFilterInput) {
+        onCreateProbateRecord(filter: $filter) {
           __typename
           id
           title
+          description
           deceasedId
           filingId
           appraiser
@@ -3001,26 +3173,37 @@ export class APIService {
           totalValue
           reviewCount
           lowerTitle
+          lowerDescription
           lockedDate
           lockedBy
           createdAt
           updatedAt
         }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateProbateRecord">>
-  >;
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<
+        Pick<__SubscriptionContainer, "onCreateProbateRecord">
+      >
+    >;
+  }
 
-  OnUpdateProbateRecordListener: Observable<
+  OnUpdateProbateRecordListener(
+    filter?: ModelSubscriptionProbateRecordFilterInput
+  ): Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateProbateRecord">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnUpdateProbateRecord {
-        onUpdateProbateRecord {
+  > {
+    const statement = `subscription OnUpdateProbateRecord($filter: ModelSubscriptionProbateRecordFilterInput) {
+        onUpdateProbateRecord(filter: $filter) {
           __typename
           id
           title
+          description
           deceasedId
           filingId
           appraiser
@@ -3069,26 +3252,37 @@ export class APIService {
           totalValue
           reviewCount
           lowerTitle
+          lowerDescription
           lockedDate
           lockedBy
           createdAt
           updatedAt
         }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateProbateRecord">>
-  >;
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<
+        Pick<__SubscriptionContainer, "onUpdateProbateRecord">
+      >
+    >;
+  }
 
-  OnDeleteProbateRecordListener: Observable<
+  OnDeleteProbateRecordListener(
+    filter?: ModelSubscriptionProbateRecordFilterInput
+  ): Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteProbateRecord">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnDeleteProbateRecord {
-        onDeleteProbateRecord {
+  > {
+    const statement = `subscription OnDeleteProbateRecord($filter: ModelSubscriptionProbateRecordFilterInput) {
+        onDeleteProbateRecord(filter: $filter) {
           __typename
           id
           title
+          description
           deceasedId
           filingId
           appraiser
@@ -3137,23 +3331,33 @@ export class APIService {
           totalValue
           reviewCount
           lowerTitle
+          lowerDescription
           lockedDate
           lockedBy
           createdAt
           updatedAt
         }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteProbateRecord">>
-  >;
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<
+        Pick<__SubscriptionContainer, "onDeleteProbateRecord">
+      >
+    >;
+  }
 
-  OnCreateLineItemListener: Observable<
+  OnCreateLineItemListener(
+    filter?: ModelSubscriptionLineItemFilterInput
+  ): Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateLineItem">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnCreateLineItem {
-        onCreateLineItem {
+  > {
+    const statement = `subscription OnCreateLineItem($filter: ModelSubscriptionLineItemFilterInput) {
+        onCreateLineItem(filter: $filter) {
           __typename
           id
           probateId
@@ -3178,18 +3382,25 @@ export class APIService {
           createdAt
           updatedAt
         }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateLineItem">>
-  >;
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateLineItem">>
+    >;
+  }
 
-  OnUpdateLineItemListener: Observable<
+  OnUpdateLineItemListener(
+    filter?: ModelSubscriptionLineItemFilterInput
+  ): Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateLineItem">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnUpdateLineItem {
-        onUpdateLineItem {
+  > {
+    const statement = `subscription OnUpdateLineItem($filter: ModelSubscriptionLineItemFilterInput) {
+        onUpdateLineItem(filter: $filter) {
           __typename
           id
           probateId
@@ -3214,18 +3425,25 @@ export class APIService {
           createdAt
           updatedAt
         }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateLineItem">>
-  >;
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateLineItem">>
+    >;
+  }
 
-  OnDeleteLineItemListener: Observable<
+  OnDeleteLineItemListener(
+    filter?: ModelSubscriptionLineItemFilterInput
+  ): Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteLineItem">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnDeleteLineItem {
-        onDeleteLineItem {
+  > {
+    const statement = `subscription OnDeleteLineItem($filter: ModelSubscriptionLineItemFilterInput) {
+        onDeleteLineItem(filter: $filter) {
           __typename
           id
           probateId
@@ -3250,18 +3468,25 @@ export class APIService {
           createdAt
           updatedAt
         }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteLineItem">>
-  >;
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteLineItem">>
+    >;
+  }
 
-  OnCreateDocumentListener: Observable<
+  OnCreateDocumentListener(
+    filter?: ModelSubscriptionDocumentFilterInput
+  ): Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateDocument">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnCreateDocument {
-        onCreateDocument {
+  > {
+    const statement = `subscription OnCreateDocument($filter: ModelSubscriptionDocumentFilterInput) {
+        onCreateDocument(filter: $filter) {
           __typename
           id
           lines {
@@ -3294,18 +3519,25 @@ export class APIService {
           createdAt
           updatedAt
         }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateDocument">>
-  >;
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateDocument">>
+    >;
+  }
 
-  OnUpdateDocumentListener: Observable<
+  OnUpdateDocumentListener(
+    filter?: ModelSubscriptionDocumentFilterInput
+  ): Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateDocument">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnUpdateDocument {
-        onUpdateDocument {
+  > {
+    const statement = `subscription OnUpdateDocument($filter: ModelSubscriptionDocumentFilterInput) {
+        onUpdateDocument(filter: $filter) {
           __typename
           id
           lines {
@@ -3338,18 +3570,25 @@ export class APIService {
           createdAt
           updatedAt
         }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateDocument">>
-  >;
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateDocument">>
+    >;
+  }
 
-  OnDeleteDocumentListener: Observable<
+  OnDeleteDocumentListener(
+    filter?: ModelSubscriptionDocumentFilterInput
+  ): Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteDocument">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnDeleteDocument {
-        onDeleteDocument {
+  > {
+    const statement = `subscription OnDeleteDocument($filter: ModelSubscriptionDocumentFilterInput) {
+        onDeleteDocument(filter: $filter) {
           __typename
           id
           lines {
@@ -3382,20 +3621,27 @@ export class APIService {
           createdAt
           updatedAt
         }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteDocument">>
-  >;
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteDocument">>
+    >;
+  }
 
-  OnCreateLineItemReviewerNoteListener: Observable<
+  OnCreateLineItemReviewerNoteListener(
+    filter?: ModelSubscriptionLineItemReviewerNoteFilterInput
+  ): Observable<
     SubscriptionResponse<
       Pick<__SubscriptionContainer, "onCreateLineItemReviewerNote">
     >
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnCreateLineItemReviewerNote {
-        onCreateLineItemReviewerNote {
+  > {
+    const statement = `subscription OnCreateLineItemReviewerNote($filter: ModelSubscriptionLineItemReviewerNoteFilterInput) {
+        onCreateLineItemReviewerNote(filter: $filter) {
           __typename
           id
           lineItemId
@@ -3405,22 +3651,29 @@ export class APIService {
           createdAt
           updatedAt
         }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<
-      Pick<__SubscriptionContainer, "onCreateLineItemReviewerNote">
-    >
-  >;
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<
+        Pick<__SubscriptionContainer, "onCreateLineItemReviewerNote">
+      >
+    >;
+  }
 
-  OnUpdateLineItemReviewerNoteListener: Observable<
+  OnUpdateLineItemReviewerNoteListener(
+    filter?: ModelSubscriptionLineItemReviewerNoteFilterInput
+  ): Observable<
     SubscriptionResponse<
       Pick<__SubscriptionContainer, "onUpdateLineItemReviewerNote">
     >
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnUpdateLineItemReviewerNote {
-        onUpdateLineItemReviewerNote {
+  > {
+    const statement = `subscription OnUpdateLineItemReviewerNote($filter: ModelSubscriptionLineItemReviewerNoteFilterInput) {
+        onUpdateLineItemReviewerNote(filter: $filter) {
           __typename
           id
           lineItemId
@@ -3430,22 +3683,29 @@ export class APIService {
           createdAt
           updatedAt
         }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<
-      Pick<__SubscriptionContainer, "onUpdateLineItemReviewerNote">
-    >
-  >;
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<
+        Pick<__SubscriptionContainer, "onUpdateLineItemReviewerNote">
+      >
+    >;
+  }
 
-  OnDeleteLineItemReviewerNoteListener: Observable<
+  OnDeleteLineItemReviewerNoteListener(
+    filter?: ModelSubscriptionLineItemReviewerNoteFilterInput
+  ): Observable<
     SubscriptionResponse<
       Pick<__SubscriptionContainer, "onDeleteLineItemReviewerNote">
     >
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnDeleteLineItemReviewerNote {
-        onDeleteLineItemReviewerNote {
+  > {
+    const statement = `subscription OnDeleteLineItemReviewerNote($filter: ModelSubscriptionLineItemReviewerNoteFilterInput) {
+        onDeleteLineItemReviewerNote(filter: $filter) {
           __typename
           id
           lineItemId
@@ -3455,20 +3715,27 @@ export class APIService {
           createdAt
           updatedAt
         }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<
-      Pick<__SubscriptionContainer, "onDeleteLineItemReviewerNote">
-    >
-  >;
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<
+        Pick<__SubscriptionContainer, "onDeleteLineItemReviewerNote">
+      >
+    >;
+  }
 
-  OnCreateIssueListener: Observable<
+  OnCreateIssueListener(
+    filter?: ModelSubscriptionIssueFilterInput
+  ): Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateIssue">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnCreateIssue {
-        onCreateIssue {
+  > {
+    const statement = `subscription OnCreateIssue($filter: ModelSubscriptionIssueFilterInput) {
+        onCreateIssue(filter: $filter) {
           __typename
           id
           title
@@ -3479,18 +3746,25 @@ export class APIService {
           createdAt
           updatedAt
         }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateIssue">>
-  >;
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateIssue">>
+    >;
+  }
 
-  OnUpdateIssueListener: Observable<
+  OnUpdateIssueListener(
+    filter?: ModelSubscriptionIssueFilterInput
+  ): Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateIssue">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnUpdateIssue {
-        onUpdateIssue {
+  > {
+    const statement = `subscription OnUpdateIssue($filter: ModelSubscriptionIssueFilterInput) {
+        onUpdateIssue(filter: $filter) {
           __typename
           id
           title
@@ -3501,18 +3775,25 @@ export class APIService {
           createdAt
           updatedAt
         }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateIssue">>
-  >;
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateIssue">>
+    >;
+  }
 
-  OnDeleteIssueListener: Observable<
+  OnDeleteIssueListener(
+    filter?: ModelSubscriptionIssueFilterInput
+  ): Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteIssue">>
-  > = API.graphql(
-    graphqlOperation(
-      `subscription OnDeleteIssue {
-        onDeleteIssue {
+  > {
+    const statement = `subscription OnDeleteIssue($filter: ModelSubscriptionIssueFilterInput) {
+        onDeleteIssue(filter: $filter) {
           __typename
           id
           title
@@ -3523,9 +3804,15 @@ export class APIService {
           createdAt
           updatedAt
         }
-      }`
-    )
-  ) as Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteIssue">>
-  >;
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteIssue">>
+    >;
+  }
 }

@@ -12,9 +12,35 @@ export class ProbateRecordService {
     let result = await this.recordService.ListProbateRecords(undefined, filter, count, nextToken);
     let newNextToken = result.nextToken;
     let records = result.items!.map((r) => r as ProbateRecord);
-    while(records.length < count && newNextToken) {
+    let ids = new Set<string>();
+    records.map(r => {
+      ids.add(r.id);
+    })
+    let recordCount = records.length;
+    while(recordCount < count && newNextToken) {
       result = await this.recordService.ListProbateRecords(undefined, filter, count - records.length, nextToken);
-      records = records.concat(result.items.map((r) => r as ProbateRecord));
+      let recordsToAdd = result.items.map((r) => r as ProbateRecord);
+      let dupesFound = false;
+      for(const record of recordsToAdd) {
+        if(ids.has(record.id)) {
+          dupesFound = true;          
+        }
+        else {
+          ids.add(record.id);
+          records.push(record);
+        }
+      }
+      if(dupesFound) {
+        console.log('duplicates found');
+      }
+      if(newNextToken === result.nextToken) {
+        break;
+      }
+      if(recordCount === records.length) {
+        // no new records were added
+        break;
+      }
+      recordCount = records.length;
       newNextToken = result.nextToken;
     }
     return {records, nextToken: newNextToken};

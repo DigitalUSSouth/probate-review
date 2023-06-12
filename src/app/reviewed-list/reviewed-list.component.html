@@ -1,0 +1,49 @@
+<div *ngIf="loading && !loaded">Loading probate records...</div>
+
+<div *ngIf="error$ | async as error">{{ error }}</div>
+
+<ng-container *ngIf="!(loading) && !(error$ | async) && loaded">
+  <table mat-table [dataSource]="dataSource!" matSort class="mat-elevation-z8">
+    <ng-container matColumnDef="thumbnail">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let record">
+        <a 
+          href="record/{{record.id}}"><img
+            [src]="'https://d2ai2qpooo3jtj.cloudfront.net/iiif/2/' + record.id + '/full/120,/0/default.png'" /></a>        
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+      <td mat-cell *matCellDef="let probateRecord">{{ probateRecord.id }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="title">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+      <td mat-cell *matCellDef="let probateRecord">{{ probateRecord.title }}</td>
+    </ng-container>
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef> Description </th>
+      <td mat-cell *matCellDef="let record"> {{record.description}} </td>
+    </ng-container>
+  
+  <ng-container matColumnDef="move">
+      <th mat-header-cell *matHeaderCellDef> Move back to review </th>
+      <td mat-cell *matCellDef="let record"> <button (click)="moveRecordToUnreviewed(record)">Move</button></td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+    
+</ng-container>
+<button
+            mat-raised-button
+            class="form-button"
+            color="primary"            
+            (click)="loadMoreRecords(nextToken!)"
+          >
+            Load More
+          </button>
+<mat-paginator (page)="handlePageEvent($event)" [length]="dataSource?.data?.length" [pageSize]="pageSize"
+  [pageSizeOptions]="[1, 5, 10, 25, 100]" showFirstLastButtons aria-label="Select page">
+
+</mat-paginator>

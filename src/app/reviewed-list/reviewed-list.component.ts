@@ -19,14 +19,14 @@ import { AuthenticatorService } from '@aws-amplify/ui-angular';
 import { AmplifyUser } from '@aws-amplify/ui';
 import { CookieService } from 'ngx-cookie-service';
 
-const UNREVIEWED_PAGE_SIZE = 'unreviewedPageSize';
+const REVIEWED_PAGE_SIZE = 'unreviewedPageSize';
 
 @Component({
-  selector: 'app-probate-record-list',
-  templateUrl: './probate-record-list.component.html',
-  styleUrls: ['./probate-record-list.component.sass']
+  selector: 'app-reviewed-list',
+  templateUrl: './reviewed-list.component.html',
+  styleUrls: ['./reviewed-list.component.sass']
 })
-export class ProbateRecordListComponent implements OnInit {
+export class ReviewedListComponent implements OnInit {
   probateRecords$: Observable<ProbateRecord[]>;
   pageSize$: Observable<number>;
   nextToken$: Observable<string | null>;
@@ -41,13 +41,7 @@ export class ProbateRecordListComponent implements OnInit {
   pageIndex = 0;
   // MatPaginator Output
   pageEvent?: PageEvent;
-  displayedColumns: string[] = [
-    'thumbnail',
-    'title',
-    'lockedBy',
-    'lockedDate',
-    'lockButton',
-  ];
+  displayedColumns: string[] = ['thumbnail', 'title', 'description'];
   nextToken: string | undefined;
   @ViewChild(MatSort) sort?: MatSort;
   @ViewChild(MatPaginator) paginator?: MatPaginator;
@@ -65,12 +59,13 @@ export class ProbateRecordListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const pageSizeText = this.cookieService.get(UNREVIEWED_PAGE_SIZE);
+    const pageSizeText = this.cookieService.get(REVIEWED_PAGE_SIZE);
     console.log('page size is ' + pageSizeText);
-    this.pageSize = parseInt(this.cookieService.get(UNREVIEWED_PAGE_SIZE)) ?? 10;
-    this.store.dispatch(clearProbateRecords()); 
+    this.pageSize = parseInt(this.cookieService.get(REVIEWED_PAGE_SIZE)) ?? 10; 
     // Dispatch the initial action to load the probate records
-    this.store.dispatch(loadProbateRecords({ pageSize: this.pageSize, filter: { reviewCount: { lt: 2 } } }));
+    // Records not loaded, dispatch the load action
+    this.store.dispatch(clearProbateRecords());
+    this.store.dispatch(loadProbateRecords({ pageSize: this.pageSize, filter: { reviewCount: { ge: 2 } }, nextToken: '' }));
     
     
     // Subscribe to the probate records, page size, and next token
@@ -94,14 +89,7 @@ export class ProbateRecordListComponent implements OnInit {
         this.loading = loading;
       }),
       this.loaded$.subscribe(loaded => {
-        this.loaded = loaded;
-        // if (!loaded) {
-        //   // Records not loaded, dispatch the load action
-        //   this.store.dispatch(loadProbateRecords({ pageSize: this.pageSize, filter: { reviewCount: { lt: 2 } } }));
-        // }
-        // else {
-        //   console.log('records loaded');
-        // }
+        this.loaded = loaded;        
       })
     );
   }  
@@ -127,7 +115,7 @@ export class ProbateRecordListComponent implements OnInit {
 
   loadMoreRecords(nextToken: string | null) {
     // Dispatch the action to load more probate records using the next token
-    this.store.dispatch(loadProbateRecords({ pageSize: 10, nextToken: this.nextToken}));
+    this.store.dispatch(loadProbateRecords({ pageSize: this.pageSize, nextToken: this.nextToken }));
   }
 
   handlePageEvent(event: PageEvent) {
@@ -139,24 +127,12 @@ export class ProbateRecordListComponent implements OnInit {
     // Dispatch the action to change the page size
     this.store.dispatch(loadProbateRecords({ pageSize }));
     console.log('setting page size to ', pageSize);
-    this.cookieService.set(UNREVIEWED_PAGE_SIZE, String(pageSize));
+    this.cookieService.set(REVIEWED_PAGE_SIZE, String(pageSize));
   }
 
-  async toggleRecordLock(record: ProbateRecord) {
-    console.log('title: ' + record.title);
-    if (record.lockedBy === this.user!.username!) {
-      record.lockedBy = '';
-      record.lockedDate = null;
-    }
-    else {
-      record.lockedBy = this.user!.username!;
-      record.lockedDate = new Date().toISOString();
-      
-      
-    }
-
+  async moveRecordToUnreviewed(record: ProbateRecord) {    
     try {
-      const updatedRecord: ProbateRecord = { ...record, lockedBy: record.lockedBy, lockedDate: record.lockedDate };
+      const updatedRecord: ProbateRecord = { ...record,  reviewCount: 0};
       this.store.dispatch(updateProbateRecord({ probateRecord: updatedRecord }));
       }
       catch (e) {
@@ -167,9 +143,5 @@ export class ProbateRecordListComponent implements OnInit {
           alert('An error has occurred during save');
         }
       }
-  }
-
-  getLockedText(record: ProbateRecord) {
-    return record.lockedBy === this.user!.username ? 'Unlock' : 'Lock';
   }
 }
