@@ -3,8 +3,20 @@ import { Storage } from 'aws-amplify';
 import { v4 as uuidv4 } from 'uuid';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
 import { interval } from 'rxjs';
-import { ProbateRecord, APIService, GetProbateRecordQuery } from '../API.service';
-
+import { ProbateRecord, APIService, GetProbateRecordQuery, ProbateRecordCollection } from '../API.service';
+import { Store, select } from '@ngrx/store';
+import { Observable, Subscription } from 'rxjs';
+import { clearProbateRecordCollections, loadProbateRecordCollections, loadProbateRecordCollectionsSuccess } from 'src/state/probate-record-collection.actions';
+import {
+  selectProbateRecordCollections,
+  selectPageSize,
+  selectNextToken,
+  selectProbateRecordCollectionsLoading,
+  selectProbateRecordCollectionsError,
+  selectProbateRecordCollectionsLoaded
+} from '../../state/probate-record-collection.selectors';
+import { AppState } from '../app.state';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 const POLL_INTERVAL = 20000;
 
@@ -19,7 +31,38 @@ export class UploadComponent implements OnInit {
   fileMap = new Map<string, File>();
   filesInProcessing = Array<string>();
   checkFileProcessedInterval = interval(POLL_INTERVAL);
-  constructor(public authenticator: AuthenticatorService, private probateRecordService: APIService) {
+  probateRecordCollections$: Observable<ProbateRecordCollection[]>;
+  loading$: Observable<boolean>;
+  loaded$: Observable<boolean>;
+  error$: Observable<any>;
+  private subscriptions: Subscription[] = [];
+  loading?: boolean;
+  loaded?: boolean;
+  collectionsFormControl = new FormControl('');
+  constructor(public authenticator: AuthenticatorService, private probateRecordService: APIService, private store: Store<AppState>) {
+    this.probateRecordCollections$ = this.store.pipe(select(selectProbateRecordCollections));
+    this.loading$ = this.store.pipe(select(selectProbateRecordCollectionsLoading));
+    this.loaded$ = this.store.pipe(select(selectProbateRecordCollectionsLoaded));
+    this.error$ = this.store.pipe(select(selectProbateRecordCollectionsError));
+    // Dispatch the initial action to load the probate records
+    this.store.dispatch(loadProbateRecordCollections({ pageSize: 10 }));
+    
+    
+    // Subscribe to the probate records, page size, and next token
+    this.subscriptions.push(
+      this.probateRecordCollections$.subscribe(records => {
+        // Do something with the probate records        
+        console.log('records loaded');
+        console.log(records);
+      }),
+      this.loading$.subscribe(loading => {
+        this.loading = loading;
+      }),
+      this.loaded$.subscribe(loaded => {
+        this.loaded = loaded;        
+      })
+    );
+
     let timer = this.checkFileProcessedInterval.subscribe(async () => {
       if (this.filesInProcessing.length > 0) {
         for (let i = 0; i < this.filesInProcessing.length; i++) {

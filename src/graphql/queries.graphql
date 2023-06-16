@@ -43,6 +43,7 @@ query GetProbateRecord($id: ID!) {
         width
         height
       }
+      lineIndex
     }
     totalValue
     reviewCount
@@ -50,8 +51,10 @@ query GetProbateRecord($id: ID!) {
     lowerDescription
     lockedDate
     lockedBy
+    markedForDeletion
     createdAt
     updatedAt
+    probateRecordCollectionProbateRecordsId
   }
 }
 query ListProbateRecords(
@@ -111,6 +114,7 @@ query ListProbateRecords(
           width
           height
         }
+        lineIndex
       }
       totalValue
       reviewCount
@@ -118,8 +122,10 @@ query ListProbateRecords(
       lowerDescription
       lockedDate
       lockedBy
+      markedForDeletion
       createdAt
       updatedAt
+      probateRecordCollectionProbateRecordsId
     }
     nextToken
     scannedCount
@@ -250,6 +256,7 @@ query GetDocument($id: ID!) {
         width
         height
       }
+      lineIndex
     }
     createdAt
     updatedAt
@@ -285,6 +292,7 @@ query ListDocuments(
           width
           height
         }
+        lineIndex
       }
       createdAt
       updatedAt
@@ -350,6 +358,161 @@ query ListIssues(
       reporter
       status
       type
+      createdAt
+      updatedAt
+    }
+    nextToken
+  }
+}
+query GetProbateRecordCollection($id: ID!) {
+  getProbateRecordCollection(id: $id) {
+    id
+    title
+    description
+    lowerTitle
+    lowerDescription
+    probateRecords {
+      items {
+        id
+        title
+        description
+        deceasedId
+        filingId
+        appraiser
+        witness
+        lineItems {
+          items {
+            id
+            probateId
+            wordIds
+            title
+            description
+            category
+            subcategory
+            quantity
+            value
+            confidence
+            rowIndex
+            lowerTitle
+            boundingBox {
+              left
+              top
+              width
+              height
+            }
+            attributeForId
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        words {
+          id
+          text
+          boundingBox {
+            left
+            top
+            width
+            height
+          }
+          lineIndex
+        }
+        totalValue
+        reviewCount
+        lowerTitle
+        lowerDescription
+        lockedDate
+        lockedBy
+        markedForDeletion
+        createdAt
+        updatedAt
+        probateRecordCollectionProbateRecordsId
+      }
+      nextToken
+      scannedCount
+      count
+    }
+    createdAt
+    updatedAt
+  }
+}
+query ListProbateRecordCollections(
+  $filter: ModelProbateRecordCollectionFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listProbateRecordCollections(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      title
+      description
+      lowerTitle
+      lowerDescription
+      probateRecords {
+        items {
+          id
+          title
+          description
+          deceasedId
+          filingId
+          appraiser
+          witness
+          lineItems {
+            items {
+              id
+              probateId
+              wordIds
+              title
+              description
+              category
+              subcategory
+              quantity
+              value
+              confidence
+              rowIndex
+              lowerTitle
+              boundingBox {
+                left
+                top
+                width
+                height
+              }
+              attributeForId
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+          words {
+            id
+            text
+            boundingBox {
+              left
+              top
+              width
+              height
+            }
+            lineIndex
+          }
+          totalValue
+          reviewCount
+          lowerTitle
+          lowerDescription
+          lockedDate
+          lockedBy
+          markedForDeletion
+          createdAt
+          updatedAt
+          probateRecordCollectionProbateRecordsId
+        }
+        nextToken
+        scannedCount
+        count
+      }
       createdAt
       updatedAt
     }

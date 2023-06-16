@@ -1,4 +1,4 @@
-type ProbateRecord @model @auth(rules: [{allow: private}]) {
+type ProbateRecord @model @auth(rules: [{ allow: private }]) {
   id: ID! @primaryKey
   title: String!
   description: String
@@ -11,9 +11,10 @@ type ProbateRecord @model @auth(rules: [{allow: private}]) {
   totalValue: Float!
   reviewCount: Int!
   lowerTitle: String!
-  lowerDescription: String 
+  lowerDescription: String
   lockedDate: AWSDateTime
-  lockedBy: String 
+  lockedBy: String
+  markedForDeletion: Boolean @default(value: "false") #https://github.com/aws-amplify/amplify-cli/issues/5959#issuecomment-984810550
 }
 
 type Filing {
@@ -37,9 +38,14 @@ type Rect {
   height: Float!
 }
 
-type LineItem @model @auth(rules: [{allow: private}]) {
+type LineItem @model @auth(rules: [{ allow: private }]) {
   id: ID!
-  probateId: ID! @index(name: "byProbate", sortKeyFields:["rowIndex"], queryField: "lineItemByProbateRecord")
+  probateId: ID!
+    @index(
+      name: "byProbate"
+      sortKeyFields: ["rowIndex"]
+      queryField: "lineItemByProbateRecord"
+    )
   wordIds: [ID]!
   title: String!
   description: String!
@@ -50,14 +56,14 @@ type LineItem @model @auth(rules: [{allow: private}]) {
   confidence: Float!
   rowIndex: Int!
   lowerTitle: String!
-  boundingBox: Rect 
-  attributeForId: ID!  
+  boundingBox: Rect
+  attributeForId: ID!
 }
 
-type Document @model @auth(rules: [{allow: private}]) {
+type Document @model @auth(rules: [{ allow: private }]) {
   id: ID!
-  lines: [Line]! 
-  words: [Word]! 
+  lines: [Line]!
+  words: [Word]!
 }
 
 type Line {
@@ -72,17 +78,18 @@ type Line {
 type Word {
   id: ID!
   text: String!
-  boundingBox: Rect  
+  boundingBox: Rect
+  lineIndex: Int
 }
 
 type ModelProbateRecordConnection @aws_iam @aws_cognito_user_pools {
   items: [ProbateRecord]!
-  nextToken: String,
-  scannedCount: Int,
-  count: Int  
+  nextToken: String
+  scannedCount: Int
+  count: Int
 }
 
-type LineItemReviewerNote @model @auth(rules: [{allow: private}]) {
+type LineItemReviewerNote @model @auth(rules: [{ allow: private }]) {
   id: ID!
   lineItemId: ID!
   title: String!
@@ -90,7 +97,7 @@ type LineItemReviewerNote @model @auth(rules: [{allow: private}]) {
   reviewer: String!
 }
 
-type Issue @model @auth(rules: [{allow: private}]) {
+type Issue @model @auth(rules: [{ allow: private }]) {
   id: ID!
   title: String!
   description: String!
@@ -111,4 +118,27 @@ enum IssueType {
   bug
   feature_request
 }
- 
+
+type ProbateRecordCollection @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  title: String!
+  description: String
+  lowerTitle: String!
+  lowerDescription: String
+  probateRecords: [ProbateRecord] @hasMany
+}
+
+type User {
+  id: ID!
+  username: String!
+  email: String!
+  profilePictureUrl: String
+  thumbnailUrl: String
+  teams: [Team!]!
+}
+
+type Team {
+  id: ID!
+  name: String!
+  members: [User!]!
+}

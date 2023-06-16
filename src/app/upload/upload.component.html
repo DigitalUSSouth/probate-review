@@ -1,6 +1,12 @@
 <div id="drop-area" (drop)="dropHandler($event);" (dragover)="dragOverHandler($event);">
     <form class="my-form">
         <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
+        <mat-form-field>
+            <mat-label>Collections</mat-label>
+            <mat-select [formControl]="collectionsFormControl" multiple>
+              <mat-option *ngFor="let collection of probateRecordCollections$ | async" [value]="collection">{{collection.title}}</mat-option>
+            </mat-select>
+          </mat-form-field>
         <input type="file" #fileInput id="fileElem" multiple accept="image/*">
         <label class="button" for="fileElem">Select file(s)</label>
         <ul id="filesToBeUploaded"></ul>

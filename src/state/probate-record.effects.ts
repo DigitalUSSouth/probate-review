@@ -21,18 +21,7 @@ export class ProbateRecordEffects {
           ),
           catchError(error => of(loadProbateRecordsFailure({ error })))
         )
-      )
-      // exhaustMap(({ pageSize, filter, nextToken }) =>
-      //   this.probateRecordService
-      //     .getProbateRecords(filter, pageSize, nextToken)
-      //     .pipe(
-      //       map(
-      //         ({ probateRecords, nextToken }) =>
-      //           loadProbateRecordsSuccess({ probateRecords, nextToken }),
-      //         catchError(() => EMPTY)
-      //       )
-      //     )
-      // )
+      )      
     )
   );
 

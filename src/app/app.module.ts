@@ -44,7 +44,12 @@ import { probateRecordReducer } from 'src/state/probate-record.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { ProbateRecordEffects } from '../state/probate-record.effects';
 import { ReviewedListComponent } from './reviewed-list/reviewed-list.component';
-
+import { ProbateRecordCollectionListComponent } from './probate-record-collection-list/probate-record-collection-list.component';
+import { ProbateRecordCollectionDetailComponent } from './probate-record-collection-detail/probate-record-collection-detail.component';
+import { probateRecordCollectionReducer } from 'src/state/probate-record-collection.reducer';
+import { ProbateRecordCollectionEffects } from 'src/state/probate-record-collection.effects';
+import { MatSelectModule } from '@angular/material/select';
+import { ReactiveFormsModule } from '@angular/forms';
 @NgModule({
   declarations: [
     AppComponent,
@@ -62,6 +67,8 @@ import { ReviewedListComponent } from './reviewed-list/reviewed-list.component';
     CombineLineDialogComponent,
     ProbateRecordListComponent,
     ReviewedListComponent,
+    ProbateRecordCollectionListComponent,
+    ProbateRecordCollectionDetailComponent,
   ],
   imports: [
     BrowserModule,
@@ -85,11 +92,17 @@ import { ReviewedListComponent } from './reviewed-list/reviewed-list.component';
     MatCheckboxModule,
     MatDialogModule,
     MatSortModule,
+    MatSelectModule,
+    ReactiveFormsModule,
     StoreModule.forRoot({
       root: appReducer,
       probateRecords: probateRecordReducer,
+      probateRecordCollections: probateRecordCollectionReducer,
     }),
-    EffectsModule.forRoot([ProbateRecordEffects]),
+    EffectsModule.forRoot([
+      ProbateRecordEffects,
+      ProbateRecordCollectionEffects,
+    ]),
   ],
   providers: [
     { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: false } },

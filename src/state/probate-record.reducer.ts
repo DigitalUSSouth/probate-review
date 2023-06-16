@@ -1,6 +1,15 @@
 import { createReducer, on } from '@ngrx/store';
-import { loadProbateRecords, loadProbateRecordsSuccess, loadProbateRecordsFailure, updateProbateRecord, clearProbateRecords } from './probate-record.actions';
-import { ModelProbateRecordFilterInput, ProbateRecord } from '../app/API.service';
+import {
+  loadProbateRecords,
+  loadProbateRecordsSuccess,
+  loadProbateRecordsFailure,
+  updateProbateRecord,
+  clearProbateRecords,
+} from './probate-record.actions';
+import {
+  ModelProbateRecordFilterInput,
+  ProbateRecord,
+} from '../app/API.service';
 
 export interface ProbateRecordState {
   probateRecords: ProbateRecord[];
@@ -10,7 +19,7 @@ export interface ProbateRecordState {
   filter: ModelProbateRecordFilterInput | undefined;
   loading: boolean;
   loaded: boolean;
-  error: any;  
+  error: any;
 }
 
 export const initialProbateRecordState: ProbateRecordState = {
@@ -21,7 +30,7 @@ export const initialProbateRecordState: ProbateRecordState = {
   filter: undefined,
   loading: false,
   loaded: false,
-  error: null
+  error: null,
 };
 
 export const probateRecordReducer = createReducer(
@@ -31,7 +40,7 @@ export const probateRecordReducer = createReducer(
     pageSize,
     filter,
     loading: true,
-    loaded: false
+    loaded: false,
   })),
   on(loadProbateRecordsSuccess, (state, { probateRecords, nextToken }) => ({
     ...state,
@@ -39,11 +48,15 @@ export const probateRecordReducer = createReducer(
     nextToken,
     loading: false,
     loaded: true,
-    error: null
+    error: null,
   })),
-  on(loadProbateRecordsFailure, (state, { error }) => ({ ...state, loading: false, error })),
+  on(loadProbateRecordsFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error,
+  })),
   on(updateProbateRecord, (state, { probateRecord }) => {
-    const updatedRecords = state.probateRecords.map(record => {
+    const updatedRecords = state.probateRecords.map((record) => {
       if (record.id === probateRecord.id) {
         return { ...record, ...probateRecord };
       }
@@ -54,6 +67,6 @@ export const probateRecordReducer = createReducer(
   }),
   on(clearProbateRecords, (state) => ({
     ...state,
-    probateRecords: []
+    probateRecords: [],
   }))
 );

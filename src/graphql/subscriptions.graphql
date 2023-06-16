@@ -45,6 +45,7 @@ subscription OnCreateProbateRecord(
         width
         height
       }
+      lineIndex
     }
     totalValue
     reviewCount
@@ -52,8 +53,10 @@ subscription OnCreateProbateRecord(
     lowerDescription
     lockedDate
     lockedBy
+    markedForDeletion
     createdAt
     updatedAt
+    probateRecordCollectionProbateRecordsId
   }
 }
 subscription OnUpdateProbateRecord(
@@ -102,6 +105,7 @@ subscription OnUpdateProbateRecord(
         width
         height
       }
+      lineIndex
     }
     totalValue
     reviewCount
@@ -109,8 +113,10 @@ subscription OnUpdateProbateRecord(
     lowerDescription
     lockedDate
     lockedBy
+    markedForDeletion
     createdAt
     updatedAt
+    probateRecordCollectionProbateRecordsId
   }
 }
 subscription OnDeleteProbateRecord(
@@ -159,6 +165,7 @@ subscription OnDeleteProbateRecord(
         width
         height
       }
+      lineIndex
     }
     totalValue
     reviewCount
@@ -166,8 +173,10 @@ subscription OnDeleteProbateRecord(
     lowerDescription
     lockedDate
     lockedBy
+    markedForDeletion
     createdAt
     updatedAt
+    probateRecordCollectionProbateRecordsId
   }
 }
 subscription OnCreateLineItem($filter: ModelSubscriptionLineItemFilterInput) {
@@ -270,6 +279,7 @@ subscription OnCreateDocument($filter: ModelSubscriptionDocumentFilterInput) {
         width
         height
       }
+      lineIndex
     }
     createdAt
     updatedAt
@@ -300,6 +310,7 @@ subscription OnUpdateDocument($filter: ModelSubscriptionDocumentFilterInput) {
         width
         height
       }
+      lineIndex
     }
     createdAt
     updatedAt
@@ -330,6 +341,7 @@ subscription OnDeleteDocument($filter: ModelSubscriptionDocumentFilterInput) {
         width
         height
       }
+      lineIndex
     }
     createdAt
     updatedAt
@@ -406,6 +418,228 @@ subscription OnDeleteIssue($filter: ModelSubscriptionIssueFilterInput) {
     reporter
     status
     type
+    createdAt
+    updatedAt
+  }
+}
+subscription OnCreateProbateRecordCollection(
+  $filter: ModelSubscriptionProbateRecordCollectionFilterInput
+) {
+  onCreateProbateRecordCollection(filter: $filter) {
+    id
+    title
+    description
+    lowerTitle
+    lowerDescription
+    probateRecords {
+      items {
+        id
+        title
+        description
+        deceasedId
+        filingId
+        appraiser
+        witness
+        lineItems {
+          items {
+            id
+            probateId
+            wordIds
+            title
+            description
+            category
+            subcategory
+            quantity
+            value
+            confidence
+            rowIndex
+            lowerTitle
+            boundingBox {
+              left
+              top
+              width
+              height
+            }
+            attributeForId
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        words {
+          id
+          text
+          boundingBox {
+            left
+            top
+            width
+            height
+          }
+          lineIndex
+        }
+        totalValue
+        reviewCount
+        lowerTitle
+        lowerDescription
+        lockedDate
+        lockedBy
+        markedForDeletion
+        createdAt
+        updatedAt
+        probateRecordCollectionProbateRecordsId
+      }
+      nextToken
+      scannedCount
+      count
+    }
+    createdAt
+    updatedAt
+  }
+}
+subscription OnUpdateProbateRecordCollection(
+  $filter: ModelSubscriptionProbateRecordCollectionFilterInput
+) {
+  onUpdateProbateRecordCollection(filter: $filter) {
+    id
+    title
+    description
+    lowerTitle
+    lowerDescription
+    probateRecords {
+      items {
+        id
+        title
+        description
+        deceasedId
+        filingId
+        appraiser
+        witness
+        lineItems {
+          items {
+            id
+            probateId
+            wordIds
+            title
+            description
+            category
+            subcategory
+            quantity
+            value
+            confidence
+            rowIndex
+            lowerTitle
+            boundingBox {
+              left
+              top
+              width
+              height
+            }
+            attributeForId
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        words {
+          id
+          text
+          boundingBox {
+            left
+            top
+            width
+            height
+          }
+          lineIndex
+        }
+        totalValue
+        reviewCount
+        lowerTitle
+        lowerDescription
+        lockedDate
+        lockedBy
+        markedForDeletion
+        createdAt
+        updatedAt
+        probateRecordCollectionProbateRecordsId
+      }
+      nextToken
+      scannedCount
+      count
+    }
+    createdAt
+    updatedAt
+  }
+}
+subscription OnDeleteProbateRecordCollection(
+  $filter: ModelSubscriptionProbateRecordCollectionFilterInput
+) {
+  onDeleteProbateRecordCollection(filter: $filter) {
+    id
+    title
+    description
+    lowerTitle
+    lowerDescription
+    probateRecords {
+      items {
+        id
+        title
+        description
+        deceasedId
+        filingId
+        appraiser
+        witness
+        lineItems {
+          items {
+            id
+            probateId
+            wordIds
+            title
+            description
+            category
+            subcategory
+            quantity
+            value
+            confidence
+            rowIndex
+            lowerTitle
+            boundingBox {
+              left
+              top
+              width
+              height
+            }
+            attributeForId
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        words {
+          id
+          text
+          boundingBox {
+            left
+            top
+            width
+            height
+          }
+          lineIndex
+        }
+        totalValue
+        reviewCount
+        lowerTitle
+        lowerDescription
+        lockedDate
+        lockedBy
+        markedForDeletion
+        createdAt
+        updatedAt
+        probateRecordCollectionProbateRecordsId
+      }
+      nextToken
+      scannedCount
+      count
+    }
     createdAt
     updatedAt
   }
