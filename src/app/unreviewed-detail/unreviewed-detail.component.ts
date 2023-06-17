@@ -292,14 +292,14 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    history.pushState(null, '');
+    // history.pushState(null, '');
 
-    fromEvent(window, 'popstate')
-      .pipe(takeUntil(this.unsubscriber))
-      .subscribe((_) => {
-        history.pushState(null, '');
-        alert(`You can't make changes or go back at this time.`);
-      });
+    // fromEvent(window, 'popstate')
+    //   .pipe(takeUntil(this.unsubscriber))
+    //   .subscribe((_) => {
+    //     history.pushState(null, '');
+    //     alert(`You can't make changes or go back at this time.`);
+    //   });
   }
 
   ngOnDestroy(): void {

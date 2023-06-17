@@ -1,14 +1,18 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
-import { clearProbateRecords, loadProbateRecords, updateProbateRecord } from '../../state/probate-record.actions';
+import {
+  clearProbateRecords,
+  loadProbateRecords,
+  updateProbateRecord,
+} from '../../state/probate-record.actions';
 import {
   selectProbateRecords,
   selectPageSize,
   selectNextToken,
   selectProbateRecordsLoading,
   selectProbateRecordsError,
-  selectProbateRecordsLoaded
+  selectProbateRecordsLoaded,
 } from '../../state/probte-record.selectors';
 import { MatTableDataSource } from '@angular/material/table';
 import { ProbateRecord } from '../API.service';
@@ -24,7 +28,7 @@ const UNREVIEWED_PAGE_SIZE = 'unreviewedPageSize';
 @Component({
   selector: 'app-probate-record-list',
   templateUrl: './probate-record-list.component.html',
-  styleUrls: ['./probate-record-list.component.sass']
+  styleUrls: ['./probate-record-list.component.sass'],
 })
 export class ProbateRecordListComponent implements OnInit {
   probateRecords$: Observable<ProbateRecord[]>;
@@ -55,7 +59,11 @@ export class ProbateRecordListComponent implements OnInit {
   user?: AmplifyUser;
   private subscriptions: Subscription[] = [];
 
-  constructor(private store: Store<AppState>, public authenticator: AuthenticatorService, private cookieService: CookieService) {
+  constructor(
+    private store: Store<AppState>,
+    public authenticator: AuthenticatorService,
+    private cookieService: CookieService
+  ) {
     this.probateRecords$ = this.store.pipe(select(selectProbateRecords));
     this.pageSize$ = this.store.pipe(select(selectPageSize));
     this.nextToken$ = this.store.pipe(select(selectNextToken));
@@ -67,33 +75,38 @@ export class ProbateRecordListComponent implements OnInit {
   ngOnInit(): void {
     const pageSizeText = this.cookieService.get(UNREVIEWED_PAGE_SIZE);
     console.log('page size is ' + pageSizeText);
-    this.pageSize = parseInt(this.cookieService.get(UNREVIEWED_PAGE_SIZE)) ?? 10;
-    this.store.dispatch(clearProbateRecords()); 
+    this.pageSize =
+      parseInt(this.cookieService.get(UNREVIEWED_PAGE_SIZE)) ?? 10;
+    this.store.dispatch(clearProbateRecords());
     // Dispatch the initial action to load the probate records
-    this.store.dispatch(loadProbateRecords({ pageSize: this.pageSize, filter: { reviewCount: { lt: 2 } } }));
-    
-    
+    this.store.dispatch(
+      loadProbateRecords({
+        pageSize: this.pageSize,
+        filter: { reviewCount: { lt: 2 } },
+      })
+    );
+
     // Subscribe to the probate records, page size, and next token
     this.subscriptions.push(
-      this.probateRecords$.subscribe(records => {
+      this.probateRecords$.subscribe((records) => {
         // Do something with the probate records
         this.dataSource = new MatTableDataSource(records);
-        this.dataSource.paginator = this.paginator!; 
+        this.dataSource.paginator = this.paginator!;
         console.log('records loaded');
         console.log(records);
       }),
-      this.pageSize$.subscribe(pageSize => {
+      this.pageSize$.subscribe((pageSize) => {
         // Do something with the page size
         this.pageSize = pageSize;
       }),
-      this.nextToken$.subscribe(nextToken => {
+      this.nextToken$.subscribe((nextToken) => {
         // Do something with the next token
         this.nextToken = nextToken!;
       }),
-      this.loading$.subscribe(loading => {
+      this.loading$.subscribe((loading) => {
         this.loading = loading;
       }),
-      this.loaded$.subscribe(loaded => {
+      this.loaded$.subscribe((loaded) => {
         this.loaded = loaded;
         // if (!loaded) {
         //   // Records not loaded, dispatch the load action
@@ -104,11 +117,10 @@ export class ProbateRecordListComponent implements OnInit {
         // }
       })
     );
-  }  
+  }
 
   ngAfterViewInit() {
     this.user = this.authenticator.user;
-     
   }
 
   loadProbateRecords(nextToken?: string): void {
@@ -122,12 +134,14 @@ export class ProbateRecordListComponent implements OnInit {
 
   ngOnDestroy() {
     // Unsubscribe from all subscriptions
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   loadMoreRecords(nextToken: string | null) {
     // Dispatch the action to load more probate records using the next token
-    this.store.dispatch(loadProbateRecords({ pageSize: 10, nextToken: this.nextToken}));
+    this.store.dispatch(
+      loadProbateRecords({ pageSize: 10, nextToken: this.nextToken })
+    );
   }
 
   handlePageEvent(event: PageEvent) {
@@ -147,26 +161,27 @@ export class ProbateRecordListComponent implements OnInit {
     if (record.lockedBy === this.user!.username!) {
       record.lockedBy = '';
       record.lockedDate = null;
-    }
-    else {
+    } else {
       record.lockedBy = this.user!.username!;
       record.lockedDate = new Date().toISOString();
-      
-      
     }
 
     try {
-      const updatedRecord: ProbateRecord = { ...record, lockedBy: record.lockedBy, lockedDate: record.lockedDate };
-      this.store.dispatch(updateProbateRecord({ probateRecord: updatedRecord }));
+      const updatedRecord: ProbateRecord = {
+        ...record,
+        lockedBy: record.lockedBy,
+        lockedDate: record.lockedDate,
+      };
+      this.store.dispatch(
+        updateProbateRecord({ probateRecord: updatedRecord })
+      );
+    } catch (e) {
+      if (e instanceof Error) {
+        alert((e as Error).message);
+      } else {
+        alert('An error has occurred during save');
       }
-      catch (e) {
-        if (e instanceof Error) {
-          alert((e as Error).message);
-        }
-        else {
-          alert('An error has occurred during save');
-        }
-      }
+    }
   }
 
   getLockedText(record: ProbateRecord) {

@@ -39,6 +39,8 @@ export class UploadComponent implements OnInit {
   loading?: boolean;
   loaded?: boolean;
   collectionsFormControl = new FormControl('');
+  probateRecordCollections: ProbateRecordCollection[] = [];
+
   constructor(public authenticator: AuthenticatorService, private probateRecordService: APIService, private store: Store<AppState>) {
     this.probateRecordCollections$ = this.store.pipe(select(selectProbateRecordCollections));
     this.loading$ = this.store.pipe(select(selectProbateRecordCollectionsLoading));
@@ -51,9 +53,10 @@ export class UploadComponent implements OnInit {
     // Subscribe to the probate records, page size, and next token
     this.subscriptions.push(
       this.probateRecordCollections$.subscribe(records => {
-        // Do something with the probate records        
+        this.probateRecordCollections = records;
         console.log('records loaded');
         console.log(records);
+        
       }),
       this.loading$.subscribe(loading => {
         this.loading = loading;
@@ -68,10 +71,17 @@ export class UploadComponent implements OnInit {
         for (let i = 0; i < this.filesInProcessing.length; i++) {
           const docid = this.filesInProcessing[i];
           try {
-            let response = await this.probateRecordService.GetProbateRecord(docid);
-            if (response && typeof response === 'object') {
+            let record = await this.probateRecordService.GetProbateRecord(docid) as ProbateRecord;
+            if (record && typeof record === 'object') {
+              // add to any checked collections
+              const collections = this.collectionsFormControl.value as unknown as ProbateRecordCollection[];
+              if(collections) {
+                for(const collection of collections) {
+                  this.probateRecordService.CreateCollectionRecords({probateRecordID: docid, probateRecordCollectionID: collection.id});
+                }
+              }
               // check if lines have been added
-              console.log(response);
+              console.log(record);
 
               console.log('record has been processed');
               // remove looking for file
@@ -96,6 +106,10 @@ export class UploadComponent implements OnInit {
         }
       }
     })
+  }
+
+  showCollections(): void {
+    console.log(this.collectionsFormControl);
   }
 
   ngOnInit(): void {

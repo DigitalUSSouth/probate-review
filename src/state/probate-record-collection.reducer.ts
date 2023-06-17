@@ -1,15 +1,19 @@
-import { createReducer, on } from '@ngrx/store';
+import { Action, createReducer, on } from '@ngrx/store';
 import { ModelProbateRecordCollectionFilterInput, ProbateRecordCollection } from 'src/app/API.service';
 import {
   loadProbateRecordCollections,
   loadProbateRecordCollectionsSuccess,
   updateProbateRecordCollection,
   clearProbateRecordCollections,
-  loadProbateRecordCollectionsFailure
+  loadProbateRecordCollectionsFailure,
+  loadProbateRecordCollection,
+  loadProbateRecordCollectionSuccess,
+  loadProbateRecordCollectionFailure
 } from './probate-record-collection.actions'
 
 export interface ProbateRecordCollectionState {
   probateRecordCollections: ProbateRecordCollection[];
+  collection: ProbateRecordCollection | null;
   pageSize: number;
   currentPage: number;
   nextToken: string | null | undefined;
@@ -21,6 +25,7 @@ export interface ProbateRecordCollectionState {
 
 export const initialProbateRecordCollectionState: ProbateRecordCollectionState = {
   probateRecordCollections: [],
+  collection: null,
   pageSize:10,
   currentPage: 1,
   nextToken: undefined,
@@ -64,4 +69,27 @@ export const probateRecordCollectionReducer = createReducer(initialProbateRecord
   on(clearProbateRecordCollections, (state) => ({
     ...state,
     probateRecordCollections: [],
-  })))
+  })),
+  on(loadProbateRecordCollection, (state) => ({
+    ...state,
+    loading: true,
+    error: null
+  })),
+  on(loadProbateRecordCollectionSuccess, (state, { collection }) => ({
+    ...state,
+    collection,
+    loading: false,
+    error: null
+  })),
+  on(loadProbateRecordCollectionFailure, (state, { error }) => ({
+    ...state,
+    collection: null,
+    loading: false,
+    error
+  }))
+  );
+
+  export function reducer(state: ProbateRecordCollectionState | undefined, action: Action) {
+    return probateRecordCollectionReducer(state, action);
+  }
+  

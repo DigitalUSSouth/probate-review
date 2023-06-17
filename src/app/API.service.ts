@@ -28,6 +28,9 @@ export type __SubscriptionContainer = {
   onCreateProbateRecordCollection: OnCreateProbateRecordCollectionSubscription;
   onUpdateProbateRecordCollection: OnUpdateProbateRecordCollectionSubscription;
   onDeleteProbateRecordCollection: OnDeleteProbateRecordCollectionSubscription;
+  onCreateCollectionRecords: OnCreateCollectionRecordsSubscription;
+  onUpdateCollectionRecords: OnUpdateCollectionRecordsSubscription;
+  onDeleteCollectionRecords: OnDeleteCollectionRecordsSubscription;
 };
 
 export type CreateProbateRecordInput = {
@@ -46,7 +49,6 @@ export type CreateProbateRecordInput = {
   lockedDate?: string | null;
   lockedBy?: string | null;
   markedForDeletion?: boolean | null;
-  probateRecordCollectionProbateRecordsId?: string | null;
 };
 
 export type WordInput = {
@@ -80,7 +82,6 @@ export type ModelProbateRecordConditionInput = {
   and?: Array<ModelProbateRecordConditionInput | null> | null;
   or?: Array<ModelProbateRecordConditionInput | null> | null;
   not?: ModelProbateRecordConditionInput | null;
-  probateRecordCollectionProbateRecordsId?: ModelIDInput | null;
 };
 
 export type ModelStringInput = {
@@ -187,9 +188,9 @@ export type ProbateRecord = {
   lockedDate?: string | null;
   lockedBy?: string | null;
   markedForDeletion?: boolean | null;
+  collections?: ModelCollectionRecordsConnection | null;
   createdAt: string;
   updatedAt: string;
-  probateRecordCollectionProbateRecordsId?: string | null;
 };
 
 export type ModelLineItemConnection = {
@@ -234,6 +235,35 @@ export type Word = {
   lineIndex?: number | null;
 };
 
+export type ModelCollectionRecordsConnection = {
+  __typename: "ModelCollectionRecordsConnection";
+  items: Array<CollectionRecords | null>;
+  nextToken?: string | null;
+};
+
+export type CollectionRecords = {
+  __typename: "CollectionRecords";
+  id: string;
+  probateRecordID: string;
+  probateRecordCollectionID: string;
+  probateRecord: ProbateRecord;
+  probateRecordCollection: ProbateRecordCollection;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ProbateRecordCollection = {
+  __typename: "ProbateRecordCollection";
+  id: string;
+  title: string;
+  description?: string | null;
+  lowerTitle: string;
+  lowerDescription?: string | null;
+  probateRecords?: ModelCollectionRecordsConnection | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type UpdateProbateRecordInput = {
   id: string;
   title?: string | null;
@@ -250,7 +280,6 @@ export type UpdateProbateRecordInput = {
   lockedDate?: string | null;
   lockedBy?: string | null;
   markedForDeletion?: boolean | null;
-  probateRecordCollectionProbateRecordsId?: string | null;
 };
 
 export type DeleteProbateRecordInput = {
@@ -490,26 +519,6 @@ export type ModelProbateRecordCollectionConditionInput = {
   not?: ModelProbateRecordCollectionConditionInput | null;
 };
 
-export type ProbateRecordCollection = {
-  __typename: "ProbateRecordCollection";
-  id: string;
-  title: string;
-  description?: string | null;
-  lowerTitle: string;
-  lowerDescription?: string | null;
-  probateRecords?: ModelProbateRecordConnection | null;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type ModelProbateRecordConnection = {
-  __typename: "ModelProbateRecordConnection";
-  items: Array<ProbateRecord | null>;
-  nextToken?: string | null;
-  scannedCount?: number | null;
-  count?: number | null;
-};
-
 export type UpdateProbateRecordCollectionInput = {
   id: string;
   title?: string | null;
@@ -519,6 +528,30 @@ export type UpdateProbateRecordCollectionInput = {
 };
 
 export type DeleteProbateRecordCollectionInput = {
+  id: string;
+};
+
+export type CreateCollectionRecordsInput = {
+  id?: string | null;
+  probateRecordID: string;
+  probateRecordCollectionID: string;
+};
+
+export type ModelCollectionRecordsConditionInput = {
+  probateRecordID?: ModelIDInput | null;
+  probateRecordCollectionID?: ModelIDInput | null;
+  and?: Array<ModelCollectionRecordsConditionInput | null> | null;
+  or?: Array<ModelCollectionRecordsConditionInput | null> | null;
+  not?: ModelCollectionRecordsConditionInput | null;
+};
+
+export type UpdateCollectionRecordsInput = {
+  id: string;
+  probateRecordID?: string | null;
+  probateRecordCollectionID?: string | null;
+};
+
+export type DeleteCollectionRecordsInput = {
   id: string;
 };
 
@@ -540,13 +573,20 @@ export type ModelProbateRecordFilterInput = {
   and?: Array<ModelProbateRecordFilterInput | null> | null;
   or?: Array<ModelProbateRecordFilterInput | null> | null;
   not?: ModelProbateRecordFilterInput | null;
-  probateRecordCollectionProbateRecordsId?: ModelIDInput | null;
 };
 
 export enum ModelSortDirection {
   ASC = "ASC",
   DESC = "DESC"
 }
+
+export type ModelProbateRecordConnection = {
+  __typename: "ModelProbateRecordConnection";
+  items: Array<ProbateRecord | null>;
+  nextToken?: string | null;
+  scannedCount?: number | null;
+  count?: number | null;
+};
 
 export type ModelLineItemFilterInput = {
   id?: ModelIDInput | null;
@@ -639,6 +679,15 @@ export type ModelProbateRecordCollectionConnection = {
   __typename: "ModelProbateRecordCollectionConnection";
   items: Array<ProbateRecordCollection | null>;
   nextToken?: string | null;
+};
+
+export type ModelCollectionRecordsFilterInput = {
+  id?: ModelIDInput | null;
+  probateRecordID?: ModelIDInput | null;
+  probateRecordCollectionID?: ModelIDInput | null;
+  and?: Array<ModelCollectionRecordsFilterInput | null> | null;
+  or?: Array<ModelCollectionRecordsFilterInput | null> | null;
+  not?: ModelCollectionRecordsFilterInput | null;
 };
 
 export type ModelSubscriptionProbateRecordFilterInput = {
@@ -774,6 +823,14 @@ export type ModelSubscriptionProbateRecordCollectionFilterInput = {
   or?: Array<ModelSubscriptionProbateRecordCollectionFilterInput | null> | null;
 };
 
+export type ModelSubscriptionCollectionRecordsFilterInput = {
+  id?: ModelSubscriptionIDInput | null;
+  probateRecordID?: ModelSubscriptionIDInput | null;
+  probateRecordCollectionID?: ModelSubscriptionIDInput | null;
+  and?: Array<ModelSubscriptionCollectionRecordsFilterInput | null> | null;
+  or?: Array<ModelSubscriptionCollectionRecordsFilterInput | null> | null;
+};
+
 export type CreateProbateRecordMutation = {
   __typename: "ProbateRecord";
   id: string;
@@ -832,9 +889,421 @@ export type CreateProbateRecordMutation = {
   lockedDate?: string | null;
   lockedBy?: string | null;
   markedForDeletion?: boolean | null;
+  collections?: {
+    __typename: "ModelCollectionRecordsConnection";
+    items: Array<{
+      __typename: "CollectionRecords";
+      id: string;
+      probateRecordID: string;
+      probateRecordCollectionID: string;
+      probateRecord: {
+        __typename: "ProbateRecord";
+        id: string;
+        title: string;
+        description?: string | null;
+        deceasedId: string;
+        filingId: string;
+        appraiser: Array<string | null>;
+        witness: Array<string | null>;
+        lineItems?: {
+          __typename: "ModelLineItemConnection";
+          items: Array<{
+            __typename: "LineItem";
+            id: string;
+            probateId: string;
+            wordIds: Array<string | null>;
+            title: string;
+            description: string;
+            category: string;
+            subcategory: string;
+            quantity: number;
+            value: number;
+            confidence: number;
+            rowIndex: number;
+            lowerTitle: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            attributeForId: string;
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        words: Array<{
+          __typename: "Word";
+          id: string;
+          text: string;
+          boundingBox?: {
+            __typename: "Rect";
+            left: number;
+            top: number;
+            width: number;
+            height: number;
+          } | null;
+          lineIndex?: number | null;
+        } | null>;
+        totalValue: number;
+        reviewCount: number;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        lockedDate?: string | null;
+        lockedBy?: string | null;
+        markedForDeletion?: boolean | null;
+        collections?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      probateRecordCollection: {
+        __typename: "ProbateRecordCollection";
+        id: string;
+        title: string;
+        description?: string | null;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        probateRecords?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      createdAt: string;
+      updatedAt: string;
+    } | null>;
+    nextToken?: string | null;
+  } | null;
   createdAt: string;
   updatedAt: string;
-  probateRecordCollectionProbateRecordsId?: string | null;
 };
 
 export type UpdateProbateRecordMutation = {
@@ -895,9 +1364,421 @@ export type UpdateProbateRecordMutation = {
   lockedDate?: string | null;
   lockedBy?: string | null;
   markedForDeletion?: boolean | null;
+  collections?: {
+    __typename: "ModelCollectionRecordsConnection";
+    items: Array<{
+      __typename: "CollectionRecords";
+      id: string;
+      probateRecordID: string;
+      probateRecordCollectionID: string;
+      probateRecord: {
+        __typename: "ProbateRecord";
+        id: string;
+        title: string;
+        description?: string | null;
+        deceasedId: string;
+        filingId: string;
+        appraiser: Array<string | null>;
+        witness: Array<string | null>;
+        lineItems?: {
+          __typename: "ModelLineItemConnection";
+          items: Array<{
+            __typename: "LineItem";
+            id: string;
+            probateId: string;
+            wordIds: Array<string | null>;
+            title: string;
+            description: string;
+            category: string;
+            subcategory: string;
+            quantity: number;
+            value: number;
+            confidence: number;
+            rowIndex: number;
+            lowerTitle: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            attributeForId: string;
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        words: Array<{
+          __typename: "Word";
+          id: string;
+          text: string;
+          boundingBox?: {
+            __typename: "Rect";
+            left: number;
+            top: number;
+            width: number;
+            height: number;
+          } | null;
+          lineIndex?: number | null;
+        } | null>;
+        totalValue: number;
+        reviewCount: number;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        lockedDate?: string | null;
+        lockedBy?: string | null;
+        markedForDeletion?: boolean | null;
+        collections?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      probateRecordCollection: {
+        __typename: "ProbateRecordCollection";
+        id: string;
+        title: string;
+        description?: string | null;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        probateRecords?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      createdAt: string;
+      updatedAt: string;
+    } | null>;
+    nextToken?: string | null;
+  } | null;
   createdAt: string;
   updatedAt: string;
-  probateRecordCollectionProbateRecordsId?: string | null;
 };
 
 export type DeleteProbateRecordMutation = {
@@ -958,9 +1839,421 @@ export type DeleteProbateRecordMutation = {
   lockedDate?: string | null;
   lockedBy?: string | null;
   markedForDeletion?: boolean | null;
+  collections?: {
+    __typename: "ModelCollectionRecordsConnection";
+    items: Array<{
+      __typename: "CollectionRecords";
+      id: string;
+      probateRecordID: string;
+      probateRecordCollectionID: string;
+      probateRecord: {
+        __typename: "ProbateRecord";
+        id: string;
+        title: string;
+        description?: string | null;
+        deceasedId: string;
+        filingId: string;
+        appraiser: Array<string | null>;
+        witness: Array<string | null>;
+        lineItems?: {
+          __typename: "ModelLineItemConnection";
+          items: Array<{
+            __typename: "LineItem";
+            id: string;
+            probateId: string;
+            wordIds: Array<string | null>;
+            title: string;
+            description: string;
+            category: string;
+            subcategory: string;
+            quantity: number;
+            value: number;
+            confidence: number;
+            rowIndex: number;
+            lowerTitle: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            attributeForId: string;
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        words: Array<{
+          __typename: "Word";
+          id: string;
+          text: string;
+          boundingBox?: {
+            __typename: "Rect";
+            left: number;
+            top: number;
+            width: number;
+            height: number;
+          } | null;
+          lineIndex?: number | null;
+        } | null>;
+        totalValue: number;
+        reviewCount: number;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        lockedDate?: string | null;
+        lockedBy?: string | null;
+        markedForDeletion?: boolean | null;
+        collections?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      probateRecordCollection: {
+        __typename: "ProbateRecordCollection";
+        id: string;
+        title: string;
+        description?: string | null;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        probateRecords?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      createdAt: string;
+      updatedAt: string;
+    } | null>;
+    nextToken?: string | null;
+  } | null;
   createdAt: string;
   updatedAt: string;
-  probateRecordCollectionProbateRecordsId?: string | null;
 };
 
 export type CreateLineItemMutation = {
@@ -1223,32 +2516,54 @@ export type CreateProbateRecordCollectionMutation = {
   lowerTitle: string;
   lowerDescription?: string | null;
   probateRecords?: {
-    __typename: "ModelProbateRecordConnection";
+    __typename: "ModelCollectionRecordsConnection";
     items: Array<{
-      __typename: "ProbateRecord";
+      __typename: "CollectionRecords";
       id: string;
-      title: string;
-      description?: string | null;
-      deceasedId: string;
-      filingId: string;
-      appraiser: Array<string | null>;
-      witness: Array<string | null>;
-      lineItems?: {
-        __typename: "ModelLineItemConnection";
-        items: Array<{
-          __typename: "LineItem";
+      probateRecordID: string;
+      probateRecordCollectionID: string;
+      probateRecord: {
+        __typename: "ProbateRecord";
+        id: string;
+        title: string;
+        description?: string | null;
+        deceasedId: string;
+        filingId: string;
+        appraiser: Array<string | null>;
+        witness: Array<string | null>;
+        lineItems?: {
+          __typename: "ModelLineItemConnection";
+          items: Array<{
+            __typename: "LineItem";
+            id: string;
+            probateId: string;
+            wordIds: Array<string | null>;
+            title: string;
+            description: string;
+            category: string;
+            subcategory: string;
+            quantity: number;
+            value: number;
+            confidence: number;
+            rowIndex: number;
+            lowerTitle: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            attributeForId: string;
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        words: Array<{
+          __typename: "Word";
           id: string;
-          probateId: string;
-          wordIds: Array<string | null>;
-          title: string;
-          description: string;
-          category: string;
-          subcategory: string;
-          quantity: number;
-          value: number;
-          confidence: number;
-          rowIndex: number;
-          lowerTitle: string;
+          text: string;
           boundingBox?: {
             __typename: "Rect";
             left: number;
@@ -1256,39 +2571,362 @@ export type CreateProbateRecordCollectionMutation = {
             width: number;
             height: number;
           } | null;
-          attributeForId: string;
-          createdAt: string;
-          updatedAt: string;
+          lineIndex?: number | null;
         } | null>;
-        nextToken?: string | null;
-      } | null;
-      words: Array<{
-        __typename: "Word";
-        id: string;
-        text: string;
-        boundingBox?: {
-          __typename: "Rect";
-          left: number;
-          top: number;
-          width: number;
-          height: number;
+        totalValue: number;
+        reviewCount: number;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        lockedDate?: string | null;
+        lockedBy?: string | null;
+        markedForDeletion?: boolean | null;
+        collections?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
         } | null;
-        lineIndex?: number | null;
-      } | null>;
-      totalValue: number;
-      reviewCount: number;
-      lowerTitle: string;
-      lowerDescription?: string | null;
-      lockedDate?: string | null;
-      lockedBy?: string | null;
-      markedForDeletion?: boolean | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      probateRecordCollection: {
+        __typename: "ProbateRecordCollection";
+        id: string;
+        title: string;
+        description?: string | null;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        probateRecords?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
       createdAt: string;
       updatedAt: string;
-      probateRecordCollectionProbateRecordsId?: string | null;
     } | null>;
     nextToken?: string | null;
-    scannedCount?: number | null;
-    count?: number | null;
   } | null;
   createdAt: string;
   updatedAt: string;
@@ -1302,32 +2940,54 @@ export type UpdateProbateRecordCollectionMutation = {
   lowerTitle: string;
   lowerDescription?: string | null;
   probateRecords?: {
-    __typename: "ModelProbateRecordConnection";
+    __typename: "ModelCollectionRecordsConnection";
     items: Array<{
-      __typename: "ProbateRecord";
+      __typename: "CollectionRecords";
       id: string;
-      title: string;
-      description?: string | null;
-      deceasedId: string;
-      filingId: string;
-      appraiser: Array<string | null>;
-      witness: Array<string | null>;
-      lineItems?: {
-        __typename: "ModelLineItemConnection";
-        items: Array<{
-          __typename: "LineItem";
+      probateRecordID: string;
+      probateRecordCollectionID: string;
+      probateRecord: {
+        __typename: "ProbateRecord";
+        id: string;
+        title: string;
+        description?: string | null;
+        deceasedId: string;
+        filingId: string;
+        appraiser: Array<string | null>;
+        witness: Array<string | null>;
+        lineItems?: {
+          __typename: "ModelLineItemConnection";
+          items: Array<{
+            __typename: "LineItem";
+            id: string;
+            probateId: string;
+            wordIds: Array<string | null>;
+            title: string;
+            description: string;
+            category: string;
+            subcategory: string;
+            quantity: number;
+            value: number;
+            confidence: number;
+            rowIndex: number;
+            lowerTitle: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            attributeForId: string;
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        words: Array<{
+          __typename: "Word";
           id: string;
-          probateId: string;
-          wordIds: Array<string | null>;
-          title: string;
-          description: string;
-          category: string;
-          subcategory: string;
-          quantity: number;
-          value: number;
-          confidence: number;
-          rowIndex: number;
-          lowerTitle: string;
+          text: string;
           boundingBox?: {
             __typename: "Rect";
             left: number;
@@ -1335,39 +2995,362 @@ export type UpdateProbateRecordCollectionMutation = {
             width: number;
             height: number;
           } | null;
-          attributeForId: string;
-          createdAt: string;
-          updatedAt: string;
+          lineIndex?: number | null;
         } | null>;
-        nextToken?: string | null;
-      } | null;
-      words: Array<{
-        __typename: "Word";
-        id: string;
-        text: string;
-        boundingBox?: {
-          __typename: "Rect";
-          left: number;
-          top: number;
-          width: number;
-          height: number;
+        totalValue: number;
+        reviewCount: number;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        lockedDate?: string | null;
+        lockedBy?: string | null;
+        markedForDeletion?: boolean | null;
+        collections?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
         } | null;
-        lineIndex?: number | null;
-      } | null>;
-      totalValue: number;
-      reviewCount: number;
-      lowerTitle: string;
-      lowerDescription?: string | null;
-      lockedDate?: string | null;
-      lockedBy?: string | null;
-      markedForDeletion?: boolean | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      probateRecordCollection: {
+        __typename: "ProbateRecordCollection";
+        id: string;
+        title: string;
+        description?: string | null;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        probateRecords?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
       createdAt: string;
       updatedAt: string;
-      probateRecordCollectionProbateRecordsId?: string | null;
     } | null>;
     nextToken?: string | null;
-    scannedCount?: number | null;
-    count?: number | null;
   } | null;
   createdAt: string;
   updatedAt: string;
@@ -1381,32 +3364,54 @@ export type DeleteProbateRecordCollectionMutation = {
   lowerTitle: string;
   lowerDescription?: string | null;
   probateRecords?: {
-    __typename: "ModelProbateRecordConnection";
+    __typename: "ModelCollectionRecordsConnection";
     items: Array<{
-      __typename: "ProbateRecord";
+      __typename: "CollectionRecords";
       id: string;
-      title: string;
-      description?: string | null;
-      deceasedId: string;
-      filingId: string;
-      appraiser: Array<string | null>;
-      witness: Array<string | null>;
-      lineItems?: {
-        __typename: "ModelLineItemConnection";
-        items: Array<{
-          __typename: "LineItem";
+      probateRecordID: string;
+      probateRecordCollectionID: string;
+      probateRecord: {
+        __typename: "ProbateRecord";
+        id: string;
+        title: string;
+        description?: string | null;
+        deceasedId: string;
+        filingId: string;
+        appraiser: Array<string | null>;
+        witness: Array<string | null>;
+        lineItems?: {
+          __typename: "ModelLineItemConnection";
+          items: Array<{
+            __typename: "LineItem";
+            id: string;
+            probateId: string;
+            wordIds: Array<string | null>;
+            title: string;
+            description: string;
+            category: string;
+            subcategory: string;
+            quantity: number;
+            value: number;
+            confidence: number;
+            rowIndex: number;
+            lowerTitle: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            attributeForId: string;
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        words: Array<{
+          __typename: "Word";
           id: string;
-          probateId: string;
-          wordIds: Array<string | null>;
-          title: string;
-          description: string;
-          category: string;
-          subcategory: string;
-          quantity: number;
-          value: number;
-          confidence: number;
-          rowIndex: number;
-          lowerTitle: string;
+          text: string;
           boundingBox?: {
             __typename: "Rect";
             left: number;
@@ -1414,16 +3419,397 @@ export type DeleteProbateRecordCollectionMutation = {
             width: number;
             height: number;
           } | null;
-          attributeForId: string;
-          createdAt: string;
-          updatedAt: string;
+          lineIndex?: number | null;
         } | null>;
-        nextToken?: string | null;
-      } | null;
-      words: Array<{
-        __typename: "Word";
+        totalValue: number;
+        reviewCount: number;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        lockedDate?: string | null;
+        lockedBy?: string | null;
+        markedForDeletion?: boolean | null;
+        collections?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      probateRecordCollection: {
+        __typename: "ProbateRecordCollection";
         id: string;
-        text: string;
+        title: string;
+        description?: string | null;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        probateRecords?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      createdAt: string;
+      updatedAt: string;
+    } | null>;
+    nextToken?: string | null;
+  } | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CreateCollectionRecordsMutation = {
+  __typename: "CollectionRecords";
+  id: string;
+  probateRecordID: string;
+  probateRecordCollectionID: string;
+  probateRecord: {
+    __typename: "ProbateRecord";
+    id: string;
+    title: string;
+    description?: string | null;
+    deceasedId: string;
+    filingId: string;
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
+    lineItems?: {
+      __typename: "ModelLineItemConnection";
+      items: Array<{
+        __typename: "LineItem";
+        id: string;
+        probateId: string;
+        wordIds: Array<string | null>;
+        title: string;
+        description: string;
+        category: string;
+        subcategory: string;
+        quantity: number;
+        value: number;
+        confidence: number;
+        rowIndex: number;
+        lowerTitle: string;
         boundingBox?: {
           __typename: "Rect";
           left: number;
@@ -1431,23 +3817,1903 @@ export type DeleteProbateRecordCollectionMutation = {
           width: number;
           height: number;
         } | null;
-        lineIndex?: number | null;
+        attributeForId: string;
+        createdAt: string;
+        updatedAt: string;
       } | null>;
-      totalValue: number;
-      reviewCount: number;
-      lowerTitle: string;
-      lowerDescription?: string | null;
-      lockedDate?: string | null;
-      lockedBy?: string | null;
-      markedForDeletion?: boolean | null;
-      createdAt: string;
-      updatedAt: string;
-      probateRecordCollectionProbateRecordsId?: string | null;
+      nextToken?: string | null;
+    } | null;
+    words: Array<{
+      __typename: "Word";
+      id: string;
+      text: string;
+      boundingBox?: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      } | null;
+      lineIndex?: number | null;
     } | null>;
-    nextToken?: string | null;
-    scannedCount?: number | null;
-    count?: number | null;
-  } | null;
+    totalValue: number;
+    reviewCount: number;
+    lowerTitle: string;
+    lowerDescription?: string | null;
+    lockedDate?: string | null;
+    lockedBy?: string | null;
+    markedForDeletion?: boolean | null;
+    collections?: {
+      __typename: "ModelCollectionRecordsConnection";
+      items: Array<{
+        __typename: "CollectionRecords";
+        id: string;
+        probateRecordID: string;
+        probateRecordCollectionID: string;
+        probateRecord: {
+          __typename: "ProbateRecord";
+          id: string;
+          title: string;
+          description?: string | null;
+          deceasedId: string;
+          filingId: string;
+          appraiser: Array<string | null>;
+          witness: Array<string | null>;
+          lineItems?: {
+            __typename: "ModelLineItemConnection";
+            items: Array<{
+              __typename: "LineItem";
+              id: string;
+              probateId: string;
+              wordIds: Array<string | null>;
+              title: string;
+              description: string;
+              category: string;
+              subcategory: string;
+              quantity: number;
+              value: number;
+              confidence: number;
+              rowIndex: number;
+              lowerTitle: string;
+              boundingBox?: {
+                __typename: "Rect";
+                left: number;
+                top: number;
+                width: number;
+                height: number;
+              } | null;
+              attributeForId: string;
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          words: Array<{
+            __typename: "Word";
+            id: string;
+            text: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            lineIndex?: number | null;
+          } | null>;
+          totalValue: number;
+          reviewCount: number;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          lockedDate?: string | null;
+          lockedBy?: string | null;
+          markedForDeletion?: boolean | null;
+          collections?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        probateRecordCollection: {
+          __typename: "ProbateRecordCollection";
+          id: string;
+          title: string;
+          description?: string | null;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          probateRecords?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        createdAt: string;
+        updatedAt: string;
+      } | null>;
+      nextToken?: string | null;
+    } | null;
+    createdAt: string;
+    updatedAt: string;
+  };
+  probateRecordCollection: {
+    __typename: "ProbateRecordCollection";
+    id: string;
+    title: string;
+    description?: string | null;
+    lowerTitle: string;
+    lowerDescription?: string | null;
+    probateRecords?: {
+      __typename: "ModelCollectionRecordsConnection";
+      items: Array<{
+        __typename: "CollectionRecords";
+        id: string;
+        probateRecordID: string;
+        probateRecordCollectionID: string;
+        probateRecord: {
+          __typename: "ProbateRecord";
+          id: string;
+          title: string;
+          description?: string | null;
+          deceasedId: string;
+          filingId: string;
+          appraiser: Array<string | null>;
+          witness: Array<string | null>;
+          lineItems?: {
+            __typename: "ModelLineItemConnection";
+            items: Array<{
+              __typename: "LineItem";
+              id: string;
+              probateId: string;
+              wordIds: Array<string | null>;
+              title: string;
+              description: string;
+              category: string;
+              subcategory: string;
+              quantity: number;
+              value: number;
+              confidence: number;
+              rowIndex: number;
+              lowerTitle: string;
+              boundingBox?: {
+                __typename: "Rect";
+                left: number;
+                top: number;
+                width: number;
+                height: number;
+              } | null;
+              attributeForId: string;
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          words: Array<{
+            __typename: "Word";
+            id: string;
+            text: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            lineIndex?: number | null;
+          } | null>;
+          totalValue: number;
+          reviewCount: number;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          lockedDate?: string | null;
+          lockedBy?: string | null;
+          markedForDeletion?: boolean | null;
+          collections?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        probateRecordCollection: {
+          __typename: "ProbateRecordCollection";
+          id: string;
+          title: string;
+          description?: string | null;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          probateRecords?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        createdAt: string;
+        updatedAt: string;
+      } | null>;
+      nextToken?: string | null;
+    } | null;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UpdateCollectionRecordsMutation = {
+  __typename: "CollectionRecords";
+  id: string;
+  probateRecordID: string;
+  probateRecordCollectionID: string;
+  probateRecord: {
+    __typename: "ProbateRecord";
+    id: string;
+    title: string;
+    description?: string | null;
+    deceasedId: string;
+    filingId: string;
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
+    lineItems?: {
+      __typename: "ModelLineItemConnection";
+      items: Array<{
+        __typename: "LineItem";
+        id: string;
+        probateId: string;
+        wordIds: Array<string | null>;
+        title: string;
+        description: string;
+        category: string;
+        subcategory: string;
+        quantity: number;
+        value: number;
+        confidence: number;
+        rowIndex: number;
+        lowerTitle: string;
+        boundingBox?: {
+          __typename: "Rect";
+          left: number;
+          top: number;
+          width: number;
+          height: number;
+        } | null;
+        attributeForId: string;
+        createdAt: string;
+        updatedAt: string;
+      } | null>;
+      nextToken?: string | null;
+    } | null;
+    words: Array<{
+      __typename: "Word";
+      id: string;
+      text: string;
+      boundingBox?: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      } | null;
+      lineIndex?: number | null;
+    } | null>;
+    totalValue: number;
+    reviewCount: number;
+    lowerTitle: string;
+    lowerDescription?: string | null;
+    lockedDate?: string | null;
+    lockedBy?: string | null;
+    markedForDeletion?: boolean | null;
+    collections?: {
+      __typename: "ModelCollectionRecordsConnection";
+      items: Array<{
+        __typename: "CollectionRecords";
+        id: string;
+        probateRecordID: string;
+        probateRecordCollectionID: string;
+        probateRecord: {
+          __typename: "ProbateRecord";
+          id: string;
+          title: string;
+          description?: string | null;
+          deceasedId: string;
+          filingId: string;
+          appraiser: Array<string | null>;
+          witness: Array<string | null>;
+          lineItems?: {
+            __typename: "ModelLineItemConnection";
+            items: Array<{
+              __typename: "LineItem";
+              id: string;
+              probateId: string;
+              wordIds: Array<string | null>;
+              title: string;
+              description: string;
+              category: string;
+              subcategory: string;
+              quantity: number;
+              value: number;
+              confidence: number;
+              rowIndex: number;
+              lowerTitle: string;
+              boundingBox?: {
+                __typename: "Rect";
+                left: number;
+                top: number;
+                width: number;
+                height: number;
+              } | null;
+              attributeForId: string;
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          words: Array<{
+            __typename: "Word";
+            id: string;
+            text: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            lineIndex?: number | null;
+          } | null>;
+          totalValue: number;
+          reviewCount: number;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          lockedDate?: string | null;
+          lockedBy?: string | null;
+          markedForDeletion?: boolean | null;
+          collections?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        probateRecordCollection: {
+          __typename: "ProbateRecordCollection";
+          id: string;
+          title: string;
+          description?: string | null;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          probateRecords?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        createdAt: string;
+        updatedAt: string;
+      } | null>;
+      nextToken?: string | null;
+    } | null;
+    createdAt: string;
+    updatedAt: string;
+  };
+  probateRecordCollection: {
+    __typename: "ProbateRecordCollection";
+    id: string;
+    title: string;
+    description?: string | null;
+    lowerTitle: string;
+    lowerDescription?: string | null;
+    probateRecords?: {
+      __typename: "ModelCollectionRecordsConnection";
+      items: Array<{
+        __typename: "CollectionRecords";
+        id: string;
+        probateRecordID: string;
+        probateRecordCollectionID: string;
+        probateRecord: {
+          __typename: "ProbateRecord";
+          id: string;
+          title: string;
+          description?: string | null;
+          deceasedId: string;
+          filingId: string;
+          appraiser: Array<string | null>;
+          witness: Array<string | null>;
+          lineItems?: {
+            __typename: "ModelLineItemConnection";
+            items: Array<{
+              __typename: "LineItem";
+              id: string;
+              probateId: string;
+              wordIds: Array<string | null>;
+              title: string;
+              description: string;
+              category: string;
+              subcategory: string;
+              quantity: number;
+              value: number;
+              confidence: number;
+              rowIndex: number;
+              lowerTitle: string;
+              boundingBox?: {
+                __typename: "Rect";
+                left: number;
+                top: number;
+                width: number;
+                height: number;
+              } | null;
+              attributeForId: string;
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          words: Array<{
+            __typename: "Word";
+            id: string;
+            text: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            lineIndex?: number | null;
+          } | null>;
+          totalValue: number;
+          reviewCount: number;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          lockedDate?: string | null;
+          lockedBy?: string | null;
+          markedForDeletion?: boolean | null;
+          collections?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        probateRecordCollection: {
+          __typename: "ProbateRecordCollection";
+          id: string;
+          title: string;
+          description?: string | null;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          probateRecords?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        createdAt: string;
+        updatedAt: string;
+      } | null>;
+      nextToken?: string | null;
+    } | null;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type DeleteCollectionRecordsMutation = {
+  __typename: "CollectionRecords";
+  id: string;
+  probateRecordID: string;
+  probateRecordCollectionID: string;
+  probateRecord: {
+    __typename: "ProbateRecord";
+    id: string;
+    title: string;
+    description?: string | null;
+    deceasedId: string;
+    filingId: string;
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
+    lineItems?: {
+      __typename: "ModelLineItemConnection";
+      items: Array<{
+        __typename: "LineItem";
+        id: string;
+        probateId: string;
+        wordIds: Array<string | null>;
+        title: string;
+        description: string;
+        category: string;
+        subcategory: string;
+        quantity: number;
+        value: number;
+        confidence: number;
+        rowIndex: number;
+        lowerTitle: string;
+        boundingBox?: {
+          __typename: "Rect";
+          left: number;
+          top: number;
+          width: number;
+          height: number;
+        } | null;
+        attributeForId: string;
+        createdAt: string;
+        updatedAt: string;
+      } | null>;
+      nextToken?: string | null;
+    } | null;
+    words: Array<{
+      __typename: "Word";
+      id: string;
+      text: string;
+      boundingBox?: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      } | null;
+      lineIndex?: number | null;
+    } | null>;
+    totalValue: number;
+    reviewCount: number;
+    lowerTitle: string;
+    lowerDescription?: string | null;
+    lockedDate?: string | null;
+    lockedBy?: string | null;
+    markedForDeletion?: boolean | null;
+    collections?: {
+      __typename: "ModelCollectionRecordsConnection";
+      items: Array<{
+        __typename: "CollectionRecords";
+        id: string;
+        probateRecordID: string;
+        probateRecordCollectionID: string;
+        probateRecord: {
+          __typename: "ProbateRecord";
+          id: string;
+          title: string;
+          description?: string | null;
+          deceasedId: string;
+          filingId: string;
+          appraiser: Array<string | null>;
+          witness: Array<string | null>;
+          lineItems?: {
+            __typename: "ModelLineItemConnection";
+            items: Array<{
+              __typename: "LineItem";
+              id: string;
+              probateId: string;
+              wordIds: Array<string | null>;
+              title: string;
+              description: string;
+              category: string;
+              subcategory: string;
+              quantity: number;
+              value: number;
+              confidence: number;
+              rowIndex: number;
+              lowerTitle: string;
+              boundingBox?: {
+                __typename: "Rect";
+                left: number;
+                top: number;
+                width: number;
+                height: number;
+              } | null;
+              attributeForId: string;
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          words: Array<{
+            __typename: "Word";
+            id: string;
+            text: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            lineIndex?: number | null;
+          } | null>;
+          totalValue: number;
+          reviewCount: number;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          lockedDate?: string | null;
+          lockedBy?: string | null;
+          markedForDeletion?: boolean | null;
+          collections?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        probateRecordCollection: {
+          __typename: "ProbateRecordCollection";
+          id: string;
+          title: string;
+          description?: string | null;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          probateRecords?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        createdAt: string;
+        updatedAt: string;
+      } | null>;
+      nextToken?: string | null;
+    } | null;
+    createdAt: string;
+    updatedAt: string;
+  };
+  probateRecordCollection: {
+    __typename: "ProbateRecordCollection";
+    id: string;
+    title: string;
+    description?: string | null;
+    lowerTitle: string;
+    lowerDescription?: string | null;
+    probateRecords?: {
+      __typename: "ModelCollectionRecordsConnection";
+      items: Array<{
+        __typename: "CollectionRecords";
+        id: string;
+        probateRecordID: string;
+        probateRecordCollectionID: string;
+        probateRecord: {
+          __typename: "ProbateRecord";
+          id: string;
+          title: string;
+          description?: string | null;
+          deceasedId: string;
+          filingId: string;
+          appraiser: Array<string | null>;
+          witness: Array<string | null>;
+          lineItems?: {
+            __typename: "ModelLineItemConnection";
+            items: Array<{
+              __typename: "LineItem";
+              id: string;
+              probateId: string;
+              wordIds: Array<string | null>;
+              title: string;
+              description: string;
+              category: string;
+              subcategory: string;
+              quantity: number;
+              value: number;
+              confidence: number;
+              rowIndex: number;
+              lowerTitle: string;
+              boundingBox?: {
+                __typename: "Rect";
+                left: number;
+                top: number;
+                width: number;
+                height: number;
+              } | null;
+              attributeForId: string;
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          words: Array<{
+            __typename: "Word";
+            id: string;
+            text: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            lineIndex?: number | null;
+          } | null>;
+          totalValue: number;
+          reviewCount: number;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          lockedDate?: string | null;
+          lockedBy?: string | null;
+          markedForDeletion?: boolean | null;
+          collections?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        probateRecordCollection: {
+          __typename: "ProbateRecordCollection";
+          id: string;
+          title: string;
+          description?: string | null;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          probateRecords?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        createdAt: string;
+        updatedAt: string;
+      } | null>;
+      nextToken?: string | null;
+    } | null;
+    createdAt: string;
+    updatedAt: string;
+  };
   createdAt: string;
   updatedAt: string;
 };
@@ -1510,9 +5776,421 @@ export type GetProbateRecordQuery = {
   lockedDate?: string | null;
   lockedBy?: string | null;
   markedForDeletion?: boolean | null;
+  collections?: {
+    __typename: "ModelCollectionRecordsConnection";
+    items: Array<{
+      __typename: "CollectionRecords";
+      id: string;
+      probateRecordID: string;
+      probateRecordCollectionID: string;
+      probateRecord: {
+        __typename: "ProbateRecord";
+        id: string;
+        title: string;
+        description?: string | null;
+        deceasedId: string;
+        filingId: string;
+        appraiser: Array<string | null>;
+        witness: Array<string | null>;
+        lineItems?: {
+          __typename: "ModelLineItemConnection";
+          items: Array<{
+            __typename: "LineItem";
+            id: string;
+            probateId: string;
+            wordIds: Array<string | null>;
+            title: string;
+            description: string;
+            category: string;
+            subcategory: string;
+            quantity: number;
+            value: number;
+            confidence: number;
+            rowIndex: number;
+            lowerTitle: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            attributeForId: string;
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        words: Array<{
+          __typename: "Word";
+          id: string;
+          text: string;
+          boundingBox?: {
+            __typename: "Rect";
+            left: number;
+            top: number;
+            width: number;
+            height: number;
+          } | null;
+          lineIndex?: number | null;
+        } | null>;
+        totalValue: number;
+        reviewCount: number;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        lockedDate?: string | null;
+        lockedBy?: string | null;
+        markedForDeletion?: boolean | null;
+        collections?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      probateRecordCollection: {
+        __typename: "ProbateRecordCollection";
+        id: string;
+        title: string;
+        description?: string | null;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        probateRecords?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      createdAt: string;
+      updatedAt: string;
+    } | null>;
+    nextToken?: string | null;
+  } | null;
   createdAt: string;
   updatedAt: string;
-  probateRecordCollectionProbateRecordsId?: string | null;
 };
 
 export type ListProbateRecordsQuery = {
@@ -1575,9 +6253,291 @@ export type ListProbateRecordsQuery = {
     lockedDate?: string | null;
     lockedBy?: string | null;
     markedForDeletion?: boolean | null;
+    collections?: {
+      __typename: "ModelCollectionRecordsConnection";
+      items: Array<{
+        __typename: "CollectionRecords";
+        id: string;
+        probateRecordID: string;
+        probateRecordCollectionID: string;
+        probateRecord: {
+          __typename: "ProbateRecord";
+          id: string;
+          title: string;
+          description?: string | null;
+          deceasedId: string;
+          filingId: string;
+          appraiser: Array<string | null>;
+          witness: Array<string | null>;
+          lineItems?: {
+            __typename: "ModelLineItemConnection";
+            items: Array<{
+              __typename: "LineItem";
+              id: string;
+              probateId: string;
+              wordIds: Array<string | null>;
+              title: string;
+              description: string;
+              category: string;
+              subcategory: string;
+              quantity: number;
+              value: number;
+              confidence: number;
+              rowIndex: number;
+              lowerTitle: string;
+              boundingBox?: {
+                __typename: "Rect";
+                left: number;
+                top: number;
+                width: number;
+                height: number;
+              } | null;
+              attributeForId: string;
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          words: Array<{
+            __typename: "Word";
+            id: string;
+            text: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            lineIndex?: number | null;
+          } | null>;
+          totalValue: number;
+          reviewCount: number;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          lockedDate?: string | null;
+          lockedBy?: string | null;
+          markedForDeletion?: boolean | null;
+          collections?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        probateRecordCollection: {
+          __typename: "ProbateRecordCollection";
+          id: string;
+          title: string;
+          description?: string | null;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          probateRecords?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        createdAt: string;
+        updatedAt: string;
+      } | null>;
+      nextToken?: string | null;
+    } | null;
     createdAt: string;
     updatedAt: string;
-    probateRecordCollectionProbateRecordsId?: string | null;
   } | null>;
   nextToken?: string | null;
   scannedCount?: number | null;
@@ -1806,89 +6766,13 @@ export type GetProbateRecordCollectionQuery = {
   lowerTitle: string;
   lowerDescription?: string | null;
   probateRecords?: {
-    __typename: "ModelProbateRecordConnection";
+    __typename: "ModelCollectionRecordsConnection";
     items: Array<{
-      __typename: "ProbateRecord";
+      __typename: "CollectionRecords";
       id: string;
-      title: string;
-      description?: string | null;
-      deceasedId: string;
-      filingId: string;
-      appraiser: Array<string | null>;
-      witness: Array<string | null>;
-      lineItems?: {
-        __typename: "ModelLineItemConnection";
-        items: Array<{
-          __typename: "LineItem";
-          id: string;
-          probateId: string;
-          wordIds: Array<string | null>;
-          title: string;
-          description: string;
-          category: string;
-          subcategory: string;
-          quantity: number;
-          value: number;
-          confidence: number;
-          rowIndex: number;
-          lowerTitle: string;
-          boundingBox?: {
-            __typename: "Rect";
-            left: number;
-            top: number;
-            width: number;
-            height: number;
-          } | null;
-          attributeForId: string;
-          createdAt: string;
-          updatedAt: string;
-        } | null>;
-        nextToken?: string | null;
-      } | null;
-      words: Array<{
-        __typename: "Word";
-        id: string;
-        text: string;
-        boundingBox?: {
-          __typename: "Rect";
-          left: number;
-          top: number;
-          width: number;
-          height: number;
-        } | null;
-        lineIndex?: number | null;
-      } | null>;
-      totalValue: number;
-      reviewCount: number;
-      lowerTitle: string;
-      lowerDescription?: string | null;
-      lockedDate?: string | null;
-      lockedBy?: string | null;
-      markedForDeletion?: boolean | null;
-      createdAt: string;
-      updatedAt: string;
-      probateRecordCollectionProbateRecordsId?: string | null;
-    } | null>;
-    nextToken?: string | null;
-    scannedCount?: number | null;
-    count?: number | null;
-  } | null;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type ListProbateRecordCollectionsQuery = {
-  __typename: "ModelProbateRecordCollectionConnection";
-  items: Array<{
-    __typename: "ProbateRecordCollection";
-    id: string;
-    title: string;
-    description?: string | null;
-    lowerTitle: string;
-    lowerDescription?: string | null;
-    probateRecords?: {
-      __typename: "ModelProbateRecordConnection";
-      items: Array<{
+      probateRecordID: string;
+      probateRecordCollectionID: string;
+      probateRecord: {
         __typename: "ProbateRecord";
         id: string;
         title: string;
@@ -1946,14 +6830,1782 @@ export type ListProbateRecordCollectionsQuery = {
         lockedDate?: string | null;
         lockedBy?: string | null;
         markedForDeletion?: boolean | null;
+        collections?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
         createdAt: string;
         updatedAt: string;
-        probateRecordCollectionProbateRecordsId?: string | null;
+      };
+      probateRecordCollection: {
+        __typename: "ProbateRecordCollection";
+        id: string;
+        title: string;
+        description?: string | null;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        probateRecords?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      createdAt: string;
+      updatedAt: string;
+    } | null>;
+    nextToken?: string | null;
+  } | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ListProbateRecordCollectionsQuery = {
+  __typename: "ModelProbateRecordCollectionConnection";
+  items: Array<{
+    __typename: "ProbateRecordCollection";
+    id: string;
+    title: string;
+    description?: string | null;
+    lowerTitle: string;
+    lowerDescription?: string | null;
+    probateRecords?: {
+      __typename: "ModelCollectionRecordsConnection";
+      items: Array<{
+        __typename: "CollectionRecords";
+        id: string;
+        probateRecordID: string;
+        probateRecordCollectionID: string;
+        probateRecord: {
+          __typename: "ProbateRecord";
+          id: string;
+          title: string;
+          description?: string | null;
+          deceasedId: string;
+          filingId: string;
+          appraiser: Array<string | null>;
+          witness: Array<string | null>;
+          lineItems?: {
+            __typename: "ModelLineItemConnection";
+            items: Array<{
+              __typename: "LineItem";
+              id: string;
+              probateId: string;
+              wordIds: Array<string | null>;
+              title: string;
+              description: string;
+              category: string;
+              subcategory: string;
+              quantity: number;
+              value: number;
+              confidence: number;
+              rowIndex: number;
+              lowerTitle: string;
+              boundingBox?: {
+                __typename: "Rect";
+                left: number;
+                top: number;
+                width: number;
+                height: number;
+              } | null;
+              attributeForId: string;
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          words: Array<{
+            __typename: "Word";
+            id: string;
+            text: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            lineIndex?: number | null;
+          } | null>;
+          totalValue: number;
+          reviewCount: number;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          lockedDate?: string | null;
+          lockedBy?: string | null;
+          markedForDeletion?: boolean | null;
+          collections?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        probateRecordCollection: {
+          __typename: "ProbateRecordCollection";
+          id: string;
+          title: string;
+          description?: string | null;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          probateRecords?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        createdAt: string;
+        updatedAt: string;
       } | null>;
       nextToken?: string | null;
-      scannedCount?: number | null;
-      count?: number | null;
     } | null;
+    createdAt: string;
+    updatedAt: string;
+  } | null>;
+  nextToken?: string | null;
+};
+
+export type GetCollectionRecordsQuery = {
+  __typename: "CollectionRecords";
+  id: string;
+  probateRecordID: string;
+  probateRecordCollectionID: string;
+  probateRecord: {
+    __typename: "ProbateRecord";
+    id: string;
+    title: string;
+    description?: string | null;
+    deceasedId: string;
+    filingId: string;
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
+    lineItems?: {
+      __typename: "ModelLineItemConnection";
+      items: Array<{
+        __typename: "LineItem";
+        id: string;
+        probateId: string;
+        wordIds: Array<string | null>;
+        title: string;
+        description: string;
+        category: string;
+        subcategory: string;
+        quantity: number;
+        value: number;
+        confidence: number;
+        rowIndex: number;
+        lowerTitle: string;
+        boundingBox?: {
+          __typename: "Rect";
+          left: number;
+          top: number;
+          width: number;
+          height: number;
+        } | null;
+        attributeForId: string;
+        createdAt: string;
+        updatedAt: string;
+      } | null>;
+      nextToken?: string | null;
+    } | null;
+    words: Array<{
+      __typename: "Word";
+      id: string;
+      text: string;
+      boundingBox?: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      } | null;
+      lineIndex?: number | null;
+    } | null>;
+    totalValue: number;
+    reviewCount: number;
+    lowerTitle: string;
+    lowerDescription?: string | null;
+    lockedDate?: string | null;
+    lockedBy?: string | null;
+    markedForDeletion?: boolean | null;
+    collections?: {
+      __typename: "ModelCollectionRecordsConnection";
+      items: Array<{
+        __typename: "CollectionRecords";
+        id: string;
+        probateRecordID: string;
+        probateRecordCollectionID: string;
+        probateRecord: {
+          __typename: "ProbateRecord";
+          id: string;
+          title: string;
+          description?: string | null;
+          deceasedId: string;
+          filingId: string;
+          appraiser: Array<string | null>;
+          witness: Array<string | null>;
+          lineItems?: {
+            __typename: "ModelLineItemConnection";
+            items: Array<{
+              __typename: "LineItem";
+              id: string;
+              probateId: string;
+              wordIds: Array<string | null>;
+              title: string;
+              description: string;
+              category: string;
+              subcategory: string;
+              quantity: number;
+              value: number;
+              confidence: number;
+              rowIndex: number;
+              lowerTitle: string;
+              boundingBox?: {
+                __typename: "Rect";
+                left: number;
+                top: number;
+                width: number;
+                height: number;
+              } | null;
+              attributeForId: string;
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          words: Array<{
+            __typename: "Word";
+            id: string;
+            text: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            lineIndex?: number | null;
+          } | null>;
+          totalValue: number;
+          reviewCount: number;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          lockedDate?: string | null;
+          lockedBy?: string | null;
+          markedForDeletion?: boolean | null;
+          collections?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        probateRecordCollection: {
+          __typename: "ProbateRecordCollection";
+          id: string;
+          title: string;
+          description?: string | null;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          probateRecords?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        createdAt: string;
+        updatedAt: string;
+      } | null>;
+      nextToken?: string | null;
+    } | null;
+    createdAt: string;
+    updatedAt: string;
+  };
+  probateRecordCollection: {
+    __typename: "ProbateRecordCollection";
+    id: string;
+    title: string;
+    description?: string | null;
+    lowerTitle: string;
+    lowerDescription?: string | null;
+    probateRecords?: {
+      __typename: "ModelCollectionRecordsConnection";
+      items: Array<{
+        __typename: "CollectionRecords";
+        id: string;
+        probateRecordID: string;
+        probateRecordCollectionID: string;
+        probateRecord: {
+          __typename: "ProbateRecord";
+          id: string;
+          title: string;
+          description?: string | null;
+          deceasedId: string;
+          filingId: string;
+          appraiser: Array<string | null>;
+          witness: Array<string | null>;
+          lineItems?: {
+            __typename: "ModelLineItemConnection";
+            items: Array<{
+              __typename: "LineItem";
+              id: string;
+              probateId: string;
+              wordIds: Array<string | null>;
+              title: string;
+              description: string;
+              category: string;
+              subcategory: string;
+              quantity: number;
+              value: number;
+              confidence: number;
+              rowIndex: number;
+              lowerTitle: string;
+              boundingBox?: {
+                __typename: "Rect";
+                left: number;
+                top: number;
+                width: number;
+                height: number;
+              } | null;
+              attributeForId: string;
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          words: Array<{
+            __typename: "Word";
+            id: string;
+            text: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            lineIndex?: number | null;
+          } | null>;
+          totalValue: number;
+          reviewCount: number;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          lockedDate?: string | null;
+          lockedBy?: string | null;
+          markedForDeletion?: boolean | null;
+          collections?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        probateRecordCollection: {
+          __typename: "ProbateRecordCollection";
+          id: string;
+          title: string;
+          description?: string | null;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          probateRecords?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        createdAt: string;
+        updatedAt: string;
+      } | null>;
+      nextToken?: string | null;
+    } | null;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ListCollectionRecordsQuery = {
+  __typename: "ModelCollectionRecordsConnection";
+  items: Array<{
+    __typename: "CollectionRecords";
+    id: string;
+    probateRecordID: string;
+    probateRecordCollectionID: string;
+    probateRecord: {
+      __typename: "ProbateRecord";
+      id: string;
+      title: string;
+      description?: string | null;
+      deceasedId: string;
+      filingId: string;
+      appraiser: Array<string | null>;
+      witness: Array<string | null>;
+      lineItems?: {
+        __typename: "ModelLineItemConnection";
+        items: Array<{
+          __typename: "LineItem";
+          id: string;
+          probateId: string;
+          wordIds: Array<string | null>;
+          title: string;
+          description: string;
+          category: string;
+          subcategory: string;
+          quantity: number;
+          value: number;
+          confidence: number;
+          rowIndex: number;
+          lowerTitle: string;
+          boundingBox?: {
+            __typename: "Rect";
+            left: number;
+            top: number;
+            width: number;
+            height: number;
+          } | null;
+          attributeForId: string;
+          createdAt: string;
+          updatedAt: string;
+        } | null>;
+        nextToken?: string | null;
+      } | null;
+      words: Array<{
+        __typename: "Word";
+        id: string;
+        text: string;
+        boundingBox?: {
+          __typename: "Rect";
+          left: number;
+          top: number;
+          width: number;
+          height: number;
+        } | null;
+        lineIndex?: number | null;
+      } | null>;
+      totalValue: number;
+      reviewCount: number;
+      lowerTitle: string;
+      lowerDescription?: string | null;
+      lockedDate?: string | null;
+      lockedBy?: string | null;
+      markedForDeletion?: boolean | null;
+      collections?: {
+        __typename: "ModelCollectionRecordsConnection";
+        items: Array<{
+          __typename: "CollectionRecords";
+          id: string;
+          probateRecordID: string;
+          probateRecordCollectionID: string;
+          probateRecord: {
+            __typename: "ProbateRecord";
+            id: string;
+            title: string;
+            description?: string | null;
+            deceasedId: string;
+            filingId: string;
+            appraiser: Array<string | null>;
+            witness: Array<string | null>;
+            lineItems?: {
+              __typename: "ModelLineItemConnection";
+              items: Array<{
+                __typename: "LineItem";
+                id: string;
+                probateId: string;
+                wordIds: Array<string | null>;
+                title: string;
+                description: string;
+                category: string;
+                subcategory: string;
+                quantity: number;
+                value: number;
+                confidence: number;
+                rowIndex: number;
+                lowerTitle: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                attributeForId: string;
+                createdAt: string;
+                updatedAt: string;
+              } | null>;
+              nextToken?: string | null;
+            } | null;
+            words: Array<{
+              __typename: "Word";
+              id: string;
+              text: string;
+              boundingBox?: {
+                __typename: "Rect";
+                left: number;
+                top: number;
+                width: number;
+                height: number;
+              } | null;
+              lineIndex?: number | null;
+            } | null>;
+            totalValue: number;
+            reviewCount: number;
+            lowerTitle: string;
+            lowerDescription?: string | null;
+            lockedDate?: string | null;
+            lockedBy?: string | null;
+            markedForDeletion?: boolean | null;
+            collections?: {
+              __typename: "ModelCollectionRecordsConnection";
+              items: Array<{
+                __typename: "CollectionRecords";
+                id: string;
+                probateRecordID: string;
+                probateRecordCollectionID: string;
+                probateRecord: {
+                  __typename: "ProbateRecord";
+                  id: string;
+                  title: string;
+                  description?: string | null;
+                  deceasedId: string;
+                  filingId: string;
+                  appraiser: Array<string | null>;
+                  witness: Array<string | null>;
+                  lineItems?: {
+                    __typename: "ModelLineItemConnection";
+                    nextToken?: string | null;
+                  } | null;
+                  words: Array<{
+                    __typename: "Word";
+                    id: string;
+                    text: string;
+                    lineIndex?: number | null;
+                  } | null>;
+                  totalValue: number;
+                  reviewCount: number;
+                  lowerTitle: string;
+                  lowerDescription?: string | null;
+                  lockedDate?: string | null;
+                  lockedBy?: string | null;
+                  markedForDeletion?: boolean | null;
+                  collections?: {
+                    __typename: "ModelCollectionRecordsConnection";
+                    nextToken?: string | null;
+                  } | null;
+                  createdAt: string;
+                  updatedAt: string;
+                };
+                probateRecordCollection: {
+                  __typename: "ProbateRecordCollection";
+                  id: string;
+                  title: string;
+                  description?: string | null;
+                  lowerTitle: string;
+                  lowerDescription?: string | null;
+                  probateRecords?: {
+                    __typename: "ModelCollectionRecordsConnection";
+                    nextToken?: string | null;
+                  } | null;
+                  createdAt: string;
+                  updatedAt: string;
+                };
+                createdAt: string;
+                updatedAt: string;
+              } | null>;
+              nextToken?: string | null;
+            } | null;
+            createdAt: string;
+            updatedAt: string;
+          };
+          probateRecordCollection: {
+            __typename: "ProbateRecordCollection";
+            id: string;
+            title: string;
+            description?: string | null;
+            lowerTitle: string;
+            lowerDescription?: string | null;
+            probateRecords?: {
+              __typename: "ModelCollectionRecordsConnection";
+              items: Array<{
+                __typename: "CollectionRecords";
+                id: string;
+                probateRecordID: string;
+                probateRecordCollectionID: string;
+                probateRecord: {
+                  __typename: "ProbateRecord";
+                  id: string;
+                  title: string;
+                  description?: string | null;
+                  deceasedId: string;
+                  filingId: string;
+                  appraiser: Array<string | null>;
+                  witness: Array<string | null>;
+                  lineItems?: {
+                    __typename: "ModelLineItemConnection";
+                    nextToken?: string | null;
+                  } | null;
+                  words: Array<{
+                    __typename: "Word";
+                    id: string;
+                    text: string;
+                    lineIndex?: number | null;
+                  } | null>;
+                  totalValue: number;
+                  reviewCount: number;
+                  lowerTitle: string;
+                  lowerDescription?: string | null;
+                  lockedDate?: string | null;
+                  lockedBy?: string | null;
+                  markedForDeletion?: boolean | null;
+                  collections?: {
+                    __typename: "ModelCollectionRecordsConnection";
+                    nextToken?: string | null;
+                  } | null;
+                  createdAt: string;
+                  updatedAt: string;
+                };
+                probateRecordCollection: {
+                  __typename: "ProbateRecordCollection";
+                  id: string;
+                  title: string;
+                  description?: string | null;
+                  lowerTitle: string;
+                  lowerDescription?: string | null;
+                  probateRecords?: {
+                    __typename: "ModelCollectionRecordsConnection";
+                    nextToken?: string | null;
+                  } | null;
+                  createdAt: string;
+                  updatedAt: string;
+                };
+                createdAt: string;
+                updatedAt: string;
+              } | null>;
+              nextToken?: string | null;
+            } | null;
+            createdAt: string;
+            updatedAt: string;
+          };
+          createdAt: string;
+          updatedAt: string;
+        } | null>;
+        nextToken?: string | null;
+      } | null;
+      createdAt: string;
+      updatedAt: string;
+    };
+    probateRecordCollection: {
+      __typename: "ProbateRecordCollection";
+      id: string;
+      title: string;
+      description?: string | null;
+      lowerTitle: string;
+      lowerDescription?: string | null;
+      probateRecords?: {
+        __typename: "ModelCollectionRecordsConnection";
+        items: Array<{
+          __typename: "CollectionRecords";
+          id: string;
+          probateRecordID: string;
+          probateRecordCollectionID: string;
+          probateRecord: {
+            __typename: "ProbateRecord";
+            id: string;
+            title: string;
+            description?: string | null;
+            deceasedId: string;
+            filingId: string;
+            appraiser: Array<string | null>;
+            witness: Array<string | null>;
+            lineItems?: {
+              __typename: "ModelLineItemConnection";
+              items: Array<{
+                __typename: "LineItem";
+                id: string;
+                probateId: string;
+                wordIds: Array<string | null>;
+                title: string;
+                description: string;
+                category: string;
+                subcategory: string;
+                quantity: number;
+                value: number;
+                confidence: number;
+                rowIndex: number;
+                lowerTitle: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                attributeForId: string;
+                createdAt: string;
+                updatedAt: string;
+              } | null>;
+              nextToken?: string | null;
+            } | null;
+            words: Array<{
+              __typename: "Word";
+              id: string;
+              text: string;
+              boundingBox?: {
+                __typename: "Rect";
+                left: number;
+                top: number;
+                width: number;
+                height: number;
+              } | null;
+              lineIndex?: number | null;
+            } | null>;
+            totalValue: number;
+            reviewCount: number;
+            lowerTitle: string;
+            lowerDescription?: string | null;
+            lockedDate?: string | null;
+            lockedBy?: string | null;
+            markedForDeletion?: boolean | null;
+            collections?: {
+              __typename: "ModelCollectionRecordsConnection";
+              items: Array<{
+                __typename: "CollectionRecords";
+                id: string;
+                probateRecordID: string;
+                probateRecordCollectionID: string;
+                probateRecord: {
+                  __typename: "ProbateRecord";
+                  id: string;
+                  title: string;
+                  description?: string | null;
+                  deceasedId: string;
+                  filingId: string;
+                  appraiser: Array<string | null>;
+                  witness: Array<string | null>;
+                  lineItems?: {
+                    __typename: "ModelLineItemConnection";
+                    nextToken?: string | null;
+                  } | null;
+                  words: Array<{
+                    __typename: "Word";
+                    id: string;
+                    text: string;
+                    lineIndex?: number | null;
+                  } | null>;
+                  totalValue: number;
+                  reviewCount: number;
+                  lowerTitle: string;
+                  lowerDescription?: string | null;
+                  lockedDate?: string | null;
+                  lockedBy?: string | null;
+                  markedForDeletion?: boolean | null;
+                  collections?: {
+                    __typename: "ModelCollectionRecordsConnection";
+                    nextToken?: string | null;
+                  } | null;
+                  createdAt: string;
+                  updatedAt: string;
+                };
+                probateRecordCollection: {
+                  __typename: "ProbateRecordCollection";
+                  id: string;
+                  title: string;
+                  description?: string | null;
+                  lowerTitle: string;
+                  lowerDescription?: string | null;
+                  probateRecords?: {
+                    __typename: "ModelCollectionRecordsConnection";
+                    nextToken?: string | null;
+                  } | null;
+                  createdAt: string;
+                  updatedAt: string;
+                };
+                createdAt: string;
+                updatedAt: string;
+              } | null>;
+              nextToken?: string | null;
+            } | null;
+            createdAt: string;
+            updatedAt: string;
+          };
+          probateRecordCollection: {
+            __typename: "ProbateRecordCollection";
+            id: string;
+            title: string;
+            description?: string | null;
+            lowerTitle: string;
+            lowerDescription?: string | null;
+            probateRecords?: {
+              __typename: "ModelCollectionRecordsConnection";
+              items: Array<{
+                __typename: "CollectionRecords";
+                id: string;
+                probateRecordID: string;
+                probateRecordCollectionID: string;
+                probateRecord: {
+                  __typename: "ProbateRecord";
+                  id: string;
+                  title: string;
+                  description?: string | null;
+                  deceasedId: string;
+                  filingId: string;
+                  appraiser: Array<string | null>;
+                  witness: Array<string | null>;
+                  lineItems?: {
+                    __typename: "ModelLineItemConnection";
+                    nextToken?: string | null;
+                  } | null;
+                  words: Array<{
+                    __typename: "Word";
+                    id: string;
+                    text: string;
+                    lineIndex?: number | null;
+                  } | null>;
+                  totalValue: number;
+                  reviewCount: number;
+                  lowerTitle: string;
+                  lowerDescription?: string | null;
+                  lockedDate?: string | null;
+                  lockedBy?: string | null;
+                  markedForDeletion?: boolean | null;
+                  collections?: {
+                    __typename: "ModelCollectionRecordsConnection";
+                    nextToken?: string | null;
+                  } | null;
+                  createdAt: string;
+                  updatedAt: string;
+                };
+                probateRecordCollection: {
+                  __typename: "ProbateRecordCollection";
+                  id: string;
+                  title: string;
+                  description?: string | null;
+                  lowerTitle: string;
+                  lowerDescription?: string | null;
+                  probateRecords?: {
+                    __typename: "ModelCollectionRecordsConnection";
+                    nextToken?: string | null;
+                  } | null;
+                  createdAt: string;
+                  updatedAt: string;
+                };
+                createdAt: string;
+                updatedAt: string;
+              } | null>;
+              nextToken?: string | null;
+            } | null;
+            createdAt: string;
+            updatedAt: string;
+          };
+          createdAt: string;
+          updatedAt: string;
+        } | null>;
+        nextToken?: string | null;
+      } | null;
+      createdAt: string;
+      updatedAt: string;
+    };
     createdAt: string;
     updatedAt: string;
   } | null>;
@@ -2018,9 +8670,421 @@ export type OnCreateProbateRecordSubscription = {
   lockedDate?: string | null;
   lockedBy?: string | null;
   markedForDeletion?: boolean | null;
+  collections?: {
+    __typename: "ModelCollectionRecordsConnection";
+    items: Array<{
+      __typename: "CollectionRecords";
+      id: string;
+      probateRecordID: string;
+      probateRecordCollectionID: string;
+      probateRecord: {
+        __typename: "ProbateRecord";
+        id: string;
+        title: string;
+        description?: string | null;
+        deceasedId: string;
+        filingId: string;
+        appraiser: Array<string | null>;
+        witness: Array<string | null>;
+        lineItems?: {
+          __typename: "ModelLineItemConnection";
+          items: Array<{
+            __typename: "LineItem";
+            id: string;
+            probateId: string;
+            wordIds: Array<string | null>;
+            title: string;
+            description: string;
+            category: string;
+            subcategory: string;
+            quantity: number;
+            value: number;
+            confidence: number;
+            rowIndex: number;
+            lowerTitle: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            attributeForId: string;
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        words: Array<{
+          __typename: "Word";
+          id: string;
+          text: string;
+          boundingBox?: {
+            __typename: "Rect";
+            left: number;
+            top: number;
+            width: number;
+            height: number;
+          } | null;
+          lineIndex?: number | null;
+        } | null>;
+        totalValue: number;
+        reviewCount: number;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        lockedDate?: string | null;
+        lockedBy?: string | null;
+        markedForDeletion?: boolean | null;
+        collections?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      probateRecordCollection: {
+        __typename: "ProbateRecordCollection";
+        id: string;
+        title: string;
+        description?: string | null;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        probateRecords?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      createdAt: string;
+      updatedAt: string;
+    } | null>;
+    nextToken?: string | null;
+  } | null;
   createdAt: string;
   updatedAt: string;
-  probateRecordCollectionProbateRecordsId?: string | null;
 };
 
 export type OnUpdateProbateRecordSubscription = {
@@ -2081,9 +9145,421 @@ export type OnUpdateProbateRecordSubscription = {
   lockedDate?: string | null;
   lockedBy?: string | null;
   markedForDeletion?: boolean | null;
+  collections?: {
+    __typename: "ModelCollectionRecordsConnection";
+    items: Array<{
+      __typename: "CollectionRecords";
+      id: string;
+      probateRecordID: string;
+      probateRecordCollectionID: string;
+      probateRecord: {
+        __typename: "ProbateRecord";
+        id: string;
+        title: string;
+        description?: string | null;
+        deceasedId: string;
+        filingId: string;
+        appraiser: Array<string | null>;
+        witness: Array<string | null>;
+        lineItems?: {
+          __typename: "ModelLineItemConnection";
+          items: Array<{
+            __typename: "LineItem";
+            id: string;
+            probateId: string;
+            wordIds: Array<string | null>;
+            title: string;
+            description: string;
+            category: string;
+            subcategory: string;
+            quantity: number;
+            value: number;
+            confidence: number;
+            rowIndex: number;
+            lowerTitle: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            attributeForId: string;
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        words: Array<{
+          __typename: "Word";
+          id: string;
+          text: string;
+          boundingBox?: {
+            __typename: "Rect";
+            left: number;
+            top: number;
+            width: number;
+            height: number;
+          } | null;
+          lineIndex?: number | null;
+        } | null>;
+        totalValue: number;
+        reviewCount: number;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        lockedDate?: string | null;
+        lockedBy?: string | null;
+        markedForDeletion?: boolean | null;
+        collections?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      probateRecordCollection: {
+        __typename: "ProbateRecordCollection";
+        id: string;
+        title: string;
+        description?: string | null;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        probateRecords?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      createdAt: string;
+      updatedAt: string;
+    } | null>;
+    nextToken?: string | null;
+  } | null;
   createdAt: string;
   updatedAt: string;
-  probateRecordCollectionProbateRecordsId?: string | null;
 };
 
 export type OnDeleteProbateRecordSubscription = {
@@ -2144,9 +9620,421 @@ export type OnDeleteProbateRecordSubscription = {
   lockedDate?: string | null;
   lockedBy?: string | null;
   markedForDeletion?: boolean | null;
+  collections?: {
+    __typename: "ModelCollectionRecordsConnection";
+    items: Array<{
+      __typename: "CollectionRecords";
+      id: string;
+      probateRecordID: string;
+      probateRecordCollectionID: string;
+      probateRecord: {
+        __typename: "ProbateRecord";
+        id: string;
+        title: string;
+        description?: string | null;
+        deceasedId: string;
+        filingId: string;
+        appraiser: Array<string | null>;
+        witness: Array<string | null>;
+        lineItems?: {
+          __typename: "ModelLineItemConnection";
+          items: Array<{
+            __typename: "LineItem";
+            id: string;
+            probateId: string;
+            wordIds: Array<string | null>;
+            title: string;
+            description: string;
+            category: string;
+            subcategory: string;
+            quantity: number;
+            value: number;
+            confidence: number;
+            rowIndex: number;
+            lowerTitle: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            attributeForId: string;
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        words: Array<{
+          __typename: "Word";
+          id: string;
+          text: string;
+          boundingBox?: {
+            __typename: "Rect";
+            left: number;
+            top: number;
+            width: number;
+            height: number;
+          } | null;
+          lineIndex?: number | null;
+        } | null>;
+        totalValue: number;
+        reviewCount: number;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        lockedDate?: string | null;
+        lockedBy?: string | null;
+        markedForDeletion?: boolean | null;
+        collections?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      probateRecordCollection: {
+        __typename: "ProbateRecordCollection";
+        id: string;
+        title: string;
+        description?: string | null;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        probateRecords?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      createdAt: string;
+      updatedAt: string;
+    } | null>;
+    nextToken?: string | null;
+  } | null;
   createdAt: string;
   updatedAt: string;
-  probateRecordCollectionProbateRecordsId?: string | null;
 };
 
 export type OnCreateLineItemSubscription = {
@@ -2409,32 +10297,54 @@ export type OnCreateProbateRecordCollectionSubscription = {
   lowerTitle: string;
   lowerDescription?: string | null;
   probateRecords?: {
-    __typename: "ModelProbateRecordConnection";
+    __typename: "ModelCollectionRecordsConnection";
     items: Array<{
-      __typename: "ProbateRecord";
+      __typename: "CollectionRecords";
       id: string;
-      title: string;
-      description?: string | null;
-      deceasedId: string;
-      filingId: string;
-      appraiser: Array<string | null>;
-      witness: Array<string | null>;
-      lineItems?: {
-        __typename: "ModelLineItemConnection";
-        items: Array<{
-          __typename: "LineItem";
+      probateRecordID: string;
+      probateRecordCollectionID: string;
+      probateRecord: {
+        __typename: "ProbateRecord";
+        id: string;
+        title: string;
+        description?: string | null;
+        deceasedId: string;
+        filingId: string;
+        appraiser: Array<string | null>;
+        witness: Array<string | null>;
+        lineItems?: {
+          __typename: "ModelLineItemConnection";
+          items: Array<{
+            __typename: "LineItem";
+            id: string;
+            probateId: string;
+            wordIds: Array<string | null>;
+            title: string;
+            description: string;
+            category: string;
+            subcategory: string;
+            quantity: number;
+            value: number;
+            confidence: number;
+            rowIndex: number;
+            lowerTitle: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            attributeForId: string;
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        words: Array<{
+          __typename: "Word";
           id: string;
-          probateId: string;
-          wordIds: Array<string | null>;
-          title: string;
-          description: string;
-          category: string;
-          subcategory: string;
-          quantity: number;
-          value: number;
-          confidence: number;
-          rowIndex: number;
-          lowerTitle: string;
+          text: string;
           boundingBox?: {
             __typename: "Rect";
             left: number;
@@ -2442,39 +10352,362 @@ export type OnCreateProbateRecordCollectionSubscription = {
             width: number;
             height: number;
           } | null;
-          attributeForId: string;
-          createdAt: string;
-          updatedAt: string;
+          lineIndex?: number | null;
         } | null>;
-        nextToken?: string | null;
-      } | null;
-      words: Array<{
-        __typename: "Word";
-        id: string;
-        text: string;
-        boundingBox?: {
-          __typename: "Rect";
-          left: number;
-          top: number;
-          width: number;
-          height: number;
+        totalValue: number;
+        reviewCount: number;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        lockedDate?: string | null;
+        lockedBy?: string | null;
+        markedForDeletion?: boolean | null;
+        collections?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
         } | null;
-        lineIndex?: number | null;
-      } | null>;
-      totalValue: number;
-      reviewCount: number;
-      lowerTitle: string;
-      lowerDescription?: string | null;
-      lockedDate?: string | null;
-      lockedBy?: string | null;
-      markedForDeletion?: boolean | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      probateRecordCollection: {
+        __typename: "ProbateRecordCollection";
+        id: string;
+        title: string;
+        description?: string | null;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        probateRecords?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
       createdAt: string;
       updatedAt: string;
-      probateRecordCollectionProbateRecordsId?: string | null;
     } | null>;
     nextToken?: string | null;
-    scannedCount?: number | null;
-    count?: number | null;
   } | null;
   createdAt: string;
   updatedAt: string;
@@ -2488,32 +10721,54 @@ export type OnUpdateProbateRecordCollectionSubscription = {
   lowerTitle: string;
   lowerDescription?: string | null;
   probateRecords?: {
-    __typename: "ModelProbateRecordConnection";
+    __typename: "ModelCollectionRecordsConnection";
     items: Array<{
-      __typename: "ProbateRecord";
+      __typename: "CollectionRecords";
       id: string;
-      title: string;
-      description?: string | null;
-      deceasedId: string;
-      filingId: string;
-      appraiser: Array<string | null>;
-      witness: Array<string | null>;
-      lineItems?: {
-        __typename: "ModelLineItemConnection";
-        items: Array<{
-          __typename: "LineItem";
+      probateRecordID: string;
+      probateRecordCollectionID: string;
+      probateRecord: {
+        __typename: "ProbateRecord";
+        id: string;
+        title: string;
+        description?: string | null;
+        deceasedId: string;
+        filingId: string;
+        appraiser: Array<string | null>;
+        witness: Array<string | null>;
+        lineItems?: {
+          __typename: "ModelLineItemConnection";
+          items: Array<{
+            __typename: "LineItem";
+            id: string;
+            probateId: string;
+            wordIds: Array<string | null>;
+            title: string;
+            description: string;
+            category: string;
+            subcategory: string;
+            quantity: number;
+            value: number;
+            confidence: number;
+            rowIndex: number;
+            lowerTitle: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            attributeForId: string;
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        words: Array<{
+          __typename: "Word";
           id: string;
-          probateId: string;
-          wordIds: Array<string | null>;
-          title: string;
-          description: string;
-          category: string;
-          subcategory: string;
-          quantity: number;
-          value: number;
-          confidence: number;
-          rowIndex: number;
-          lowerTitle: string;
+          text: string;
           boundingBox?: {
             __typename: "Rect";
             left: number;
@@ -2521,39 +10776,362 @@ export type OnUpdateProbateRecordCollectionSubscription = {
             width: number;
             height: number;
           } | null;
-          attributeForId: string;
-          createdAt: string;
-          updatedAt: string;
+          lineIndex?: number | null;
         } | null>;
-        nextToken?: string | null;
-      } | null;
-      words: Array<{
-        __typename: "Word";
-        id: string;
-        text: string;
-        boundingBox?: {
-          __typename: "Rect";
-          left: number;
-          top: number;
-          width: number;
-          height: number;
+        totalValue: number;
+        reviewCount: number;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        lockedDate?: string | null;
+        lockedBy?: string | null;
+        markedForDeletion?: boolean | null;
+        collections?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
         } | null;
-        lineIndex?: number | null;
-      } | null>;
-      totalValue: number;
-      reviewCount: number;
-      lowerTitle: string;
-      lowerDescription?: string | null;
-      lockedDate?: string | null;
-      lockedBy?: string | null;
-      markedForDeletion?: boolean | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      probateRecordCollection: {
+        __typename: "ProbateRecordCollection";
+        id: string;
+        title: string;
+        description?: string | null;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        probateRecords?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
       createdAt: string;
       updatedAt: string;
-      probateRecordCollectionProbateRecordsId?: string | null;
     } | null>;
     nextToken?: string | null;
-    scannedCount?: number | null;
-    count?: number | null;
   } | null;
   createdAt: string;
   updatedAt: string;
@@ -2567,32 +11145,54 @@ export type OnDeleteProbateRecordCollectionSubscription = {
   lowerTitle: string;
   lowerDescription?: string | null;
   probateRecords?: {
-    __typename: "ModelProbateRecordConnection";
+    __typename: "ModelCollectionRecordsConnection";
     items: Array<{
-      __typename: "ProbateRecord";
+      __typename: "CollectionRecords";
       id: string;
-      title: string;
-      description?: string | null;
-      deceasedId: string;
-      filingId: string;
-      appraiser: Array<string | null>;
-      witness: Array<string | null>;
-      lineItems?: {
-        __typename: "ModelLineItemConnection";
-        items: Array<{
-          __typename: "LineItem";
+      probateRecordID: string;
+      probateRecordCollectionID: string;
+      probateRecord: {
+        __typename: "ProbateRecord";
+        id: string;
+        title: string;
+        description?: string | null;
+        deceasedId: string;
+        filingId: string;
+        appraiser: Array<string | null>;
+        witness: Array<string | null>;
+        lineItems?: {
+          __typename: "ModelLineItemConnection";
+          items: Array<{
+            __typename: "LineItem";
+            id: string;
+            probateId: string;
+            wordIds: Array<string | null>;
+            title: string;
+            description: string;
+            category: string;
+            subcategory: string;
+            quantity: number;
+            value: number;
+            confidence: number;
+            rowIndex: number;
+            lowerTitle: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            attributeForId: string;
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        words: Array<{
+          __typename: "Word";
           id: string;
-          probateId: string;
-          wordIds: Array<string | null>;
-          title: string;
-          description: string;
-          category: string;
-          subcategory: string;
-          quantity: number;
-          value: number;
-          confidence: number;
-          rowIndex: number;
-          lowerTitle: string;
+          text: string;
           boundingBox?: {
             __typename: "Rect";
             left: number;
@@ -2600,16 +11200,397 @@ export type OnDeleteProbateRecordCollectionSubscription = {
             width: number;
             height: number;
           } | null;
-          attributeForId: string;
-          createdAt: string;
-          updatedAt: string;
+          lineIndex?: number | null;
         } | null>;
-        nextToken?: string | null;
-      } | null;
-      words: Array<{
-        __typename: "Word";
+        totalValue: number;
+        reviewCount: number;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        lockedDate?: string | null;
+        lockedBy?: string | null;
+        markedForDeletion?: boolean | null;
+        collections?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      probateRecordCollection: {
+        __typename: "ProbateRecordCollection";
         id: string;
-        text: string;
+        title: string;
+        description?: string | null;
+        lowerTitle: string;
+        lowerDescription?: string | null;
+        probateRecords?: {
+          __typename: "ModelCollectionRecordsConnection";
+          items: Array<{
+            __typename: "CollectionRecords";
+            id: string;
+            probateRecordID: string;
+            probateRecordCollectionID: string;
+            probateRecord: {
+              __typename: "ProbateRecord";
+              id: string;
+              title: string;
+              description?: string | null;
+              deceasedId: string;
+              filingId: string;
+              appraiser: Array<string | null>;
+              witness: Array<string | null>;
+              lineItems?: {
+                __typename: "ModelLineItemConnection";
+                items: Array<{
+                  __typename: "LineItem";
+                  id: string;
+                  probateId: string;
+                  wordIds: Array<string | null>;
+                  title: string;
+                  description: string;
+                  category: string;
+                  subcategory: string;
+                  quantity: number;
+                  value: number;
+                  confidence: number;
+                  rowIndex: number;
+                  lowerTitle: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  attributeForId: string;
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              words: Array<{
+                __typename: "Word";
+                id: string;
+                text: string;
+                boundingBox?: {
+                  __typename: "Rect";
+                  left: number;
+                  top: number;
+                  width: number;
+                  height: number;
+                } | null;
+                lineIndex?: number | null;
+              } | null>;
+              totalValue: number;
+              reviewCount: number;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              lockedDate?: string | null;
+              lockedBy?: string | null;
+              markedForDeletion?: boolean | null;
+              collections?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            probateRecordCollection: {
+              __typename: "ProbateRecordCollection";
+              id: string;
+              title: string;
+              description?: string | null;
+              lowerTitle: string;
+              lowerDescription?: string | null;
+              probateRecords?: {
+                __typename: "ModelCollectionRecordsConnection";
+                items: Array<{
+                  __typename: "CollectionRecords";
+                  id: string;
+                  probateRecordID: string;
+                  probateRecordCollectionID: string;
+                  probateRecord: {
+                    __typename: "ProbateRecord";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    deceasedId: string;
+                    filingId: string;
+                    appraiser: Array<string | null>;
+                    witness: Array<string | null>;
+                    totalValue: number;
+                    reviewCount: number;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    lockedDate?: string | null;
+                    lockedBy?: string | null;
+                    markedForDeletion?: boolean | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  probateRecordCollection: {
+                    __typename: "ProbateRecordCollection";
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    lowerTitle: string;
+                    lowerDescription?: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                  };
+                  createdAt: string;
+                  updatedAt: string;
+                } | null>;
+                nextToken?: string | null;
+              } | null;
+              createdAt: string;
+              updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+          } | null>;
+          nextToken?: string | null;
+        } | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+      createdAt: string;
+      updatedAt: string;
+    } | null>;
+    nextToken?: string | null;
+  } | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type OnCreateCollectionRecordsSubscription = {
+  __typename: "CollectionRecords";
+  id: string;
+  probateRecordID: string;
+  probateRecordCollectionID: string;
+  probateRecord: {
+    __typename: "ProbateRecord";
+    id: string;
+    title: string;
+    description?: string | null;
+    deceasedId: string;
+    filingId: string;
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
+    lineItems?: {
+      __typename: "ModelLineItemConnection";
+      items: Array<{
+        __typename: "LineItem";
+        id: string;
+        probateId: string;
+        wordIds: Array<string | null>;
+        title: string;
+        description: string;
+        category: string;
+        subcategory: string;
+        quantity: number;
+        value: number;
+        confidence: number;
+        rowIndex: number;
+        lowerTitle: string;
         boundingBox?: {
           __typename: "Rect";
           left: number;
@@ -2617,23 +11598,1903 @@ export type OnDeleteProbateRecordCollectionSubscription = {
           width: number;
           height: number;
         } | null;
-        lineIndex?: number | null;
+        attributeForId: string;
+        createdAt: string;
+        updatedAt: string;
       } | null>;
-      totalValue: number;
-      reviewCount: number;
-      lowerTitle: string;
-      lowerDescription?: string | null;
-      lockedDate?: string | null;
-      lockedBy?: string | null;
-      markedForDeletion?: boolean | null;
-      createdAt: string;
-      updatedAt: string;
-      probateRecordCollectionProbateRecordsId?: string | null;
+      nextToken?: string | null;
+    } | null;
+    words: Array<{
+      __typename: "Word";
+      id: string;
+      text: string;
+      boundingBox?: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      } | null;
+      lineIndex?: number | null;
     } | null>;
-    nextToken?: string | null;
-    scannedCount?: number | null;
-    count?: number | null;
-  } | null;
+    totalValue: number;
+    reviewCount: number;
+    lowerTitle: string;
+    lowerDescription?: string | null;
+    lockedDate?: string | null;
+    lockedBy?: string | null;
+    markedForDeletion?: boolean | null;
+    collections?: {
+      __typename: "ModelCollectionRecordsConnection";
+      items: Array<{
+        __typename: "CollectionRecords";
+        id: string;
+        probateRecordID: string;
+        probateRecordCollectionID: string;
+        probateRecord: {
+          __typename: "ProbateRecord";
+          id: string;
+          title: string;
+          description?: string | null;
+          deceasedId: string;
+          filingId: string;
+          appraiser: Array<string | null>;
+          witness: Array<string | null>;
+          lineItems?: {
+            __typename: "ModelLineItemConnection";
+            items: Array<{
+              __typename: "LineItem";
+              id: string;
+              probateId: string;
+              wordIds: Array<string | null>;
+              title: string;
+              description: string;
+              category: string;
+              subcategory: string;
+              quantity: number;
+              value: number;
+              confidence: number;
+              rowIndex: number;
+              lowerTitle: string;
+              boundingBox?: {
+                __typename: "Rect";
+                left: number;
+                top: number;
+                width: number;
+                height: number;
+              } | null;
+              attributeForId: string;
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          words: Array<{
+            __typename: "Word";
+            id: string;
+            text: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            lineIndex?: number | null;
+          } | null>;
+          totalValue: number;
+          reviewCount: number;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          lockedDate?: string | null;
+          lockedBy?: string | null;
+          markedForDeletion?: boolean | null;
+          collections?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        probateRecordCollection: {
+          __typename: "ProbateRecordCollection";
+          id: string;
+          title: string;
+          description?: string | null;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          probateRecords?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        createdAt: string;
+        updatedAt: string;
+      } | null>;
+      nextToken?: string | null;
+    } | null;
+    createdAt: string;
+    updatedAt: string;
+  };
+  probateRecordCollection: {
+    __typename: "ProbateRecordCollection";
+    id: string;
+    title: string;
+    description?: string | null;
+    lowerTitle: string;
+    lowerDescription?: string | null;
+    probateRecords?: {
+      __typename: "ModelCollectionRecordsConnection";
+      items: Array<{
+        __typename: "CollectionRecords";
+        id: string;
+        probateRecordID: string;
+        probateRecordCollectionID: string;
+        probateRecord: {
+          __typename: "ProbateRecord";
+          id: string;
+          title: string;
+          description?: string | null;
+          deceasedId: string;
+          filingId: string;
+          appraiser: Array<string | null>;
+          witness: Array<string | null>;
+          lineItems?: {
+            __typename: "ModelLineItemConnection";
+            items: Array<{
+              __typename: "LineItem";
+              id: string;
+              probateId: string;
+              wordIds: Array<string | null>;
+              title: string;
+              description: string;
+              category: string;
+              subcategory: string;
+              quantity: number;
+              value: number;
+              confidence: number;
+              rowIndex: number;
+              lowerTitle: string;
+              boundingBox?: {
+                __typename: "Rect";
+                left: number;
+                top: number;
+                width: number;
+                height: number;
+              } | null;
+              attributeForId: string;
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          words: Array<{
+            __typename: "Word";
+            id: string;
+            text: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            lineIndex?: number | null;
+          } | null>;
+          totalValue: number;
+          reviewCount: number;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          lockedDate?: string | null;
+          lockedBy?: string | null;
+          markedForDeletion?: boolean | null;
+          collections?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        probateRecordCollection: {
+          __typename: "ProbateRecordCollection";
+          id: string;
+          title: string;
+          description?: string | null;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          probateRecords?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        createdAt: string;
+        updatedAt: string;
+      } | null>;
+      nextToken?: string | null;
+    } | null;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type OnUpdateCollectionRecordsSubscription = {
+  __typename: "CollectionRecords";
+  id: string;
+  probateRecordID: string;
+  probateRecordCollectionID: string;
+  probateRecord: {
+    __typename: "ProbateRecord";
+    id: string;
+    title: string;
+    description?: string | null;
+    deceasedId: string;
+    filingId: string;
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
+    lineItems?: {
+      __typename: "ModelLineItemConnection";
+      items: Array<{
+        __typename: "LineItem";
+        id: string;
+        probateId: string;
+        wordIds: Array<string | null>;
+        title: string;
+        description: string;
+        category: string;
+        subcategory: string;
+        quantity: number;
+        value: number;
+        confidence: number;
+        rowIndex: number;
+        lowerTitle: string;
+        boundingBox?: {
+          __typename: "Rect";
+          left: number;
+          top: number;
+          width: number;
+          height: number;
+        } | null;
+        attributeForId: string;
+        createdAt: string;
+        updatedAt: string;
+      } | null>;
+      nextToken?: string | null;
+    } | null;
+    words: Array<{
+      __typename: "Word";
+      id: string;
+      text: string;
+      boundingBox?: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      } | null;
+      lineIndex?: number | null;
+    } | null>;
+    totalValue: number;
+    reviewCount: number;
+    lowerTitle: string;
+    lowerDescription?: string | null;
+    lockedDate?: string | null;
+    lockedBy?: string | null;
+    markedForDeletion?: boolean | null;
+    collections?: {
+      __typename: "ModelCollectionRecordsConnection";
+      items: Array<{
+        __typename: "CollectionRecords";
+        id: string;
+        probateRecordID: string;
+        probateRecordCollectionID: string;
+        probateRecord: {
+          __typename: "ProbateRecord";
+          id: string;
+          title: string;
+          description?: string | null;
+          deceasedId: string;
+          filingId: string;
+          appraiser: Array<string | null>;
+          witness: Array<string | null>;
+          lineItems?: {
+            __typename: "ModelLineItemConnection";
+            items: Array<{
+              __typename: "LineItem";
+              id: string;
+              probateId: string;
+              wordIds: Array<string | null>;
+              title: string;
+              description: string;
+              category: string;
+              subcategory: string;
+              quantity: number;
+              value: number;
+              confidence: number;
+              rowIndex: number;
+              lowerTitle: string;
+              boundingBox?: {
+                __typename: "Rect";
+                left: number;
+                top: number;
+                width: number;
+                height: number;
+              } | null;
+              attributeForId: string;
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          words: Array<{
+            __typename: "Word";
+            id: string;
+            text: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            lineIndex?: number | null;
+          } | null>;
+          totalValue: number;
+          reviewCount: number;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          lockedDate?: string | null;
+          lockedBy?: string | null;
+          markedForDeletion?: boolean | null;
+          collections?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        probateRecordCollection: {
+          __typename: "ProbateRecordCollection";
+          id: string;
+          title: string;
+          description?: string | null;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          probateRecords?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        createdAt: string;
+        updatedAt: string;
+      } | null>;
+      nextToken?: string | null;
+    } | null;
+    createdAt: string;
+    updatedAt: string;
+  };
+  probateRecordCollection: {
+    __typename: "ProbateRecordCollection";
+    id: string;
+    title: string;
+    description?: string | null;
+    lowerTitle: string;
+    lowerDescription?: string | null;
+    probateRecords?: {
+      __typename: "ModelCollectionRecordsConnection";
+      items: Array<{
+        __typename: "CollectionRecords";
+        id: string;
+        probateRecordID: string;
+        probateRecordCollectionID: string;
+        probateRecord: {
+          __typename: "ProbateRecord";
+          id: string;
+          title: string;
+          description?: string | null;
+          deceasedId: string;
+          filingId: string;
+          appraiser: Array<string | null>;
+          witness: Array<string | null>;
+          lineItems?: {
+            __typename: "ModelLineItemConnection";
+            items: Array<{
+              __typename: "LineItem";
+              id: string;
+              probateId: string;
+              wordIds: Array<string | null>;
+              title: string;
+              description: string;
+              category: string;
+              subcategory: string;
+              quantity: number;
+              value: number;
+              confidence: number;
+              rowIndex: number;
+              lowerTitle: string;
+              boundingBox?: {
+                __typename: "Rect";
+                left: number;
+                top: number;
+                width: number;
+                height: number;
+              } | null;
+              attributeForId: string;
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          words: Array<{
+            __typename: "Word";
+            id: string;
+            text: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            lineIndex?: number | null;
+          } | null>;
+          totalValue: number;
+          reviewCount: number;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          lockedDate?: string | null;
+          lockedBy?: string | null;
+          markedForDeletion?: boolean | null;
+          collections?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        probateRecordCollection: {
+          __typename: "ProbateRecordCollection";
+          id: string;
+          title: string;
+          description?: string | null;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          probateRecords?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        createdAt: string;
+        updatedAt: string;
+      } | null>;
+      nextToken?: string | null;
+    } | null;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type OnDeleteCollectionRecordsSubscription = {
+  __typename: "CollectionRecords";
+  id: string;
+  probateRecordID: string;
+  probateRecordCollectionID: string;
+  probateRecord: {
+    __typename: "ProbateRecord";
+    id: string;
+    title: string;
+    description?: string | null;
+    deceasedId: string;
+    filingId: string;
+    appraiser: Array<string | null>;
+    witness: Array<string | null>;
+    lineItems?: {
+      __typename: "ModelLineItemConnection";
+      items: Array<{
+        __typename: "LineItem";
+        id: string;
+        probateId: string;
+        wordIds: Array<string | null>;
+        title: string;
+        description: string;
+        category: string;
+        subcategory: string;
+        quantity: number;
+        value: number;
+        confidence: number;
+        rowIndex: number;
+        lowerTitle: string;
+        boundingBox?: {
+          __typename: "Rect";
+          left: number;
+          top: number;
+          width: number;
+          height: number;
+        } | null;
+        attributeForId: string;
+        createdAt: string;
+        updatedAt: string;
+      } | null>;
+      nextToken?: string | null;
+    } | null;
+    words: Array<{
+      __typename: "Word";
+      id: string;
+      text: string;
+      boundingBox?: {
+        __typename: "Rect";
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      } | null;
+      lineIndex?: number | null;
+    } | null>;
+    totalValue: number;
+    reviewCount: number;
+    lowerTitle: string;
+    lowerDescription?: string | null;
+    lockedDate?: string | null;
+    lockedBy?: string | null;
+    markedForDeletion?: boolean | null;
+    collections?: {
+      __typename: "ModelCollectionRecordsConnection";
+      items: Array<{
+        __typename: "CollectionRecords";
+        id: string;
+        probateRecordID: string;
+        probateRecordCollectionID: string;
+        probateRecord: {
+          __typename: "ProbateRecord";
+          id: string;
+          title: string;
+          description?: string | null;
+          deceasedId: string;
+          filingId: string;
+          appraiser: Array<string | null>;
+          witness: Array<string | null>;
+          lineItems?: {
+            __typename: "ModelLineItemConnection";
+            items: Array<{
+              __typename: "LineItem";
+              id: string;
+              probateId: string;
+              wordIds: Array<string | null>;
+              title: string;
+              description: string;
+              category: string;
+              subcategory: string;
+              quantity: number;
+              value: number;
+              confidence: number;
+              rowIndex: number;
+              lowerTitle: string;
+              boundingBox?: {
+                __typename: "Rect";
+                left: number;
+                top: number;
+                width: number;
+                height: number;
+              } | null;
+              attributeForId: string;
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          words: Array<{
+            __typename: "Word";
+            id: string;
+            text: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            lineIndex?: number | null;
+          } | null>;
+          totalValue: number;
+          reviewCount: number;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          lockedDate?: string | null;
+          lockedBy?: string | null;
+          markedForDeletion?: boolean | null;
+          collections?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        probateRecordCollection: {
+          __typename: "ProbateRecordCollection";
+          id: string;
+          title: string;
+          description?: string | null;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          probateRecords?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        createdAt: string;
+        updatedAt: string;
+      } | null>;
+      nextToken?: string | null;
+    } | null;
+    createdAt: string;
+    updatedAt: string;
+  };
+  probateRecordCollection: {
+    __typename: "ProbateRecordCollection";
+    id: string;
+    title: string;
+    description?: string | null;
+    lowerTitle: string;
+    lowerDescription?: string | null;
+    probateRecords?: {
+      __typename: "ModelCollectionRecordsConnection";
+      items: Array<{
+        __typename: "CollectionRecords";
+        id: string;
+        probateRecordID: string;
+        probateRecordCollectionID: string;
+        probateRecord: {
+          __typename: "ProbateRecord";
+          id: string;
+          title: string;
+          description?: string | null;
+          deceasedId: string;
+          filingId: string;
+          appraiser: Array<string | null>;
+          witness: Array<string | null>;
+          lineItems?: {
+            __typename: "ModelLineItemConnection";
+            items: Array<{
+              __typename: "LineItem";
+              id: string;
+              probateId: string;
+              wordIds: Array<string | null>;
+              title: string;
+              description: string;
+              category: string;
+              subcategory: string;
+              quantity: number;
+              value: number;
+              confidence: number;
+              rowIndex: number;
+              lowerTitle: string;
+              boundingBox?: {
+                __typename: "Rect";
+                left: number;
+                top: number;
+                width: number;
+                height: number;
+              } | null;
+              attributeForId: string;
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          words: Array<{
+            __typename: "Word";
+            id: string;
+            text: string;
+            boundingBox?: {
+              __typename: "Rect";
+              left: number;
+              top: number;
+              width: number;
+              height: number;
+            } | null;
+            lineIndex?: number | null;
+          } | null>;
+          totalValue: number;
+          reviewCount: number;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          lockedDate?: string | null;
+          lockedBy?: string | null;
+          markedForDeletion?: boolean | null;
+          collections?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        probateRecordCollection: {
+          __typename: "ProbateRecordCollection";
+          id: string;
+          title: string;
+          description?: string | null;
+          lowerTitle: string;
+          lowerDescription?: string | null;
+          probateRecords?: {
+            __typename: "ModelCollectionRecordsConnection";
+            items: Array<{
+              __typename: "CollectionRecords";
+              id: string;
+              probateRecordID: string;
+              probateRecordCollectionID: string;
+              probateRecord: {
+                __typename: "ProbateRecord";
+                id: string;
+                title: string;
+                description?: string | null;
+                deceasedId: string;
+                filingId: string;
+                appraiser: Array<string | null>;
+                witness: Array<string | null>;
+                lineItems?: {
+                  __typename: "ModelLineItemConnection";
+                  items: Array<{
+                    __typename: "LineItem";
+                    id: string;
+                    probateId: string;
+                    wordIds: Array<string | null>;
+                    title: string;
+                    description: string;
+                    category: string;
+                    subcategory: string;
+                    quantity: number;
+                    value: number;
+                    confidence: number;
+                    rowIndex: number;
+                    lowerTitle: string;
+                    attributeForId: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                words: Array<{
+                  __typename: "Word";
+                  id: string;
+                  text: string;
+                  boundingBox?: {
+                    __typename: "Rect";
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
+                  } | null;
+                  lineIndex?: number | null;
+                } | null>;
+                totalValue: number;
+                reviewCount: number;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                lockedDate?: string | null;
+                lockedBy?: string | null;
+                markedForDeletion?: boolean | null;
+                collections?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              probateRecordCollection: {
+                __typename: "ProbateRecordCollection";
+                id: string;
+                title: string;
+                description?: string | null;
+                lowerTitle: string;
+                lowerDescription?: string | null;
+                probateRecords?: {
+                  __typename: "ModelCollectionRecordsConnection";
+                  items: Array<{
+                    __typename: "CollectionRecords";
+                    id: string;
+                    probateRecordID: string;
+                    probateRecordCollectionID: string;
+                    createdAt: string;
+                    updatedAt: string;
+                  } | null>;
+                  nextToken?: string | null;
+                } | null;
+                createdAt: string;
+                updatedAt: string;
+              };
+              createdAt: string;
+              updatedAt: string;
+            } | null>;
+            nextToken?: string | null;
+          } | null;
+          createdAt: string;
+          updatedAt: string;
+        };
+        createdAt: string;
+        updatedAt: string;
+      } | null>;
+      nextToken?: string | null;
+    } | null;
+    createdAt: string;
+    updatedAt: string;
+  };
   createdAt: string;
   updatedAt: string;
 };
@@ -2705,9 +13566,421 @@ export class APIService {
           lockedDate
           lockedBy
           markedForDeletion
+          collections {
+            __typename
+            items {
+              __typename
+              id
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
+                __typename
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
+                  __typename
+                  id
+                  text
+                  boundingBox {
+                    __typename
+                    left
+                    top
+                    width
+                    height
+                  }
+                  lineIndex
+                }
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              probateRecordCollection {
+                __typename
+                id
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
           createdAt
           updatedAt
-          probateRecordCollectionProbateRecordsId
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -2784,9 +14057,421 @@ export class APIService {
           lockedDate
           lockedBy
           markedForDeletion
+          collections {
+            __typename
+            items {
+              __typename
+              id
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
+                __typename
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
+                  __typename
+                  id
+                  text
+                  boundingBox {
+                    __typename
+                    left
+                    top
+                    width
+                    height
+                  }
+                  lineIndex
+                }
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              probateRecordCollection {
+                __typename
+                id
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
           createdAt
           updatedAt
-          probateRecordCollectionProbateRecordsId
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -2863,9 +14548,421 @@ export class APIService {
           lockedDate
           lockedBy
           markedForDeletion
+          collections {
+            __typename
+            items {
+              __typename
+              id
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
+                __typename
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
+                  __typename
+                  id
+                  text
+                  boundingBox {
+                    __typename
+                    left
+                    top
+                    width
+                    height
+                  }
+                  lineIndex
+                }
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              probateRecordCollection {
+                __typename
+                id
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
           createdAt
           updatedAt
-          probateRecordCollectionProbateRecordsId
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -3346,28 +15443,50 @@ export class APIService {
             items {
               __typename
               id
-              title
-              description
-              deceasedId
-              filingId
-              appraiser
-              witness
-              lineItems {
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
                 __typename
-                items {
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
                   __typename
                   id
-                  probateId
-                  wordIds
-                  title
-                  description
-                  category
-                  subcategory
-                  quantity
-                  value
-                  confidence
-                  rowIndex
-                  lowerTitle
+                  text
                   boundingBox {
                     __typename
                     left
@@ -3375,39 +15494,362 @@ export class APIService {
                     width
                     height
                   }
-                  attributeForId
-                  createdAt
-                  updatedAt
+                  lineIndex
                 }
-                nextToken
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
               }
-              words {
+              probateRecordCollection {
                 __typename
                 id
-                text
-                boundingBox {
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
                   __typename
-                  left
-                  top
-                  width
-                  height
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
                 }
-                lineIndex
+                createdAt
+                updatedAt
               }
-              totalValue
-              reviewCount
-              lowerTitle
-              lowerDescription
-              lockedDate
-              lockedBy
-              markedForDeletion
               createdAt
               updatedAt
-              probateRecordCollectionProbateRecordsId
             }
             nextToken
-            scannedCount
-            count
           }
           createdAt
           updatedAt
@@ -3443,28 +15885,50 @@ export class APIService {
             items {
               __typename
               id
-              title
-              description
-              deceasedId
-              filingId
-              appraiser
-              witness
-              lineItems {
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
                 __typename
-                items {
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
                   __typename
                   id
-                  probateId
-                  wordIds
-                  title
-                  description
-                  category
-                  subcategory
-                  quantity
-                  value
-                  confidence
-                  rowIndex
-                  lowerTitle
+                  text
                   boundingBox {
                     __typename
                     left
@@ -3472,39 +15936,362 @@ export class APIService {
                     width
                     height
                   }
-                  attributeForId
-                  createdAt
-                  updatedAt
+                  lineIndex
                 }
-                nextToken
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
               }
-              words {
+              probateRecordCollection {
                 __typename
                 id
-                text
-                boundingBox {
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
                   __typename
-                  left
-                  top
-                  width
-                  height
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
                 }
-                lineIndex
+                createdAt
+                updatedAt
               }
-              totalValue
-              reviewCount
-              lowerTitle
-              lowerDescription
-              lockedDate
-              lockedBy
-              markedForDeletion
               createdAt
               updatedAt
-              probateRecordCollectionProbateRecordsId
             }
             nextToken
-            scannedCount
-            count
           }
           createdAt
           updatedAt
@@ -3540,28 +16327,50 @@ export class APIService {
             items {
               __typename
               id
-              title
-              description
-              deceasedId
-              filingId
-              appraiser
-              witness
-              lineItems {
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
                 __typename
-                items {
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
                   __typename
                   id
-                  probateId
-                  wordIds
-                  title
-                  description
-                  category
-                  subcategory
-                  quantity
-                  value
-                  confidence
-                  rowIndex
-                  lowerTitle
+                  text
                   boundingBox {
                     __typename
                     left
@@ -3569,39 +16378,362 @@ export class APIService {
                     width
                     height
                   }
-                  attributeForId
-                  createdAt
-                  updatedAt
+                  lineIndex
                 }
-                nextToken
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
               }
-              words {
+              probateRecordCollection {
                 __typename
                 id
-                text
-                boundingBox {
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
                   __typename
-                  left
-                  top
-                  width
-                  height
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
                 }
-                lineIndex
+                createdAt
+                updatedAt
               }
-              totalValue
-              reviewCount
-              lowerTitle
-              lowerDescription
-              lockedDate
-              lockedBy
-              markedForDeletion
               createdAt
               updatedAt
-              probateRecordCollectionProbateRecordsId
             }
             nextToken
-            scannedCount
-            count
           }
           createdAt
           updatedAt
@@ -3618,6 +16750,1998 @@ export class APIService {
     )) as any;
     return <DeleteProbateRecordCollectionMutation>(
       response.data.deleteProbateRecordCollection
+    );
+  }
+  async CreateCollectionRecords(
+    input: CreateCollectionRecordsInput,
+    condition?: ModelCollectionRecordsConditionInput
+  ): Promise<CreateCollectionRecordsMutation> {
+    const statement = `mutation CreateCollectionRecords($input: CreateCollectionRecordsInput!, $condition: ModelCollectionRecordsConditionInput) {
+        createCollectionRecords(input: $input, condition: $condition) {
+          __typename
+          id
+          probateRecordID
+          probateRecordCollectionID
+          probateRecord {
+            __typename
+            id
+            title
+            description
+            deceasedId
+            filingId
+            appraiser
+            witness
+            lineItems {
+              __typename
+              items {
+                __typename
+                id
+                probateId
+                wordIds
+                title
+                description
+                category
+                subcategory
+                quantity
+                value
+                confidence
+                rowIndex
+                lowerTitle
+                boundingBox {
+                  __typename
+                  left
+                  top
+                  width
+                  height
+                }
+                attributeForId
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            words {
+              __typename
+              id
+              text
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+              lineIndex
+            }
+            totalValue
+            reviewCount
+            lowerTitle
+            lowerDescription
+            lockedDate
+            lockedBy
+            markedForDeletion
+            collections {
+              __typename
+              items {
+                __typename
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  __typename
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      boundingBox {
+                        __typename
+                        left
+                        top
+                        width
+                        height
+                      }
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    __typename
+                    id
+                    text
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  __typename
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          probateRecordCollection {
+            __typename
+            id
+            title
+            description
+            lowerTitle
+            lowerDescription
+            probateRecords {
+              __typename
+              items {
+                __typename
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  __typename
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      boundingBox {
+                        __typename
+                        left
+                        top
+                        width
+                        height
+                      }
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    __typename
+                    id
+                    text
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  __typename
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <CreateCollectionRecordsMutation>(
+      response.data.createCollectionRecords
+    );
+  }
+  async UpdateCollectionRecords(
+    input: UpdateCollectionRecordsInput,
+    condition?: ModelCollectionRecordsConditionInput
+  ): Promise<UpdateCollectionRecordsMutation> {
+    const statement = `mutation UpdateCollectionRecords($input: UpdateCollectionRecordsInput!, $condition: ModelCollectionRecordsConditionInput) {
+        updateCollectionRecords(input: $input, condition: $condition) {
+          __typename
+          id
+          probateRecordID
+          probateRecordCollectionID
+          probateRecord {
+            __typename
+            id
+            title
+            description
+            deceasedId
+            filingId
+            appraiser
+            witness
+            lineItems {
+              __typename
+              items {
+                __typename
+                id
+                probateId
+                wordIds
+                title
+                description
+                category
+                subcategory
+                quantity
+                value
+                confidence
+                rowIndex
+                lowerTitle
+                boundingBox {
+                  __typename
+                  left
+                  top
+                  width
+                  height
+                }
+                attributeForId
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            words {
+              __typename
+              id
+              text
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+              lineIndex
+            }
+            totalValue
+            reviewCount
+            lowerTitle
+            lowerDescription
+            lockedDate
+            lockedBy
+            markedForDeletion
+            collections {
+              __typename
+              items {
+                __typename
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  __typename
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      boundingBox {
+                        __typename
+                        left
+                        top
+                        width
+                        height
+                      }
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    __typename
+                    id
+                    text
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  __typename
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          probateRecordCollection {
+            __typename
+            id
+            title
+            description
+            lowerTitle
+            lowerDescription
+            probateRecords {
+              __typename
+              items {
+                __typename
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  __typename
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      boundingBox {
+                        __typename
+                        left
+                        top
+                        width
+                        height
+                      }
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    __typename
+                    id
+                    text
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  __typename
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <UpdateCollectionRecordsMutation>(
+      response.data.updateCollectionRecords
+    );
+  }
+  async DeleteCollectionRecords(
+    input: DeleteCollectionRecordsInput,
+    condition?: ModelCollectionRecordsConditionInput
+  ): Promise<DeleteCollectionRecordsMutation> {
+    const statement = `mutation DeleteCollectionRecords($input: DeleteCollectionRecordsInput!, $condition: ModelCollectionRecordsConditionInput) {
+        deleteCollectionRecords(input: $input, condition: $condition) {
+          __typename
+          id
+          probateRecordID
+          probateRecordCollectionID
+          probateRecord {
+            __typename
+            id
+            title
+            description
+            deceasedId
+            filingId
+            appraiser
+            witness
+            lineItems {
+              __typename
+              items {
+                __typename
+                id
+                probateId
+                wordIds
+                title
+                description
+                category
+                subcategory
+                quantity
+                value
+                confidence
+                rowIndex
+                lowerTitle
+                boundingBox {
+                  __typename
+                  left
+                  top
+                  width
+                  height
+                }
+                attributeForId
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            words {
+              __typename
+              id
+              text
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+              lineIndex
+            }
+            totalValue
+            reviewCount
+            lowerTitle
+            lowerDescription
+            lockedDate
+            lockedBy
+            markedForDeletion
+            collections {
+              __typename
+              items {
+                __typename
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  __typename
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      boundingBox {
+                        __typename
+                        left
+                        top
+                        width
+                        height
+                      }
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    __typename
+                    id
+                    text
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  __typename
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          probateRecordCollection {
+            __typename
+            id
+            title
+            description
+            lowerTitle
+            lowerDescription
+            probateRecords {
+              __typename
+              items {
+                __typename
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  __typename
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      boundingBox {
+                        __typename
+                        left
+                        top
+                        width
+                        height
+                      }
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    __typename
+                    id
+                    text
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  __typename
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <DeleteCollectionRecordsMutation>(
+      response.data.deleteCollectionRecords
     );
   }
   async GetProbateRecord(id: string): Promise<GetProbateRecordQuery> {
@@ -3680,9 +18804,421 @@ export class APIService {
           lockedDate
           lockedBy
           markedForDeletion
+          collections {
+            __typename
+            items {
+              __typename
+              id
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
+                __typename
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
+                  __typename
+                  id
+                  text
+                  boundingBox {
+                    __typename
+                    left
+                    top
+                    width
+                    height
+                  }
+                  lineIndex
+                }
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              probateRecordCollection {
+                __typename
+                id
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
           createdAt
           updatedAt
-          probateRecordCollectionProbateRecordsId
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -3767,9 +19303,291 @@ export class APIService {
             lockedDate
             lockedBy
             markedForDeletion
+            collections {
+              __typename
+              items {
+                __typename
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  __typename
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      boundingBox {
+                        __typename
+                        left
+                        top
+                        width
+                        height
+                      }
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    __typename
+                    id
+                    text
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  __typename
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
             createdAt
             updatedAt
-            probateRecordCollectionProbateRecordsId
           }
           nextToken
           scannedCount
@@ -4194,105 +20012,9 @@ export class APIService {
             items {
               __typename
               id
-              title
-              description
-              deceasedId
-              filingId
-              appraiser
-              witness
-              lineItems {
-                __typename
-                items {
-                  __typename
-                  id
-                  probateId
-                  wordIds
-                  title
-                  description
-                  category
-                  subcategory
-                  quantity
-                  value
-                  confidence
-                  rowIndex
-                  lowerTitle
-                  boundingBox {
-                    __typename
-                    left
-                    top
-                    width
-                    height
-                  }
-                  attributeForId
-                  createdAt
-                  updatedAt
-                }
-                nextToken
-              }
-              words {
-                __typename
-                id
-                text
-                boundingBox {
-                  __typename
-                  left
-                  top
-                  width
-                  height
-                }
-                lineIndex
-              }
-              totalValue
-              reviewCount
-              lowerTitle
-              lowerDescription
-              lockedDate
-              lockedBy
-              markedForDeletion
-              createdAt
-              updatedAt
-              probateRecordCollectionProbateRecordsId
-            }
-            nextToken
-            scannedCount
-            count
-          }
-          createdAt
-          updatedAt
-        }
-      }`;
-    const gqlAPIServiceArguments: any = {
-      id
-    };
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
-    return <GetProbateRecordCollectionQuery>(
-      response.data.getProbateRecordCollection
-    );
-  }
-  async ListProbateRecordCollections(
-    filter?: ModelProbateRecordCollectionFilterInput,
-    limit?: number,
-    nextToken?: string
-  ): Promise<ListProbateRecordCollectionsQuery> {
-    const statement = `query ListProbateRecordCollections($filter: ModelProbateRecordCollectionFilterInput, $limit: Int, $nextToken: String) {
-        listProbateRecordCollections(
-          filter: $filter
-          limit: $limit
-          nextToken: $nextToken
-        ) {
-          __typename
-          items {
-            __typename
-            id
-            title
-            description
-            lowerTitle
-            lowerDescription
-            probateRecords {
-              __typename
-              items {
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
                 __typename
                 id
                 title
@@ -4350,13 +20072,669 @@ export class APIService {
                 lockedDate
                 lockedBy
                 markedForDeletion
+                collections {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
                 createdAt
                 updatedAt
-                probateRecordCollectionProbateRecordsId
+              }
+              probateRecordCollection {
+                __typename
+                id
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      id
+    };
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <GetProbateRecordCollectionQuery>(
+      response.data.getProbateRecordCollection
+    );
+  }
+  async ListProbateRecordCollections(
+    filter?: ModelProbateRecordCollectionFilterInput,
+    limit?: number,
+    nextToken?: string
+  ): Promise<ListProbateRecordCollectionsQuery> {
+    const statement = `query ListProbateRecordCollections($filter: ModelProbateRecordCollectionFilterInput, $limit: Int, $nextToken: String) {
+        listProbateRecordCollections(
+          filter: $filter
+          limit: $limit
+          nextToken: $nextToken
+        ) {
+          __typename
+          items {
+            __typename
+            id
+            title
+            description
+            lowerTitle
+            lowerDescription
+            probateRecords {
+              __typename
+              items {
+                __typename
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  __typename
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      boundingBox {
+                        __typename
+                        left
+                        top
+                        width
+                        height
+                      }
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    __typename
+                    id
+                    text
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  __typename
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
               }
               nextToken
-              scannedCount
-              count
             }
             createdAt
             updatedAt
@@ -4380,6 +20758,1169 @@ export class APIService {
     return <ListProbateRecordCollectionsQuery>(
       response.data.listProbateRecordCollections
     );
+  }
+  async GetCollectionRecords(id: string): Promise<GetCollectionRecordsQuery> {
+    const statement = `query GetCollectionRecords($id: ID!) {
+        getCollectionRecords(id: $id) {
+          __typename
+          id
+          probateRecordID
+          probateRecordCollectionID
+          probateRecord {
+            __typename
+            id
+            title
+            description
+            deceasedId
+            filingId
+            appraiser
+            witness
+            lineItems {
+              __typename
+              items {
+                __typename
+                id
+                probateId
+                wordIds
+                title
+                description
+                category
+                subcategory
+                quantity
+                value
+                confidence
+                rowIndex
+                lowerTitle
+                boundingBox {
+                  __typename
+                  left
+                  top
+                  width
+                  height
+                }
+                attributeForId
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            words {
+              __typename
+              id
+              text
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+              lineIndex
+            }
+            totalValue
+            reviewCount
+            lowerTitle
+            lowerDescription
+            lockedDate
+            lockedBy
+            markedForDeletion
+            collections {
+              __typename
+              items {
+                __typename
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  __typename
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      boundingBox {
+                        __typename
+                        left
+                        top
+                        width
+                        height
+                      }
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    __typename
+                    id
+                    text
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  __typename
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          probateRecordCollection {
+            __typename
+            id
+            title
+            description
+            lowerTitle
+            lowerDescription
+            probateRecords {
+              __typename
+              items {
+                __typename
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  __typename
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      boundingBox {
+                        __typename
+                        left
+                        top
+                        width
+                        height
+                      }
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    __typename
+                    id
+                    text
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  __typename
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      id
+    };
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <GetCollectionRecordsQuery>response.data.getCollectionRecords;
+  }
+  async ListCollectionRecords(
+    filter?: ModelCollectionRecordsFilterInput,
+    limit?: number,
+    nextToken?: string
+  ): Promise<ListCollectionRecordsQuery> {
+    const statement = `query ListCollectionRecords($filter: ModelCollectionRecordsFilterInput, $limit: Int, $nextToken: String) {
+        listCollectionRecords(filter: $filter, limit: $limit, nextToken: $nextToken) {
+          __typename
+          items {
+            __typename
+            id
+            probateRecordID
+            probateRecordCollectionID
+            probateRecord {
+              __typename
+              id
+              title
+              description
+              deceasedId
+              filingId
+              appraiser
+              witness
+              lineItems {
+                __typename
+                items {
+                  __typename
+                  id
+                  probateId
+                  wordIds
+                  title
+                  description
+                  category
+                  subcategory
+                  quantity
+                  value
+                  confidence
+                  rowIndex
+                  lowerTitle
+                  boundingBox {
+                    __typename
+                    left
+                    top
+                    width
+                    height
+                  }
+                  attributeForId
+                  createdAt
+                  updatedAt
+                }
+                nextToken
+              }
+              words {
+                __typename
+                id
+                text
+                boundingBox {
+                  __typename
+                  left
+                  top
+                  width
+                  height
+                }
+                lineIndex
+              }
+              totalValue
+              reviewCount
+              lowerTitle
+              lowerDescription
+              lockedDate
+              lockedBy
+              markedForDeletion
+              collections {
+                __typename
+                items {
+                  __typename
+                  id
+                  probateRecordID
+                  probateRecordCollectionID
+                  probateRecord {
+                    __typename
+                    id
+                    title
+                    description
+                    deceasedId
+                    filingId
+                    appraiser
+                    witness
+                    lineItems {
+                      __typename
+                      items {
+                        __typename
+                        id
+                        probateId
+                        wordIds
+                        title
+                        description
+                        category
+                        subcategory
+                        quantity
+                        value
+                        confidence
+                        rowIndex
+                        lowerTitle
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        attributeForId
+                        createdAt
+                        updatedAt
+                      }
+                      nextToken
+                    }
+                    words {
+                      __typename
+                      id
+                      text
+                      boundingBox {
+                        __typename
+                        left
+                        top
+                        width
+                        height
+                      }
+                      lineIndex
+                    }
+                    totalValue
+                    reviewCount
+                    lowerTitle
+                    lowerDescription
+                    lockedDate
+                    lockedBy
+                    markedForDeletion
+                    collections {
+                      __typename
+                      items {
+                        __typename
+                        id
+                        probateRecordID
+                        probateRecordCollectionID
+                        probateRecord {
+                          __typename
+                          id
+                          title
+                          description
+                          deceasedId
+                          filingId
+                          appraiser
+                          witness
+                          lineItems {
+                            __typename
+                            nextToken
+                          }
+                          words {
+                            __typename
+                            id
+                            text
+                            lineIndex
+                          }
+                          totalValue
+                          reviewCount
+                          lowerTitle
+                          lowerDescription
+                          lockedDate
+                          lockedBy
+                          markedForDeletion
+                          collections {
+                            __typename
+                            nextToken
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        probateRecordCollection {
+                          __typename
+                          id
+                          title
+                          description
+                          lowerTitle
+                          lowerDescription
+                          probateRecords {
+                            __typename
+                            nextToken
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      nextToken
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  probateRecordCollection {
+                    __typename
+                    id
+                    title
+                    description
+                    lowerTitle
+                    lowerDescription
+                    probateRecords {
+                      __typename
+                      items {
+                        __typename
+                        id
+                        probateRecordID
+                        probateRecordCollectionID
+                        probateRecord {
+                          __typename
+                          id
+                          title
+                          description
+                          deceasedId
+                          filingId
+                          appraiser
+                          witness
+                          lineItems {
+                            __typename
+                            nextToken
+                          }
+                          words {
+                            __typename
+                            id
+                            text
+                            lineIndex
+                          }
+                          totalValue
+                          reviewCount
+                          lowerTitle
+                          lowerDescription
+                          lockedDate
+                          lockedBy
+                          markedForDeletion
+                          collections {
+                            __typename
+                            nextToken
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        probateRecordCollection {
+                          __typename
+                          id
+                          title
+                          description
+                          lowerTitle
+                          lowerDescription
+                          probateRecords {
+                            __typename
+                            nextToken
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      nextToken
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  createdAt
+                  updatedAt
+                }
+                nextToken
+              }
+              createdAt
+              updatedAt
+            }
+            probateRecordCollection {
+              __typename
+              id
+              title
+              description
+              lowerTitle
+              lowerDescription
+              probateRecords {
+                __typename
+                items {
+                  __typename
+                  id
+                  probateRecordID
+                  probateRecordCollectionID
+                  probateRecord {
+                    __typename
+                    id
+                    title
+                    description
+                    deceasedId
+                    filingId
+                    appraiser
+                    witness
+                    lineItems {
+                      __typename
+                      items {
+                        __typename
+                        id
+                        probateId
+                        wordIds
+                        title
+                        description
+                        category
+                        subcategory
+                        quantity
+                        value
+                        confidence
+                        rowIndex
+                        lowerTitle
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        attributeForId
+                        createdAt
+                        updatedAt
+                      }
+                      nextToken
+                    }
+                    words {
+                      __typename
+                      id
+                      text
+                      boundingBox {
+                        __typename
+                        left
+                        top
+                        width
+                        height
+                      }
+                      lineIndex
+                    }
+                    totalValue
+                    reviewCount
+                    lowerTitle
+                    lowerDescription
+                    lockedDate
+                    lockedBy
+                    markedForDeletion
+                    collections {
+                      __typename
+                      items {
+                        __typename
+                        id
+                        probateRecordID
+                        probateRecordCollectionID
+                        probateRecord {
+                          __typename
+                          id
+                          title
+                          description
+                          deceasedId
+                          filingId
+                          appraiser
+                          witness
+                          lineItems {
+                            __typename
+                            nextToken
+                          }
+                          words {
+                            __typename
+                            id
+                            text
+                            lineIndex
+                          }
+                          totalValue
+                          reviewCount
+                          lowerTitle
+                          lowerDescription
+                          lockedDate
+                          lockedBy
+                          markedForDeletion
+                          collections {
+                            __typename
+                            nextToken
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        probateRecordCollection {
+                          __typename
+                          id
+                          title
+                          description
+                          lowerTitle
+                          lowerDescription
+                          probateRecords {
+                            __typename
+                            nextToken
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      nextToken
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  probateRecordCollection {
+                    __typename
+                    id
+                    title
+                    description
+                    lowerTitle
+                    lowerDescription
+                    probateRecords {
+                      __typename
+                      items {
+                        __typename
+                        id
+                        probateRecordID
+                        probateRecordCollectionID
+                        probateRecord {
+                          __typename
+                          id
+                          title
+                          description
+                          deceasedId
+                          filingId
+                          appraiser
+                          witness
+                          lineItems {
+                            __typename
+                            nextToken
+                          }
+                          words {
+                            __typename
+                            id
+                            text
+                            lineIndex
+                          }
+                          totalValue
+                          reviewCount
+                          lowerTitle
+                          lowerDescription
+                          lockedDate
+                          lockedBy
+                          markedForDeletion
+                          collections {
+                            __typename
+                            nextToken
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        probateRecordCollection {
+                          __typename
+                          id
+                          title
+                          description
+                          lowerTitle
+                          lowerDescription
+                          probateRecords {
+                            __typename
+                            nextToken
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      nextToken
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  createdAt
+                  updatedAt
+                }
+                nextToken
+              }
+              createdAt
+              updatedAt
+            }
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    if (limit) {
+      gqlAPIServiceArguments.limit = limit;
+    }
+    if (nextToken) {
+      gqlAPIServiceArguments.nextToken = nextToken;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <ListCollectionRecordsQuery>response.data.listCollectionRecords;
   }
   OnCreateProbateRecordListener(
     filter?: ModelSubscriptionProbateRecordFilterInput
@@ -4445,9 +21986,421 @@ export class APIService {
           lockedDate
           lockedBy
           markedForDeletion
+          collections {
+            __typename
+            items {
+              __typename
+              id
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
+                __typename
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
+                  __typename
+                  id
+                  text
+                  boundingBox {
+                    __typename
+                    left
+                    top
+                    width
+                    height
+                  }
+                  lineIndex
+                }
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              probateRecordCollection {
+                __typename
+                id
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
           createdAt
           updatedAt
-          probateRecordCollectionProbateRecordsId
         }
       }`;
     const gqlAPIServiceArguments: any = {};
@@ -4527,9 +22480,421 @@ export class APIService {
           lockedDate
           lockedBy
           markedForDeletion
+          collections {
+            __typename
+            items {
+              __typename
+              id
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
+                __typename
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
+                  __typename
+                  id
+                  text
+                  boundingBox {
+                    __typename
+                    left
+                    top
+                    width
+                    height
+                  }
+                  lineIndex
+                }
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              probateRecordCollection {
+                __typename
+                id
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
           createdAt
           updatedAt
-          probateRecordCollectionProbateRecordsId
         }
       }`;
     const gqlAPIServiceArguments: any = {};
@@ -4609,9 +22974,421 @@ export class APIService {
           lockedDate
           lockedBy
           markedForDeletion
+          collections {
+            __typename
+            items {
+              __typename
+              id
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
+                __typename
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
+                  __typename
+                  id
+                  text
+                  boundingBox {
+                    __typename
+                    left
+                    top
+                    width
+                    height
+                  }
+                  lineIndex
+                }
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              probateRecordCollection {
+                __typename
+                id
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
           createdAt
           updatedAt
-          probateRecordCollectionProbateRecordsId
         }
       }`;
     const gqlAPIServiceArguments: any = {};
@@ -5115,28 +23892,50 @@ export class APIService {
             items {
               __typename
               id
-              title
-              description
-              deceasedId
-              filingId
-              appraiser
-              witness
-              lineItems {
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
                 __typename
-                items {
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
                   __typename
                   id
-                  probateId
-                  wordIds
-                  title
-                  description
-                  category
-                  subcategory
-                  quantity
-                  value
-                  confidence
-                  rowIndex
-                  lowerTitle
+                  text
                   boundingBox {
                     __typename
                     left
@@ -5144,39 +23943,362 @@ export class APIService {
                     width
                     height
                   }
-                  attributeForId
-                  createdAt
-                  updatedAt
+                  lineIndex
                 }
-                nextToken
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
               }
-              words {
+              probateRecordCollection {
                 __typename
                 id
-                text
-                boundingBox {
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
                   __typename
-                  left
-                  top
-                  width
-                  height
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
                 }
-                lineIndex
+                createdAt
+                updatedAt
               }
-              totalValue
-              reviewCount
-              lowerTitle
-              lowerDescription
-              lockedDate
-              lockedBy
-              markedForDeletion
               createdAt
               updatedAt
-              probateRecordCollectionProbateRecordsId
             }
             nextToken
-            scannedCount
-            count
           }
           createdAt
           updatedAt
@@ -5215,28 +24337,50 @@ export class APIService {
             items {
               __typename
               id
-              title
-              description
-              deceasedId
-              filingId
-              appraiser
-              witness
-              lineItems {
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
                 __typename
-                items {
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
                   __typename
                   id
-                  probateId
-                  wordIds
-                  title
-                  description
-                  category
-                  subcategory
-                  quantity
-                  value
-                  confidence
-                  rowIndex
-                  lowerTitle
+                  text
                   boundingBox {
                     __typename
                     left
@@ -5244,39 +24388,362 @@ export class APIService {
                     width
                     height
                   }
-                  attributeForId
-                  createdAt
-                  updatedAt
+                  lineIndex
                 }
-                nextToken
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
               }
-              words {
+              probateRecordCollection {
                 __typename
                 id
-                text
-                boundingBox {
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
                   __typename
-                  left
-                  top
-                  width
-                  height
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
                 }
-                lineIndex
+                createdAt
+                updatedAt
               }
-              totalValue
-              reviewCount
-              lowerTitle
-              lowerDescription
-              lockedDate
-              lockedBy
-              markedForDeletion
               createdAt
               updatedAt
-              probateRecordCollectionProbateRecordsId
             }
             nextToken
-            scannedCount
-            count
           }
           createdAt
           updatedAt
@@ -5315,28 +24782,50 @@ export class APIService {
             items {
               __typename
               id
-              title
-              description
-              deceasedId
-              filingId
-              appraiser
-              witness
-              lineItems {
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
                 __typename
-                items {
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
                   __typename
                   id
-                  probateId
-                  wordIds
-                  title
-                  description
-                  category
-                  subcategory
-                  quantity
-                  value
-                  confidence
-                  rowIndex
-                  lowerTitle
+                  text
                   boundingBox {
                     __typename
                     left
@@ -5344,39 +24833,362 @@ export class APIService {
                     width
                     height
                   }
-                  attributeForId
-                  createdAt
-                  updatedAt
+                  lineIndex
                 }
-                nextToken
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  __typename
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
               }
-              words {
+              probateRecordCollection {
                 __typename
                 id
-                text
-                boundingBox {
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
                   __typename
-                  left
-                  top
-                  width
-                  height
+                  items {
+                    __typename
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      __typename
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      lineItems {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateId
+                          wordIds
+                          title
+                          description
+                          category
+                          subcategory
+                          quantity
+                          value
+                          confidence
+                          rowIndex
+                          lowerTitle
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          attributeForId
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      words {
+                        __typename
+                        id
+                        text
+                        boundingBox {
+                          __typename
+                          left
+                          top
+                          width
+                          height
+                        }
+                        lineIndex
+                      }
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      collections {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      __typename
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      probateRecords {
+                        __typename
+                        items {
+                          __typename
+                          id
+                          probateRecordID
+                          probateRecordCollectionID
+                          probateRecord {
+                            __typename
+                            id
+                            title
+                            description
+                            deceasedId
+                            filingId
+                            appraiser
+                            witness
+                            totalValue
+                            reviewCount
+                            lowerTitle
+                            lowerDescription
+                            lockedDate
+                            lockedBy
+                            markedForDeletion
+                            createdAt
+                            updatedAt
+                          }
+                          probateRecordCollection {
+                            __typename
+                            id
+                            title
+                            description
+                            lowerTitle
+                            lowerDescription
+                            createdAt
+                            updatedAt
+                          }
+                          createdAt
+                          updatedAt
+                        }
+                        nextToken
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
                 }
-                lineIndex
+                createdAt
+                updatedAt
               }
-              totalValue
-              reviewCount
-              lowerTitle
-              lowerDescription
-              lockedDate
-              lockedBy
-              markedForDeletion
               createdAt
               updatedAt
-              probateRecordCollectionProbateRecordsId
             }
             nextToken
-            scannedCount
-            count
           }
           createdAt
           updatedAt
@@ -5391,6 +25203,2007 @@ export class APIService {
     ) as Observable<
       SubscriptionResponse<
         Pick<__SubscriptionContainer, "onDeleteProbateRecordCollection">
+      >
+    >;
+  }
+
+  OnCreateCollectionRecordsListener(
+    filter?: ModelSubscriptionCollectionRecordsFilterInput
+  ): Observable<
+    SubscriptionResponse<
+      Pick<__SubscriptionContainer, "onCreateCollectionRecords">
+    >
+  > {
+    const statement = `subscription OnCreateCollectionRecords($filter: ModelSubscriptionCollectionRecordsFilterInput) {
+        onCreateCollectionRecords(filter: $filter) {
+          __typename
+          id
+          probateRecordID
+          probateRecordCollectionID
+          probateRecord {
+            __typename
+            id
+            title
+            description
+            deceasedId
+            filingId
+            appraiser
+            witness
+            lineItems {
+              __typename
+              items {
+                __typename
+                id
+                probateId
+                wordIds
+                title
+                description
+                category
+                subcategory
+                quantity
+                value
+                confidence
+                rowIndex
+                lowerTitle
+                boundingBox {
+                  __typename
+                  left
+                  top
+                  width
+                  height
+                }
+                attributeForId
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            words {
+              __typename
+              id
+              text
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+              lineIndex
+            }
+            totalValue
+            reviewCount
+            lowerTitle
+            lowerDescription
+            lockedDate
+            lockedBy
+            markedForDeletion
+            collections {
+              __typename
+              items {
+                __typename
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  __typename
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      boundingBox {
+                        __typename
+                        left
+                        top
+                        width
+                        height
+                      }
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    __typename
+                    id
+                    text
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  __typename
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          probateRecordCollection {
+            __typename
+            id
+            title
+            description
+            lowerTitle
+            lowerDescription
+            probateRecords {
+              __typename
+              items {
+                __typename
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  __typename
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      boundingBox {
+                        __typename
+                        left
+                        top
+                        width
+                        height
+                      }
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    __typename
+                    id
+                    text
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  __typename
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<
+        Pick<__SubscriptionContainer, "onCreateCollectionRecords">
+      >
+    >;
+  }
+
+  OnUpdateCollectionRecordsListener(
+    filter?: ModelSubscriptionCollectionRecordsFilterInput
+  ): Observable<
+    SubscriptionResponse<
+      Pick<__SubscriptionContainer, "onUpdateCollectionRecords">
+    >
+  > {
+    const statement = `subscription OnUpdateCollectionRecords($filter: ModelSubscriptionCollectionRecordsFilterInput) {
+        onUpdateCollectionRecords(filter: $filter) {
+          __typename
+          id
+          probateRecordID
+          probateRecordCollectionID
+          probateRecord {
+            __typename
+            id
+            title
+            description
+            deceasedId
+            filingId
+            appraiser
+            witness
+            lineItems {
+              __typename
+              items {
+                __typename
+                id
+                probateId
+                wordIds
+                title
+                description
+                category
+                subcategory
+                quantity
+                value
+                confidence
+                rowIndex
+                lowerTitle
+                boundingBox {
+                  __typename
+                  left
+                  top
+                  width
+                  height
+                }
+                attributeForId
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            words {
+              __typename
+              id
+              text
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+              lineIndex
+            }
+            totalValue
+            reviewCount
+            lowerTitle
+            lowerDescription
+            lockedDate
+            lockedBy
+            markedForDeletion
+            collections {
+              __typename
+              items {
+                __typename
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  __typename
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      boundingBox {
+                        __typename
+                        left
+                        top
+                        width
+                        height
+                      }
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    __typename
+                    id
+                    text
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  __typename
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          probateRecordCollection {
+            __typename
+            id
+            title
+            description
+            lowerTitle
+            lowerDescription
+            probateRecords {
+              __typename
+              items {
+                __typename
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  __typename
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      boundingBox {
+                        __typename
+                        left
+                        top
+                        width
+                        height
+                      }
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    __typename
+                    id
+                    text
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  __typename
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<
+        Pick<__SubscriptionContainer, "onUpdateCollectionRecords">
+      >
+    >;
+  }
+
+  OnDeleteCollectionRecordsListener(
+    filter?: ModelSubscriptionCollectionRecordsFilterInput
+  ): Observable<
+    SubscriptionResponse<
+      Pick<__SubscriptionContainer, "onDeleteCollectionRecords">
+    >
+  > {
+    const statement = `subscription OnDeleteCollectionRecords($filter: ModelSubscriptionCollectionRecordsFilterInput) {
+        onDeleteCollectionRecords(filter: $filter) {
+          __typename
+          id
+          probateRecordID
+          probateRecordCollectionID
+          probateRecord {
+            __typename
+            id
+            title
+            description
+            deceasedId
+            filingId
+            appraiser
+            witness
+            lineItems {
+              __typename
+              items {
+                __typename
+                id
+                probateId
+                wordIds
+                title
+                description
+                category
+                subcategory
+                quantity
+                value
+                confidence
+                rowIndex
+                lowerTitle
+                boundingBox {
+                  __typename
+                  left
+                  top
+                  width
+                  height
+                }
+                attributeForId
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            words {
+              __typename
+              id
+              text
+              boundingBox {
+                __typename
+                left
+                top
+                width
+                height
+              }
+              lineIndex
+            }
+            totalValue
+            reviewCount
+            lowerTitle
+            lowerDescription
+            lockedDate
+            lockedBy
+            markedForDeletion
+            collections {
+              __typename
+              items {
+                __typename
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  __typename
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      boundingBox {
+                        __typename
+                        left
+                        top
+                        width
+                        height
+                      }
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    __typename
+                    id
+                    text
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  __typename
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          probateRecordCollection {
+            __typename
+            id
+            title
+            description
+            lowerTitle
+            lowerDescription
+            probateRecords {
+              __typename
+              items {
+                __typename
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  __typename
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      boundingBox {
+                        __typename
+                        left
+                        top
+                        width
+                        height
+                      }
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    __typename
+                    id
+                    text
+                    boundingBox {
+                      __typename
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  __typename
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    __typename
+                    items {
+                      __typename
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      probateRecord {
+                        __typename
+                        id
+                        title
+                        description
+                        deceasedId
+                        filingId
+                        appraiser
+                        witness
+                        lineItems {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateId
+                            wordIds
+                            title
+                            description
+                            category
+                            subcategory
+                            quantity
+                            value
+                            confidence
+                            rowIndex
+                            lowerTitle
+                            attributeForId
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        words {
+                          __typename
+                          id
+                          text
+                          boundingBox {
+                            __typename
+                            left
+                            top
+                            width
+                            height
+                          }
+                          lineIndex
+                        }
+                        totalValue
+                        reviewCount
+                        lowerTitle
+                        lowerDescription
+                        lockedDate
+                        lockedBy
+                        markedForDeletion
+                        collections {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      probateRecordCollection {
+                        __typename
+                        id
+                        title
+                        description
+                        lowerTitle
+                        lowerDescription
+                        probateRecords {
+                          __typename
+                          items {
+                            __typename
+                            id
+                            probateRecordID
+                            probateRecordCollectionID
+                            createdAt
+                            updatedAt
+                          }
+                          nextToken
+                        }
+                        createdAt
+                        updatedAt
+                      }
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<
+        Pick<__SubscriptionContainer, "onDeleteCollectionRecords">
       >
     >;
   }

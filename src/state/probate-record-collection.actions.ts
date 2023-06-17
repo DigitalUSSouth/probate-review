@@ -59,3 +59,18 @@ export const setPage = createAction(
   '[Probate Record Collection] Set Current Page',
   props<{ currentPage: number }>()
 );
+
+export const loadProbateRecordCollection = createAction(
+  '[Probate Record Collection] Load Collection',
+  props<{ id: string }>()
+);
+
+export const loadProbateRecordCollectionSuccess = createAction(
+  '[Probate Record Collection] Load Collection Success',
+  props<{ collection: ProbateRecordCollection }>()
+);
+
+export const loadProbateRecordCollectionFailure = createAction(
+  '[Probate Record Collection] Load Collection Failure',
+  props<{ error: any }>()
+);

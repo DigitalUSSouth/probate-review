@@ -55,9 +55,378 @@ mutation CreateProbateRecord(
     lockedDate
     lockedBy
     markedForDeletion
+    collections {
+      items {
+        id
+        probateRecordID
+        probateRecordCollectionID
+        probateRecord {
+          id
+          title
+          description
+          deceasedId
+          filingId
+          appraiser
+          witness
+          lineItems {
+            items {
+              id
+              probateId
+              wordIds
+              title
+              description
+              category
+              subcategory
+              quantity
+              value
+              confidence
+              rowIndex
+              lowerTitle
+              boundingBox {
+                left
+                top
+                width
+                height
+              }
+              attributeForId
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+          words {
+            id
+            text
+            boundingBox {
+              left
+              top
+              width
+              height
+            }
+            lineIndex
+          }
+          totalValue
+          reviewCount
+          lowerTitle
+          lowerDescription
+          lockedDate
+          lockedBy
+          markedForDeletion
+          collections {
+            items {
+              id
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  items {
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
+                  id
+                  text
+                  boundingBox {
+                    left
+                    top
+                    width
+                    height
+                  }
+                  lineIndex
+                }
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              probateRecordCollection {
+                id
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
+        probateRecordCollection {
+          id
+          title
+          description
+          lowerTitle
+          lowerDescription
+          probateRecords {
+            items {
+              id
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  items {
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
+                  id
+                  text
+                  boundingBox {
+                    left
+                    top
+                    width
+                    height
+                  }
+                  lineIndex
+                }
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              probateRecordCollection {
+                id
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
     createdAt
     updatedAt
-    probateRecordCollectionProbateRecordsId
   }
 }
 mutation UpdateProbateRecord(
@@ -116,9 +485,378 @@ mutation UpdateProbateRecord(
     lockedDate
     lockedBy
     markedForDeletion
+    collections {
+      items {
+        id
+        probateRecordID
+        probateRecordCollectionID
+        probateRecord {
+          id
+          title
+          description
+          deceasedId
+          filingId
+          appraiser
+          witness
+          lineItems {
+            items {
+              id
+              probateId
+              wordIds
+              title
+              description
+              category
+              subcategory
+              quantity
+              value
+              confidence
+              rowIndex
+              lowerTitle
+              boundingBox {
+                left
+                top
+                width
+                height
+              }
+              attributeForId
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+          words {
+            id
+            text
+            boundingBox {
+              left
+              top
+              width
+              height
+            }
+            lineIndex
+          }
+          totalValue
+          reviewCount
+          lowerTitle
+          lowerDescription
+          lockedDate
+          lockedBy
+          markedForDeletion
+          collections {
+            items {
+              id
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  items {
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
+                  id
+                  text
+                  boundingBox {
+                    left
+                    top
+                    width
+                    height
+                  }
+                  lineIndex
+                }
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              probateRecordCollection {
+                id
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
+        probateRecordCollection {
+          id
+          title
+          description
+          lowerTitle
+          lowerDescription
+          probateRecords {
+            items {
+              id
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  items {
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
+                  id
+                  text
+                  boundingBox {
+                    left
+                    top
+                    width
+                    height
+                  }
+                  lineIndex
+                }
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              probateRecordCollection {
+                id
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
     createdAt
     updatedAt
-    probateRecordCollectionProbateRecordsId
   }
 }
 mutation DeleteProbateRecord(
@@ -177,9 +915,378 @@ mutation DeleteProbateRecord(
     lockedDate
     lockedBy
     markedForDeletion
+    collections {
+      items {
+        id
+        probateRecordID
+        probateRecordCollectionID
+        probateRecord {
+          id
+          title
+          description
+          deceasedId
+          filingId
+          appraiser
+          witness
+          lineItems {
+            items {
+              id
+              probateId
+              wordIds
+              title
+              description
+              category
+              subcategory
+              quantity
+              value
+              confidence
+              rowIndex
+              lowerTitle
+              boundingBox {
+                left
+                top
+                width
+                height
+              }
+              attributeForId
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+          words {
+            id
+            text
+            boundingBox {
+              left
+              top
+              width
+              height
+            }
+            lineIndex
+          }
+          totalValue
+          reviewCount
+          lowerTitle
+          lowerDescription
+          lockedDate
+          lockedBy
+          markedForDeletion
+          collections {
+            items {
+              id
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  items {
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
+                  id
+                  text
+                  boundingBox {
+                    left
+                    top
+                    width
+                    height
+                  }
+                  lineIndex
+                }
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              probateRecordCollection {
+                id
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
+        probateRecordCollection {
+          id
+          title
+          description
+          lowerTitle
+          lowerDescription
+          probateRecords {
+            items {
+              id
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  items {
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
+                  id
+                  text
+                  boundingBox {
+                    left
+                    top
+                    width
+                    height
+                  }
+                  lineIndex
+                }
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              probateRecordCollection {
+                id
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
     createdAt
     updatedAt
-    probateRecordCollectionProbateRecordsId
   }
 }
 mutation CreateLineItem(
@@ -468,63 +1575,372 @@ mutation CreateProbateRecordCollection(
     probateRecords {
       items {
         id
-        title
-        description
-        deceasedId
-        filingId
-        appraiser
-        witness
-        lineItems {
-          items {
+        probateRecordID
+        probateRecordCollectionID
+        probateRecord {
+          id
+          title
+          description
+          deceasedId
+          filingId
+          appraiser
+          witness
+          lineItems {
+            items {
+              id
+              probateId
+              wordIds
+              title
+              description
+              category
+              subcategory
+              quantity
+              value
+              confidence
+              rowIndex
+              lowerTitle
+              boundingBox {
+                left
+                top
+                width
+                height
+              }
+              attributeForId
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+          words {
             id
-            probateId
-            wordIds
-            title
-            description
-            category
-            subcategory
-            quantity
-            value
-            confidence
-            rowIndex
-            lowerTitle
+            text
             boundingBox {
               left
               top
               width
               height
             }
-            attributeForId
-            createdAt
-            updatedAt
+            lineIndex
           }
-          nextToken
+          totalValue
+          reviewCount
+          lowerTitle
+          lowerDescription
+          lockedDate
+          lockedBy
+          markedForDeletion
+          collections {
+            items {
+              id
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  items {
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
+                  id
+                  text
+                  boundingBox {
+                    left
+                    top
+                    width
+                    height
+                  }
+                  lineIndex
+                }
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              probateRecordCollection {
+                id
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+          createdAt
+          updatedAt
         }
-        words {
+        probateRecordCollection {
           id
-          text
-          boundingBox {
-            left
-            top
-            width
-            height
+          title
+          description
+          lowerTitle
+          lowerDescription
+          probateRecords {
+            items {
+              id
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  items {
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
+                  id
+                  text
+                  boundingBox {
+                    left
+                    top
+                    width
+                    height
+                  }
+                  lineIndex
+                }
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              probateRecordCollection {
+                id
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              createdAt
+              updatedAt
+            }
+            nextToken
           }
-          lineIndex
+          createdAt
+          updatedAt
         }
-        totalValue
-        reviewCount
-        lowerTitle
-        lowerDescription
-        lockedDate
-        lockedBy
-        markedForDeletion
         createdAt
         updatedAt
-        probateRecordCollectionProbateRecordsId
       }
       nextToken
-      scannedCount
-      count
     }
     createdAt
     updatedAt
@@ -543,63 +1959,372 @@ mutation UpdateProbateRecordCollection(
     probateRecords {
       items {
         id
-        title
-        description
-        deceasedId
-        filingId
-        appraiser
-        witness
-        lineItems {
-          items {
+        probateRecordID
+        probateRecordCollectionID
+        probateRecord {
+          id
+          title
+          description
+          deceasedId
+          filingId
+          appraiser
+          witness
+          lineItems {
+            items {
+              id
+              probateId
+              wordIds
+              title
+              description
+              category
+              subcategory
+              quantity
+              value
+              confidence
+              rowIndex
+              lowerTitle
+              boundingBox {
+                left
+                top
+                width
+                height
+              }
+              attributeForId
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+          words {
             id
-            probateId
-            wordIds
-            title
-            description
-            category
-            subcategory
-            quantity
-            value
-            confidence
-            rowIndex
-            lowerTitle
+            text
             boundingBox {
               left
               top
               width
               height
             }
-            attributeForId
-            createdAt
-            updatedAt
+            lineIndex
           }
-          nextToken
+          totalValue
+          reviewCount
+          lowerTitle
+          lowerDescription
+          lockedDate
+          lockedBy
+          markedForDeletion
+          collections {
+            items {
+              id
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  items {
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
+                  id
+                  text
+                  boundingBox {
+                    left
+                    top
+                    width
+                    height
+                  }
+                  lineIndex
+                }
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              probateRecordCollection {
+                id
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+          createdAt
+          updatedAt
         }
-        words {
+        probateRecordCollection {
           id
-          text
-          boundingBox {
-            left
-            top
-            width
-            height
+          title
+          description
+          lowerTitle
+          lowerDescription
+          probateRecords {
+            items {
+              id
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  items {
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
+                  id
+                  text
+                  boundingBox {
+                    left
+                    top
+                    width
+                    height
+                  }
+                  lineIndex
+                }
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              probateRecordCollection {
+                id
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              createdAt
+              updatedAt
+            }
+            nextToken
           }
-          lineIndex
+          createdAt
+          updatedAt
         }
-        totalValue
-        reviewCount
-        lowerTitle
-        lowerDescription
-        lockedDate
-        lockedBy
-        markedForDeletion
         createdAt
         updatedAt
-        probateRecordCollectionProbateRecordsId
       }
       nextToken
-      scannedCount
-      count
     }
     createdAt
     updatedAt
@@ -618,63 +2343,2100 @@ mutation DeleteProbateRecordCollection(
     probateRecords {
       items {
         id
-        title
-        description
-        deceasedId
-        filingId
-        appraiser
-        witness
-        lineItems {
-          items {
+        probateRecordID
+        probateRecordCollectionID
+        probateRecord {
+          id
+          title
+          description
+          deceasedId
+          filingId
+          appraiser
+          witness
+          lineItems {
+            items {
+              id
+              probateId
+              wordIds
+              title
+              description
+              category
+              subcategory
+              quantity
+              value
+              confidence
+              rowIndex
+              lowerTitle
+              boundingBox {
+                left
+                top
+                width
+                height
+              }
+              attributeForId
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+          words {
             id
-            probateId
-            wordIds
-            title
-            description
-            category
-            subcategory
-            quantity
-            value
-            confidence
-            rowIndex
-            lowerTitle
+            text
             boundingBox {
               left
               top
               width
               height
             }
-            attributeForId
-            createdAt
-            updatedAt
+            lineIndex
           }
-          nextToken
+          totalValue
+          reviewCount
+          lowerTitle
+          lowerDescription
+          lockedDate
+          lockedBy
+          markedForDeletion
+          collections {
+            items {
+              id
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  items {
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
+                  id
+                  text
+                  boundingBox {
+                    left
+                    top
+                    width
+                    height
+                  }
+                  lineIndex
+                }
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              probateRecordCollection {
+                id
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+          createdAt
+          updatedAt
         }
-        words {
+        probateRecordCollection {
           id
-          text
+          title
+          description
+          lowerTitle
+          lowerDescription
+          probateRecords {
+            items {
+              id
+              probateRecordID
+              probateRecordCollectionID
+              probateRecord {
+                id
+                title
+                description
+                deceasedId
+                filingId
+                appraiser
+                witness
+                lineItems {
+                  items {
+                    id
+                    probateId
+                    wordIds
+                    title
+                    description
+                    category
+                    subcategory
+                    quantity
+                    value
+                    confidence
+                    rowIndex
+                    lowerTitle
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    attributeForId
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                words {
+                  id
+                  text
+                  boundingBox {
+                    left
+                    top
+                    width
+                    height
+                  }
+                  lineIndex
+                }
+                totalValue
+                reviewCount
+                lowerTitle
+                lowerDescription
+                lockedDate
+                lockedBy
+                markedForDeletion
+                collections {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              probateRecordCollection {
+                id
+                title
+                description
+                lowerTitle
+                lowerDescription
+                probateRecords {
+                  items {
+                    id
+                    probateRecordID
+                    probateRecordCollectionID
+                    probateRecord {
+                      id
+                      title
+                      description
+                      deceasedId
+                      filingId
+                      appraiser
+                      witness
+                      totalValue
+                      reviewCount
+                      lowerTitle
+                      lowerDescription
+                      lockedDate
+                      lockedBy
+                      markedForDeletion
+                      createdAt
+                      updatedAt
+                    }
+                    probateRecordCollection {
+                      id
+                      title
+                      description
+                      lowerTitle
+                      lowerDescription
+                      createdAt
+                      updatedAt
+                    }
+                    createdAt
+                    updatedAt
+                  }
+                  nextToken
+                }
+                createdAt
+                updatedAt
+              }
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+    createdAt
+    updatedAt
+  }
+}
+mutation CreateCollectionRecords(
+  $input: CreateCollectionRecordsInput!
+  $condition: ModelCollectionRecordsConditionInput
+) {
+  createCollectionRecords(input: $input, condition: $condition) {
+    id
+    probateRecordID
+    probateRecordCollectionID
+    probateRecord {
+      id
+      title
+      description
+      deceasedId
+      filingId
+      appraiser
+      witness
+      lineItems {
+        items {
+          id
+          probateId
+          wordIds
+          title
+          description
+          category
+          subcategory
+          quantity
+          value
+          confidence
+          rowIndex
+          lowerTitle
           boundingBox {
             left
             top
             width
             height
           }
-          lineIndex
+          attributeForId
+          createdAt
+          updatedAt
         }
-        totalValue
-        reviewCount
-        lowerTitle
-        lowerDescription
-        lockedDate
-        lockedBy
-        markedForDeletion
-        createdAt
-        updatedAt
-        probateRecordCollectionProbateRecordsId
+        nextToken
       }
-      nextToken
-      scannedCount
-      count
+      words {
+        id
+        text
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+        lineIndex
+      }
+      totalValue
+      reviewCount
+      lowerTitle
+      lowerDescription
+      lockedDate
+      lockedBy
+      markedForDeletion
+      collections {
+        items {
+          id
+          probateRecordID
+          probateRecordCollectionID
+          probateRecord {
+            id
+            title
+            description
+            deceasedId
+            filingId
+            appraiser
+            witness
+            lineItems {
+              items {
+                id
+                probateId
+                wordIds
+                title
+                description
+                category
+                subcategory
+                quantity
+                value
+                confidence
+                rowIndex
+                lowerTitle
+                boundingBox {
+                  left
+                  top
+                  width
+                  height
+                }
+                attributeForId
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            words {
+              id
+              text
+              boundingBox {
+                left
+                top
+                width
+                height
+              }
+              lineIndex
+            }
+            totalValue
+            reviewCount
+            lowerTitle
+            lowerDescription
+            lockedDate
+            lockedBy
+            markedForDeletion
+            collections {
+              items {
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    items {
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    id
+                    text
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          probateRecordCollection {
+            id
+            title
+            description
+            lowerTitle
+            lowerDescription
+            probateRecords {
+              items {
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    items {
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    id
+                    text
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      createdAt
+      updatedAt
+    }
+    probateRecordCollection {
+      id
+      title
+      description
+      lowerTitle
+      lowerDescription
+      probateRecords {
+        items {
+          id
+          probateRecordID
+          probateRecordCollectionID
+          probateRecord {
+            id
+            title
+            description
+            deceasedId
+            filingId
+            appraiser
+            witness
+            lineItems {
+              items {
+                id
+                probateId
+                wordIds
+                title
+                description
+                category
+                subcategory
+                quantity
+                value
+                confidence
+                rowIndex
+                lowerTitle
+                boundingBox {
+                  left
+                  top
+                  width
+                  height
+                }
+                attributeForId
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            words {
+              id
+              text
+              boundingBox {
+                left
+                top
+                width
+                height
+              }
+              lineIndex
+            }
+            totalValue
+            reviewCount
+            lowerTitle
+            lowerDescription
+            lockedDate
+            lockedBy
+            markedForDeletion
+            collections {
+              items {
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    items {
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    id
+                    text
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          probateRecordCollection {
+            id
+            title
+            description
+            lowerTitle
+            lowerDescription
+            probateRecords {
+              items {
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    items {
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    id
+                    text
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+mutation UpdateCollectionRecords(
+  $input: UpdateCollectionRecordsInput!
+  $condition: ModelCollectionRecordsConditionInput
+) {
+  updateCollectionRecords(input: $input, condition: $condition) {
+    id
+    probateRecordID
+    probateRecordCollectionID
+    probateRecord {
+      id
+      title
+      description
+      deceasedId
+      filingId
+      appraiser
+      witness
+      lineItems {
+        items {
+          id
+          probateId
+          wordIds
+          title
+          description
+          category
+          subcategory
+          quantity
+          value
+          confidence
+          rowIndex
+          lowerTitle
+          boundingBox {
+            left
+            top
+            width
+            height
+          }
+          attributeForId
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      words {
+        id
+        text
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+        lineIndex
+      }
+      totalValue
+      reviewCount
+      lowerTitle
+      lowerDescription
+      lockedDate
+      lockedBy
+      markedForDeletion
+      collections {
+        items {
+          id
+          probateRecordID
+          probateRecordCollectionID
+          probateRecord {
+            id
+            title
+            description
+            deceasedId
+            filingId
+            appraiser
+            witness
+            lineItems {
+              items {
+                id
+                probateId
+                wordIds
+                title
+                description
+                category
+                subcategory
+                quantity
+                value
+                confidence
+                rowIndex
+                lowerTitle
+                boundingBox {
+                  left
+                  top
+                  width
+                  height
+                }
+                attributeForId
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            words {
+              id
+              text
+              boundingBox {
+                left
+                top
+                width
+                height
+              }
+              lineIndex
+            }
+            totalValue
+            reviewCount
+            lowerTitle
+            lowerDescription
+            lockedDate
+            lockedBy
+            markedForDeletion
+            collections {
+              items {
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    items {
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    id
+                    text
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          probateRecordCollection {
+            id
+            title
+            description
+            lowerTitle
+            lowerDescription
+            probateRecords {
+              items {
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    items {
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    id
+                    text
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      createdAt
+      updatedAt
+    }
+    probateRecordCollection {
+      id
+      title
+      description
+      lowerTitle
+      lowerDescription
+      probateRecords {
+        items {
+          id
+          probateRecordID
+          probateRecordCollectionID
+          probateRecord {
+            id
+            title
+            description
+            deceasedId
+            filingId
+            appraiser
+            witness
+            lineItems {
+              items {
+                id
+                probateId
+                wordIds
+                title
+                description
+                category
+                subcategory
+                quantity
+                value
+                confidence
+                rowIndex
+                lowerTitle
+                boundingBox {
+                  left
+                  top
+                  width
+                  height
+                }
+                attributeForId
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            words {
+              id
+              text
+              boundingBox {
+                left
+                top
+                width
+                height
+              }
+              lineIndex
+            }
+            totalValue
+            reviewCount
+            lowerTitle
+            lowerDescription
+            lockedDate
+            lockedBy
+            markedForDeletion
+            collections {
+              items {
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    items {
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    id
+                    text
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          probateRecordCollection {
+            id
+            title
+            description
+            lowerTitle
+            lowerDescription
+            probateRecords {
+              items {
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    items {
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    id
+                    text
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+mutation DeleteCollectionRecords(
+  $input: DeleteCollectionRecordsInput!
+  $condition: ModelCollectionRecordsConditionInput
+) {
+  deleteCollectionRecords(input: $input, condition: $condition) {
+    id
+    probateRecordID
+    probateRecordCollectionID
+    probateRecord {
+      id
+      title
+      description
+      deceasedId
+      filingId
+      appraiser
+      witness
+      lineItems {
+        items {
+          id
+          probateId
+          wordIds
+          title
+          description
+          category
+          subcategory
+          quantity
+          value
+          confidence
+          rowIndex
+          lowerTitle
+          boundingBox {
+            left
+            top
+            width
+            height
+          }
+          attributeForId
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      words {
+        id
+        text
+        boundingBox {
+          left
+          top
+          width
+          height
+        }
+        lineIndex
+      }
+      totalValue
+      reviewCount
+      lowerTitle
+      lowerDescription
+      lockedDate
+      lockedBy
+      markedForDeletion
+      collections {
+        items {
+          id
+          probateRecordID
+          probateRecordCollectionID
+          probateRecord {
+            id
+            title
+            description
+            deceasedId
+            filingId
+            appraiser
+            witness
+            lineItems {
+              items {
+                id
+                probateId
+                wordIds
+                title
+                description
+                category
+                subcategory
+                quantity
+                value
+                confidence
+                rowIndex
+                lowerTitle
+                boundingBox {
+                  left
+                  top
+                  width
+                  height
+                }
+                attributeForId
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            words {
+              id
+              text
+              boundingBox {
+                left
+                top
+                width
+                height
+              }
+              lineIndex
+            }
+            totalValue
+            reviewCount
+            lowerTitle
+            lowerDescription
+            lockedDate
+            lockedBy
+            markedForDeletion
+            collections {
+              items {
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    items {
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    id
+                    text
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          probateRecordCollection {
+            id
+            title
+            description
+            lowerTitle
+            lowerDescription
+            probateRecords {
+              items {
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    items {
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    id
+                    text
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      createdAt
+      updatedAt
+    }
+    probateRecordCollection {
+      id
+      title
+      description
+      lowerTitle
+      lowerDescription
+      probateRecords {
+        items {
+          id
+          probateRecordID
+          probateRecordCollectionID
+          probateRecord {
+            id
+            title
+            description
+            deceasedId
+            filingId
+            appraiser
+            witness
+            lineItems {
+              items {
+                id
+                probateId
+                wordIds
+                title
+                description
+                category
+                subcategory
+                quantity
+                value
+                confidence
+                rowIndex
+                lowerTitle
+                boundingBox {
+                  left
+                  top
+                  width
+                  height
+                }
+                attributeForId
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            words {
+              id
+              text
+              boundingBox {
+                left
+                top
+                width
+                height
+              }
+              lineIndex
+            }
+            totalValue
+            reviewCount
+            lowerTitle
+            lowerDescription
+            lockedDate
+            lockedBy
+            markedForDeletion
+            collections {
+              items {
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    items {
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    id
+                    text
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          probateRecordCollection {
+            id
+            title
+            description
+            lowerTitle
+            lowerDescription
+            probateRecords {
+              items {
+                id
+                probateRecordID
+                probateRecordCollectionID
+                probateRecord {
+                  id
+                  title
+                  description
+                  deceasedId
+                  filingId
+                  appraiser
+                  witness
+                  lineItems {
+                    items {
+                      id
+                      probateId
+                      wordIds
+                      title
+                      description
+                      category
+                      subcategory
+                      quantity
+                      value
+                      confidence
+                      rowIndex
+                      lowerTitle
+                      attributeForId
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  words {
+                    id
+                    text
+                    boundingBox {
+                      left
+                      top
+                      width
+                      height
+                    }
+                    lineIndex
+                  }
+                  totalValue
+                  reviewCount
+                  lowerTitle
+                  lowerDescription
+                  lockedDate
+                  lockedBy
+                  markedForDeletion
+                  collections {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                probateRecordCollection {
+                  id
+                  title
+                  description
+                  lowerTitle
+                  lowerDescription
+                  probateRecords {
+                    items {
+                      id
+                      probateRecordID
+                      probateRecordCollectionID
+                      createdAt
+                      updatedAt
+                    }
+                    nextToken
+                  }
+                  createdAt
+                  updatedAt
+                }
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+            createdAt
+            updatedAt
+          }
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      createdAt
+      updatedAt
     }
     createdAt
     updatedAt

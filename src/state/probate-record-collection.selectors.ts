@@ -25,7 +25,7 @@ export const selectRootState = createFeatureSelector<AppState>('root');
 // Export the selectors for the root state
 export const selectRootProbateRecordCollections = createSelector(
   selectRootState,
-  (state: AppState) => state.probateRecords
+  (state: AppState) => state.probateRecordCollections
 );
 
 // Create an ActionReducerMap for all the reducers
@@ -60,3 +60,17 @@ export const reducers: ActionReducerMap<RootState> = {
     (state: ProbateRecordCollectionState) => state.error
   );
   
+  export const selectProbateRecordCollection = createSelector(
+    selectProbateRecordCollectionState,
+    (state: ProbateRecordCollectionState) => state.collection
+  );
+  
+  export const selectProbateRecordCollectionLoading = createSelector(
+    selectProbateRecordCollectionState,
+    (state: ProbateRecordCollectionState) => state.loading
+  );
+  
+  export const selectProbateRecordCollectionError = createSelector(
+    selectProbateRecordCollectionState,
+    (state: ProbateRecordCollectionState) => state.error
+  );
