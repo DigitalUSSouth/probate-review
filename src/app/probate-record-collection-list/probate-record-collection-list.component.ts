@@ -10,7 +10,7 @@ import {
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { ProbateRecordCollection, ModelProbateRecordCollectionFilterInput } from '../API.service';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { AmplifyUser } from '@aws-amplify/ui';
 
@@ -33,27 +33,32 @@ export class ProbateRecordCollectionListComponent implements OnInit {
   constructor(private store: Store<AppState>) {}
 
   ngOnInit() {
-    this.probateRecordCollections$ = this.store.pipe(select(selectProbateRecordCollections));
+    this.probateRecordCollections$ = this.store.pipe(
+      select(selectProbateRecordCollections),
+      tap((collections) => {
+        if (collections.length === 0) {
+          this.store.dispatch(
+            loadProbateRecordCollections({
+              pageSize: 10, // Set your desired page size
+              filter: undefined, // Set your filter if needed
+              nextToken: undefined, // Set your next token if needed
+            })
+          );
+        }
+      })
+    );
     this.loading$ = this.store.pipe(select(selectProbateRecordCollectionsLoading));
     this.error$ = this.store.pipe(select(selectProbateRecordCollectionsError));
-
+    
     this.probateRecordCollections$.subscribe((collections) => {
       console.log('collections loaded');
       console.log(collections);
       this.dataSource.data = collections;
     });
-
+    
     this.loading$.subscribe((loading) => {
       console.log('loading ' + loading);
-    })
-
-    this.store.dispatch(
-      loadProbateRecordCollections({
-        pageSize: 10, // Set your desired page size
-        filter: undefined, // Set your filter if needed
-        nextToken: undefined, // Set your next token if needed
-      })
-    );
+    });
   }
 
   ngAfterViewInit() {
