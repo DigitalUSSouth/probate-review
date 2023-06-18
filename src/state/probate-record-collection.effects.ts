@@ -1,7 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { from, of } from 'rxjs';
-import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
+import {
+  catchError,
+  filter,
+  map,
+  mergeMap,
+  switchMap,
+  withLatestFrom,
+} from 'rxjs/operators';
 import {
   loadProbateRecordCollections,
   loadProbateRecordCollectionsSuccess,
@@ -12,6 +19,12 @@ import {
 } from './probate-record-collection.actions';
 import { ProbateRecordService } from 'src/app/probate-record.service';
 import { APIService } from '../app/API.service';
+import { Store, select } from '@ngrx/store';
+import { AppState } from 'src/app/app.state';
+import {
+  selectProbateRecordCollection,
+  selectProbateRecordCollections,
+} from './probate-record-collection.selectors';
 
 @Injectable()
 export class ProbateRecordCollectionEffects {
@@ -36,25 +49,56 @@ export class ProbateRecordCollectionEffects {
     )
   );
 
+  // loadProbateRecordCollection$ = createEffect(() =>
+  //   this.actions$.pipe(
+  //     ofType(loadProbateRecordCollection),
+  //     withLatestFrom(this.store.pipe(select(selectProbateRecordCollections))),
+  //     filter(([action, collections]) => !collections.map(r => r.id).includes(action.id)),
+  //     mergeMap(([action]) =>
+  //       from(this.apiService.GetProbateRecordCollection(action.id)).pipe(
+  //         map((response) =>
+  //           loadProbateRecordCollectionSuccess({ collection: response })
+  //         ),
+  //         catchError((error) =>
+  //           of(loadProbateRecordCollectionFailure({ error }))
+  //         )
+  //       )
+  //     )
+  //   )
+  // );
   loadProbateRecordCollection$ = createEffect(() =>
     this.actions$.pipe(
       ofType(loadProbateRecordCollection),
-      mergeMap((action) =>
-        from(this.apiService.GetProbateRecordCollection(action.id)).pipe(
-          map((response) =>
-            loadProbateRecordCollectionSuccess({ collection: response })
-          ),
-          catchError((error) =>
-            of(loadProbateRecordCollectionFailure({ error }))
-          )
-        )
-      )
+      withLatestFrom(this.store.pipe(select(selectProbateRecordCollections))),
+      mergeMap(([action, collections]) => {
+        const existingCollection = collections.find((c) => c.id === action.id);
+        if (existingCollection) {
+          console.log('found existing collection');
+          return of(
+            loadProbateRecordCollectionSuccess({
+              collection: existingCollection,
+            })
+          );
+        } else {
+          return from(
+            this.apiService.GetProbateRecordCollection(action.id)
+          ).pipe(
+            map((response) =>
+              loadProbateRecordCollectionSuccess({ collection: response })
+            ),
+            catchError((error) =>
+              of(loadProbateRecordCollectionFailure({ error }))
+            )
+          );
+        }
+      })
     )
   );
 
   constructor(
     private actions$: Actions,
     private probateRecordService: ProbateRecordService,
-    private apiService: APIService
+    private apiService: APIService,
+    private store: Store<AppState>
   ) {}
 }
