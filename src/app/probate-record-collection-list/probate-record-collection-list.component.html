@@ -2,6 +2,23 @@
 
 <mat-table [dataSource]="dataSource" matSort>
   <!-- Customize the table columns and header labels as needed -->
+  <ng-container matColumnDef="checked">
+    <th mat-header-cell *matHeaderCellDef>
+      <mat-checkbox
+        (change)="toggleAllChecks($event)"
+        [checked]="selection.hasValue() && isAllSelected()"
+        [indeterminate]="selection.hasValue() && !isAllSelected()"
+        color="primary"
+      ></mat-checkbox>
+    </th>
+    <td mat-cell *matCellDef="let collection">
+      <mat-checkbox
+        (change)="toggleCheck(collection)"
+        [checked]="selection.isSelected(collection)"
+        color="primary"
+      ></mat-checkbox>
+    </td>
+  </ng-container>
   <ng-container matColumnDef="title">
     <mat-header-cell *matHeaderCellDef mat-sort-header>Title</mat-header-cell>
     <mat-cell *matCellDef="let collection">{{ collection.title }}</mat-cell>
@@ -22,5 +39,6 @@
   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
   <mat-row *matRowDef="let collection; columns: displayedColumns"></mat-row>
 </mat-table>
+<button mat-raised-button color="primary" (click)="selectCollections()">Select Collections</button>
 
 <mat-paginator [pageSizeOptions]="[5, 10, 25, 50, 100]" showFirstLastButtons></mat-paginator>

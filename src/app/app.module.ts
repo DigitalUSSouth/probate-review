@@ -50,6 +50,7 @@ import { probateRecordCollectionReducer } from 'src/state/probate-record-collect
 import { ProbateRecordCollectionEffects } from 'src/state/probate-record-collection.effects';
 import { MatSelectModule } from '@angular/material/select';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ProbateRecordCollectionSelectionComponent } from './probate-record-collection-selection/probate-record-collection-selection.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -69,6 +70,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     ReviewedListComponent,
     ProbateRecordCollectionListComponent,
     ProbateRecordCollectionDetailComponent,
+    ProbateRecordCollectionSelectionComponent,
   ],
   imports: [
     BrowserModule,

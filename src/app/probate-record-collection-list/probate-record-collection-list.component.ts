@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, QueryList, ViewChild, ViewChildren, EventEmitter, Output } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '../app.state';
 import { loadProbateRecordCollections } from '../../state/probate-record-collection.actions';
@@ -13,6 +13,8 @@ import { ProbateRecordCollection, ModelProbateRecordCollectionFilterInput } from
 import { Observable, tap } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { AmplifyUser } from '@aws-amplify/ui';
+import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
+import { SelectionModel } from '@angular/cdk/collections';
 
 @Component({
   selector: 'app-probate-record-collection-list',
@@ -24,9 +26,13 @@ export class ProbateRecordCollectionListComponent implements OnInit {
   loading$?: Observable<boolean>;
   error$?: Observable<string | null>;
   dataSource: MatTableDataSource<ProbateRecordCollection> = new MatTableDataSource<ProbateRecordCollection>();
+  selection: SelectionModel<ProbateRecordCollection> = new SelectionModel<ProbateRecordCollection>(true, []);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChildren('checkbox') checkBoxes?: QueryList<MatCheckbox>;
+  @Output() selectedCollections = new EventEmitter<ProbateRecordCollection[]>();
+
 
   displayedColumns = ['title', 'description', 'actions']; // Customize the displayed columns as needed
 
@@ -69,4 +75,28 @@ export class ProbateRecordCollectionListComponent implements OnInit {
   applyFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
+
+  toggleAllChecks(event: MatCheckboxChange): void {
+    if (event.checked) {
+      this.selection.select(...this.dataSource.data);
+    } else {
+      this.selection.clear();
+    }
+  }
+
+  toggleCheck(collection: ProbateRecordCollection): void {
+    this.selection.toggle(collection);
+  }
+  
+  isAllSelected(): boolean {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  selectCollections(): void {
+    const selectedCollections = this.selection.selected;
+    this.selectedCollections.emit(selectedCollections);
+  }
+  
 }

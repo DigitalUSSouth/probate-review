@@ -1,0 +1,7 @@
+<h2>Select Probate Record Collections</h2>
+
+<app-probate-record-collection-list
+  (selectedCollections)="onProbateRecordCollectionsSelected($event)"
+></app-probate-record-collection-list>
+
+<button mat-raised-button color="primary" (click)="saveSelections()">Save Selections</button>
