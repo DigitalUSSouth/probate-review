@@ -35,7 +35,7 @@ import {
 } from '@angular/cdk/drag-drop';
 import { MatTable } from '@angular/material/table';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
-import { BoundingBox } from '../quad-tree';
+// import { BoundingBox } from '../quad-tree';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
 import { deleteLine, deleteWord } from 'src/graphql/mutations';
@@ -49,6 +49,42 @@ import { AuthenticatorService } from '@aws-amplify/ui-angular';
 import awsExports from 'src/aws-exports';
 import { Amplify } from 'aws-amplify';
 import { LocationStrategy } from '@angular/common';
+
+class BoundingBox {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+
+  constructor(x = 0, y = 0, width = 1, height = 1) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+  }
+
+  intersects(rect: BoundingBox): boolean {
+    // return !(rect.x > this.x + this.width ||
+    //     rect.x + rect.width < this.x ||
+    //     rect.y > this.y + this.height ||
+    //     rect.y + rect.height < this.y);
+    return (
+      this.x + this.width >= rect.x &&
+      this.x <= rect.x + rect.width &&
+      this.y <= rect.y + rect.height &&
+      this.y + this.height >= rect.y
+    );
+  }
+
+  contains(rect: BoundingBox): boolean {
+    return (
+      this.x <= rect.x &&
+      this.x + this.width >= rect.x + rect.width &&
+      this.y <= rect.y &&
+      this.y + this.height >= rect.y + rect.height
+    );
+  }
+}
 
 interface SubcategoryOptionValue {
   value: string;

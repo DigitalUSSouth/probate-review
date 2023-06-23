@@ -15,6 +15,7 @@
       <mat-checkbox
         (change)="toggleCheck(collection)"
         [checked]="selection.isSelected(collection)"
+        (change)="selectionChanged()"
         color="primary"
       ></mat-checkbox>
     </td>
@@ -39,6 +40,6 @@
   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
   <mat-row *matRowDef="let collection; columns: displayedColumns"></mat-row>
 </mat-table>
-<button mat-raised-button color="primary" (click)="selectCollections()">Select Collections</button>
+<!-- <button mat-raised-button color="primary" (click)="selectCollections()">Select Collections</button> -->
 
 <mat-paginator [pageSizeOptions]="[5, 10, 25, 50, 100]" showFirstLastButtons></mat-paginator>

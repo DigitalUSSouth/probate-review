@@ -18,7 +18,7 @@ import {
   loadProbateRecordCollectionFailure,
 } from './probate-record-collection.actions';
 import { ProbateRecordService } from 'src/app/probate-record.service';
-import { APIService } from '../app/API.service';
+import { APIService, ProbateRecordCollection } from '../app/API.service';
 import { Store, select } from '@ngrx/store';
 import { AppState } from 'src/app/app.state';
 import {
@@ -84,7 +84,7 @@ export class ProbateRecordCollectionEffects {
             this.apiService.GetProbateRecordCollection(action.id)
           ).pipe(
             map((response) =>
-              loadProbateRecordCollectionSuccess({ collection: response })
+              loadProbateRecordCollectionSuccess({ collection: response as ProbateRecordCollection })
             ),
             catchError((error) =>
               of(loadProbateRecordCollectionFailure({ error }))

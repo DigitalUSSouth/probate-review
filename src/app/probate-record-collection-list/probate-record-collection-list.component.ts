@@ -1,4 +1,4 @@
-import { Component, OnInit, QueryList, ViewChild, ViewChildren, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, QueryList, ViewChild, ViewChildren, EventEmitter, Output, Input } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '../app.state';
 import { loadProbateRecordCollections } from '../../state/probate-record-collection.actions';
@@ -32,13 +32,16 @@ export class ProbateRecordCollectionListComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChildren('checkbox') checkBoxes?: QueryList<MatCheckbox>;
   @Output() selectedCollections = new EventEmitter<ProbateRecordCollection[]>();
-
+  @Input() showCheckBoxes = false;
 
   displayedColumns = ['title', 'description', 'actions']; // Customize the displayed columns as needed
 
   constructor(private store: Store<AppState>) {}
 
   ngOnInit() {
+    if (this.showCheckBoxes) {
+      this.displayedColumns = ['checked', ...this.displayedColumns];
+    } 
     this.probateRecordCollections$ = this.store.pipe(
       select(selectProbateRecordCollections),
       tap((collections) => {
@@ -82,10 +85,12 @@ export class ProbateRecordCollectionListComponent implements OnInit {
     } else {
       this.selection.clear();
     }
+    this.selectionChanged();
   }
 
   toggleCheck(collection: ProbateRecordCollection): void {
     this.selection.toggle(collection);
+    this.selectionChanged();
   }
   
   isAllSelected(): boolean {
@@ -94,7 +99,12 @@ export class ProbateRecordCollectionListComponent implements OnInit {
     return numSelected === numRows;
   }
 
-  selectCollections(): void {
+  // selectCollections(): void {
+  //   const selectedCollections = this.selection.selected;
+  //   this.selectedCollections.emit(selectedCollections);
+  // }
+
+  selectionChanged(): void {
     const selectedCollections = this.selection.selected;
     this.selectedCollections.emit(selectedCollections);
   }

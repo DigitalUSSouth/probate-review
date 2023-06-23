@@ -17,6 +17,8 @@ import {
 } from '../../state/probate-record-collection.selectors';
 import { AppState } from '../app.state';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { ProbateRecordCollectionSelectionDialogComponent } from '../probate-record-collection-selection-dialog/probate-record-collection-selection-dialog.component';
 
 const POLL_INTERVAL = 20000;
 
@@ -40,8 +42,9 @@ export class UploadComponent implements OnInit {
   loaded?: boolean;
   collectionsFormControl = new FormControl('');
   probateRecordCollections: ProbateRecordCollection[] = [];
+  selectedProbateRecordCollections: ProbateRecordCollection[] = [];
 
-  constructor(public authenticator: AuthenticatorService, private probateRecordService: APIService, private store: Store<AppState>) {
+  constructor(public authenticator: AuthenticatorService, private probateRecordService: APIService, private store: Store<AppState>, public dialog: MatDialog) {
     this.probateRecordCollections$ = this.store.pipe(select(selectProbateRecordCollections));
     this.loading$ = this.store.pipe(select(selectProbateRecordCollectionsLoading));
     this.loaded$ = this.store.pipe(select(selectProbateRecordCollectionsLoaded));
@@ -95,7 +98,6 @@ export class UploadComponent implements OnInit {
 
               }
             }
-            // console.log(response);
           }
           catch (error) {
             console.log(error);
@@ -110,6 +112,19 @@ export class UploadComponent implements OnInit {
 
   showCollections(): void {
     console.log(this.collectionsFormControl);
+  }
+
+  selectCollections(): void {
+    const dialogRef = this.dialog.open(ProbateRecordCollectionSelectionDialogComponent, {
+      height: '90%',
+      panelClass: 'custom-dialog',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      this.selectCollections = result;
+      console.log('selected the following collections');
+      console.log(this.selectCollections);
+    });
   }
 
   ngOnInit(): void {
