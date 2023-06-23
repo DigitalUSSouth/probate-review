@@ -1,22 +1,20 @@
-import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+  ViewEncapsulation,
+  AfterViewInit,
+} from '@angular/core';
 import { Storage } from 'aws-amplify';
 import { v4 as uuidv4 } from 'uuid';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
 import { interval } from 'rxjs';
-import { ProbateRecord, APIService, GetProbateRecordQuery, ProbateRecordCollection } from '../API.service';
-import { Store, select } from '@ngrx/store';
-import { Observable, Subscription } from 'rxjs';
-import { clearProbateRecordCollections, loadProbateRecordCollections, loadProbateRecordCollectionsSuccess } from 'src/state/probate-record-collection.actions';
 import {
-  selectProbateRecordCollections,
-  selectPageSize,
-  selectNextToken,
-  selectProbateRecordCollectionsLoading,
-  selectProbateRecordCollectionsError,
-  selectProbateRecordCollectionsLoaded
-} from '../../state/probate-record-collection.selectors';
-import { AppState } from '../app.state';
-import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+  ProbateRecord,
+  APIService,
+  ProbateRecordCollection,
+} from '../API.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ProbateRecordCollectionSelectionDialogComponent } from '../probate-record-collection-selection-dialog/probate-record-collection-selection-dialog.component';
 
@@ -26,115 +24,90 @@ const POLL_INTERVAL = 20000;
   selector: 'app-upload',
   encapsulation: ViewEncapsulation.None, // https://stackoverflow.com/questions/43631587/angular-4-css-on-document-createelement
   templateUrl: './upload.component.html',
-  styleUrls: ['./upload.component.sass']
+  styleUrls: ['./upload.component.sass'],
 })
 export class UploadComponent implements OnInit {
-  @ViewChild("fileInput") fileInputRef?: ElementRef<HTMLInputElement>;
+  @ViewChild('fileInput') fileInputRef?: ElementRef<HTMLInputElement>;
   fileMap = new Map<string, File>();
   filesInProcessing = Array<string>();
   checkFileProcessedInterval = interval(POLL_INTERVAL);
-  probateRecordCollections$: Observable<ProbateRecordCollection[]>;
-  loading$: Observable<boolean>;
-  loaded$: Observable<boolean>;
-  error$: Observable<any>;
-  private subscriptions: Subscription[] = [];
-  loading?: boolean;
-  loaded?: boolean;
-  collectionsFormControl = new FormControl('');
-  probateRecordCollections: ProbateRecordCollection[] = [];
   selectedProbateRecordCollections: ProbateRecordCollection[] = [];
 
-  constructor(public authenticator: AuthenticatorService, private probateRecordService: APIService, private store: Store<AppState>, public dialog: MatDialog) {
-    this.probateRecordCollections$ = this.store.pipe(select(selectProbateRecordCollections));
-    this.loading$ = this.store.pipe(select(selectProbateRecordCollectionsLoading));
-    this.loaded$ = this.store.pipe(select(selectProbateRecordCollectionsLoaded));
-    this.error$ = this.store.pipe(select(selectProbateRecordCollectionsError));
-    // Dispatch the initial action to load the probate records
-    this.store.dispatch(loadProbateRecordCollections({ pageSize: 10 }));
+  constructor(
+    public authenticator: AuthenticatorService,
+    private probateRecordService: APIService,
+    public dialog: MatDialog
+  ) {
     
-    
-    // Subscribe to the probate records, page size, and next token
-    this.subscriptions.push(
-      this.probateRecordCollections$.subscribe(records => {
-        this.probateRecordCollections = records;
-        console.log('records loaded');
-        console.log(records);
-        
-      }),
-      this.loading$.subscribe(loading => {
-        this.loading = loading;
-      }),
-      this.loaded$.subscribe(loaded => {
-        this.loaded = loaded;        
-      })
-    );
-
     let timer = this.checkFileProcessedInterval.subscribe(async () => {
       if (this.filesInProcessing.length > 0) {
         for (let i = 0; i < this.filesInProcessing.length; i++) {
           const docid = this.filesInProcessing[i];
           try {
-            let record = await this.probateRecordService.GetProbateRecord(docid) as ProbateRecord;
+            let record = (await this.probateRecordService.GetProbateRecord(
+              docid
+            )) as ProbateRecord;
             if (record && typeof record === 'object') {
               // add to any checked collections
-              const collections = this.collectionsFormControl.value as unknown as ProbateRecordCollection[];
-              if(collections) {
-                for(const collection of collections) {
-                  this.probateRecordService.CreateCollectionRecords({probateRecordID: docid, probateRecordCollectionID: collection.id});
-                }
+              for (const collection of this.selectedProbateRecordCollections) {
+                this.probateRecordService.CreateCollectionRecords({
+                  probateRecordID: docid,
+                  probateRecordCollectionID: collection.id,
+                });
               }
               // check if lines have been added
               console.log(record);
 
               console.log('record has been processed');
               // remove looking for file
-              this.filesInProcessing = this.filesInProcessing.filter(id => id != docid);
-              let anchorElement = document.getElementById(`a-${docid}`) as HTMLAnchorElement;
+              this.filesInProcessing = this.filesInProcessing.filter(
+                (id) => id != docid
+              );
+              let anchorElement = document.getElementById(
+                `a-${docid}`
+              ) as HTMLAnchorElement;
               if (anchorElement) {
                 anchorElement.className = 'processed';
                 anchorElement.innerHTML = 'review';
                 anchorElement.href = `review/${docid}`;
                 anchorElement.target = '_blank';
-
               }
             }
-          }
-          catch (error) {
+          } catch (error) {
             console.log(error);
-            this.filesInProcessing = this.filesInProcessing.filter(id => id != docid);
+            this.filesInProcessing = this.filesInProcessing.filter(
+              (id) => id != docid
+            );
             timer.unsubscribe();
             break;
           }
         }
       }
-    })
-  }
-
-  showCollections(): void {
-    console.log(this.collectionsFormControl);
+    });
   }
 
   selectCollections(): void {
-    const dialogRef = this.dialog.open(ProbateRecordCollectionSelectionDialogComponent, {
-      height: '90%',
-      panelClass: 'custom-dialog',
-    });
+    const dialogRef = this.dialog.open(
+      ProbateRecordCollectionSelectionDialogComponent,
+      {
+        height: '90%',
+        panelClass: 'custom-dialog',
+      }
+    );
 
     dialogRef.afterClosed().subscribe((result) => {
-      this.selectCollections = result;
+      this.selectCollections = result ?? [];
       console.log('selected the following collections');
       console.log(this.selectCollections);
     });
   }
 
-  ngOnInit(): void {
-
-  }
+  ngOnInit(): void {}
 
   ngAfterViewInit() {
     if (this.fileInputRef) {
       const fileInputElement = this.fileInputRef.nativeElement;
-      fileInputElement?.addEventListener('change', event => {
+      fileInputElement?.addEventListener('change', (event) => {
         const target = event.target as HTMLInputElement;
         const files = target!.files;
         if (files) {
@@ -144,8 +117,7 @@ export class UploadComponent implements OnInit {
           }
         }
       });
-    }
-    else {
+    } else {
       console.log('no file input elem found');
     }
   }
@@ -175,7 +147,7 @@ export class UploadComponent implements OnInit {
 
   /**
    * on file drop handler
-  */
+   */
   dropHandler(event: Event) {
     event.preventDefault();
     const dragEvent = event as DragEvent;
@@ -201,18 +173,20 @@ export class UploadComponent implements OnInit {
     // don't try to process non-images
     var imageType = /image.*/;
     if (dragEvent.dataTransfer?.items) {
-
       const file = dragEvent.dataTransfer.items[0];
-      dragEvent.dataTransfer.dropEffect = file.type.match(imageType) ? "copy" : "none";
+      dragEvent.dataTransfer.dropEffect = file.type.match(imageType)
+        ? 'copy'
+        : 'none';
     }
   }
 
   async uploadFiles() {
     for (const docid of this.fileMap.keys()) {
-      let anchorElement = document.getElementById(`a-${docid}`) as HTMLAnchorElement;
+      let anchorElement = document.getElementById(
+        `a-${docid}`
+      ) as HTMLAnchorElement;
       if (anchorElement) {
         anchorElement.innerText = 'uploading';
-
       }
       let file = this.fileMap.get(docid);
       console.log(`uploading file ${file!.name}`);
@@ -220,17 +194,22 @@ export class UploadComponent implements OnInit {
       // let ext = re.exec(file!.name);
       let metadata = {
         docid,
-        uploader: this.authenticator.user.username!
+        uploader: this.authenticator.user.username!,
       };
       this.filesInProcessing.push(docid);
       await Storage.put(file!.name, file, {
-        metadata, progressCallback: (progress) => {
+        metadata,
+        progressCallback: (progress) => {
           // console.log(`Uploaded: ${progress.loaded}/${progress.total} for ${docid}`);
-          let progressElement = document.getElementById(`progress-${docid}`) as HTMLInputElement;
+          let progressElement = document.getElementById(
+            `progress-${docid}`
+          ) as HTMLInputElement;
           if (progressElement) {
-            progressElement.value = `${progress.loaded / progress.total * 100}`;
+            progressElement.value = `${
+              (progress.loaded / progress.total) * 100
+            }`;
           }
-        }
+        },
       });
       anchorElement.innerText = 'processing';
     }
@@ -242,5 +221,4 @@ export class UploadComponent implements OnInit {
       this.addFile(file!);
     }
   }
-
 }
