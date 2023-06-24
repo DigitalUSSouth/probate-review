@@ -4,14 +4,14 @@ import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-probate-record-collection-selection',
-  templateUrl: './probate-record-collection-selection-dialog.component.html',
-  styleUrls: ['./probate-record-collection-selection-dialog.component.sass'],
+  templateUrl: './select-probate-record-collection-dialog.component.html',
+  styleUrls: ['./select-probate-record-collection-dialog.component.sass'],
 })
-export class ProbateRecordCollectionSelectionDialogComponent {
+export class SelectProbateRecordCollectionDialogComponent {
   @Output() selectedCollectionsSaved = new EventEmitter<ProbateRecordCollection[]>();
   selectedCollections: ProbateRecordCollection[] = [];
 
-  constructor(public dialogRef: MatDialogRef<ProbateRecordCollectionSelectionDialogComponent>) { }
+  constructor(public dialogRef: MatDialogRef<SelectProbateRecordCollectionDialogComponent>) { }
 
   ngOnInit() {
   

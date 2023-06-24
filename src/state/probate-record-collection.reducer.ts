@@ -8,7 +8,9 @@ import {
   loadProbateRecordCollectionsFailure,
   loadProbateRecordCollection,
   loadProbateRecordCollectionSuccess,
-  loadProbateRecordCollectionFailure
+  loadProbateRecordCollectionFailure,
+  associateProbateRecordsSuccess,
+  associateProbateRecordsFailure
 } from './probate-record-collection.actions'
 
 export interface ProbateRecordCollectionState {
@@ -86,7 +88,19 @@ export const probateRecordCollectionReducer = createReducer(initialProbateRecord
     collection: null,
     loading: false,
     error
-  }))
+  })),
+  on(associateProbateRecordsSuccess, (state, { collection }) => ({
+    ...state,
+    collection,
+    loading: false,
+    error: null
+  })),
+  on(associateProbateRecordsFailure, (state, { error }) => ({
+    ...state,
+    collection: null,
+    loading: false,
+    error
+  })),
   );
 
   export function reducer(state: ProbateRecordCollectionState | undefined, action: Action) {

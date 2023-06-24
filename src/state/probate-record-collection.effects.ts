@@ -19,9 +19,16 @@ import {
   createProbateRecordCollection,
   createProbateRecordCollectionSuccess,
   createProbateRecordCollectionFailure,
+  associateProbateRecords,
+  associateProbateRecordsSuccess,
+  associateProbateRecordsFailure,
 } from './probate-record-collection.actions';
 import { ProbateRecordService } from 'src/app/probate-record.service';
-import { APIService, ProbateRecordCollection } from '../app/API.service';
+import {
+  APIService,
+  CollectionRecords,
+  ProbateRecordCollection,
+} from '../app/API.service';
 import { Store, select } from '@ngrx/store';
 import { AppState } from 'src/app/app.state';
 import {
@@ -87,7 +94,9 @@ export class ProbateRecordCollectionEffects {
             this.apiService.GetProbateRecordCollection(action.id)
           ).pipe(
             map((response) =>
-              loadProbateRecordCollectionSuccess({ collection: response as ProbateRecordCollection })
+              loadProbateRecordCollectionSuccess({
+                collection: response as ProbateRecordCollection,
+              })
             ),
             catchError((error) =>
               of(loadProbateRecordCollectionFailure({ error }))
@@ -102,9 +111,18 @@ export class ProbateRecordCollectionEffects {
     this.actions$.pipe(
       ofType(createProbateRecordCollection),
       mergeMap(({ title, description }) =>
-        from(this.apiService.CreateProbateRecordCollection({ title, description, lowerTitle: title?.toLowerCase(), lowerDescription: description?.toLowerCase() })).pipe(
+        from(
+          this.apiService.CreateProbateRecordCollection({
+            title,
+            description,
+            lowerTitle: title?.toLowerCase(),
+            lowerDescription: description?.toLowerCase(),
+          })
+        ).pipe(
           map((response) =>
-            createProbateRecordCollectionSuccess({ collection: response as ProbateRecordCollection})
+            createProbateRecordCollectionSuccess({
+              collection: response as ProbateRecordCollection,
+            })
           ),
           catchError((error) =>
             of(createProbateRecordCollectionFailure({ error }))
@@ -113,6 +131,40 @@ export class ProbateRecordCollectionEffects {
       )
     )
   );
+
+  associateProbateRecords$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(associateProbateRecords),
+      mergeMap(({ collectionId, recordIds }) =>
+        from(this.associateRecords(collectionId, recordIds)).pipe(
+          map((response) =>
+            associateProbateRecordsSuccess({
+              collection: response as ProbateRecordCollection,
+            })
+          ),
+          catchError((error) => of(associateProbateRecordsFailure({ error })))
+        )
+      )
+    )
+  );
+
+  async associateRecords(
+    collectionId: string,
+    recordIds: string[]
+  ): Promise<ProbateRecordCollection> {
+    const collectionRecords: CollectionRecords[] = [];
+    let collection: ProbateRecordCollection | undefined;
+    for (const recordId of recordIds) {
+      const collectionRecord = await this.apiService.CreateCollectionRecords({
+        probateRecordCollectionID: collectionId,
+        probateRecordID: recordId,
+      });
+
+      collection =
+        collectionRecord.probateRecordCollection as ProbateRecordCollection;
+    }
+    return collection!;
+  }
 
   constructor(
     private actions$: Actions,

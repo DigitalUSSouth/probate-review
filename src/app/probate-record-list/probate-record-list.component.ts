@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
 import {
@@ -22,6 +22,7 @@ import { AppState } from '../app.state';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
 import { AmplifyUser } from '@aws-amplify/ui';
 import { CookieService } from 'ngx-cookie-service';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 const UNREVIEWED_PAGE_SIZE = 'unreviewedPageSize';
 
@@ -55,9 +56,12 @@ export class ProbateRecordListComponent implements OnInit {
   nextToken: string | undefined;
   @ViewChild(MatSort) sort?: MatSort;
   @ViewChild(MatPaginator) paginator?: MatPaginator;
+  @Input() showCheckBoxes = false;
+  @Output() selectedProbateRecords = new EventEmitter<ProbateRecord[]>();
   dataSource?: MatTableDataSource<ProbateRecord>;
   user?: AmplifyUser;
   private subscriptions: Subscription[] = [];
+  selectedRecords: ProbateRecord[] = [];
 
   constructor(
     private store: Store<AppState>,
@@ -73,10 +77,14 @@ export class ProbateRecordListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.showCheckBoxes) {
+      this.displayedColumns = ['checked', ...this.displayedColumns];
+    } 
     const pageSizeText = this.cookieService.get(UNREVIEWED_PAGE_SIZE);
     console.log('page size is ' + pageSizeText);
-    this.pageSize =
-      parseInt(this.cookieService.get(UNREVIEWED_PAGE_SIZE)) ?? 10;
+    
+    this.pageSize = (pageSizeText) ?
+      parseInt(this.cookieService.get(UNREVIEWED_PAGE_SIZE)) ?? 10 : 10;
     this.store.dispatch(clearProbateRecords());
     // Dispatch the initial action to load the probate records
     this.store.dispatch(
@@ -186,5 +194,39 @@ export class ProbateRecordListComponent implements OnInit {
 
   getLockedText(record: ProbateRecord) {
     return record.lockedBy === this.user!.username ? 'Unlock' : 'Lock';
+  }
+
+  toggleCheck(record: ProbateRecord, event: MatCheckboxChange) {
+    if (event.checked) {
+      this.selectedRecords.push(record);
+    } else {
+      const index = this.selectedRecords.findIndex((selected) => selected.id === record.id);
+      if (index !== -1) {
+        this.selectedRecords.splice(index, 1);
+      }
+    }
+  }
+
+  toggleAllChecks(event: MatCheckboxChange) {
+    this.selectedRecords = event.checked ? this.dataSource!.data : [];
+  }
+
+  isAllSelected() {
+    return this.dataSource!.data.length === this.selectedRecords.length;
+  }
+
+  toggleSelection(record: ProbateRecord): void {
+    if (this.isSelected(record)) {
+      this.selectedRecords = this.selectedRecords.filter((r) => r.id !== record.id);
+    } else {
+      this.selectedRecords.push(record);
+    }
+
+    this.selectedProbateRecords.emit(this.selectedRecords);
+  }
+
+
+  isSelected(record: ProbateRecord): boolean {
+    return this.selectedRecords.some((r) => r.id === record.id);
   }
 }

@@ -4,6 +4,23 @@
 
 <ng-container *ngIf="!(loading) && !(error$ | async) && loaded">
   <table mat-table [dataSource]="dataSource!" matSort class="mat-elevation-z8">
+    <ng-container matColumnDef="checked">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-checkbox
+          (change)="toggleAllChecks($event)"
+          [checked]="isAllSelected()"
+          [indeterminate]="selectedRecords.length > 0 && !isAllSelected()"
+          color="primary"
+        ></mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let record">
+        <mat-checkbox
+          (change)="toggleSelection(record)"
+          [checked]="selectedRecords.includes(record)"
+          color="primary"
+        ></mat-checkbox>
+      </td>
+    </ng-container>
     <ng-container matColumnDef="thumbnail">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let record">
@@ -44,7 +61,7 @@
   </table>
     
 </ng-container>
-<button
+<!-- <button
             mat-raised-button
             class="form-button"
             color="primary"            
@@ -55,4 +72,12 @@
 <mat-paginator (page)="handlePageEvent($event)" [length]="dataSource?.data?.length" [pageSize]="pageSize"
   [pageSizeOptions]="[1, 5, 10, 25, 100]" showFirstLastButtons aria-label="Select page">
 
-</mat-paginator>
+</mat-paginator> -->
+<div class="load-more-container">
+  <button mat-raised-button class="form-button" color="primary" (click)="loadMoreRecords(nextToken!)">
+    Load More
+  </button>
+  
+  <mat-paginator (page)="handlePageEvent($event)" [length]="dataSource?.data?.length" [pageSize]="pageSize"
+    [pageSizeOptions]="[1, 5, 10, 25, 100]" showFirstLastButtons aria-label="Select page"></mat-paginator>
+</div>

@@ -16,7 +16,7 @@ import {
   ProbateRecordCollection,
 } from '../API.service';
 import { MatDialog } from '@angular/material/dialog';
-import { ProbateRecordCollectionSelectionDialogComponent } from '../probate-record-collection-selection-dialog/probate-record-collection-selection-dialog.component';
+import { SelectProbateRecordCollectionDialogComponent } from '../select-probate-record-collection-dialog/select-probate-record-collection-dialog.component';
 
 const POLL_INTERVAL = 20000;
 
@@ -88,7 +88,7 @@ export class UploadComponent implements OnInit {
 
   selectCollections(): void {
     const dialogRef = this.dialog.open(
-      ProbateRecordCollectionSelectionDialogComponent,
+      SelectProbateRecordCollectionDialogComponent,
       {
         height: '90%',
         panelClass: 'custom-dialog',
