@@ -6,6 +6,9 @@ import {
   loadProbateRecords,
   loadProbateRecordsSuccess,
   loadProbateRecordsFailure,
+  loadFilteredProbateRecords,
+  loadFilteredProbateRecordsFailure,
+  loadFilteredProbateRecordsSuccess,
 } from './probate-record.actions';
 import { ProbateRecordService } from 'src/app/probate-record.service';
 
@@ -22,6 +25,18 @@ export class ProbateRecordEffects {
           catchError(error => of(loadProbateRecordsFailure({ error })))
         )
       )      
+    )
+  );
+
+  loadFilteredProbateRecords$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loadFilteredProbateRecords),
+      switchMap(({ filter, limit, nextToken, sortDirection }) =>
+        this.probateRecordService.loadFilteredProbateRecords(filter, limit, nextToken, sortDirection).pipe(
+          map((response) => loadFilteredProbateRecordsSuccess({ records: response.probateRecords, nextToken: response.nextToken })),
+          catchError((error) => of(loadFilteredProbateRecordsFailure({ error: error.message })))
+        )
+      )
     )
   );
 

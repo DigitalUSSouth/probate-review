@@ -6,11 +6,10 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { AmplifyUser } from '@aws-amplify/ui';
-import { PageEvent } from 'openseadragon';
 import { Subscription } from 'rxjs';
 import { ProbateRecord } from '../API.service';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
@@ -69,14 +68,24 @@ export class SelectableRecordListViewComponent {
 
     if (this.records) {
       this.dataSource = new MatTableDataSource<ProbateRecord>(this.records);
+      this.dataSource.sort = this.sort!;
+      this.dataSource.paginator = this.paginator!;
     }
+  }
+
+  ngAfterViewInit() {
+    this.user = this.authenticator.user;  
   }
 
   ngOnChanges(changes: SimpleChanges) {
     let recordChange = changes['records'];
 
     if (recordChange) {
+      console.log('updating data source');
+      console.log(this.records);
       this.dataSource = new MatTableDataSource<ProbateRecord>(this.records);
+      this.dataSource.sort = this.sort!;
+      this.dataSource.paginator = this.paginator!;
     }
   }
 

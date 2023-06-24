@@ -14,22 +14,36 @@ import { ProbateRecordCollectionListComponent } from './probate-record-collectio
 import { ProbateRecordCollectionDetailComponent } from './probate-record-collection-detail/probate-record-collection-detail.component';
 import { CreateProbateRecordCollectionComponent } from './create-probate-record-collection/create-probate-record-collection.component';
 import { LoadRecordListViewComponent } from './load-record-list-view/load-record-list-view.component';
+import { UnreviewedComponent } from './unreviewed/unreviewed.component';
 const routes: Routes = [
-  {path: 'records', component: ReviewedListComponent},
-  {path: 'record/:id', component: RecordDetailComponent},
-  {path: 'review/:id', component: UnreviewedDetailComponent, canActivate: [AuthGuard]},
-  {path: 'unreviewed', component: LoadRecordListViewComponent, canActivate: [AuthGuard ]},
-  {path: 'upload', component: UploadComponent, canActivate: [AuthGuard]},
-  {path: '', component: SearchComponent},
-  {path: 'search/:q', component: SearchResultsComponent},
-  {path: 'collections', component: ProbateRecordCollectionListComponent},
-  {path: 'probate-record-collections/create', component: CreateProbateRecordCollectionComponent},
-  { path: 'probate-record-collections/:id', component: ProbateRecordCollectionDetailComponent },
-  
+  { path: 'records', component: ReviewedListComponent },
+  { path: 'record/:id', component: RecordDetailComponent },
+  {
+    path: 'review/:id',
+    component: UnreviewedDetailComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'unreviewed',
+    component: UnreviewedComponent,
+    canActivate: [AuthGuard],
+  },
+  { path: 'upload', component: UploadComponent, canActivate: [AuthGuard] },
+  { path: '', component: SearchComponent },
+  { path: 'search/:q', component: SearchResultsComponent },
+  { path: 'collections', component: ProbateRecordCollectionListComponent },
+  {
+    path: 'probate-record-collections/create',
+    component: CreateProbateRecordCollectionComponent,
+  },
+  {
+    path: 'probate-record-collections/:id',
+    component: ProbateRecordCollectionDetailComponent,
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

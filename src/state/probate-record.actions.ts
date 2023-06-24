@@ -15,13 +15,13 @@ export const loadProbateRecords = createAction(
   props<{
     pageSize: number;
     filter?: ModelProbateRecordFilterInput;
-    nextToken?: string;
+    nextToken?: string | null | undefined;
   }>()
 );
 
 export const loadProbateRecordsSuccess = createAction(
   '[ProbateRecord] Load ProbateRecords Success',
-  props<{ probateRecords: ProbateRecord[]; nextToken: string | null }>()
+  props<{ probateRecords: ProbateRecord[]; nextToken: string | null | undefined }>()
 );
 
 export const loadProbateRecordsSuccessWithHistoryState = createAction(
@@ -71,14 +71,14 @@ export const loadFilteredProbateRecords = createAction(
   props<{
     filter: ModelProbateRecordFilterInput;
     limit: number;
-    nextToken: string | undefined;
+    nextToken: string | null | undefined;
     sortDirection: ModelSortDirection;
   }>()
 );
 
 export const loadFilteredProbateRecordsSuccess = createAction(
   LOAD_FILTERED_PROBATE_RECORDS_SUCCESS,
-  props<{ records: ProbateRecord[]; nextToken: string }>()
+  props<{ records: ProbateRecord[]; nextToken: string | null | undefined}>()
 );
 
 export const loadFilteredProbateRecordsFailure = createAction(

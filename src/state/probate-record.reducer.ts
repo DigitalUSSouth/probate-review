@@ -14,6 +14,7 @@ import {
   ModelProbateRecordFilterInput,
   ProbateRecord,
 } from '../app/API.service';
+import isEqual from 'lodash/isEqual';
 
 export interface ProbateRecordState {
   filter: ModelProbateRecordFilterInput | undefined | null;
@@ -73,7 +74,7 @@ export const probateRecordReducer = createReducer(
   on(loadFilteredProbateRecordsSuccess, (state, { records, nextToken }) => ({
     ...state,
     loading: false,
-    records,
+    records: [...state.records, ...records],
     nextToken,
     error: null
   })),
@@ -82,9 +83,17 @@ export const probateRecordReducer = createReducer(
     loading: false,
     error,
   })),
-  on(setProbateRecordFilter, (state, { filter }) => ({
-    ...state,
-    filter,
-    records: [], // Empty the array of Probate Records when the filter changes
-  }))
+  on(setProbateRecordFilter, (state, { filter }) => {
+    if (isEqual(state.filter, filter)) {
+      // If the filter is the same, return the current state
+      return state;
+    } else {
+      // If the filter is different, update the filter and empty the array of Probate Records
+      return {
+        ...state,
+        filter,
+        records: [],
+      };
+    }
+  })
 );
