@@ -2,7 +2,13 @@ import { createAction, props } from '@ngrx/store';
 import {
   ModelProbateRecordFilterInput,
   ProbateRecord,
+  ModelSortDirection
 } from '../app/API.service';
+
+export const LOAD_FILTERED_PROBATE_RECORDS = '[Probate Records] Load Filtered Probate Records';
+export const LOAD_FILTERED_PROBATE_RECORDS_SUCCESS = '[Probate Records] Load Filtered Probate Records Success';
+export const LOAD_FILTERED_PROBATE_RECORDS_FAILURE = '[Probate Records] Load Filtered Probate Records Failure';
+export const SET_PROBATE_RECORD_FILTER = '[ProbateRecord] Set Filter';
 
 export const loadProbateRecords = createAction(
   '[ProbateRecord] Load ProbateRecords',
@@ -58,4 +64,29 @@ export const updateProbateRecordAction = (probateRecord: ProbateRecord) => {
 export const setPage = createAction(
   '[Probate Record] Set Current Page',
   props<{ currentPage: number }>()
+);
+
+export const loadFilteredProbateRecords = createAction(
+  LOAD_FILTERED_PROBATE_RECORDS,
+  props<{
+    filter: ModelProbateRecordFilterInput;
+    limit: number;
+    nextToken: string | undefined;
+    sortDirection: ModelSortDirection;
+  }>()
+);
+
+export const loadFilteredProbateRecordsSuccess = createAction(
+  LOAD_FILTERED_PROBATE_RECORDS_SUCCESS,
+  props<{ records: ProbateRecord[]; nextToken: string }>()
+);
+
+export const loadFilteredProbateRecordsFailure = createAction(
+  LOAD_FILTERED_PROBATE_RECORDS_FAILURE,
+  props<{ error: string }>()
+);
+
+export const setProbateRecordFilter = createAction(
+  SET_PROBATE_RECORD_FILTER,
+  props<{ filter: ModelProbateRecordFilterInput }>()
 );

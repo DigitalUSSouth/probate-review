@@ -13,11 +13,12 @@ import { ReviewedListComponent } from './reviewed-list/reviewed-list.component';
 import { ProbateRecordCollectionListComponent } from './probate-record-collection-list/probate-record-collection-list.component';
 import { ProbateRecordCollectionDetailComponent } from './probate-record-collection-detail/probate-record-collection-detail.component';
 import { CreateProbateRecordCollectionComponent } from './create-probate-record-collection/create-probate-record-collection.component';
+import { LoadRecordListViewComponent } from './load-record-list-view/load-record-list-view.component';
 const routes: Routes = [
   {path: 'records', component: ReviewedListComponent},
   {path: 'record/:id', component: RecordDetailComponent},
   {path: 'review/:id', component: UnreviewedDetailComponent, canActivate: [AuthGuard]},
-  {path: 'unreviewed', component: ProbateRecordListComponent, canActivate: [AuthGuard ]},
+  {path: 'unreviewed', component: LoadRecordListViewComponent, canActivate: [AuthGuard ]},
   {path: 'upload', component: UploadComponent, canActivate: [AuthGuard]},
   {path: '', component: SearchComponent},
   {path: 'search/:q', component: SearchResultsComponent},

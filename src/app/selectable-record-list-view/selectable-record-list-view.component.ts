@@ -2,47 +2,32 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit,
   Output,
+  SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { Store, select } from '@ngrx/store';
-import { Observable, Subscription } from 'rxjs';
-import {
-  clearProbateRecords,
-  loadProbateRecords,
-  updateProbateRecord,
-} from '../../state/probate-record.actions';
-import {
-  selectProbateRecords,
-  selectNextToken,
-  selectProbateRecordsLoading,
-  selectProbateRecordsError,
-} from '../../state/probte-record.selectors';
-import { MatTableDataSource } from '@angular/material/table';
-import { ProbateRecord } from '../API.service';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { AppState } from '../app.state';
-import { AuthenticatorService } from '@aws-amplify/ui-angular';
+import { MatTableDataSource } from '@angular/material/table';
 import { AmplifyUser } from '@aws-amplify/ui';
+import { PageEvent } from 'openseadragon';
+import { Subscription } from 'rxjs';
+import { ProbateRecord } from '../API.service';
+import { AuthenticatorService } from '@aws-amplify/ui-angular';
 import { CookieService } from 'ngx-cookie-service';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { Store } from '@ngrx/store';
+import { AppState } from '../app.state';
+import { updateProbateRecord } from 'src/state/probate-record.actions';
 
 const UNREVIEWED_PAGE_SIZE = 'unreviewedPageSize';
 
 @Component({
-  selector: 'app-probate-record-list',
-  templateUrl: './probate-record-list.component.html',
-  styleUrls: ['./probate-record-list.component.sass'],
+  selector: 'app-selectable-record-list-view',
+  templateUrl: './selectable-record-list-view.component.html',
+  styleUrls: ['./selectable-record-list-view.component.sass'],
 })
-export class ProbateRecordListComponent implements OnInit {
-  probateRecords$: Observable<ProbateRecord[]>;
-  nextToken$: Observable<string | null | undefined>;
-  loading$: Observable<boolean>;
-  error$: Observable<any>;
-  loading = true;
-  loaded = false;
+export class SelectableRecordListViewComponent {
   length = 50;
   pageSize = 10;
   pageSizes: number[] = [1, 5, 10, 25, 100];
@@ -60,22 +45,16 @@ export class ProbateRecordListComponent implements OnInit {
   @ViewChild(MatSort) sort?: MatSort;
   @ViewChild(MatPaginator) paginator?: MatPaginator;
   @Input() showCheckBoxes = false;
+  @Input() records?: ProbateRecord[];
   @Output() selectedProbateRecords = new EventEmitter<ProbateRecord[]>();
   dataSource?: MatTableDataSource<ProbateRecord>;
   user?: AmplifyUser;
-  private subscriptions: Subscription[] = [];
   selectedRecords: ProbateRecord[] = [];
-
   constructor(
     private store: Store<AppState>,
     public authenticator: AuthenticatorService,
     private cookieService: CookieService
-  ) {
-    this.probateRecords$ = this.store.pipe(select(selectProbateRecords));
-    this.nextToken$ = this.store.pipe(select(selectNextToken));
-    this.loading$ = this.store.pipe(select(selectProbateRecordsLoading));
-    this.error$ = this.store.pipe(select(selectProbateRecordsError));
-  }
+  ) {}
 
   ngOnInit(): void {
     if (this.showCheckBoxes) {
@@ -87,57 +66,18 @@ export class ProbateRecordListComponent implements OnInit {
     this.pageSize = pageSizeText
       ? parseInt(this.cookieService.get(UNREVIEWED_PAGE_SIZE)) ?? 10
       : 10;
-    this.store.dispatch(clearProbateRecords());
-    // Dispatch the initial action to load the probate records
-    this.store.dispatch(
-      loadProbateRecords({
-        pageSize: this.pageSize,
-        filter: { reviewCount: { lt: 2 } },
-      })
-    );
 
-    // Subscribe to the probate records, page size, and next token
-    this.subscriptions.push(
-      this.probateRecords$.subscribe((records) => {
-        // Do something with the probate records
-        this.dataSource = new MatTableDataSource(records);
-        this.dataSource.paginator = this.paginator!;
-        console.log('records loaded');
-        console.log(records);
-      }),
-      this.nextToken$.subscribe((nextToken) => {
-        // Do something with the next token
-        this.nextToken = nextToken!;
-      }),
-      this.loading$.subscribe((loading) => {
-        this.loading = loading;
-      })
-    );
+    if (this.records) {
+      this.dataSource = new MatTableDataSource<ProbateRecord>(this.records);
+    }
   }
 
-  ngAfterViewInit() {
-    this.user = this.authenticator.user;
-  }
+  ngOnChanges(changes: SimpleChanges) {
+    let recordChange = changes['records'];
 
-  loadProbateRecords(nextToken?: string): void {
-    const pageSize = 10; // Set your desired page size here
-    this.store.dispatch(loadProbateRecords({ pageSize, nextToken }));
-  }
-
-  onPageChange(nextToken: string): void {
-    this.loadProbateRecords(nextToken);
-  }
-
-  ngOnDestroy() {
-    // Unsubscribe from all subscriptions
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
-  }
-
-  loadMoreRecords(nextToken: string | null) {
-    // Dispatch the action to load more probate records using the next token
-    this.store.dispatch(
-      loadProbateRecords({ pageSize: 10, nextToken: this.nextToken })
-    );
+    if (recordChange) {
+      this.dataSource = new MatTableDataSource<ProbateRecord>(this.records);
+    }
   }
 
   handlePageEvent(event: PageEvent) {
@@ -147,7 +87,6 @@ export class ProbateRecordListComponent implements OnInit {
 
   changePageSize(pageSize: number) {
     // Dispatch the action to change the page size
-    this.store.dispatch(loadProbateRecords({ pageSize }));
     console.log('setting page size to ', pageSize);
     this.cookieService.set(UNREVIEWED_PAGE_SIZE, String(pageSize));
   }

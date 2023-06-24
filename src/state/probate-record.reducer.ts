@@ -5,6 +5,10 @@ import {
   loadProbateRecordsFailure,
   updateProbateRecord,
   clearProbateRecords,
+  loadFilteredProbateRecordsFailure,
+  loadFilteredProbateRecordsSuccess,
+  setProbateRecordFilter,
+  loadFilteredProbateRecords,
 } from './probate-record.actions';
 import {
   ModelProbateRecordFilterInput,
@@ -12,24 +16,18 @@ import {
 } from '../app/API.service';
 
 export interface ProbateRecordState {
-  probateRecords: ProbateRecord[];
-  pageSize: number;
-  currentPage: number;
-  nextToken: string | null;
-  filter: ModelProbateRecordFilterInput | undefined;
+  filter: ModelProbateRecordFilterInput | undefined | null;
+  nextToken: string | undefined | null;
+  records: ProbateRecord[];
   loading: boolean;
-  loaded: boolean;
-  error: any;
+  error: string | null;
 }
 
 export const initialProbateRecordState: ProbateRecordState = {
-  probateRecords: [],
-  pageSize: 10, // Default page size
-  currentPage: 1,
+  records: [],
+  filter: null,
   nextToken: null,
-  filter: undefined,
   loading: false,
-  loaded: false,
   error: null,
 };
 
@@ -40,14 +38,12 @@ export const probateRecordReducer = createReducer(
     pageSize,
     filter,
     loading: true,
-    loaded: false,
   })),
   on(loadProbateRecordsSuccess, (state, { probateRecords, nextToken }) => ({
     ...state,
-    probateRecords: [...state.probateRecords, ...probateRecords],
+    probateRecords: [...state.records, ...probateRecords],
     nextToken,
     loading: false,
-    loaded: true,
     error: null,
   })),
   on(loadProbateRecordsFailure, (state, { error }) => ({
@@ -56,17 +52,39 @@ export const probateRecordReducer = createReducer(
     error,
   })),
   on(updateProbateRecord, (state, { probateRecord }) => {
-    const updatedRecords = state.probateRecords.map((record) => {
+    const updatedRecords = state.records.map((record) => {
       if (record.id === probateRecord.id) {
         return { ...record, ...probateRecord };
       }
       return record;
     });
 
-    return { ...state, probateRecords: updatedRecords };
+    return { ...state, records: updatedRecords };
   }),
   on(clearProbateRecords, (state) => ({
     ...state,
-    probateRecords: [],
+    records: [],
+  })),
+  on(loadFilteredProbateRecords, (state) => ({
+    ...state,
+    loading: true,
+    error: null,
+  })),
+  on(loadFilteredProbateRecordsSuccess, (state, { records, nextToken }) => ({
+    ...state,
+    loading: false,
+    records,
+    nextToken,
+    error: null
+  })),
+  on(loadFilteredProbateRecordsFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error,
+  })),
+  on(setProbateRecordFilter, (state, { filter }) => ({
+    ...state,
+    filter,
+    records: [], // Empty the array of Probate Records when the filter changes
   }))
 );

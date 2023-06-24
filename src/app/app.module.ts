@@ -53,6 +53,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { SelectProbateRecordCollectionDialogComponent } from './select-probate-record-collection-dialog/select-probate-record-collection-dialog.component';
 import { CreateProbateRecordCollectionComponent } from './create-probate-record-collection/create-probate-record-collection.component';
 import { SelectProbateRecordsDialogComponent } from './select-probate-records-dialog/select-probate-records-dialog.component';
+import { SelectableRecordListViewComponent } from './selectable-record-list-view/selectable-record-list-view.component';
+import { LoadRecordListViewComponent } from './load-record-list-view/load-record-list-view.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -75,6 +77,8 @@ import { SelectProbateRecordsDialogComponent } from './select-probate-records-di
     SelectProbateRecordCollectionDialogComponent,
     CreateProbateRecordCollectionComponent,
     SelectProbateRecordsDialogComponent,
+    SelectableRecordListViewComponent,
+    LoadRecordListViewComponent,
   ],
   imports: [
     BrowserModule,
