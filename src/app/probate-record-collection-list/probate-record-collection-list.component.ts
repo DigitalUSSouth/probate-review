@@ -15,6 +15,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { AmplifyUser } from '@aws-amplify/ui';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 import { SelectionModel } from '@angular/cdk/collections';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-probate-record-collection-list',
@@ -36,7 +37,7 @@ export class ProbateRecordCollectionListComponent implements OnInit {
 
   displayedColumns = ['title', 'description', 'actions']; // Customize the displayed columns as needed
 
-  constructor(private store: Store<AppState>) {}
+  constructor(private store: Store<AppState>, private router: Router) {}
 
   ngOnInit() {
     if (this.showCheckBoxes) {
@@ -109,4 +110,8 @@ export class ProbateRecordCollectionListComponent implements OnInit {
     this.selectedCollections.emit(selectedCollections);
   }
   
+  createNewRecord(): void {
+    this.router.navigateByUrl('probate-record-collections/create')
+  }
+
 }

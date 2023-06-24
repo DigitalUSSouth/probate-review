@@ -16,6 +16,9 @@ import {
   loadProbateRecordCollection,
   loadProbateRecordCollectionSuccess,
   loadProbateRecordCollectionFailure,
+  createProbateRecordCollection,
+  createProbateRecordCollectionSuccess,
+  createProbateRecordCollectionFailure,
 } from './probate-record-collection.actions';
 import { ProbateRecordService } from 'src/app/probate-record.service';
 import { APIService, ProbateRecordCollection } from '../app/API.service';
@@ -92,6 +95,22 @@ export class ProbateRecordCollectionEffects {
           );
         }
       })
+    )
+  );
+
+  createProbateRecordCollection$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(createProbateRecordCollection),
+      mergeMap(({ title, description }) =>
+        from(this.apiService.CreateProbateRecordCollection({ title, description, lowerTitle: title?.toLowerCase(), lowerDescription: description?.toLowerCase() })).pipe(
+          map((response) =>
+            createProbateRecordCollectionSuccess({ collection: response as ProbateRecordCollection})
+          ),
+          catchError((error) =>
+            of(createProbateRecordCollectionFailure({ error }))
+          )
+        )
+      )
     )
   );
 

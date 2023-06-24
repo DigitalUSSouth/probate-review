@@ -37,7 +37,7 @@ export const updateProbateRecordCollection = createAction(
 
 export const createProbateRecordCollection = createAction(
   '[Probate Record Collection] Create Probate Record',
-  props<{ probateRecordCollection: ProbateRecordCollection }>()
+  props<{ title: string, description: string }>()
 );
 
 export const deleteProbateRecordCollection = createAction(
@@ -72,5 +72,15 @@ export const loadProbateRecordCollectionSuccess = createAction(
 
 export const loadProbateRecordCollectionFailure = createAction(
   '[Probate Record Collection] Load Collection Failure',
+  props<{ error: any }>()
+);
+
+export const createProbateRecordCollectionSuccess = createAction(
+  '[Probate Record Collection] Create Probate Record Collection Success',
+  props<{ collection: ProbateRecordCollection }>()
+);
+
+export const createProbateRecordCollectionFailure = createAction(
+  '[Probate Record Collection] Create Probate Record Collection Failure',
   props<{ error: any }>()
 );

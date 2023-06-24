@@ -51,6 +51,7 @@ import { ProbateRecordCollectionEffects } from 'src/state/probate-record-collect
 import { MatSelectModule } from '@angular/material/select';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ProbateRecordCollectionSelectionDialogComponent } from './probate-record-collection-selection-dialog/probate-record-collection-selection-dialog.component';
+import { CreateProbateRecordCollectionComponent } from './create-probate-record-collection/create-probate-record-collection.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -71,6 +72,7 @@ import { ProbateRecordCollectionSelectionDialogComponent } from './probate-recor
     ProbateRecordCollectionListComponent,
     ProbateRecordCollectionDetailComponent,
     ProbateRecordCollectionSelectionDialogComponent,
+    CreateProbateRecordCollectionComponent,
   ],
   imports: [
     BrowserModule,
