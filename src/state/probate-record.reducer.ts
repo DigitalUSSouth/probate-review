@@ -9,6 +9,7 @@ import {
   loadFilteredProbateRecordsSuccess,
   setProbateRecordFilter,
   loadFilteredProbateRecords,
+  loadProbateRecordByIdSuccess,
 } from './probate-record.actions';
 import {
   ModelProbateRecordFilterInput,
@@ -20,12 +21,14 @@ export interface ProbateRecordState {
   filter: ModelProbateRecordFilterInput | undefined | null;
   nextToken: string | undefined | null;
   records: ProbateRecord[];
+  selectedRecord: ProbateRecord | null;
   loading: boolean;
   error: string | null;
 }
 
 export const initialProbateRecordState: ProbateRecordState = {
   records: [],
+  selectedRecord: null,
   filter: null,
   nextToken: null,
   loading: false,
@@ -95,5 +98,9 @@ export const probateRecordReducer = createReducer(
         records: [],
       };
     }
-  })
+  }),
+  on(loadProbateRecordByIdSuccess, (state, { probateRecord }) => ({
+    ...state,
+    selectedRecord: probateRecord,
+  })),
 );

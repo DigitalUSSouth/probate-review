@@ -90,3 +90,18 @@ export const setProbateRecordFilter = createAction(
   SET_PROBATE_RECORD_FILTER,
   props<{ filter: ModelProbateRecordFilterInput }>()
 );
+
+export const loadProbateRecordById = createAction(
+  '[Probate Record] Load Probate Record By ID',
+  props<{ id: string }>()
+);
+
+export const loadProbateRecordByIdSuccess = createAction(
+  '[Probate Record] Load Probate Record By ID Success',
+  props<{ probateRecord: ProbateRecord }>()
+);
+
+export const loadProbateRecordByIdFailure = createAction(
+  '[Probate Record] Load Probate Record By ID Failure',
+  props<{ error: string }>()
+);

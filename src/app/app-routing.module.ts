@@ -15,6 +15,7 @@ import { ProbateRecordCollectionDetailComponent } from './probate-record-collect
 import { CreateProbateRecordCollectionComponent } from './create-probate-record-collection/create-probate-record-collection.component';
 import { LoadRecordListViewComponent } from './load-record-list-view/load-record-list-view.component';
 import { UnreviewedComponent } from './unreviewed/unreviewed.component';
+import { EditProbateRecordDetailComponent } from './edit-probate-record-detail/edit-probate-record-detail.component';
 const routes: Routes = [
   { path: 'records', component: ReviewedListComponent },
   { path: 'record/:id', component: RecordDetailComponent },
@@ -40,6 +41,10 @@ const routes: Routes = [
     path: 'probate-record-collections/:id',
     component: ProbateRecordCollectionDetailComponent,
   },
+  {
+    path: 'edit/:id',
+    component: EditProbateRecordDetailComponent,
+  }
 ];
 
 @NgModule({

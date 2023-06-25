@@ -38,6 +38,20 @@ export class LoadRecordListViewComponent {
     this.nextToken$ = this.store.pipe(select(selectNextToken));
     this.loading$ = this.store.pipe(select(selectProbateRecordsLoading));
     this.error$ = this.store.pipe(select(selectProbateRecordsError));
+
+    // Subscribe to the probate records, page size, and next token
+    this.subscriptions.push(
+      this.probateRecords$.subscribe((records) => {
+        // Do something with the probate records
+        this.records = records;
+        console.log('records loaded');
+        console.log(records);
+      }),
+      this.nextToken$.subscribe((nextToken) => {
+        // Do something with the next token
+        this.nextToken = nextToken!;
+      })
+    );
   }
 
   ngOnInit(): void {
@@ -55,22 +69,7 @@ export class LoadRecordListViewComponent {
       );
       console.log('fetching records');
     }
-    // Subscribe to the probate records, page size, and next token
-    this.subscriptions.push(
-      this.probateRecords$.subscribe((records) => {
-        // Do something with the probate records
-        this.records = records;
-        console.log('records loaded');
-        console.log(records);
-      }),
-      this.nextToken$.subscribe((nextToken) => {
-        // Do something with the next token
-        this.nextToken = nextToken!;
-      })
-      // this.loading$.subscribe((loading) => {
-      //   this.loading = loading;
-      // })
-    );
+    
   }
 
   ngAfterViewInit() {

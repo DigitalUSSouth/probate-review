@@ -343,6 +343,10 @@ export class UnreviewedDetailComponent implements OnInit {
     this.unsubscriber.complete();
   }
 
+  backToList() {
+    this.router.navigateByUrl('/unreviewed');
+  }
+
   onReviewedChange(event: Event) {
     const commandType = this.isReviewed
       ? CommandType.MarkAsReviewed

@@ -1,0 +1,6 @@
+<div *ngIf="(probateRecord$ | async) as probateRecord">
+  <h2>{{ probateRecord.title }}</h2>
+  <p>ID: {{ probateRecord.id }}</p>
+  <p>Description: {{ probateRecord.description }}</p>
+  <!-- Add other details as needed -->
+</div>

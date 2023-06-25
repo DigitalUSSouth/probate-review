@@ -50,4 +50,9 @@ export const reducers: ActionReducerMap<RootState> = {
     selectProbateRecordState,
     (state: ProbateRecordState) => state.error
   );
+
+  export const selectSelectedRecord = createSelector(
+    selectProbateRecordState,
+    (state: ProbateRecordState) => state.selectedRecord
+  )
   
