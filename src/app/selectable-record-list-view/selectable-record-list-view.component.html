@@ -1,4 +1,4 @@
-<ng-container>
+<ng-container *ngIf="dataSource">
   <table mat-table [dataSource]="dataSource!" matSort class="mat-elevation-z8">
     <ng-container matColumnDef="checked">
       <th mat-header-cell *matHeaderCellDef>

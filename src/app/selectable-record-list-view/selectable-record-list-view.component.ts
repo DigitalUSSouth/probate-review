@@ -36,15 +36,13 @@ export class SelectableRecordListViewComponent {
   displayedColumns: string[] = [
     'thumbnail',
     'title',
-    'lockedBy',
-    'lockedDate',
-    'lockButton',
   ];
   nextToken: string | undefined;
   @ViewChild(MatSort) sort?: MatSort;
   @ViewChild(MatPaginator) paginator?: MatPaginator;
   @Input() showCheckBoxes = false;
-  @Input() records?: ProbateRecord[];
+  @Input() showLocked = false;
+  @Input() records?: (ProbateRecord | null)[] | null;
   @Output() selectedProbateRecords = new EventEmitter<ProbateRecord[]>();
   dataSource?: MatTableDataSource<ProbateRecord>;
   user?: AmplifyUser;
@@ -56,9 +54,17 @@ export class SelectableRecordListViewComponent {
   ) {}
 
   ngOnInit(): void {
+    this.user = this.authenticator.user;
     if (this.showCheckBoxes) {
       this.displayedColumns = ['checked', ...this.displayedColumns];
     }
+    
+    if(this.showLocked) {
+      this.displayedColumns = this.displayedColumns.concat([ 'lockedBy',
+      'lockedDate',
+      'lockButton']);
+    }
+
     const pageSizeText = this.cookieService.get(UNREVIEWED_PAGE_SIZE);
     console.log('page size is ' + pageSizeText);
 
@@ -67,14 +73,14 @@ export class SelectableRecordListViewComponent {
       : 10;
 
     if (this.records) {
-      this.dataSource = new MatTableDataSource<ProbateRecord>(this.records);
+      this.dataSource = new MatTableDataSource<ProbateRecord>(this.records.map(r => r as ProbateRecord));
       this.dataSource.sort = this.sort!;
       this.dataSource.paginator = this.paginator!;
     }
   }
 
   ngAfterViewInit() {
-    this.user = this.authenticator.user;  
+    // this.user = this.authenticator.user;  
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -83,7 +89,7 @@ export class SelectableRecordListViewComponent {
     if (recordChange) {
       console.log('updating data source');
       console.log(this.records);
-      this.dataSource = new MatTableDataSource<ProbateRecord>(this.records);
+      this.dataSource = new MatTableDataSource<ProbateRecord>(this.records?.map(r => r as ProbateRecord));
       this.dataSource.sort = this.sort!;
       this.dataSource.paginator = this.paginator!;
     }

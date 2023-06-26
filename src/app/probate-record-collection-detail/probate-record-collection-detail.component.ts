@@ -19,7 +19,8 @@ import { SelectProbateRecordsDialogComponent } from '../select-probate-records-d
 })
 export class ProbateRecordCollectionDetailComponent implements OnInit {
   probateRecordCollection$: Observable<ProbateRecordCollection | null>;
-  probateRecords$: Observable<(ProbateRecord | null)[]>;
+  probateRecords$?: Observable<(ProbateRecord | null)[]>;
+  probateRecords: ProbateRecord[] = [];
   loading$: Observable<boolean>;
   user?: AmplifyUser;
   displayedColumns = ["thumbnail", "title"];
@@ -34,9 +35,16 @@ export class ProbateRecordCollectionDetailComponent implements OnInit {
       select(selectProbateRecordCollection)
     );
 
-    this.probateRecords$ = this.probateRecordCollection$.pipe(
-      map((collection) => collection!.probateRecords!.items.map(c => c!.probateRecord) || [])
-    );
+    this.probateRecordCollection$.subscribe((collection) => {
+      this.probateRecords = (collection) ? collection!.probateRecords!.items.map(c => c!.probateRecord) || [] : [];
+    });
+    // this.probateRecords$ = this.probateRecordCollection$.pipe(
+    //   map((collection) => collection!.probateRecords!.items.map(c => c!.probateRecord) || [])
+    // );
+
+    // this.probateRecords$.subscribe((records) => {
+    //   this.probateRecords = (records) ? records.map(r => r as ProbateRecord) : [];
+    // })
 
     this.loading$ = this.store.pipe(
       select(selectProbateRecordCollectionLoading)

@@ -52,14 +52,12 @@ export class ProbateRecordListComponent implements OnInit {
   displayedColumns: string[] = [
     'thumbnail',
     'title',
-    'lockedBy',
-    'lockedDate',
-    'lockButton',
   ];
   nextToken: string | undefined;
   @ViewChild(MatSort) sort?: MatSort;
   @ViewChild(MatPaginator) paginator?: MatPaginator;
   @Input() showCheckBoxes = false;
+  @Input() showLocked = false;
   @Output() selectedProbateRecords = new EventEmitter<ProbateRecord[]>();
   dataSource?: MatTableDataSource<ProbateRecord>;
   user?: AmplifyUser;
@@ -80,6 +78,12 @@ export class ProbateRecordListComponent implements OnInit {
   ngOnInit(): void {
     if (this.showCheckBoxes) {
       this.displayedColumns = ['checked', ...this.displayedColumns];
+    }
+
+    if(this.showLocked) {
+      this.displayedColumns = this.displayedColumns.concat([ 'lockedBy',
+      'lockedDate',
+      'lockButton']);
     }
     const pageSizeText = this.cookieService.get(UNREVIEWED_PAGE_SIZE);
     console.log('page size is ' + pageSizeText);

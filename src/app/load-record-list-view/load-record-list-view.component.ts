@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AmplifyUser } from '@aws-amplify/ui';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
 import { Store, select } from '@ngrx/store';
@@ -29,7 +29,10 @@ export class LoadRecordListViewComponent {
   private subscriptions: Subscription[] = [];
 
   @Input() filter?: ModelProbateRecordFilterInput;
-
+  @Input() showLocked = false;
+  @Input() showCheckBoxes = false;
+  @Output() selectedProbateRecords = new EventEmitter<ProbateRecord[]>();
+  
   constructor(
     private store: Store<AppState>,
     public authenticator: AuthenticatorService
@@ -76,11 +79,16 @@ export class LoadRecordListViewComponent {
     this.user = this.authenticator.user;
   }
 
+  // bubble up selection changed to parent
+  onSelectedRecordsChanged(selectedRecords: ProbateRecord[]) {
+    this.selectedProbateRecords.emit(selectedRecords);
+  }
+
   loadMoreRecords() {
     this.store.dispatch(
       loadFilteredProbateRecords({
         limit: 10,
-        filter: { reviewCount: { lt: 2 } },
+        filter: this.filter ?? { reviewCount: { lt: 2 } },
         sortDirection: ModelSortDirection.DESC,
         nextToken: this.nextToken,
       })
