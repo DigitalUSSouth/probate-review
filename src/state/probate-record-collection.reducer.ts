@@ -10,7 +10,8 @@ import {
   loadProbateRecordCollectionSuccess,
   loadProbateRecordCollectionFailure,
   associateProbateRecordsSuccess,
-  associateProbateRecordsFailure
+  associateProbateRecordsFailure,
+  createProbateRecordCollectionSuccess
 } from './probate-record-collection.actions'
 
 export interface ProbateRecordCollectionState {
@@ -101,6 +102,13 @@ export const probateRecordCollectionReducer = createReducer(initialProbateRecord
     loading: false,
     error
   })),
+  on(createProbateRecordCollectionSuccess, (state, {collection}) => ({
+    ...state,
+    collection,
+    probateRecordCollections: [...state.probateRecordCollections, collection],
+    loading: false,
+    error: null
+  }))
   );
 
   export function reducer(state: ProbateRecordCollectionState | undefined, action: Action) {
