@@ -96,9 +96,11 @@ export class UploadComponent implements OnInit {
     );
 
     dialogRef.afterClosed().subscribe((result) => {
-      this.selectCollections = result ?? [];
-      console.log('selected the following collections');
-      console.log(this.selectCollections);
+      if(result) {
+        this.selectedProbateRecordCollections = result;
+        console.log('selected the following collections');
+        console.log(this.selectedProbateRecordCollections);
+      }
     });
   }
 

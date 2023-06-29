@@ -90,12 +90,17 @@ export const probateRecordCollectionReducer = createReducer(initialProbateRecord
     loading: false,
     error
   })),
-  on(associateProbateRecordsSuccess, (state, { collection }) => ({
-    ...state,
-    collection,
-    loading: false,
-    error: null
-  })),
+  on(associateProbateRecordsSuccess, (state, { collection }) => {
+    const updatedRecordCollections = state.probateRecordCollections.map((recordCollection) => {
+      if (recordCollection.id === collection.id) {
+        return { ...recordCollection, ...collection };
+      }
+      return recordCollection;
+    });
+
+    return { ...state, probateRecordCollections: updatedRecordCollections, loading: false,
+    error: null };
+  }),
   on(associateProbateRecordsFailure, (state, { error }) => ({
     ...state,
     collection: null,

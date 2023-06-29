@@ -4,6 +4,7 @@ import { Store } from '@ngrx/store';
 import { AppState } from '../app.state';
 import { createProbateRecordCollection } from '../../state/probate-record-collection.actions';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-create-probate-record-collection',
@@ -13,7 +14,12 @@ import { Router } from '@angular/router';
 export class CreateProbateRecordCollectionComponent implements OnInit {
   createForm!: FormGroup;
 
-  constructor(private formBuilder: FormBuilder, private store: Store<AppState>, private router: Router) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private store: Store<AppState>,
+    // private router: Router,
+    private location: Location
+  ) {}
 
   ngOnInit() {
     this.createForm = this.formBuilder.group({
@@ -29,10 +35,9 @@ export class CreateProbateRecordCollectionComponent implements OnInit {
 
     const { title, description } = this.createForm.value;
 
-    this.store.dispatch(
-      createProbateRecordCollection({ title, description })
-    );
+    this.store.dispatch(createProbateRecordCollection({ title, description }));
 
-    this.router.navigateByUrl('/collections');
+    // this.router.navigateByUrl('/collections');
+    this.location.back();
   }
 }
