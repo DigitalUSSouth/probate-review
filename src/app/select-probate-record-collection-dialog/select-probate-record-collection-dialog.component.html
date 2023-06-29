@@ -2,9 +2,9 @@
   <span mat-dialog-title style="color:white">Select Probate Record Collections</span>
 </mat-toolbar>
 <div id="dialog-container" mat-dialog-content>
-<app-probate-record-collection-list [showCheckBoxes]="true"
+<app-load-collection-list-view [showCheckBoxes]="true" [showActions]="false"
   (selectedCollections)="onProbateRecordCollectionsSelected($event)"
-></app-probate-record-collection-list>
+></app-load-collection-list-view>
 
 <div id="button-row">
   <button mat-raised-button color="primary" [mat-dialog-close]="getSelected()">Select</button>

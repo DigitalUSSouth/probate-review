@@ -36,28 +36,13 @@ export class LoadRecordListViewComponent {
   constructor(
     private store: Store<AppState>,
     public authenticator: AuthenticatorService
-  ) {
-    // this.probateRecords$ = this.store.pipe(select(selectProbateRecords));
-    
-  }
+  ) {}
 
   ngOnInit(): void {
     if(!this.filter) {
       this.filter = { reviewCount: { lt: 2 } };
     }
     
-    // Dispatch the initial action to load the probate records
-    // if (!this.records || this.records.length == 0) {
-    //   this.store.dispatch(
-    //     loadFilteredProbateRecords({
-    //       limit: 10,
-    //       filter,
-    //       sortDirection: ModelSortDirection.DESC,
-    //       nextToken: undefined,
-    //     })
-    //   );
-    //   console.log('fetching records');
-    // }
     this.probateRecords$ = this.store.pipe(
       select(selectProbateRecords),
       tap((records) => {

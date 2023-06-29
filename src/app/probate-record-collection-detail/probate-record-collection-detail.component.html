@@ -7,9 +7,9 @@
     <div>
       <!-- Your existing component content -->
 
-      <button mat-raised-button color="primary" (click)="openSelectProbateRecordsDialog()">Select Probate
-        Records</button>
+      <!-- <button mat-raised-button color="primary" (click)="openSelectProbateRecordsDialog()">Select Probate
+        Records</button> -->
     </div>
-    <app-selectable-record-list-view [records]="probateRecords" [showCheckBoxes]="false" [showLocked]="true"></app-selectable-record-list-view>
+    <app-selectable-record-list-view [records]="probateRecords" [showCheckBoxes]="true" [showLocked]="true"></app-selectable-record-list-view>
   </div>
 </ng-container>

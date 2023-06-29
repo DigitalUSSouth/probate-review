@@ -17,6 +17,9 @@ import {
 } from '../API.service';
 import { MatDialog } from '@angular/material/dialog';
 import { SelectProbateRecordCollectionDialogComponent } from '../select-probate-record-collection-dialog/select-probate-record-collection-dialog.component';
+import { AppState } from '../app.state';
+import { Store } from '@ngrx/store';
+import { associateProbateRecords } from 'src/state/probate-record-collection.actions';
 
 const POLL_INTERVAL = 20000;
 
@@ -36,9 +39,9 @@ export class UploadComponent implements OnInit {
   constructor(
     public authenticator: AuthenticatorService,
     private probateRecordService: APIService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private store: Store<AppState>
   ) {
-    
     let timer = this.checkFileProcessedInterval.subscribe(async () => {
       if (this.filesInProcessing.length > 0) {
         for (let i = 0; i < this.filesInProcessing.length; i++) {
@@ -50,10 +53,12 @@ export class UploadComponent implements OnInit {
             if (record && typeof record === 'object') {
               // add to any checked collections
               for (const collection of this.selectedProbateRecordCollections) {
-                this.probateRecordService.CreateCollectionRecords({
-                  probateRecordID: docid,
-                  probateRecordCollectionID: collection.id,
-                });
+                this.store.dispatch(
+                  associateProbateRecords({
+                    collectionId: collection.id,
+                    recordIds: [docid],
+                  })
+                );
               }
               // check if lines have been added
               console.log(record);
@@ -96,7 +101,7 @@ export class UploadComponent implements OnInit {
     );
 
     dialogRef.afterClosed().subscribe((result) => {
-      if(result) {
+      if (result) {
         this.selectedProbateRecordCollections = result;
         console.log('selected the following collections');
         console.log(this.selectedProbateRecordCollections);

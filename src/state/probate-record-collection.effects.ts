@@ -27,6 +27,7 @@ import { ProbateRecordService } from 'src/app/probate-record.service';
 import {
   APIService,
   CollectionRecords,
+  ProbateRecord,
   ProbateRecordCollection,
 } from '../app/API.service';
 import { Store, select } from '@ngrx/store';
@@ -139,7 +140,7 @@ export class ProbateRecordCollectionEffects {
         from(this.associateRecords(collectionId, recordIds)).pipe(
           map((response) =>
             associateProbateRecordsSuccess({
-              collection: response as ProbateRecordCollection,
+              collections: response as ProbateRecordCollection[],
             })
           ),
           catchError((error) => of(associateProbateRecordsFailure({ error })))
@@ -151,19 +152,21 @@ export class ProbateRecordCollectionEffects {
   async associateRecords(
     collectionId: string,
     recordIds: string[]
-  ): Promise<ProbateRecordCollection> {
-    const collectionRecords: CollectionRecords[] = [];
-    let collection: ProbateRecordCollection | undefined;
+  ): Promise<ProbateRecordCollection[]> {
+    const collections: ProbateRecordCollection[] = [];
+    
     for (const recordId of recordIds) {
       const collectionRecord = await this.apiService.CreateCollectionRecords({
         probateRecordCollectionID: collectionId,
         probateRecordID: recordId,
       });
 
-      collection =
+      const collection =
         collectionRecord.probateRecordCollection as ProbateRecordCollection;
+      
+      collections.push(collection);
     }
-    return collection!;
+    return collections;
   }
 
   constructor(

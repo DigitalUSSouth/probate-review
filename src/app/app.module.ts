@@ -57,6 +57,7 @@ import { SelectableRecordListViewComponent } from './selectable-record-list-view
 import { LoadRecordListViewComponent } from './load-record-list-view/load-record-list-view.component';
 import { EditProbateRecordDetailComponent } from './edit-probate-record-detail/edit-probate-record-detail.component';
 import { SelectableCollectionListViewComponent } from './selectable-collection-list-view/selectable-collection-list-view.component';
+import { LoadCollectionListViewComponent } from './load-collection-list-view/load-collection-list-view.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -83,6 +84,7 @@ import { SelectableCollectionListViewComponent } from './selectable-collection-l
     LoadRecordListViewComponent,
     EditProbateRecordDetailComponent,
     SelectableCollectionListViewComponent,
+    LoadCollectionListViewComponent,
   ],
   imports: [
     BrowserModule,

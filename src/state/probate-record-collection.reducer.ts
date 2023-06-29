@@ -90,16 +90,27 @@ export const probateRecordCollectionReducer = createReducer(initialProbateRecord
     loading: false,
     error
   })),
-  on(associateProbateRecordsSuccess, (state, { collection }) => {
+  // on(associateProbateRecordsSuccess, (state, { collections }) => {
+  //   const updatedRecordCollections = state.probateRecordCollections.map((recordCollection) => {
+  //     if (recordCollection.id === collection.id) {
+  //       return { ...recordCollection, ...collection };
+  //     }
+  //     return recordCollection;
+  //   });
+
+  //   return { ...state, probateRecordCollections: updatedRecordCollections, loading: false,
+  //   error: null };
+  // }),
+  on(associateProbateRecordsSuccess, (state, { collections }) => {
     const updatedRecordCollections = state.probateRecordCollections.map((recordCollection) => {
-      if (recordCollection.id === collection.id) {
-        return { ...recordCollection, ...collection };
+      const updatedCollection = collections.find((c) => c.id === recordCollection.id);
+      if (updatedCollection) {
+        return { ...recordCollection, ...updatedCollection };
       }
       return recordCollection;
     });
-
-    return { ...state, probateRecordCollections: updatedRecordCollections, loading: false,
-    error: null };
+  
+    return { ...state, probateRecordCollections: updatedRecordCollections };
   }),
   on(associateProbateRecordsFailure, (state, { error }) => ({
     ...state,

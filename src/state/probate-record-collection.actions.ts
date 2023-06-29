@@ -99,7 +99,7 @@ export const associateProbateRecords = createAction(
 
 export const associateProbateRecordsSuccess = createAction(
   '[Probate Record Collection] Associate Probate Records Success',
-  props<{ collection: ProbateRecordCollection }>()
+  props<{ collections: ProbateRecordCollection[] }>()
 );
 
 export const associateProbateRecordsFailure = createAction(

@@ -45,7 +45,7 @@ export const probateRecordReducer = createReducer(
   })),
   on(loadProbateRecordsSuccess, (state, { probateRecords, nextToken }) => ({
     ...state,
-    probateRecords: [...state.records, ...probateRecords],
+    records: [...state.records, ...probateRecords],
     nextToken,
     loading: false,
     error: null,

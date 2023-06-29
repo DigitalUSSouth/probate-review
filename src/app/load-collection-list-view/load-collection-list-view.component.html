@@ -1,0 +1,9 @@
+<div *ngIf="loading$ | async">Loading probate collections...</div>
+
+<div *ngIf="error$ | async as error">{{ error }}</div>
+<app-selectable-collection-list-view [collections]="collections" [showCheckBoxes]="showCheckBoxes" [showActions]="showActions" (selectedCollections)="onSelectedCollectionsChanged($event)"></app-selectable-collection-list-view>
+<div class="load-more-container">
+  <button mat-raised-button class="form-button" color="primary" (click)="loadMoreCollections()">
+    Load More
+  </button>
+</div>
