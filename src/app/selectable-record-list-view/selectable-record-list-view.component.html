@@ -21,7 +21,7 @@
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let record">
         <a *ngIf="!record.lockedBy || record.lockedBy === user?.username; else previewBlock"
-          href="review/{{record.id}}"><img
+          [routerLink]="['/review', record.id]"><img
             [src]="'https://d2ai2qpooo3jtj.cloudfront.net/iiif/2/' + record.id + '/full/120,/0/default.png'" /></a>
         <ng-template #previewBlock><img style="cursor: not-allowed;"
             [src]="'https://d2ai2qpooo3jtj.cloudfront.net/iiif/2/' + record.id + '/full/120,/0/default.png'" />

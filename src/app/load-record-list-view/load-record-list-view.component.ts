@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AmplifyUser } from '@aws-amplify/ui';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
 import { Store, select } from '@ngrx/store';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, tap } from 'rxjs';
 import { loadFilteredProbateRecords } from 'src/state/probate-record.actions';
 import {
   selectProbateRecords,
@@ -19,10 +19,10 @@ import { AppState } from '../app.state';
   styleUrls: ['./load-record-list-view.component.sass'],
 })
 export class LoadRecordListViewComponent {
-  probateRecords$: Observable<ProbateRecord[]>;
+  probateRecords$?: Observable<ProbateRecord[]>;
   records?: ProbateRecord[];
   loading$?: Observable<boolean>;
-  nextToken$: Observable<string | null | undefined>;
+  nextToken$?: Observable<string | null | undefined>;
   nextToken: string | undefined;
   error$?: Observable<string | null>;
   user?: AmplifyUser;
@@ -37,7 +37,43 @@ export class LoadRecordListViewComponent {
     private store: Store<AppState>,
     public authenticator: AuthenticatorService
   ) {
-    this.probateRecords$ = this.store.pipe(select(selectProbateRecords));
+    // this.probateRecords$ = this.store.pipe(select(selectProbateRecords));
+    
+  }
+
+  ngOnInit(): void {
+    if(!this.filter) {
+      this.filter = { reviewCount: { lt: 2 } };
+    }
+    
+    // Dispatch the initial action to load the probate records
+    // if (!this.records || this.records.length == 0) {
+    //   this.store.dispatch(
+    //     loadFilteredProbateRecords({
+    //       limit: 10,
+    //       filter,
+    //       sortDirection: ModelSortDirection.DESC,
+    //       nextToken: undefined,
+    //     })
+    //   );
+    //   console.log('fetching records');
+    // }
+    this.probateRecords$ = this.store.pipe(
+      select(selectProbateRecords),
+      tap((records) => {
+        console.log('selected probate records', records);
+        if (records.length === 0) {
+          this.store.dispatch(
+            loadFilteredProbateRecords({
+              limit: 10,
+              filter: this.filter!,
+              sortDirection: ModelSortDirection.DESC,
+              nextToken: undefined,
+            })
+          );
+        }
+      })
+    );
     this.nextToken$ = this.store.pipe(select(selectNextToken));
     this.loading$ = this.store.pipe(select(selectProbateRecordsLoading));
     this.error$ = this.store.pipe(select(selectProbateRecordsError));
@@ -55,24 +91,6 @@ export class LoadRecordListViewComponent {
         this.nextToken = nextToken!;
       })
     );
-  }
-
-  ngOnInit(): void {
-    let filter = this.filter ?? { reviewCount: { lt: 2 } };
-    console.log('filter is ', filter)
-    // Dispatch the initial action to load the probate records
-    if (!this.records || this.records.length == 0) {
-      this.store.dispatch(
-        loadFilteredProbateRecords({
-          limit: 10,
-          filter,
-          sortDirection: ModelSortDirection.DESC,
-          nextToken: undefined,
-        })
-      );
-      console.log('fetching records');
-    }
-    
   }
 
   ngAfterViewInit() {

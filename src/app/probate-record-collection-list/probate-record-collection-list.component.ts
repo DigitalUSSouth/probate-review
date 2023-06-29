@@ -37,12 +37,7 @@ export class ProbateRecordCollectionListComponent implements OnInit {
 
   displayedColumns = ['title', 'description', 'actions']; // Customize the displayed columns as needed
 
-  constructor(private store: Store<AppState>, private router: Router) {}
-
-  ngOnInit() {
-    if (this.showCheckBoxes) {
-      this.displayedColumns = ['checked', ...this.displayedColumns];
-    } 
+  constructor(private store: Store<AppState>, private router: Router) {
     this.probateRecordCollections$ = this.store.pipe(
       select(selectProbateRecordCollections),
       tap((collections) => {
@@ -69,6 +64,13 @@ export class ProbateRecordCollectionListComponent implements OnInit {
     this.loading$.subscribe((loading) => {
       console.log('loading ' + loading);
     });
+  }
+
+  ngOnInit() {
+    if (this.showCheckBoxes) {
+      this.displayedColumns = ['checked', ...this.displayedColumns];
+    } 
+    
   }
 
   ngAfterViewInit() {
