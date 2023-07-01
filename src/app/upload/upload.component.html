@@ -1,3 +1,4 @@
+<div *ngIf="updating$ | async">Updating... Do not navigate waway</div>
 <div id="drop-area" (drop)="dropHandler($event);" (dragover)="dragOverHandler($event);">
   <form class="my-form">
     <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
