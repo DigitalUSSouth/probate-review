@@ -206,7 +206,7 @@ export class ProbateRecordCollectionEffects {
     delete updatedCollectionInput["updatedAt"];
     if (updatedCollectionInput.probateRecordIds) {
       if (!updatedCollectionInput.probateRecordIds.includes(recordId)) {
-        updatedCollectionInput.probateRecordIds.push(recordId);
+        updatedCollectionInput.probateRecordIds = [...updatedCollectionInput.probateRecordIds, recordId];
         
       }
     } else {

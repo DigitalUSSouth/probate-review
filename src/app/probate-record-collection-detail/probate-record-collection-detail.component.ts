@@ -50,16 +50,22 @@ export class ProbateRecordCollectionDetailComponent implements OnInit {
 
     this.probateRecordCollection$.subscribe((collection) => {
       this.probateRecordCollection = collection;
+      console.log('collection loaded');
+      console.log('collection detail');
+        console.log(collection);
       // this.probateRecords = (collection) ? collection!.probateRecords!.items.map(c => c!.probateRecord) || [] : [];
       if (
         collection &&
         collection.probateRecordIds &&
         collection.probateRecordIds.length > 0
       ) {
+        console.log('loading associated records');
         this.store.dispatch(loadSelectedRecordsById({ids: collection.probateRecordIds as string[]}))
         this.probateRecords$ = this.store.pipe(select(selectSelectedRecords));
         this.probateRecords$.subscribe((selectedRecords) => {
           this.probateRecords = selectedRecords as ProbateRecord[];
+          console.log('probate records loaded');
+          console.log(this.probateRecords);
         })
       }
     

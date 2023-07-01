@@ -20,7 +20,7 @@ import { SelectProbateRecordCollectionDialogComponent } from '../select-probate-
 import { AppState } from '../app.state';
 import { Store, select } from '@ngrx/store';
 import { associateProbateRecord } from 'src/state/probate-record-collection.actions';
-import { selectProbateRecordCollectionsUpdating } from 'src/state/probate-record-collection.selectors';
+import { selectProbateRecordCollectionsError, selectProbateRecordCollectionsUpdating } from 'src/state/probate-record-collection.selectors';
 
 const POLL_INTERVAL = 20000;
 
@@ -40,6 +40,7 @@ export class UploadComponent implements OnInit {
   collectionsToBeUpdated = new Map<string, string[]>();
   updating$: Observable<boolean>;
   updating = false;
+  error$: Observable<any>;
 
   constructor(
     public authenticator: AuthenticatorService,
@@ -59,6 +60,12 @@ export class UploadComponent implements OnInit {
         }
       }
     });
+    
+    this.error$ = this.store.pipe(select(selectProbateRecordCollectionsError));
+    this.error$.subscribe((error) => {
+      console.log(error);
+    });
+
     let timer = this.checkFileProcessedInterval.subscribe(async () => {
       if (this.filesInProcessing.length > 0) {
         for (let i = 0; i < this.filesInProcessing.length; i++) {
@@ -101,11 +108,21 @@ export class UploadComponent implements OnInit {
           }
         }
       }
+      if (!this.updating) {
+        if(this.collectionsToBeUpdated.size > 0) {
+          const recordId = this.collectionsToBeUpdated.keys()[0];
+          this.update(recordId);
+        }
+      }
     });
   }
 
   update(recordId: string) {
     console.log('update called for ' + recordId);
+    if(!recordId) {
+      return;
+    }
+
     if (!this.updating) {
       const collectionIds = this.collectionsToBeUpdated.get(recordId);
       if (collectionIds) {
@@ -116,6 +133,17 @@ export class UploadComponent implements OnInit {
         const collection = this.selectedProbateRecordCollections.find(
           (c) => c.id === collectionId
         );
+        const updatedCollection = {...collection};
+        
+        if(updatedCollection.probateRecordIds) {
+          updatedCollection.probateRecordIds = [...updatedCollection.probateRecordIds, recordId];
+        }
+        else {
+          updatedCollection.probateRecordIds = [recordId];
+        }
+        const index = this.selectedProbateRecordCollections.findIndex(c => c.id === updatedCollection.id);
+        this.selectedProbateRecordCollections[index] = updatedCollection as ProbateRecordCollection;
+
         if (collection) {
           this.store.dispatch(associateProbateRecord({ collection, recordId }));
         }

@@ -12,8 +12,8 @@ import {
   loadProbateRecordByIdSuccess,
   loadProbateRecordById,
   loadProbateRecordByIdFailure,
-  loadSelectedProbateRecordByIdsFailure,
-  loadSelectedProbateRecordByIdsSuccess,
+  loadSelectedProbateRecordsByIdFailure,
+  loadSelectedProbateRecordsByIdSuccess,
   loadSelectedRecordsById,
 } from './probate-record.actions';
 import {
@@ -134,7 +134,7 @@ export const probateRecordReducer = createReducer(
     selectedRecords: [],
     loading: true,
   })),
-  on(loadSelectedProbateRecordByIdsSuccess, (state, { probateRecords }) => {
+  on(loadSelectedProbateRecordsByIdSuccess, (state, { probateRecords }) => {
     const records = [...state.records];
     for(const record of probateRecords) {
       if(!records.some(r => r.id === record.id)) {
@@ -147,7 +147,7 @@ export const probateRecordReducer = createReducer(
     selectedRecords: probateRecords,
     loading: false,
   };}),
-  on(loadSelectedProbateRecordByIdsFailure, (state, { error }) => ({
+  on(loadSelectedProbateRecordsByIdFailure, (state, { error }) => ({
     ...state,
     loading: false,
     error,
