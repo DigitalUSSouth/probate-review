@@ -12,10 +12,7 @@ import {
   selectProbateRecordCollection,
   selectProbateRecordCollectionLoading,
 } from '../../state/probate-record-collection.selectors';
-import {
-  ProbateRecordCollection,
-  ProbateRecord,
-} from '../API.service';
+import { ProbateRecordCollection, ProbateRecord } from '../API.service';
 import { AmplifyUser } from '@aws-amplify/ui';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -52,25 +49,32 @@ export class ProbateRecordCollectionDetailComponent implements OnInit {
       this.probateRecordCollection = collection;
       console.log('collection loaded');
       console.log('collection detail');
-        console.log(collection);
+      console.log(collection);
       // this.probateRecords = (collection) ? collection!.probateRecords!.items.map(c => c!.probateRecord) || [] : [];
-      if (
-        collection &&
-        collection.probateRecordIds &&
-        collection.probateRecordIds.length > 0
-      ) {
-        console.log('loading associated records');
-        this.store.dispatch(loadSelectedRecordsById({ids: collection.probateRecordIds as string[]}))
-        this.probateRecords$ = this.store.pipe(select(selectSelectedRecords));
-        this.probateRecords$.subscribe((selectedRecords) => {
-          this.probateRecords = selectedRecords as ProbateRecord[];
-          console.log('probate records loaded');
-          console.log(this.probateRecords);
-        })
+      if (collection) {
+        if (
+          collection.probateRecordIds &&
+          collection.probateRecordIds.length > 0
+        ) {
+          console.log('loading associated records');
+          this.store.dispatch(
+            loadSelectedRecordsById({
+              ids: collection.probateRecordIds as string[],
+            })
+          );
+          this.probateRecords$ = this.store.pipe(select(selectSelectedRecords));
+          this.probateRecords$.subscribe((selectedRecords) => {
+            this.probateRecords = selectedRecords as ProbateRecord[];
+            console.log('probate records loaded');
+            console.log(this.probateRecords);
+          });
+        }
+        else {
+          this.probateRecords = [];
+        }
       }
-    
     });
-    
+
     this.loading$ = this.store.pipe(
       select(selectProbateRecordCollectionLoading)
     );
@@ -102,19 +106,31 @@ export class ProbateRecordCollectionDetailComponent implements OnInit {
         console.log('Selected Records:', selectedRecords);
         const selectedIds = selectedRecords.map((record) => record.id);
         let updatedNeeded = false;
-        if(!this.probateRecordCollection!.probateRecordIds) {
+        if (!this.probateRecordCollection!.probateRecordIds) {
           this.probateRecordCollection!.probateRecordIds = [];
         }
-        for(const selectedId of selectedIds) {
-          if(!this.probateRecordCollection!.probateRecordIds?.includes(selectedId)) {
+        for (const selectedId of selectedIds) {
+          if (
+            !this.probateRecordCollection!.probateRecordIds?.includes(
+              selectedId
+            )
+          ) {
             this.probateRecordCollection!.probateRecordIds?.push(selectedId);
             updatedNeeded = true;
           }
         }
-        
-        if(updatedNeeded) {
-          this.store.dispatch(updateProbateRecordCollection({probateRecordCollection: this.probateRecordCollection!}));
-          this.store.dispatch(loadSelectedRecordsById({ids: this.probateRecordCollection!.probateRecordIds as string[]}))
+
+        if (updatedNeeded) {
+          this.store.dispatch(
+            updateProbateRecordCollection({
+              probateRecordCollection: this.probateRecordCollection!,
+            })
+          );
+          this.store.dispatch(
+            loadSelectedRecordsById({
+              ids: this.probateRecordCollection!.probateRecordIds as string[],
+            })
+          );
         }
       }
     });
@@ -128,14 +144,21 @@ export class ProbateRecordCollectionDetailComponent implements OnInit {
   removeSelected() {
     const selectedIds = this.selectedProbateRecords.map((record) => record.id);
     let updateNeeded = false;
-    if(!this.probateRecordCollection!.probateRecordIds) {
+    let updatedCollection = { ...this.probateRecordCollection };
+    if (!updatedCollection!.probateRecordIds) {
       this.probateRecordCollection!.probateRecordIds = [];
       updateNeeded = true;
     }
-    this.probateRecordCollection!.probateRecordIds = this.probateRecordCollection!.probateRecordIds.filter(id => !selectedIds.includes(id!))
+    updatedCollection!.probateRecordIds =
+      updatedCollection!.probateRecordIds!.filter(
+        (id) => !selectedIds.includes(id!)
+      );
+    delete updatedCollection['__typename'];
+    delete updatedCollection['createdAt'];
+    delete updatedCollection['updatedAt'];
     this.store.dispatch(
       updateProbateRecordCollection({
-        probateRecordCollection: this.probateRecordCollection!,
+        probateRecordCollection: updatedCollection as ProbateRecordCollection,
       })
     );
   }
