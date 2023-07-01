@@ -15,7 +15,6 @@ type ProbateRecord @model @auth(rules: [{ allow: private }]) {
   lockedDate: AWSDateTime
   lockedBy: String
   markedForDeletion: Boolean @default(value: "false") #https://github.com/aws-amplify/amplify-cli/issues/5959#issuecomment-984810550
-  collectionIds: [String]
 }
 
 type Filing {

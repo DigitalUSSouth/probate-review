@@ -52,7 +52,6 @@ query GetProbateRecord($id: ID!) {
     lockedDate
     lockedBy
     markedForDeletion
-    collectionIds
     createdAt
     updatedAt
   }
@@ -123,7 +122,6 @@ query ListProbateRecords(
       lockedDate
       lockedBy
       markedForDeletion
-      collectionIds
       createdAt
       updatedAt
     }

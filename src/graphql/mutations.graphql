@@ -55,7 +55,6 @@ mutation CreateProbateRecord(
     lockedDate
     lockedBy
     markedForDeletion
-    collectionIds
     createdAt
     updatedAt
   }
@@ -116,7 +115,6 @@ mutation UpdateProbateRecord(
     lockedDate
     lockedBy
     markedForDeletion
-    collectionIds
     createdAt
     updatedAt
   }
@@ -177,7 +175,6 @@ mutation DeleteProbateRecord(
     lockedDate
     lockedBy
     markedForDeletion
-    collectionIds
     createdAt
     updatedAt
   }

@@ -46,7 +46,6 @@ export type CreateProbateRecordInput = {
   lockedDate?: string | null;
   lockedBy?: string | null;
   markedForDeletion?: boolean | null;
-  collectionIds?: Array<string | null> | null;
 };
 
 export type WordInput = {
@@ -77,7 +76,6 @@ export type ModelProbateRecordConditionInput = {
   lockedDate?: ModelStringInput | null;
   lockedBy?: ModelStringInput | null;
   markedForDeletion?: ModelBooleanInput | null;
-  collectionIds?: ModelStringInput | null;
   and?: Array<ModelProbateRecordConditionInput | null> | null;
   or?: Array<ModelProbateRecordConditionInput | null> | null;
   not?: ModelProbateRecordConditionInput | null;
@@ -187,7 +185,6 @@ export type ProbateRecord = {
   lockedDate?: string | null;
   lockedBy?: string | null;
   markedForDeletion?: boolean | null;
-  collectionIds?: Array<string | null> | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -250,7 +247,6 @@ export type UpdateProbateRecordInput = {
   lockedDate?: string | null;
   lockedBy?: string | null;
   markedForDeletion?: boolean | null;
-  collectionIds?: Array<string | null> | null;
 };
 
 export type DeleteProbateRecordInput = {
@@ -532,7 +528,6 @@ export type ModelProbateRecordFilterInput = {
   lockedDate?: ModelStringInput | null;
   lockedBy?: ModelStringInput | null;
   markedForDeletion?: ModelBooleanInput | null;
-  collectionIds?: ModelStringInput | null;
   and?: Array<ModelProbateRecordFilterInput | null> | null;
   or?: Array<ModelProbateRecordFilterInput | null> | null;
   not?: ModelProbateRecordFilterInput | null;
@@ -660,7 +655,6 @@ export type ModelSubscriptionProbateRecordFilterInput = {
   lockedDate?: ModelSubscriptionStringInput | null;
   lockedBy?: ModelSubscriptionStringInput | null;
   markedForDeletion?: ModelSubscriptionBooleanInput | null;
-  collectionIds?: ModelSubscriptionStringInput | null;
   and?: Array<ModelSubscriptionProbateRecordFilterInput | null> | null;
   or?: Array<ModelSubscriptionProbateRecordFilterInput | null> | null;
 };
@@ -838,7 +832,6 @@ export type CreateProbateRecordMutation = {
   lockedDate?: string | null;
   lockedBy?: string | null;
   markedForDeletion?: boolean | null;
-  collectionIds?: Array<string | null> | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -901,7 +894,6 @@ export type UpdateProbateRecordMutation = {
   lockedDate?: string | null;
   lockedBy?: string | null;
   markedForDeletion?: boolean | null;
-  collectionIds?: Array<string | null> | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -964,7 +956,6 @@ export type DeleteProbateRecordMutation = {
   lockedDate?: string | null;
   lockedBy?: string | null;
   markedForDeletion?: boolean | null;
-  collectionIds?: Array<string | null> | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -1315,7 +1306,6 @@ export type GetProbateRecordQuery = {
   lockedDate?: string | null;
   lockedBy?: string | null;
   markedForDeletion?: boolean | null;
-  collectionIds?: Array<string | null> | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -1380,7 +1370,6 @@ export type ListProbateRecordsQuery = {
     lockedDate?: string | null;
     lockedBy?: string | null;
     markedForDeletion?: boolean | null;
-    collectionIds?: Array<string | null> | null;
     createdAt: string;
     updatedAt: string;
   } | null>;
@@ -1689,7 +1678,6 @@ export type OnCreateProbateRecordSubscription = {
   lockedDate?: string | null;
   lockedBy?: string | null;
   markedForDeletion?: boolean | null;
-  collectionIds?: Array<string | null> | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -1752,7 +1740,6 @@ export type OnUpdateProbateRecordSubscription = {
   lockedDate?: string | null;
   lockedBy?: string | null;
   markedForDeletion?: boolean | null;
-  collectionIds?: Array<string | null> | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -1815,7 +1802,6 @@ export type OnDeleteProbateRecordSubscription = {
   lockedDate?: string | null;
   lockedBy?: string | null;
   markedForDeletion?: boolean | null;
-  collectionIds?: Array<string | null> | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -2175,7 +2161,6 @@ export class APIService {
           lockedDate
           lockedBy
           markedForDeletion
-          collectionIds
           createdAt
           updatedAt
         }
@@ -2254,7 +2239,6 @@ export class APIService {
           lockedDate
           lockedBy
           markedForDeletion
-          collectionIds
           createdAt
           updatedAt
         }
@@ -2333,7 +2317,6 @@ export class APIService {
           lockedDate
           lockedBy
           markedForDeletion
-          collectionIds
           createdAt
           updatedAt
         }
@@ -2949,7 +2932,6 @@ export class APIService {
           lockedDate
           lockedBy
           markedForDeletion
-          collectionIds
           createdAt
           updatedAt
         }
@@ -3036,7 +3018,6 @@ export class APIService {
             lockedDate
             lockedBy
             markedForDeletion
-            collectionIds
             createdAt
             updatedAt
           }
@@ -3580,7 +3561,6 @@ export class APIService {
           lockedDate
           lockedBy
           markedForDeletion
-          collectionIds
           createdAt
           updatedAt
         }
@@ -3662,7 +3642,6 @@ export class APIService {
           lockedDate
           lockedBy
           markedForDeletion
-          collectionIds
           createdAt
           updatedAt
         }
@@ -3744,7 +3723,6 @@ export class APIService {
           lockedDate
           lockedBy
           markedForDeletion
-          collectionIds
           createdAt
           updatedAt
         }

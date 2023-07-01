@@ -54,7 +54,6 @@ subscription OnCreateProbateRecord(
     lockedDate
     lockedBy
     markedForDeletion
-    collectionIds
     createdAt
     updatedAt
   }
@@ -114,7 +113,6 @@ subscription OnUpdateProbateRecord(
     lockedDate
     lockedBy
     markedForDeletion
-    collectionIds
     createdAt
     updatedAt
   }
@@ -174,7 +172,6 @@ subscription OnDeleteProbateRecord(
     lockedDate
     lockedBy
     markedForDeletion
-    collectionIds
     createdAt
     updatedAt
   }
