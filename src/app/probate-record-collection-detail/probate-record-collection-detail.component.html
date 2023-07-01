@@ -7,7 +7,8 @@
     <h3>Probate Records:</h3>
     <div>
       <!-- Your existing component content -->
-
+      <button mat-raised-button color="primary" (click)="openSelectProbateRecordsDialog()">Add Probate
+        Records</button>
       <button mat-raised-button color="primary" [disabled]="selectedProbateRecords.length === 0"  (click)="removeSelected()">Remove Selected Probate
         Records</button>
     </div>
