@@ -34,6 +34,7 @@ import {
   APIService,
   ProbateRecord,
   ProbateRecordCollection,
+  UpdateProbateRecordCollectionInput,
 } from '../app/API.service';
 import { Store, select } from '@ngrx/store';
 import { AppState } from 'src/app/app.state';
@@ -199,18 +200,25 @@ export class ProbateRecordCollectionEffects {
     recordId: string
   ): Promise<ProbateRecordCollection> {
     console.log('associating ' + recordId + ' with ', collection);
-    let updatedCollection = { ...collection };
-    if (updatedCollection.probateRecordIds) {
-      if (!updatedCollection.probateRecordIds.includes(recordId)) {
-        updatedCollection.probateRecordIds.push(recordId);
+    let updatedCollectionInput: UpdateProbateRecordCollectionInput = { ...collection };
+    delete updatedCollectionInput["__typename"];
+    delete updatedCollectionInput["createdAt"];
+    delete updatedCollectionInput["updatedAt"];
+    if (updatedCollectionInput.probateRecordIds) {
+      if (!updatedCollectionInput.probateRecordIds.includes(recordId)) {
+        updatedCollectionInput.probateRecordIds.push(recordId);
         
       }
     } else {
-      updatedCollection.probateRecordIds = [recordId];
+      updatedCollectionInput.probateRecordIds = [recordId];
     }
-    updatedCollection = await this.apiService.UpdateProbateRecordCollection(
-      updatedCollection
+    console.log('updated collection input before svc call');
+    console.log(updatedCollectionInput);
+    const updatedCollection = await this.apiService.UpdateProbateRecordCollection(
+      updatedCollectionInput
     );
+    console.log('updated collection after svc call');
+    console.log(updateProbateRecordCollection);
     return updatedCollection;
   }
 
