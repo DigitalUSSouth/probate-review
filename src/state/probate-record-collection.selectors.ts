@@ -50,9 +50,9 @@ export const reducers: ActionReducerMap<RootState> = {
     (state: ProbateRecordCollectionState) => state.loading
   );
   
-  export const selectProbateRecordCollectionsLoaded = createSelector(
+  export const selectProbateRecordCollectionsUpdating = createSelector(
     selectProbateRecordCollectionState,
-    (state: ProbateRecordCollectionState) => state.loaded
+    (state: ProbateRecordCollectionState) => state.updating
   );
 
   export const selectProbateRecordCollectionsError = createSelector(

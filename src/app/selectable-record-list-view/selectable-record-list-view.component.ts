@@ -153,6 +153,7 @@ export class SelectableRecordListViewComponent {
 
   toggleAllChecks(event: MatCheckboxChange) {
     this.selectedRecords = event.checked ? this.dataSource!.data : [];
+    this.selectedProbateRecords.emit(this.selectedRecords);
   }
 
   isAllSelected() {

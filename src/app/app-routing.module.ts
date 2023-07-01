@@ -8,7 +8,6 @@ import { SearchComponent } from './search/search.component';
 // import { UnreviewedComponent } from './unreviewed/unreviewed.component';
 import { UploadComponent } from './upload/upload.component';
 import { UnreviewedDetailComponent } from './unreviewed-detail/unreviewed-detail.component';
-import { ProbateRecordListComponent } from './probate-record-list/probate-record-list.component';
 import { ReviewedListComponent } from './reviewed-list/reviewed-list.component';
 import { ProbateRecordCollectionListComponent } from './probate-record-collection-list/probate-record-collection-list.component';
 import { ProbateRecordCollectionDetailComponent } from './probate-record-collection-detail/probate-record-collection-detail.component';

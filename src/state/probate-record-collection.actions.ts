@@ -1,6 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 import {
   ModelProbateRecordCollectionFilterInput,
+  ProbateRecord,
   ProbateRecordCollection,
 } from '../app/API.service';
 
@@ -51,9 +52,15 @@ export const deleteProbateRecordCollection = createAction(
 );
 
 export const updateProbateRecordCollectionSuccess = createAction(
-  '[Probate Record Collection] Update Probate Record Success',
+  '[Probate Record Collection] Update Probate Record Collections Success',
   props<{ probateRecordCollection: ProbateRecordCollection }>()
 );
+
+export const updateProbateRecordCollectionFailure = createAction(
+  '[Probate Record Collection] Update Probate Record Collections Failure',
+  props<{ error: any }>()
+);
+
 
 // Action creator function
 export const updateProbateRecordCollectionAction = (
@@ -92,17 +99,48 @@ export const createProbateRecordCollectionFailure = createAction(
   props<{ error: any }>()
 );
 
-export const associateProbateRecords = createAction(
-  '[Probate Record Collection] Associate Probate Records',
-  props<{ collectionId: string; recordIds: string[] }>()
+
+export const associateProbateRecord = createAction(
+  '[Probate Record Collection] Associate Probate Record',
+  props<{ collection: ProbateRecordCollection; recordId: string }>()
 );
 
-export const associateProbateRecordsSuccess = createAction(
-  '[Probate Record Collection] Associate Probate Records Success',
-  props<{ collections: ProbateRecordCollection[] }>()
+export const associateProbateRecordSuccess = createAction(
+  '[Probate Record Collection] Associate Probate Record Success',
+  props<{ collection: ProbateRecordCollection }>()
 );
 
-export const associateProbateRecordsFailure = createAction(
-  '[Probate Record Collection] Associate Probate Records Failure',
+export const associateProbateRecordFailure = createAction(
+  '[Probate Record Collection] Associate Probate Record Failure',
+  props<{ error: any }>()
+);
+
+// export const associateProbateRecords = createAction(
+//   '[Probate Record Collection] Associate Probate Records',
+//   props<{ collectionId: string; recordIds: string[] }>()
+// );
+
+// export const associateProbateRecordsSuccess = createAction(
+//   '[Probate Record Collection] Associate Probate Records Success',
+//   props<{ collections: ProbateRecordCollection[] }>()
+// );
+
+// export const associateProbateRecordsFailure = createAction(
+//   '[Probate Record Collection] Associate Probate Records Failure',
+//   props<{ error: any }>()
+// );
+
+export const disassociateProbateRecord = createAction(
+  '[Probate Record Collection] Disassociate Probate Record',
+  props<{ collection: ProbateRecordCollection, recordId: string }>()
+);
+
+export const disassociateProbateRecordSuccess = createAction(
+  '[Probate Record Collection] Disassociate Probate Record Success',
+  props<{ collection: ProbateRecordCollection }>()
+);
+
+export const disassociateProbateRecordFailure = createAction(
+  '[Probate Record Collection] Disassociate Probate Record Failure',
   props<{ error: any }>()
 );

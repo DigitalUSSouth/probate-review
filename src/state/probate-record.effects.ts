@@ -78,11 +78,17 @@ export class ProbateRecordEffects {
     ) as Observable<Action>
   );
 
+
+
   constructor(
     private actions$: Actions,
     private probateRecordService: ProbateRecordService,
     private apiService: APIService,
     private store: Store<AppState>
   ) {}
+
+  private areRecordsLoaded(recordIds: string[], records: ProbateRecord[]): boolean {
+    return recordIds.every((recordId) => records.some((record) => record.id === recordId));
+  }
 }
 

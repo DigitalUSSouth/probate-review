@@ -10,6 +10,11 @@ import {
   setProbateRecordFilter,
   loadFilteredProbateRecords,
   loadProbateRecordByIdSuccess,
+  loadProbateRecordById,
+  loadProbateRecordByIdFailure,
+  loadSelectedProbateRecordByIdsFailure,
+  loadSelectedProbateRecordByIdsSuccess,
+  loadSelectedRecordsById,
 } from './probate-record.actions';
 import {
   ModelProbateRecordFilterInput,
@@ -22,16 +27,20 @@ export interface ProbateRecordState {
   nextToken: string | undefined | null;
   records: ProbateRecord[];
   selectedRecord: ProbateRecord | null;
+  selectedRecords: ProbateRecord[];
   loading: boolean;
+  updating: boolean;
   error: string | null;
 }
 
 export const initialProbateRecordState: ProbateRecordState = {
   records: [],
   selectedRecord: null,
+  selectedRecords: [],
   filter: null,
   nextToken: null,
   loading: false,
+  updating: false,
   error: null,
 };
 
@@ -79,7 +88,7 @@ export const probateRecordReducer = createReducer(
     loading: false,
     records: [...state.records, ...records],
     nextToken,
-    error: null
+    error: null,
   })),
   on(loadFilteredProbateRecordsFailure, (state, { error }) => ({
     ...state,
@@ -99,8 +108,48 @@ export const probateRecordReducer = createReducer(
       };
     }
   }),
-  on(loadProbateRecordByIdSuccess, (state, { probateRecord }) => ({
+  on(loadProbateRecordById, (state) => ({
     ...state,
-    selectedRecord: probateRecord,
+    loading: true,
+  })),
+  on(loadProbateRecordByIdSuccess, (state, { probateRecord }) => {
+    const records = [...state.records];
+    if(!state.records.map(r => r.id).includes(probateRecord.id)) {
+      records.push(probateRecord);
+    }
+    return {
+      ...state,
+      records,
+      selectedRecord: probateRecord,
+      loading: false,
+    };
+  }),
+  on(loadProbateRecordByIdFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error,
+  })),
+  on(loadSelectedRecordsById, (state) => ({
+    ...state,
+    selectedRecords: [],
+    loading: true,
+  })),
+  on(loadSelectedProbateRecordByIdsSuccess, (state, { probateRecords }) => {
+    const records = [...state.records];
+    for(const record of probateRecords) {
+      if(!records.some(r => r.id === record.id)) {
+        records.push(record);
+      }
+    }
+    return {
+    ...state,
+    records,
+    selectedRecords: probateRecords,
+    loading: false,
+  };}),
+  on(loadSelectedProbateRecordByIdsFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error,
   })),
 );

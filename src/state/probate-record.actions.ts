@@ -105,3 +105,18 @@ export const loadProbateRecordByIdFailure = createAction(
   '[Probate Record] Load Probate Record By ID Failure',
   props<{ error: string }>()
 );
+
+export const loadSelectedRecordsById = createAction(
+  '[Probate Record] Load Selected Probate Records By ID',
+  props<{ ids: string[] }>()
+);
+
+export const loadSelectedProbateRecordByIdsSuccess = createAction(
+  '[Probate Record] Load Selected Probate Record By ID Success',
+  props<{ probateRecords: ProbateRecord[] }>()
+);
+
+export const loadSelectedProbateRecordByIdsFailure = createAction(
+  '[Probate Record] Load Selected Probate Record By ID Failure',
+  props<{ error: string }>()
+);

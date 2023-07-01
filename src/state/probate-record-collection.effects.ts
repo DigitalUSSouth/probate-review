@@ -19,14 +19,19 @@ import {
   createProbateRecordCollection,
   createProbateRecordCollectionSuccess,
   createProbateRecordCollectionFailure,
-  associateProbateRecords,
-  associateProbateRecordsSuccess,
-  associateProbateRecordsFailure,
+  disassociateProbateRecord,
+  disassociateProbateRecordSuccess,
+  disassociateProbateRecordFailure,
+  associateProbateRecord,
+  associateProbateRecordSuccess,
+  updateProbateRecordCollection,
+  updateProbateRecordCollectionSuccess,
+  updateProbateRecordCollectionFailure,
+  associateProbateRecordFailure,
 } from './probate-record-collection.actions';
 import { ProbateRecordService } from 'src/app/probate-record.service';
 import {
   APIService,
-  CollectionRecords,
   ProbateRecord,
   ProbateRecordCollection,
 } from '../app/API.service';
@@ -60,23 +65,7 @@ export class ProbateRecordCollectionEffects {
     )
   );
 
-  // loadProbateRecordCollection$ = createEffect(() =>
-  //   this.actions$.pipe(
-  //     ofType(loadProbateRecordCollection),
-  //     withLatestFrom(this.store.pipe(select(selectProbateRecordCollections))),
-  //     filter(([action, collections]) => !collections.map(r => r.id).includes(action.id)),
-  //     mergeMap(([action]) =>
-  //       from(this.apiService.GetProbateRecordCollection(action.id)).pipe(
-  //         map((response) =>
-  //           loadProbateRecordCollectionSuccess({ collection: response })
-  //         ),
-  //         catchError((error) =>
-  //           of(loadProbateRecordCollectionFailure({ error }))
-  //         )
-  //       )
-  //     )
-  //   )
-  // );
+ 
   loadProbateRecordCollection$ = createEffect(() =>
     this.actions$.pipe(
       ofType(loadProbateRecordCollection),
@@ -133,42 +122,99 @@ export class ProbateRecordCollectionEffects {
     )
   );
 
-  associateProbateRecords$ = createEffect(() =>
+  updateProbateRecordCollection$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(associateProbateRecords),
-      mergeMap(({ collectionId, recordIds }) =>
-        from(this.associateRecords(collectionId, recordIds)).pipe(
+      ofType(updateProbateRecordCollection),
+      mergeMap(({ probateRecordCollection }) =>
+        from(
+          this.apiService.UpdateProbateRecordCollection(probateRecordCollection)
+        ).pipe(
           map((response) =>
-            associateProbateRecordsSuccess({
-              collections: response as ProbateRecordCollection[],
+            updateProbateRecordCollectionSuccess({
+              probateRecordCollection: response as ProbateRecordCollection,
             })
           ),
-          catchError((error) => of(associateProbateRecordsFailure({ error })))
+          catchError((error) =>
+            of(updateProbateRecordCollectionFailure({ error }))
+          )
+        )
+      )
+    )
+  );
+ 
+
+  associateProbateRecord$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(associateProbateRecord),
+      mergeMap(({ collection, recordId }) =>
+        from(this.associateRecord(collection, recordId)).pipe(
+          map((response) =>
+            associateProbateRecordSuccess({
+              collection: response as ProbateRecordCollection,
+            })
+          ),
+          catchError((error) => of(associateProbateRecordFailure({ error })))
         )
       )
     )
   );
 
-  async associateRecords(
-    collectionId: string,
-    recordIds: string[]
-  ): Promise<ProbateRecordCollection[]> {
-    const collections: ProbateRecordCollection[] = [];
-    
-    for (const recordId of recordIds) {
-      const collectionRecord = await this.apiService.CreateCollectionRecords({
-        probateRecordCollectionID: collectionId,
-        probateRecordID: recordId,
-      });
+  disassociateProbateRecord$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(disassociateProbateRecord),
+      mergeMap((action) =>
+        from(
+          this.disassociateRecord(action.collection, action.recordId)
+        ).pipe(
+          map((response) =>
+            disassociateProbateRecordSuccess({ collection: response })
+          ),
+          catchError((error) => of(disassociateProbateRecordFailure({ error })))
+        )
+      )
+    )
+  );
 
-      const collection =
-        collectionRecord.probateRecordCollection as ProbateRecordCollection;
-      
-      collections.push(collection);
+
+  async disassociateRecord(
+    collection: ProbateRecordCollection,
+    recordId: string
+  ): Promise<ProbateRecordCollection> {
+    let updatedCollection = { ...collection };
+    if (updatedCollection.probateRecordIds) {
+      if (updatedCollection.probateRecordIds.includes(recordId)) {
+        updatedCollection.probateRecordIds =
+          updatedCollection.probateRecordIds!.filter((id) => id != recordId);
+        updatedCollection = await this.apiService.UpdateProbateRecordCollection(
+          updatedCollection
+        );
+      }
     }
-    return collections;
+
+    return updatedCollection;
   }
 
+  async associateRecord(
+    collection: ProbateRecordCollection,
+    recordId: string
+  ): Promise<ProbateRecordCollection> {
+    console.log('associating ' + recordId + ' with ', collection);
+    let updatedCollection = { ...collection };
+    if (updatedCollection.probateRecordIds) {
+      if (!updatedCollection.probateRecordIds.includes(recordId)) {
+        updatedCollection.probateRecordIds.push(recordId);
+        
+      }
+    } else {
+      updatedCollection.probateRecordIds = [recordId];
+    }
+    updatedCollection = await this.apiService.UpdateProbateRecordCollection(
+      updatedCollection
+    );
+    return updatedCollection;
+  }
+
+  
   constructor(
     private actions$: Actions,
     private probateRecordService: ProbateRecordService,

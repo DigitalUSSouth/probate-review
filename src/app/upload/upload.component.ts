@@ -9,7 +9,7 @@ import {
 import { Storage } from 'aws-amplify';
 import { v4 as uuidv4 } from 'uuid';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
-import { interval } from 'rxjs';
+import { Observable, interval } from 'rxjs';
 import {
   ProbateRecord,
   APIService,
@@ -18,8 +18,9 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { SelectProbateRecordCollectionDialogComponent } from '../select-probate-record-collection-dialog/select-probate-record-collection-dialog.component';
 import { AppState } from '../app.state';
-import { Store } from '@ngrx/store';
-import { associateProbateRecords } from 'src/state/probate-record-collection.actions';
+import { Store, select } from '@ngrx/store';
+import { associateProbateRecord } from 'src/state/probate-record-collection.actions';
+import { selectProbateRecordCollectionsUpdating } from 'src/state/probate-record-collection.selectors';
 
 const POLL_INTERVAL = 20000;
 
@@ -35,6 +36,10 @@ export class UploadComponent implements OnInit {
   filesInProcessing = Array<string>();
   checkFileProcessedInterval = interval(POLL_INTERVAL);
   selectedProbateRecordCollections: ProbateRecordCollection[] = [];
+  selectedProbateRecordCollectionIds: string[] = [];
+  collectionsToBeUpdated = new Map<string, string[]>();
+  updating$: Observable<boolean>;
+  updating = false;
 
   constructor(
     public authenticator: AuthenticatorService,
@@ -42,6 +47,18 @@ export class UploadComponent implements OnInit {
     public dialog: MatDialog,
     private store: Store<AppState>
   ) {
+    this.updating$ = this.store.pipe(
+      select(selectProbateRecordCollectionsUpdating)
+    );
+    this.updating$.subscribe((updating) => {
+      this.updating = updating;
+      if (!this.updating) {
+        if(this.collectionsToBeUpdated.size > 0) {
+          const recordId = this.collectionsToBeUpdated.keys()[0];
+          this.update(recordId);
+        }
+      }
+    });
     let timer = this.checkFileProcessedInterval.subscribe(async () => {
       if (this.filesInProcessing.length > 0) {
         for (let i = 0; i < this.filesInProcessing.length; i++) {
@@ -51,15 +68,11 @@ export class UploadComponent implements OnInit {
               docid
             )) as ProbateRecord;
             if (record && typeof record === 'object') {
-              // add to any checked collections
-              for (const collection of this.selectedProbateRecordCollections) {
-                this.store.dispatch(
-                  associateProbateRecords({
-                    collectionId: collection.id,
-                    recordIds: [docid],
-                  })
-                );
-              }
+              this.collectionsToBeUpdated.set(docid, [
+                ...this.selectedProbateRecordCollectionIds,
+              ]);
+              this.update(docid);
+
               // check if lines have been added
               console.log(record);
 
@@ -91,6 +104,25 @@ export class UploadComponent implements OnInit {
     });
   }
 
+  update(recordId: string) {
+    console.log('update called for ' + recordId);
+    if (!this.updating) {
+      const collectionIds = this.collectionsToBeUpdated.get(recordId);
+      if (collectionIds) {
+        const collectionId = collectionIds.pop();
+        if(collectionIds.length === 0) {
+          this.collectionsToBeUpdated.delete(recordId);
+        }
+        const collection = this.selectedProbateRecordCollections.find(
+          (c) => c.id === collectionId
+        );
+        if (collection) {
+          this.store.dispatch(associateProbateRecord({ collection, recordId }));
+        }
+      }
+    }
+  }
+
   selectCollections(): void {
     const dialogRef = this.dialog.open(
       SelectProbateRecordCollectionDialogComponent,
@@ -103,6 +135,9 @@ export class UploadComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.selectedProbateRecordCollections = result;
+        this.selectedProbateRecordCollectionIds =
+          this.selectedProbateRecordCollections.map((c) => c.id);
+
         console.log('selected the following collections');
         console.log(this.selectedProbateRecordCollections);
       }

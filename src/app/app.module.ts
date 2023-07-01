@@ -37,7 +37,6 @@ import { CookieService } from 'ngx-cookie-service';
 import { CombineLineDialogComponent } from './combine-line-dialog/combine-line-dialog.component';
 import { MatListModule } from '@angular/material/list';
 import { MatSortModule } from '@angular/material/sort';
-import { ProbateRecordListComponent } from './probate-record-list/probate-record-list.component';
 import { StoreModule } from '@ngrx/store';
 import { appReducer } from 'src/state/app.reducer';
 import { probateRecordReducer } from 'src/state/probate-record.reducer';
@@ -73,7 +72,6 @@ import { LoadCollectionListViewComponent } from './load-collection-list-view/loa
     ConfirmDeleteDialogComponent,
     HelpDialogComponent,
     CombineLineDialogComponent,
-    ProbateRecordListComponent,
     ReviewedListComponent,
     ProbateRecordCollectionListComponent,
     ProbateRecordCollectionDetailComponent,

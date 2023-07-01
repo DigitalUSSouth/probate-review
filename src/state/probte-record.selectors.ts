@@ -54,5 +54,10 @@ export const reducers: ActionReducerMap<RootState> = {
   export const selectSelectedRecord = createSelector(
     selectProbateRecordState,
     (state: ProbateRecordState) => state.selectedRecord
-  )
+  );
+
+  export const selectSelectedRecords = createSelector(
+    selectProbateRecordState,
+    (state: ProbateRecordState) => state.selectedRecords
+  );
   

@@ -4,13 +4,24 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '../app.state';
-import { associateProbateRecords, loadProbateRecordCollection } from '../../state/probate-record-collection.actions';
-import { selectProbateRecordCollection, selectProbateRecordCollectionLoading } from '../../state/probate-record-collection.selectors';
-import { ProbateRecordCollection, ModelCollectionRecordsConnection, ProbateRecord } from '../API.service';
+import {
+  loadProbateRecordCollection,
+  updateProbateRecordCollection,
+} from '../../state/probate-record-collection.actions';
+import {
+  selectProbateRecordCollection,
+  selectProbateRecordCollectionLoading,
+} from '../../state/probate-record-collection.selectors';
+import {
+  ProbateRecordCollection,
+  ProbateRecord,
+} from '../API.service';
 import { AmplifyUser } from '@aws-amplify/ui';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { SelectProbateRecordsDialogComponent } from '../select-probate-records-dialog/select-probate-records-dialog.component';
+import { selectSelectedRecords } from 'src/state/probte-record.selectors';
+import { loadSelectedRecordsById } from 'src/state/probate-record.actions';
 
 @Component({
   selector: 'app-probate-record-collection-detail',
@@ -19,11 +30,13 @@ import { SelectProbateRecordsDialogComponent } from '../select-probate-records-d
 })
 export class ProbateRecordCollectionDetailComponent implements OnInit {
   probateRecordCollection$: Observable<ProbateRecordCollection | null>;
+  probateRecordCollection: ProbateRecordCollection | null = null;
   probateRecords$?: Observable<(ProbateRecord | null)[]>;
   probateRecords: ProbateRecord[] = [];
+  selectedProbateRecords: ProbateRecord[] = [];
   loading$: Observable<boolean>;
   user?: AmplifyUser;
-  displayedColumns = ["thumbnail", "title"];
+  displayedColumns = ['thumbnail', 'title'];
   collectionId = '';
   constructor(
     private route: ActivatedRoute,
@@ -36,52 +49,88 @@ export class ProbateRecordCollectionDetailComponent implements OnInit {
     );
 
     this.probateRecordCollection$.subscribe((collection) => {
-      this.probateRecords = (collection) ? collection!.probateRecords!.items.map(c => c!.probateRecord) || [] : [];
+      this.probateRecordCollection = collection;
+      // this.probateRecords = (collection) ? collection!.probateRecords!.items.map(c => c!.probateRecord) || [] : [];
+      if (
+        collection &&
+        collection.probateRecordIds &&
+        collection.probateRecordIds.length > 0
+      ) {
+        this.store.dispatch(loadSelectedRecordsById({ids: collection.probateRecordIds as string[]}))
+        this.probateRecords$ = this.store.pipe(select(selectSelectedRecords));
+        this.probateRecords$.subscribe((selectedRecords) => {
+          this.probateRecords = selectedRecords as ProbateRecord[];
+        })
+      }
+    
     });
-    // this.probateRecords$ = this.probateRecordCollection$.pipe(
-    //   map((collection) => collection!.probateRecords!.items.map(c => c!.probateRecord) || [])
-    // );
-
-    // this.probateRecords$.subscribe((records) => {
-    //   this.probateRecords = (records) ? records.map(r => r as ProbateRecord) : [];
-    // })
-
+    
     this.loading$ = this.store.pipe(
       select(selectProbateRecordCollectionLoading)
     );
   }
 
   ngOnInit() {
-    
-
     this.collectionId = this.route.snapshot.paramMap.get('id') ?? '';
     if (this.collectionId) {
-      this.store.dispatch(loadProbateRecordCollection({ id: this.collectionId }));
+      this.store.dispatch(
+        loadProbateRecordCollection({ id: this.collectionId })
+      );
     }
   }
 
   ngAfterViewInit() {
-    this.user = this.authenticator.user;  
+    this.user = this.authenticator.user;
   }
 
   openSelectProbateRecordsDialog() {
-    const dialogRef: MatDialogRef<SelectProbateRecordsDialogComponent> = this.dialog.open(SelectProbateRecordsDialogComponent, {
-      width: '100%',
-    });
-  
+    const dialogRef: MatDialogRef<SelectProbateRecordsDialogComponent> =
+      this.dialog.open(SelectProbateRecordsDialogComponent, {
+        width: '100%',
+      });
+
     dialogRef.afterClosed().subscribe((selectedRecords: ProbateRecord[]) => {
       console.log('dialog closed');
-      if (selectedRecords) {
+      if (selectedRecords && selectedRecords.length > 0) {
         // Handle the selected records
         console.log('Selected Records:', selectedRecords);
-        this.store.dispatch(
-          associateProbateRecords({
-            collectionId: this.collectionId,
-            recordIds: selectedRecords.map(record => record.id)
-          })
-        );
+        const selectedIds = selectedRecords.map((record) => record.id);
+        let updatedNeeded = false;
+        if(!this.probateRecordCollection!.probateRecordIds) {
+          this.probateRecordCollection!.probateRecordIds = [];
+        }
+        for(const selectedId of selectedIds) {
+          if(!this.probateRecordCollection!.probateRecordIds?.includes(selectedId)) {
+            this.probateRecordCollection!.probateRecordIds?.push(selectedId);
+            updatedNeeded = true;
+          }
+        }
+        
+        if(updatedNeeded) {
+          this.store.dispatch(updateProbateRecordCollection({probateRecordCollection: this.probateRecordCollection!}));
+          this.store.dispatch(loadSelectedRecordsById({ids: this.probateRecordCollection!.probateRecordIds as string[]}))
+        }
       }
     });
   }
-  
+
+  onSelectedProbateRecords(selectedProbateRecords: ProbateRecord[]) {
+    console.log('records selected', selectedProbateRecords);
+    this.selectedProbateRecords = selectedProbateRecords;
+  }
+
+  removeSelected() {
+    const selectedIds = this.selectedProbateRecords.map((record) => record.id);
+    let updateNeeded = false;
+    if(!this.probateRecordCollection!.probateRecordIds) {
+      this.probateRecordCollection!.probateRecordIds = [];
+      updateNeeded = true;
+    }
+    this.probateRecordCollection!.probateRecordIds = this.probateRecordCollection!.probateRecordIds.filter(id => !selectedIds.includes(id!))
+    this.store.dispatch(
+      updateProbateRecordCollection({
+        probateRecordCollection: this.probateRecordCollection!,
+      })
+    );
+  }
 }
