@@ -1,14 +1,27 @@
-<div *ngIf="loading && !loaded">Loading probate records...</div>
-
-<div *ngIf="error$ | async as error">{{ error }}</div>
-
-<ng-container *ngIf="!(loading) && !(error$ | async) && loaded">
+<ng-container *ngIf="dataSource">
   <table mat-table [dataSource]="dataSource!" matSort class="mat-elevation-z8">
+    <ng-container matColumnDef="checked">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-checkbox
+          (change)="toggleAllChecks($event)"
+          [checked]="isAllSelected()"
+          [indeterminate]="selectedRecords.length > 0 && !isAllSelected()"
+          color="primary"
+        ></mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let record">
+        <mat-checkbox
+          (change)="toggleSelection(record)"
+          [checked]="selectedRecords.includes(record)"
+          color="primary"
+        ></mat-checkbox>
+      </td>
+    </ng-container>
     <ng-container matColumnDef="thumbnail">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let record">
         <a *ngIf="!record.lockedBy || record.lockedBy === user?.username; else previewBlock"
-          href="review/{{record.id}}"><img
+          [routerLink]="['/review', record.id]"><img
             [src]="'https://d2ai2qpooo3jtj.cloudfront.net/iiif/2/' + record.id + '/full/120,/0/default.png'" /></a>
         <ng-template #previewBlock><img style="cursor: not-allowed;"
             [src]="'https://d2ai2qpooo3jtj.cloudfront.net/iiif/2/' + record.id + '/full/120,/0/default.png'" />
@@ -42,17 +55,7 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
-    
+ 
 </ng-container>
-<button
-            mat-raised-button
-            class="form-button"
-            color="primary"            
-            (click)="loadMoreRecords(nextToken!)"
-          >
-            Load More
-          </button>
 <mat-paginator (page)="handlePageEvent($event)" [length]="dataSource?.data?.length" [pageSize]="pageSize"
-  [pageSizeOptions]="[1, 5, 10, 25, 100]" showFirstLastButtons aria-label="Select page">
-
-</mat-paginator>
+[pageSizeOptions]="[1, 5, 10, 25, 100]" showFirstLastButtons aria-label="Select page"></mat-paginator>  

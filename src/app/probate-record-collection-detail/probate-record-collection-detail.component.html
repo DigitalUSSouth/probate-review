@@ -1,0 +1,17 @@
+<div *ngIf="loading$ | async">Loading...</div>
+<ng-container *ngIf="probateRecordCollection$ | async as probateRecordCollection">
+  <h2>{{ probateRecordCollection.title }}</h2>
+  <p>{{ probateRecordCollection.description }}</p>
+
+  <div>
+    <h3>Probate Records:</h3>
+    <div>
+      <!-- Your existing component content -->
+      <button mat-raised-button color="primary" (click)="openSelectProbateRecordsDialog()">Add Probate
+        Records</button>
+      <button mat-raised-button color="primary" [disabled]="selectedProbateRecords.length === 0"  (click)="removeSelected()">Remove Selected Probate
+        Records</button>
+    </div>
+    <app-selectable-record-list-view [records]="probateRecords" [showCheckBoxes]="true" [showLocked]="true" (selectedProbateRecords)="onSelectedProbateRecords($event)"></app-selectable-record-list-view>
+  </div>
+</ng-container>

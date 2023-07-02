@@ -1,27 +1,47 @@
 import { createReducer, on } from '@ngrx/store';
-import { loadProbateRecords, loadProbateRecordsSuccess, loadProbateRecordsFailure, updateProbateRecord, clearProbateRecords } from './probate-record.actions';
-import { ModelProbateRecordFilterInput, ProbateRecord } from '../app/API.service';
+import {
+  loadProbateRecords,
+  loadProbateRecordsSuccess,
+  loadProbateRecordsFailure,
+  updateProbateRecord,
+  clearProbateRecords,
+  loadFilteredProbateRecordsFailure,
+  loadFilteredProbateRecordsSuccess,
+  setProbateRecordFilter,
+  loadFilteredProbateRecords,
+  loadProbateRecordByIdSuccess,
+  loadProbateRecordById,
+  loadProbateRecordByIdFailure,
+  loadSelectedProbateRecordsByIdFailure,
+  loadSelectedProbateRecordsByIdSuccess,
+  loadSelectedRecordsById,
+} from './probate-record.actions';
+import {
+  ModelProbateRecordFilterInput,
+  ProbateRecord,
+} from '../app/API.service';
+import isEqual from 'lodash/isEqual';
 
 export interface ProbateRecordState {
-  probateRecords: ProbateRecord[];
-  pageSize: number;
-  currentPage: number;
-  nextToken: string | null;
-  filter: ModelProbateRecordFilterInput | undefined;
+  filter: ModelProbateRecordFilterInput | undefined | null;
+  nextToken: string | undefined | null;
+  records: ProbateRecord[];
+  selectedRecord: ProbateRecord | null;
+  selectedRecords: ProbateRecord[];
   loading: boolean;
-  loaded: boolean;
-  error: any;  
+  updating: boolean;
+  error: string | null;
 }
 
 export const initialProbateRecordState: ProbateRecordState = {
-  probateRecords: [],
-  pageSize: 10, // Default page size
-  currentPage: 1,
+  records: [],
+  selectedRecord: null,
+  selectedRecords: [],
+  filter: null,
   nextToken: null,
-  filter: undefined,
   loading: false,
-  loaded: false,
-  error: null
+  updating: false,
+  error: null,
 };
 
 export const probateRecordReducer = createReducer(
@@ -31,29 +51,105 @@ export const probateRecordReducer = createReducer(
     pageSize,
     filter,
     loading: true,
-    loaded: false
   })),
   on(loadProbateRecordsSuccess, (state, { probateRecords, nextToken }) => ({
     ...state,
-    probateRecords: [...state.probateRecords, ...probateRecords],
+    records: [...state.records, ...probateRecords],
     nextToken,
     loading: false,
-    loaded: true,
-    error: null
+    error: null,
   })),
-  on(loadProbateRecordsFailure, (state, { error }) => ({ ...state, loading: false, error })),
+  on(loadProbateRecordsFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error,
+  })),
   on(updateProbateRecord, (state, { probateRecord }) => {
-    const updatedRecords = state.probateRecords.map(record => {
+    const updatedRecords = state.records.map((record) => {
       if (record.id === probateRecord.id) {
         return { ...record, ...probateRecord };
       }
       return record;
     });
 
-    return { ...state, probateRecords: updatedRecords };
+    return { ...state, records: updatedRecords };
   }),
   on(clearProbateRecords, (state) => ({
     ...state,
-    probateRecords: []
-  }))
+    records: [],
+  })),
+  on(loadFilteredProbateRecords, (state) => ({
+    ...state,
+    loading: true,
+    error: null,
+  })),
+  on(loadFilteredProbateRecordsSuccess, (state, { records, nextToken }) => ({
+    ...state,
+    loading: false,
+    records: [...state.records, ...records],
+    nextToken,
+    error: null,
+  })),
+  on(loadFilteredProbateRecordsFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error,
+  })),
+  on(setProbateRecordFilter, (state, { filter }) => {
+    if (isEqual(state.filter, filter)) {
+      // If the filter is the same, return the current state
+      return state;
+    } else {
+      // If the filter is different, update the filter and empty the array of Probate Records
+      return {
+        ...state,
+        filter,
+        records: [],
+      };
+    }
+  }),
+  on(loadProbateRecordById, (state) => ({
+    ...state,
+    loading: true,
+  })),
+  on(loadProbateRecordByIdSuccess, (state, { probateRecord }) => {
+    const records = [...state.records];
+    if(!state.records.map(r => r.id).includes(probateRecord.id)) {
+      records.push(probateRecord);
+    }
+    return {
+      ...state,
+      records,
+      selectedRecord: probateRecord,
+      loading: false,
+    };
+  }),
+  on(loadProbateRecordByIdFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error,
+  })),
+  on(loadSelectedRecordsById, (state) => ({
+    ...state,
+    selectedRecords: [],
+    loading: true,
+  })),
+  on(loadSelectedProbateRecordsByIdSuccess, (state, { probateRecords }) => {
+    const records = [...state.records];
+    for(const record of probateRecords) {
+      if(!records.some(r => r.id === record.id)) {
+        records.push(record);
+      }
+    }
+    return {
+    ...state,
+    records,
+    selectedRecords: probateRecords,
+    loading: false,
+  };}),
+  on(loadSelectedProbateRecordsByIdFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error,
+  })),
 );

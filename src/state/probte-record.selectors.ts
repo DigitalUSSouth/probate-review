@@ -14,7 +14,7 @@ export const selectProbateRecordState = createFeatureSelector<ProbateRecordState
 // Create selectors for the ProbateRecordState and other state slices if necessary
 export const selectProbateRecords = createSelector(
   selectProbateRecordState,
-  (state: ProbateRecordState) => state.probateRecords
+  (state: ProbateRecordState) => state.records
 );
 
 // Define other selectors as needed
@@ -35,11 +35,6 @@ export const reducers: ActionReducerMap<RootState> = {
 };
 
   
-  export const selectPageSize = createSelector(
-    selectProbateRecordState,
-    (state: ProbateRecordState) => state.pageSize
-  );
-  
   export const selectNextToken = createSelector(
     selectProbateRecordState,
     (state: ProbateRecordState) => state.nextToken
@@ -50,13 +45,19 @@ export const reducers: ActionReducerMap<RootState> = {
     (state: ProbateRecordState) => state.loading
   );
   
-  export const selectProbateRecordsLoaded = createSelector(
-    selectProbateRecordState,
-    (state: ProbateRecordState) => state.loaded
-  );
 
   export const selectProbateRecordsError = createSelector(
     selectProbateRecordState,
     (state: ProbateRecordState) => state.error
+  );
+
+  export const selectSelectedRecord = createSelector(
+    selectProbateRecordState,
+    (state: ProbateRecordState) => state.selectedRecord
+  );
+
+  export const selectSelectedRecords = createSelector(
+    selectProbateRecordState,
+    (state: ProbateRecordState) => state.selectedRecords
   );
   

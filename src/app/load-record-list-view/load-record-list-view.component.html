@@ -1,0 +1,9 @@
+<div *ngIf="loading$ | async">Loading probate records...</div>
+
+<div *ngIf="error$ | async as error">{{ error }}</div>
+<app-selectable-record-list-view [records]="records" [showCheckBoxes]="showCheckBoxes" [showLocked]="showLocked" (selectedProbateRecords)="onSelectedRecordsChanged($event)"></app-selectable-record-list-view>
+<div class="load-more-container">
+  <button mat-raised-button class="form-button" color="primary" (click)="loadMoreRecords()">
+    Load More
+  </button>
+</div>

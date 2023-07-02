@@ -4,11 +4,9 @@ import { Observable, Subscription } from 'rxjs';
 import { clearProbateRecords, loadProbateRecords, updateProbateRecord } from '../../state/probate-record.actions';
 import {
   selectProbateRecords,
-  selectPageSize,
   selectNextToken,
   selectProbateRecordsLoading,
   selectProbateRecordsError,
-  selectProbateRecordsLoaded
 } from '../../state/probte-record.selectors';
 import { MatTableDataSource } from '@angular/material/table';
 import { ProbateRecord } from '../API.service';
@@ -28,10 +26,8 @@ const REVIEWED_PAGE_SIZE = 'unreviewedPageSize';
 })
 export class ReviewedListComponent implements OnInit {
   probateRecords$: Observable<ProbateRecord[]>;
-  pageSize$: Observable<number>;
-  nextToken$: Observable<string | null>;
+  nextToken$: Observable<string | null | undefined>;
   loading$: Observable<boolean>;
-  loaded$: Observable<boolean>;
   error$: Observable<any>;
   loading = true;
   loaded = false;
@@ -51,10 +47,8 @@ export class ReviewedListComponent implements OnInit {
 
   constructor(private store: Store<AppState>, public authenticator: AuthenticatorService, private cookieService: CookieService) {
     this.probateRecords$ = this.store.pipe(select(selectProbateRecords));
-    this.pageSize$ = this.store.pipe(select(selectPageSize));
     this.nextToken$ = this.store.pipe(select(selectNextToken));
     this.loading$ = this.store.pipe(select(selectProbateRecordsLoading));
-    this.loaded$ = this.store.pipe(select(selectProbateRecordsLoaded));
     this.error$ = this.store.pipe(select(selectProbateRecordsError));
   }
 
@@ -77,10 +71,6 @@ export class ReviewedListComponent implements OnInit {
         console.log('records loaded');
         console.log(records);
       }),
-      this.pageSize$.subscribe(pageSize => {
-        // Do something with the page size
-        this.pageSize = pageSize;
-      }),
       this.nextToken$.subscribe(nextToken => {
         // Do something with the next token
         this.nextToken = nextToken!;
@@ -88,9 +78,6 @@ export class ReviewedListComponent implements OnInit {
       this.loading$.subscribe(loading => {
         this.loading = loading;
       }),
-      this.loaded$.subscribe(loaded => {
-        this.loaded = loaded;        
-      })
     );
   }  
 

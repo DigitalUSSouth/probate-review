@@ -45,6 +45,7 @@ subscription OnCreateProbateRecord(
         width
         height
       }
+      lineIndex
     }
     totalValue
     reviewCount
@@ -52,6 +53,7 @@ subscription OnCreateProbateRecord(
     lowerDescription
     lockedDate
     lockedBy
+    markedForDeletion
     createdAt
     updatedAt
   }
@@ -102,6 +104,7 @@ subscription OnUpdateProbateRecord(
         width
         height
       }
+      lineIndex
     }
     totalValue
     reviewCount
@@ -109,6 +112,7 @@ subscription OnUpdateProbateRecord(
     lowerDescription
     lockedDate
     lockedBy
+    markedForDeletion
     createdAt
     updatedAt
   }
@@ -159,6 +163,7 @@ subscription OnDeleteProbateRecord(
         width
         height
       }
+      lineIndex
     }
     totalValue
     reviewCount
@@ -166,6 +171,7 @@ subscription OnDeleteProbateRecord(
     lowerDescription
     lockedDate
     lockedBy
+    markedForDeletion
     createdAt
     updatedAt
   }
@@ -270,6 +276,7 @@ subscription OnCreateDocument($filter: ModelSubscriptionDocumentFilterInput) {
         width
         height
       }
+      lineIndex
     }
     createdAt
     updatedAt
@@ -300,6 +307,7 @@ subscription OnUpdateDocument($filter: ModelSubscriptionDocumentFilterInput) {
         width
         height
       }
+      lineIndex
     }
     createdAt
     updatedAt
@@ -330,6 +338,7 @@ subscription OnDeleteDocument($filter: ModelSubscriptionDocumentFilterInput) {
         width
         height
       }
+      lineIndex
     }
     createdAt
     updatedAt
@@ -406,6 +415,48 @@ subscription OnDeleteIssue($filter: ModelSubscriptionIssueFilterInput) {
     reporter
     status
     type
+    createdAt
+    updatedAt
+  }
+}
+subscription OnCreateProbateRecordCollection(
+  $filter: ModelSubscriptionProbateRecordCollectionFilterInput
+) {
+  onCreateProbateRecordCollection(filter: $filter) {
+    id
+    title
+    description
+    lowerTitle
+    lowerDescription
+    probateRecordIds
+    createdAt
+    updatedAt
+  }
+}
+subscription OnUpdateProbateRecordCollection(
+  $filter: ModelSubscriptionProbateRecordCollectionFilterInput
+) {
+  onUpdateProbateRecordCollection(filter: $filter) {
+    id
+    title
+    description
+    lowerTitle
+    lowerDescription
+    probateRecordIds
+    createdAt
+    updatedAt
+  }
+}
+subscription OnDeleteProbateRecordCollection(
+  $filter: ModelSubscriptionProbateRecordCollectionFilterInput
+) {
+  onDeleteProbateRecordCollection(filter: $filter) {
+    id
+    title
+    description
+    lowerTitle
+    lowerDescription
+    probateRecordIds
     createdAt
     updatedAt
   }

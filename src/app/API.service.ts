@@ -25,6 +25,9 @@ export type __SubscriptionContainer = {
   onCreateIssue: OnCreateIssueSubscription;
   onUpdateIssue: OnUpdateIssueSubscription;
   onDeleteIssue: OnDeleteIssueSubscription;
+  onCreateProbateRecordCollection: OnCreateProbateRecordCollectionSubscription;
+  onUpdateProbateRecordCollection: OnUpdateProbateRecordCollectionSubscription;
+  onDeleteProbateRecordCollection: OnDeleteProbateRecordCollectionSubscription;
 };
 
 export type CreateProbateRecordInput = {
@@ -42,12 +45,14 @@ export type CreateProbateRecordInput = {
   lowerDescription?: string | null;
   lockedDate?: string | null;
   lockedBy?: string | null;
+  markedForDeletion?: boolean | null;
 };
 
 export type WordInput = {
   id: string;
   text: string;
   boundingBox?: RectInput | null;
+  lineIndex?: number | null;
 };
 
 export type RectInput = {
@@ -70,6 +75,7 @@ export type ModelProbateRecordConditionInput = {
   lowerDescription?: ModelStringInput | null;
   lockedDate?: ModelStringInput | null;
   lockedBy?: ModelStringInput | null;
+  markedForDeletion?: ModelBooleanInput | null;
   and?: Array<ModelProbateRecordConditionInput | null> | null;
   or?: Array<ModelProbateRecordConditionInput | null> | null;
   not?: ModelProbateRecordConditionInput | null;
@@ -154,6 +160,13 @@ export type ModelIntInput = {
   attributeType?: ModelAttributeTypes | null;
 };
 
+export type ModelBooleanInput = {
+  ne?: boolean | null;
+  eq?: boolean | null;
+  attributeExists?: boolean | null;
+  attributeType?: ModelAttributeTypes | null;
+};
+
 export type ProbateRecord = {
   __typename: "ProbateRecord";
   id: string;
@@ -171,6 +184,7 @@ export type ProbateRecord = {
   lowerDescription?: string | null;
   lockedDate?: string | null;
   lockedBy?: string | null;
+  markedForDeletion?: boolean | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -214,6 +228,7 @@ export type Word = {
   id: string;
   text: string;
   boundingBox?: Rect | null;
+  lineIndex?: number | null;
 };
 
 export type UpdateProbateRecordInput = {
@@ -231,6 +246,7 @@ export type UpdateProbateRecordInput = {
   lowerDescription?: string | null;
   lockedDate?: string | null;
   lockedBy?: string | null;
+  markedForDeletion?: boolean | null;
 };
 
 export type DeleteProbateRecordInput = {
@@ -361,13 +377,6 @@ export type ModelLineItemReviewerNoteConditionInput = {
   not?: ModelLineItemReviewerNoteConditionInput | null;
 };
 
-export type ModelBooleanInput = {
-  ne?: boolean | null;
-  eq?: boolean | null;
-  attributeExists?: boolean | null;
-  attributeType?: ModelAttributeTypes | null;
-};
-
 export type LineItemReviewerNote = {
   __typename: "LineItemReviewerNote";
   id: string;
@@ -459,6 +468,51 @@ export type DeleteIssueInput = {
   id: string;
 };
 
+export type CreateProbateRecordCollectionInput = {
+  id?: string | null;
+  title: string;
+  description?: string | null;
+  lowerTitle: string;
+  lowerDescription?: string | null;
+  probateRecordIds?: Array<string | null> | null;
+};
+
+export type ModelProbateRecordCollectionConditionInput = {
+  title?: ModelStringInput | null;
+  description?: ModelStringInput | null;
+  lowerTitle?: ModelStringInput | null;
+  lowerDescription?: ModelStringInput | null;
+  probateRecordIds?: ModelStringInput | null;
+  and?: Array<ModelProbateRecordCollectionConditionInput | null> | null;
+  or?: Array<ModelProbateRecordCollectionConditionInput | null> | null;
+  not?: ModelProbateRecordCollectionConditionInput | null;
+};
+
+export type ProbateRecordCollection = {
+  __typename: "ProbateRecordCollection";
+  id: string;
+  title: string;
+  description?: string | null;
+  lowerTitle: string;
+  lowerDescription?: string | null;
+  probateRecordIds?: Array<string | null> | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UpdateProbateRecordCollectionInput = {
+  id: string;
+  title?: string | null;
+  description?: string | null;
+  lowerTitle?: string | null;
+  lowerDescription?: string | null;
+  probateRecordIds?: Array<string | null> | null;
+};
+
+export type DeleteProbateRecordCollectionInput = {
+  id: string;
+};
+
 export type ModelProbateRecordFilterInput = {
   id?: ModelIDInput | null;
   title?: ModelStringInput | null;
@@ -473,6 +527,7 @@ export type ModelProbateRecordFilterInput = {
   lowerDescription?: ModelStringInput | null;
   lockedDate?: ModelStringInput | null;
   lockedBy?: ModelStringInput | null;
+  markedForDeletion?: ModelBooleanInput | null;
   and?: Array<ModelProbateRecordFilterInput | null> | null;
   or?: Array<ModelProbateRecordFilterInput | null> | null;
   not?: ModelProbateRecordFilterInput | null;
@@ -567,6 +622,24 @@ export type ModelIssueConnection = {
   nextToken?: string | null;
 };
 
+export type ModelProbateRecordCollectionFilterInput = {
+  id?: ModelIDInput | null;
+  title?: ModelStringInput | null;
+  description?: ModelStringInput | null;
+  lowerTitle?: ModelStringInput | null;
+  lowerDescription?: ModelStringInput | null;
+  probateRecordIds?: ModelStringInput | null;
+  and?: Array<ModelProbateRecordCollectionFilterInput | null> | null;
+  or?: Array<ModelProbateRecordCollectionFilterInput | null> | null;
+  not?: ModelProbateRecordCollectionFilterInput | null;
+};
+
+export type ModelProbateRecordCollectionConnection = {
+  __typename: "ModelProbateRecordCollectionConnection";
+  items: Array<ProbateRecordCollection | null>;
+  nextToken?: string | null;
+};
+
 export type ModelSubscriptionProbateRecordFilterInput = {
   id?: ModelSubscriptionIDInput | null;
   title?: ModelSubscriptionStringInput | null;
@@ -581,6 +654,7 @@ export type ModelSubscriptionProbateRecordFilterInput = {
   lowerDescription?: ModelSubscriptionStringInput | null;
   lockedDate?: ModelSubscriptionStringInput | null;
   lockedBy?: ModelSubscriptionStringInput | null;
+  markedForDeletion?: ModelSubscriptionBooleanInput | null;
   and?: Array<ModelSubscriptionProbateRecordFilterInput | null> | null;
   or?: Array<ModelSubscriptionProbateRecordFilterInput | null> | null;
 };
@@ -639,6 +713,11 @@ export type ModelSubscriptionIntInput = {
   notIn?: Array<number | null> | null;
 };
 
+export type ModelSubscriptionBooleanInput = {
+  ne?: boolean | null;
+  eq?: boolean | null;
+};
+
 export type ModelSubscriptionLineItemFilterInput = {
   id?: ModelSubscriptionIDInput | null;
   probateId?: ModelSubscriptionIDInput | null;
@@ -673,11 +752,6 @@ export type ModelSubscriptionLineItemReviewerNoteFilterInput = {
   or?: Array<ModelSubscriptionLineItemReviewerNoteFilterInput | null> | null;
 };
 
-export type ModelSubscriptionBooleanInput = {
-  ne?: boolean | null;
-  eq?: boolean | null;
-};
-
 export type ModelSubscriptionIssueFilterInput = {
   id?: ModelSubscriptionIDInput | null;
   title?: ModelSubscriptionStringInput | null;
@@ -687,6 +761,17 @@ export type ModelSubscriptionIssueFilterInput = {
   type?: ModelSubscriptionStringInput | null;
   and?: Array<ModelSubscriptionIssueFilterInput | null> | null;
   or?: Array<ModelSubscriptionIssueFilterInput | null> | null;
+};
+
+export type ModelSubscriptionProbateRecordCollectionFilterInput = {
+  id?: ModelSubscriptionIDInput | null;
+  title?: ModelSubscriptionStringInput | null;
+  description?: ModelSubscriptionStringInput | null;
+  lowerTitle?: ModelSubscriptionStringInput | null;
+  lowerDescription?: ModelSubscriptionStringInput | null;
+  probateRecordIds?: ModelSubscriptionStringInput | null;
+  and?: Array<ModelSubscriptionProbateRecordCollectionFilterInput | null> | null;
+  or?: Array<ModelSubscriptionProbateRecordCollectionFilterInput | null> | null;
 };
 
 export type CreateProbateRecordMutation = {
@@ -738,6 +823,7 @@ export type CreateProbateRecordMutation = {
       width: number;
       height: number;
     } | null;
+    lineIndex?: number | null;
   } | null>;
   totalValue: number;
   reviewCount: number;
@@ -745,6 +831,7 @@ export type CreateProbateRecordMutation = {
   lowerDescription?: string | null;
   lockedDate?: string | null;
   lockedBy?: string | null;
+  markedForDeletion?: boolean | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -798,6 +885,7 @@ export type UpdateProbateRecordMutation = {
       width: number;
       height: number;
     } | null;
+    lineIndex?: number | null;
   } | null>;
   totalValue: number;
   reviewCount: number;
@@ -805,6 +893,7 @@ export type UpdateProbateRecordMutation = {
   lowerDescription?: string | null;
   lockedDate?: string | null;
   lockedBy?: string | null;
+  markedForDeletion?: boolean | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -858,6 +947,7 @@ export type DeleteProbateRecordMutation = {
       width: number;
       height: number;
     } | null;
+    lineIndex?: number | null;
   } | null>;
   totalValue: number;
   reviewCount: number;
@@ -865,6 +955,7 @@ export type DeleteProbateRecordMutation = {
   lowerDescription?: string | null;
   lockedDate?: string | null;
   lockedBy?: string | null;
+  markedForDeletion?: boolean | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -976,6 +1067,7 @@ export type CreateDocumentMutation = {
       width: number;
       height: number;
     } | null;
+    lineIndex?: number | null;
   } | null>;
   createdAt: string;
   updatedAt: string;
@@ -1010,6 +1102,7 @@ export type UpdateDocumentMutation = {
       width: number;
       height: number;
     } | null;
+    lineIndex?: number | null;
   } | null>;
   createdAt: string;
   updatedAt: string;
@@ -1044,6 +1137,7 @@ export type DeleteDocumentMutation = {
       width: number;
       height: number;
     } | null;
+    lineIndex?: number | null;
   } | null>;
   createdAt: string;
   updatedAt: string;
@@ -1118,6 +1212,42 @@ export type DeleteIssueMutation = {
   updatedAt: string;
 };
 
+export type CreateProbateRecordCollectionMutation = {
+  __typename: "ProbateRecordCollection";
+  id: string;
+  title: string;
+  description?: string | null;
+  lowerTitle: string;
+  lowerDescription?: string | null;
+  probateRecordIds?: Array<string | null> | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UpdateProbateRecordCollectionMutation = {
+  __typename: "ProbateRecordCollection";
+  id: string;
+  title: string;
+  description?: string | null;
+  lowerTitle: string;
+  lowerDescription?: string | null;
+  probateRecordIds?: Array<string | null> | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type DeleteProbateRecordCollectionMutation = {
+  __typename: "ProbateRecordCollection";
+  id: string;
+  title: string;
+  description?: string | null;
+  lowerTitle: string;
+  lowerDescription?: string | null;
+  probateRecordIds?: Array<string | null> | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type GetProbateRecordQuery = {
   __typename: "ProbateRecord";
   id: string;
@@ -1167,6 +1297,7 @@ export type GetProbateRecordQuery = {
       width: number;
       height: number;
     } | null;
+    lineIndex?: number | null;
   } | null>;
   totalValue: number;
   reviewCount: number;
@@ -1174,6 +1305,7 @@ export type GetProbateRecordQuery = {
   lowerDescription?: string | null;
   lockedDate?: string | null;
   lockedBy?: string | null;
+  markedForDeletion?: boolean | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -1229,6 +1361,7 @@ export type ListProbateRecordsQuery = {
         width: number;
         height: number;
       } | null;
+      lineIndex?: number | null;
     } | null>;
     totalValue: number;
     reviewCount: number;
@@ -1236,6 +1369,7 @@ export type ListProbateRecordsQuery = {
     lowerDescription?: string | null;
     lockedDate?: string | null;
     lockedBy?: string | null;
+    markedForDeletion?: boolean | null;
     createdAt: string;
     updatedAt: string;
   } | null>;
@@ -1359,6 +1493,7 @@ export type GetDocumentQuery = {
       width: number;
       height: number;
     } | null;
+    lineIndex?: number | null;
   } | null>;
   createdAt: string;
   updatedAt: string;
@@ -1395,6 +1530,7 @@ export type ListDocumentsQuery = {
         width: number;
         height: number;
       } | null;
+      lineIndex?: number | null;
     } | null>;
     createdAt: string;
     updatedAt: string;
@@ -1456,6 +1592,34 @@ export type ListIssuesQuery = {
   nextToken?: string | null;
 };
 
+export type GetProbateRecordCollectionQuery = {
+  __typename: "ProbateRecordCollection";
+  id: string;
+  title: string;
+  description?: string | null;
+  lowerTitle: string;
+  lowerDescription?: string | null;
+  probateRecordIds?: Array<string | null> | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ListProbateRecordCollectionsQuery = {
+  __typename: "ModelProbateRecordCollectionConnection";
+  items: Array<{
+    __typename: "ProbateRecordCollection";
+    id: string;
+    title: string;
+    description?: string | null;
+    lowerTitle: string;
+    lowerDescription?: string | null;
+    probateRecordIds?: Array<string | null> | null;
+    createdAt: string;
+    updatedAt: string;
+  } | null>;
+  nextToken?: string | null;
+};
+
 export type OnCreateProbateRecordSubscription = {
   __typename: "ProbateRecord";
   id: string;
@@ -1505,6 +1669,7 @@ export type OnCreateProbateRecordSubscription = {
       width: number;
       height: number;
     } | null;
+    lineIndex?: number | null;
   } | null>;
   totalValue: number;
   reviewCount: number;
@@ -1512,6 +1677,7 @@ export type OnCreateProbateRecordSubscription = {
   lowerDescription?: string | null;
   lockedDate?: string | null;
   lockedBy?: string | null;
+  markedForDeletion?: boolean | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -1565,6 +1731,7 @@ export type OnUpdateProbateRecordSubscription = {
       width: number;
       height: number;
     } | null;
+    lineIndex?: number | null;
   } | null>;
   totalValue: number;
   reviewCount: number;
@@ -1572,6 +1739,7 @@ export type OnUpdateProbateRecordSubscription = {
   lowerDescription?: string | null;
   lockedDate?: string | null;
   lockedBy?: string | null;
+  markedForDeletion?: boolean | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -1625,6 +1793,7 @@ export type OnDeleteProbateRecordSubscription = {
       width: number;
       height: number;
     } | null;
+    lineIndex?: number | null;
   } | null>;
   totalValue: number;
   reviewCount: number;
@@ -1632,6 +1801,7 @@ export type OnDeleteProbateRecordSubscription = {
   lowerDescription?: string | null;
   lockedDate?: string | null;
   lockedBy?: string | null;
+  markedForDeletion?: boolean | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -1743,6 +1913,7 @@ export type OnCreateDocumentSubscription = {
       width: number;
       height: number;
     } | null;
+    lineIndex?: number | null;
   } | null>;
   createdAt: string;
   updatedAt: string;
@@ -1777,6 +1948,7 @@ export type OnUpdateDocumentSubscription = {
       width: number;
       height: number;
     } | null;
+    lineIndex?: number | null;
   } | null>;
   createdAt: string;
   updatedAt: string;
@@ -1811,6 +1983,7 @@ export type OnDeleteDocumentSubscription = {
       width: number;
       height: number;
     } | null;
+    lineIndex?: number | null;
   } | null>;
   createdAt: string;
   updatedAt: string;
@@ -1885,6 +2058,42 @@ export type OnDeleteIssueSubscription = {
   updatedAt: string;
 };
 
+export type OnCreateProbateRecordCollectionSubscription = {
+  __typename: "ProbateRecordCollection";
+  id: string;
+  title: string;
+  description?: string | null;
+  lowerTitle: string;
+  lowerDescription?: string | null;
+  probateRecordIds?: Array<string | null> | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type OnUpdateProbateRecordCollectionSubscription = {
+  __typename: "ProbateRecordCollection";
+  id: string;
+  title: string;
+  description?: string | null;
+  lowerTitle: string;
+  lowerDescription?: string | null;
+  probateRecordIds?: Array<string | null> | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type OnDeleteProbateRecordCollectionSubscription = {
+  __typename: "ProbateRecordCollection";
+  id: string;
+  title: string;
+  description?: string | null;
+  lowerTitle: string;
+  lowerDescription?: string | null;
+  probateRecordIds?: Array<string | null> | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
 @Injectable({
   providedIn: "root"
 })
@@ -1943,6 +2152,7 @@ export class APIService {
               width
               height
             }
+            lineIndex
           }
           totalValue
           reviewCount
@@ -1950,6 +2160,7 @@ export class APIService {
           lowerDescription
           lockedDate
           lockedBy
+          markedForDeletion
           createdAt
           updatedAt
         }
@@ -2019,6 +2230,7 @@ export class APIService {
               width
               height
             }
+            lineIndex
           }
           totalValue
           reviewCount
@@ -2026,6 +2238,7 @@ export class APIService {
           lowerDescription
           lockedDate
           lockedBy
+          markedForDeletion
           createdAt
           updatedAt
         }
@@ -2095,6 +2308,7 @@ export class APIService {
               width
               height
             }
+            lineIndex
           }
           totalValue
           reviewCount
@@ -2102,6 +2316,7 @@ export class APIService {
           lowerDescription
           lockedDate
           lockedBy
+          markedForDeletion
           createdAt
           updatedAt
         }
@@ -2277,6 +2492,7 @@ export class APIService {
               width
               height
             }
+            lineIndex
           }
           createdAt
           updatedAt
@@ -2327,6 +2543,7 @@ export class APIService {
               width
               height
             }
+            lineIndex
           }
           createdAt
           updatedAt
@@ -2377,6 +2594,7 @@ export class APIService {
               width
               height
             }
+            lineIndex
           }
           createdAt
           updatedAt
@@ -2564,6 +2782,96 @@ export class APIService {
     )) as any;
     return <DeleteIssueMutation>response.data.deleteIssue;
   }
+  async CreateProbateRecordCollection(
+    input: CreateProbateRecordCollectionInput,
+    condition?: ModelProbateRecordCollectionConditionInput
+  ): Promise<CreateProbateRecordCollectionMutation> {
+    const statement = `mutation CreateProbateRecordCollection($input: CreateProbateRecordCollectionInput!, $condition: ModelProbateRecordCollectionConditionInput) {
+        createProbateRecordCollection(input: $input, condition: $condition) {
+          __typename
+          id
+          title
+          description
+          lowerTitle
+          lowerDescription
+          probateRecordIds
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <CreateProbateRecordCollectionMutation>(
+      response.data.createProbateRecordCollection
+    );
+  }
+  async UpdateProbateRecordCollection(
+    input: UpdateProbateRecordCollectionInput,
+    condition?: ModelProbateRecordCollectionConditionInput
+  ): Promise<UpdateProbateRecordCollectionMutation> {
+    const statement = `mutation UpdateProbateRecordCollection($input: UpdateProbateRecordCollectionInput!, $condition: ModelProbateRecordCollectionConditionInput) {
+        updateProbateRecordCollection(input: $input, condition: $condition) {
+          __typename
+          id
+          title
+          description
+          lowerTitle
+          lowerDescription
+          probateRecordIds
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <UpdateProbateRecordCollectionMutation>(
+      response.data.updateProbateRecordCollection
+    );
+  }
+  async DeleteProbateRecordCollection(
+    input: DeleteProbateRecordCollectionInput,
+    condition?: ModelProbateRecordCollectionConditionInput
+  ): Promise<DeleteProbateRecordCollectionMutation> {
+    const statement = `mutation DeleteProbateRecordCollection($input: DeleteProbateRecordCollectionInput!, $condition: ModelProbateRecordCollectionConditionInput) {
+        deleteProbateRecordCollection(input: $input, condition: $condition) {
+          __typename
+          id
+          title
+          description
+          lowerTitle
+          lowerDescription
+          probateRecordIds
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <DeleteProbateRecordCollectionMutation>(
+      response.data.deleteProbateRecordCollection
+    );
+  }
   async GetProbateRecord(id: string): Promise<GetProbateRecordQuery> {
     const statement = `query GetProbateRecord($id: ID!) {
         getProbateRecord(id: $id) {
@@ -2615,6 +2923,7 @@ export class APIService {
               width
               height
             }
+            lineIndex
           }
           totalValue
           reviewCount
@@ -2622,6 +2931,7 @@ export class APIService {
           lowerDescription
           lockedDate
           lockedBy
+          markedForDeletion
           createdAt
           updatedAt
         }
@@ -2699,6 +3009,7 @@ export class APIService {
                 width
                 height
               }
+              lineIndex
             }
             totalValue
             reviewCount
@@ -2706,6 +3017,7 @@ export class APIService {
             lowerDescription
             lockedDate
             lockedBy
+            markedForDeletion
             createdAt
             updatedAt
           }
@@ -2922,6 +3234,7 @@ export class APIService {
               width
               height
             }
+            lineIndex
           }
           createdAt
           updatedAt
@@ -2972,6 +3285,7 @@ export class APIService {
                 width
                 height
               }
+              lineIndex
             }
             createdAt
             updatedAt
@@ -3114,6 +3428,75 @@ export class APIService {
     )) as any;
     return <ListIssuesQuery>response.data.listIssues;
   }
+  async GetProbateRecordCollection(
+    id: string
+  ): Promise<GetProbateRecordCollectionQuery> {
+    const statement = `query GetProbateRecordCollection($id: ID!) {
+        getProbateRecordCollection(id: $id) {
+          __typename
+          id
+          title
+          description
+          lowerTitle
+          lowerDescription
+          probateRecordIds
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      id
+    };
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <GetProbateRecordCollectionQuery>(
+      response.data.getProbateRecordCollection
+    );
+  }
+  async ListProbateRecordCollections(
+    filter?: ModelProbateRecordCollectionFilterInput,
+    limit?: number,
+    nextToken?: string
+  ): Promise<ListProbateRecordCollectionsQuery> {
+    const statement = `query ListProbateRecordCollections($filter: ModelProbateRecordCollectionFilterInput, $limit: Int, $nextToken: String) {
+        listProbateRecordCollections(
+          filter: $filter
+          limit: $limit
+          nextToken: $nextToken
+        ) {
+          __typename
+          items {
+            __typename
+            id
+            title
+            description
+            lowerTitle
+            lowerDescription
+            probateRecordIds
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    if (limit) {
+      gqlAPIServiceArguments.limit = limit;
+    }
+    if (nextToken) {
+      gqlAPIServiceArguments.nextToken = nextToken;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <ListProbateRecordCollectionsQuery>(
+      response.data.listProbateRecordCollections
+    );
+  }
   OnCreateProbateRecordListener(
     filter?: ModelSubscriptionProbateRecordFilterInput
   ): Observable<
@@ -3169,6 +3552,7 @@ export class APIService {
               width
               height
             }
+            lineIndex
           }
           totalValue
           reviewCount
@@ -3176,6 +3560,7 @@ export class APIService {
           lowerDescription
           lockedDate
           lockedBy
+          markedForDeletion
           createdAt
           updatedAt
         }
@@ -3248,6 +3633,7 @@ export class APIService {
               width
               height
             }
+            lineIndex
           }
           totalValue
           reviewCount
@@ -3255,6 +3641,7 @@ export class APIService {
           lowerDescription
           lockedDate
           lockedBy
+          markedForDeletion
           createdAt
           updatedAt
         }
@@ -3327,6 +3714,7 @@ export class APIService {
               width
               height
             }
+            lineIndex
           }
           totalValue
           reviewCount
@@ -3334,6 +3722,7 @@ export class APIService {
           lowerDescription
           lockedDate
           lockedBy
+          markedForDeletion
           createdAt
           updatedAt
         }
@@ -3515,6 +3904,7 @@ export class APIService {
               width
               height
             }
+            lineIndex
           }
           createdAt
           updatedAt
@@ -3566,6 +3956,7 @@ export class APIService {
               width
               height
             }
+            lineIndex
           }
           createdAt
           updatedAt
@@ -3617,6 +4008,7 @@ export class APIService {
               width
               height
             }
+            lineIndex
           }
           createdAt
           updatedAt
@@ -3813,6 +4205,105 @@ export class APIService {
       graphqlOperation(statement, gqlAPIServiceArguments)
     ) as Observable<
       SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteIssue">>
+    >;
+  }
+
+  OnCreateProbateRecordCollectionListener(
+    filter?: ModelSubscriptionProbateRecordCollectionFilterInput
+  ): Observable<
+    SubscriptionResponse<
+      Pick<__SubscriptionContainer, "onCreateProbateRecordCollection">
+    >
+  > {
+    const statement = `subscription OnCreateProbateRecordCollection($filter: ModelSubscriptionProbateRecordCollectionFilterInput) {
+        onCreateProbateRecordCollection(filter: $filter) {
+          __typename
+          id
+          title
+          description
+          lowerTitle
+          lowerDescription
+          probateRecordIds
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<
+        Pick<__SubscriptionContainer, "onCreateProbateRecordCollection">
+      >
+    >;
+  }
+
+  OnUpdateProbateRecordCollectionListener(
+    filter?: ModelSubscriptionProbateRecordCollectionFilterInput
+  ): Observable<
+    SubscriptionResponse<
+      Pick<__SubscriptionContainer, "onUpdateProbateRecordCollection">
+    >
+  > {
+    const statement = `subscription OnUpdateProbateRecordCollection($filter: ModelSubscriptionProbateRecordCollectionFilterInput) {
+        onUpdateProbateRecordCollection(filter: $filter) {
+          __typename
+          id
+          title
+          description
+          lowerTitle
+          lowerDescription
+          probateRecordIds
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<
+        Pick<__SubscriptionContainer, "onUpdateProbateRecordCollection">
+      >
+    >;
+  }
+
+  OnDeleteProbateRecordCollectionListener(
+    filter?: ModelSubscriptionProbateRecordCollectionFilterInput
+  ): Observable<
+    SubscriptionResponse<
+      Pick<__SubscriptionContainer, "onDeleteProbateRecordCollection">
+    >
+  > {
+    const statement = `subscription OnDeleteProbateRecordCollection($filter: ModelSubscriptionProbateRecordCollectionFilterInput) {
+        onDeleteProbateRecordCollection(filter: $filter) {
+          __typename
+          id
+          title
+          description
+          lowerTitle
+          lowerDescription
+          probateRecordIds
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<
+        Pick<__SubscriptionContainer, "onDeleteProbateRecordCollection">
+      >
     >;
   }
 }

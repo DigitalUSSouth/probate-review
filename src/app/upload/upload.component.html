@@ -1,10 +1,15 @@
+<div *ngIf="updating$ | async">Updating... Do not navigate waway</div>
 <div id="drop-area" (drop)="dropHandler($event);" (dragover)="dragOverHandler($event);">
-    <form class="my-form">
-        <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
-        <input type="file" #fileInput id="fileElem" multiple accept="image/*">
-        <label class="button" for="fileElem">Select file(s)</label>
-        <ul id="filesToBeUploaded"></ul>
-        <button id="uploadButton" type="button" mat-raised-button  (click)="uploadFiles()">Upload</button>
-    </form>
-    
+  <form class="my-form">
+    <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
+    <input type="file" #fileInput id="fileElem" multiple accept="image/*">
+    <label class="button" for="fileElem">Select file(s)</label>
+    <ul id="filesToBeUploaded"></ul>
+    <div id="button-row">
+      <button title="Upload the selected files" id="uploadButton" type="button" mat-raised-button (click)="uploadFiles()">Upload</button>
+      <button title="Select the collections to which these files should be uploaded" type="button" mat-raised-button
+        (click)="selectCollections()">Select Collections</button>
+    </div>
+  </form>
+  <app-selectable-collection-list-view [collections]="selectedProbateRecordCollections"></app-selectable-collection-list-view>
 </div>

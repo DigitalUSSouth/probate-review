@@ -72,6 +72,14 @@
           >
             Save
           </button>
+          <button
+            mat-raised-button
+            class="form-button"
+            color="primary"
+            (click)="backToList()"
+          >
+            Back to List
+          </button>
           <mat-checkbox [(ngModel)]="isReviewed" (ngModelChange)="onReviewedChange($event)" color="primary"
             >Reviewed</mat-checkbox
           >

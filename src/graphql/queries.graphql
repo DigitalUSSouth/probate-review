@@ -43,6 +43,7 @@ query GetProbateRecord($id: ID!) {
         width
         height
       }
+      lineIndex
     }
     totalValue
     reviewCount
@@ -50,6 +51,7 @@ query GetProbateRecord($id: ID!) {
     lowerDescription
     lockedDate
     lockedBy
+    markedForDeletion
     createdAt
     updatedAt
   }
@@ -111,6 +113,7 @@ query ListProbateRecords(
           width
           height
         }
+        lineIndex
       }
       totalValue
       reviewCount
@@ -118,6 +121,7 @@ query ListProbateRecords(
       lowerDescription
       lockedDate
       lockedBy
+      markedForDeletion
       createdAt
       updatedAt
     }
@@ -250,6 +254,7 @@ query GetDocument($id: ID!) {
         width
         height
       }
+      lineIndex
     }
     createdAt
     updatedAt
@@ -285,6 +290,7 @@ query ListDocuments(
           width
           height
         }
+        lineIndex
       }
       createdAt
       updatedAt
@@ -350,6 +356,41 @@ query ListIssues(
       reporter
       status
       type
+      createdAt
+      updatedAt
+    }
+    nextToken
+  }
+}
+query GetProbateRecordCollection($id: ID!) {
+  getProbateRecordCollection(id: $id) {
+    id
+    title
+    description
+    lowerTitle
+    lowerDescription
+    probateRecordIds
+    createdAt
+    updatedAt
+  }
+}
+query ListProbateRecordCollections(
+  $filter: ModelProbateRecordCollectionFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listProbateRecordCollections(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      title
+      description
+      lowerTitle
+      lowerDescription
+      probateRecordIds
       createdAt
       updatedAt
     }

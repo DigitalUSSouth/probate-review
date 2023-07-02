@@ -1,10 +1,26 @@
-import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+  ViewEncapsulation,
+  AfterViewInit,
+} from '@angular/core';
 import { Storage } from 'aws-amplify';
 import { v4 as uuidv4 } from 'uuid';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
-import { interval } from 'rxjs';
-import { ProbateRecord, APIService, GetProbateRecordQuery } from '../API.service';
-
+import { Observable, interval } from 'rxjs';
+import {
+  ProbateRecord,
+  APIService,
+  ProbateRecordCollection,
+} from '../API.service';
+import { MatDialog } from '@angular/material/dialog';
+import { SelectProbateRecordCollectionDialogComponent } from '../select-probate-record-collection-dialog/select-probate-record-collection-dialog.component';
+import { AppState } from '../app.state';
+import { Store, select } from '@ngrx/store';
+import { associateProbateRecord } from 'src/state/probate-record-collection.actions';
+import { selectProbateRecordCollectionsError, selectProbateRecordCollectionsUpdating } from 'src/state/probate-record-collection.selectors';
 
 const POLL_INTERVAL = 20000;
 
@@ -12,57 +28,156 @@ const POLL_INTERVAL = 20000;
   selector: 'app-upload',
   encapsulation: ViewEncapsulation.None, // https://stackoverflow.com/questions/43631587/angular-4-css-on-document-createelement
   templateUrl: './upload.component.html',
-  styleUrls: ['./upload.component.sass']
+  styleUrls: ['./upload.component.sass'],
 })
 export class UploadComponent implements OnInit {
-  @ViewChild("fileInput") fileInputRef?: ElementRef<HTMLInputElement>;
+  @ViewChild('fileInput') fileInputRef?: ElementRef<HTMLInputElement>;
   fileMap = new Map<string, File>();
   filesInProcessing = Array<string>();
   checkFileProcessedInterval = interval(POLL_INTERVAL);
-  constructor(public authenticator: AuthenticatorService, private probateRecordService: APIService) {
+  selectedProbateRecordCollections: ProbateRecordCollection[] = [];
+  selectedProbateRecordCollectionIds: string[] = [];
+  collectionsToBeUpdated = new Map<string, string[]>();
+  updating$: Observable<boolean>;
+  updating = false;
+  error$: Observable<any>;
+
+  constructor(
+    public authenticator: AuthenticatorService,
+    private probateRecordService: APIService,
+    public dialog: MatDialog,
+    private store: Store<AppState>
+  ) {
+    this.updating$ = this.store.pipe(
+      select(selectProbateRecordCollectionsUpdating)
+    );
+    this.updating$.subscribe((updating) => {
+      this.updating = updating;
+      if (!this.updating) {
+        if(this.collectionsToBeUpdated.size > 0) {
+          const recordId = this.collectionsToBeUpdated.keys()[0];
+          this.update(recordId);
+        }
+      }
+    });
+    
+    this.error$ = this.store.pipe(select(selectProbateRecordCollectionsError));
+    this.error$.subscribe((error) => {
+      console.log(error);
+    });
+
     let timer = this.checkFileProcessedInterval.subscribe(async () => {
       if (this.filesInProcessing.length > 0) {
         for (let i = 0; i < this.filesInProcessing.length; i++) {
           const docid = this.filesInProcessing[i];
           try {
-            let response = await this.probateRecordService.GetProbateRecord(docid);
-            if (response && typeof response === 'object') {
+            let record = (await this.probateRecordService.GetProbateRecord(
+              docid
+            )) as ProbateRecord;
+            if (record && typeof record === 'object') {
+              this.collectionsToBeUpdated.set(docid, [
+                ...this.selectedProbateRecordCollectionIds,
+              ]);
+              this.update(docid);
+
               // check if lines have been added
-              console.log(response);
+              console.log(record);
 
               console.log('record has been processed');
               // remove looking for file
-              this.filesInProcessing = this.filesInProcessing.filter(id => id != docid);
-              let anchorElement = document.getElementById(`a-${docid}`) as HTMLAnchorElement;
+              this.filesInProcessing = this.filesInProcessing.filter(
+                (id) => id != docid
+              );
+              let anchorElement = document.getElementById(
+                `a-${docid}`
+              ) as HTMLAnchorElement;
               if (anchorElement) {
                 anchorElement.className = 'processed';
                 anchorElement.innerHTML = 'review';
                 anchorElement.href = `review/${docid}`;
                 anchorElement.target = '_blank';
-
               }
             }
-            // console.log(response);
-          }
-          catch (error) {
+          } catch (error) {
             console.log(error);
-            this.filesInProcessing = this.filesInProcessing.filter(id => id != docid);
+            this.filesInProcessing = this.filesInProcessing.filter(
+              (id) => id != docid
+            );
             timer.unsubscribe();
             break;
           }
         }
       }
-    })
+      if (!this.updating) {
+        if(this.collectionsToBeUpdated.size > 0) {
+          const recordId = this.collectionsToBeUpdated.keys()[0];
+          this.update(recordId);
+        }
+      }
+    });
   }
 
-  ngOnInit(): void {
+  update(recordId: string) {
+    console.log('update called for ' + recordId);
+    if(!recordId) {
+      return;
+    }
 
+    if (!this.updating) {
+      const collectionIds = this.collectionsToBeUpdated.get(recordId);
+      if (collectionIds) {
+        const collectionId = collectionIds.pop();
+        if(collectionIds.length === 0) {
+          this.collectionsToBeUpdated.delete(recordId);
+        }
+        const collection = this.selectedProbateRecordCollections.find(
+          (c) => c.id === collectionId
+        );
+        const updatedCollection = {...collection};
+        
+        if(updatedCollection.probateRecordIds) {
+          updatedCollection.probateRecordIds = [...updatedCollection.probateRecordIds, recordId];
+        }
+        else {
+          updatedCollection.probateRecordIds = [recordId];
+        }
+        const index = this.selectedProbateRecordCollections.findIndex(c => c.id === updatedCollection.id);
+        this.selectedProbateRecordCollections[index] = updatedCollection as ProbateRecordCollection;
+
+        if (collection) {
+          this.store.dispatch(associateProbateRecord({ collection, recordId }));
+        }
+      }
+    }
   }
+
+  selectCollections(): void {
+    const dialogRef = this.dialog.open(
+      SelectProbateRecordCollectionDialogComponent,
+      {
+        height: '90%',
+        panelClass: 'custom-dialog',
+      }
+    );
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.selectedProbateRecordCollections = result;
+        this.selectedProbateRecordCollectionIds =
+          this.selectedProbateRecordCollections.map((c) => c.id);
+
+        console.log('selected the following collections');
+        console.log(this.selectedProbateRecordCollections);
+      }
+    });
+  }
+
+  ngOnInit(): void {}
 
   ngAfterViewInit() {
     if (this.fileInputRef) {
       const fileInputElement = this.fileInputRef.nativeElement;
-      fileInputElement?.addEventListener('change', event => {
+      fileInputElement?.addEventListener('change', (event) => {
         const target = event.target as HTMLInputElement;
         const files = target!.files;
         if (files) {
@@ -72,8 +187,7 @@ export class UploadComponent implements OnInit {
           }
         }
       });
-    }
-    else {
+    } else {
       console.log('no file input elem found');
     }
   }
@@ -103,7 +217,7 @@ export class UploadComponent implements OnInit {
 
   /**
    * on file drop handler
-  */
+   */
   dropHandler(event: Event) {
     event.preventDefault();
     const dragEvent = event as DragEvent;
@@ -129,18 +243,20 @@ export class UploadComponent implements OnInit {
     // don't try to process non-images
     var imageType = /image.*/;
     if (dragEvent.dataTransfer?.items) {
-
       const file = dragEvent.dataTransfer.items[0];
-      dragEvent.dataTransfer.dropEffect = file.type.match(imageType) ? "copy" : "none";
+      dragEvent.dataTransfer.dropEffect = file.type.match(imageType)
+        ? 'copy'
+        : 'none';
     }
   }
 
   async uploadFiles() {
     for (const docid of this.fileMap.keys()) {
-      let anchorElement = document.getElementById(`a-${docid}`) as HTMLAnchorElement;
+      let anchorElement = document.getElementById(
+        `a-${docid}`
+      ) as HTMLAnchorElement;
       if (anchorElement) {
         anchorElement.innerText = 'uploading';
-
       }
       let file = this.fileMap.get(docid);
       console.log(`uploading file ${file!.name}`);
@@ -148,17 +264,22 @@ export class UploadComponent implements OnInit {
       // let ext = re.exec(file!.name);
       let metadata = {
         docid,
-        uploader: this.authenticator.user.username!
+        uploader: this.authenticator.user.username!,
       };
       this.filesInProcessing.push(docid);
       await Storage.put(file!.name, file, {
-        metadata, progressCallback: (progress) => {
+        metadata,
+        progressCallback: (progress) => {
           // console.log(`Uploaded: ${progress.loaded}/${progress.total} for ${docid}`);
-          let progressElement = document.getElementById(`progress-${docid}`) as HTMLInputElement;
+          let progressElement = document.getElementById(
+            `progress-${docid}`
+          ) as HTMLInputElement;
           if (progressElement) {
-            progressElement.value = `${progress.loaded / progress.total * 100}`;
+            progressElement.value = `${
+              (progress.loaded / progress.total) * 100
+            }`;
           }
-        }
+        },
       });
       anchorElement.innerText = 'processing';
     }
@@ -170,5 +291,4 @@ export class UploadComponent implements OnInit {
       this.addFile(file!);
     }
   }
-
 }

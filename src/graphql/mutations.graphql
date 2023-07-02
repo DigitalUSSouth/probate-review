@@ -46,6 +46,7 @@ mutation CreateProbateRecord(
         width
         height
       }
+      lineIndex
     }
     totalValue
     reviewCount
@@ -53,6 +54,7 @@ mutation CreateProbateRecord(
     lowerDescription
     lockedDate
     lockedBy
+    markedForDeletion
     createdAt
     updatedAt
   }
@@ -104,6 +106,7 @@ mutation UpdateProbateRecord(
         width
         height
       }
+      lineIndex
     }
     totalValue
     reviewCount
@@ -111,6 +114,7 @@ mutation UpdateProbateRecord(
     lowerDescription
     lockedDate
     lockedBy
+    markedForDeletion
     createdAt
     updatedAt
   }
@@ -162,6 +166,7 @@ mutation DeleteProbateRecord(
         width
         height
       }
+      lineIndex
     }
     totalValue
     reviewCount
@@ -169,6 +174,7 @@ mutation DeleteProbateRecord(
     lowerDescription
     lockedDate
     lockedBy
+    markedForDeletion
     createdAt
     updatedAt
   }
@@ -285,6 +291,7 @@ mutation CreateDocument(
         width
         height
       }
+      lineIndex
     }
     createdAt
     updatedAt
@@ -318,6 +325,7 @@ mutation UpdateDocument(
         width
         height
       }
+      lineIndex
     }
     createdAt
     updatedAt
@@ -351,6 +359,7 @@ mutation DeleteDocument(
         width
         height
       }
+      lineIndex
     }
     createdAt
     updatedAt
@@ -439,6 +448,51 @@ mutation DeleteIssue(
     reporter
     status
     type
+    createdAt
+    updatedAt
+  }
+}
+mutation CreateProbateRecordCollection(
+  $input: CreateProbateRecordCollectionInput!
+  $condition: ModelProbateRecordCollectionConditionInput
+) {
+  createProbateRecordCollection(input: $input, condition: $condition) {
+    id
+    title
+    description
+    lowerTitle
+    lowerDescription
+    probateRecordIds
+    createdAt
+    updatedAt
+  }
+}
+mutation UpdateProbateRecordCollection(
+  $input: UpdateProbateRecordCollectionInput!
+  $condition: ModelProbateRecordCollectionConditionInput
+) {
+  updateProbateRecordCollection(input: $input, condition: $condition) {
+    id
+    title
+    description
+    lowerTitle
+    lowerDescription
+    probateRecordIds
+    createdAt
+    updatedAt
+  }
+}
+mutation DeleteProbateRecordCollection(
+  $input: DeleteProbateRecordCollectionInput!
+  $condition: ModelProbateRecordCollectionConditionInput
+) {
+  deleteProbateRecordCollection(input: $input, condition: $condition) {
+    id
+    title
+    description
+    lowerTitle
+    lowerDescription
+    probateRecordIds
     createdAt
     updatedAt
   }
