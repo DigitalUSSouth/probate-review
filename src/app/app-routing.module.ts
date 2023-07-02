@@ -15,6 +15,7 @@ import { CreateProbateRecordCollectionComponent } from './create-probate-record-
 import { LoadRecordListViewComponent } from './load-record-list-view/load-record-list-view.component';
 import { UnreviewedComponent } from './unreviewed/unreviewed.component';
 import { EditProbateRecordDetailComponent } from './edit-probate-record-detail/edit-probate-record-detail.component';
+import { LoadCollectionListViewComponent } from './load-collection-list-view/load-collection-list-view.component';
 const routes: Routes = [
   { path: 'records', component: ReviewedListComponent },
   { path: 'record/:id', component: RecordDetailComponent },

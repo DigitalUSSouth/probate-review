@@ -28,6 +28,9 @@ import {
   updateProbateRecordCollectionSuccess,
   updateProbateRecordCollectionFailure,
   associateProbateRecordFailure,
+  deleteProbateRecordCollections,
+  deleteProbateRecordsCollectionsSuccess,
+  deleteProbateRecordsCollectionsFailure,
 } from './probate-record-collection.actions';
 import { ProbateRecordService } from 'src/app/probate-record.service';
 import {
@@ -66,7 +69,6 @@ export class ProbateRecordCollectionEffects {
     )
   );
 
- 
   loadProbateRecordCollection$ = createEffect(() =>
     this.actions$.pipe(
       ofType(loadProbateRecordCollection),
@@ -142,7 +144,33 @@ export class ProbateRecordCollectionEffects {
       )
     )
   );
- 
+
+  deleteProbateRecordCollections$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(deleteProbateRecordCollections),
+      mergeMap(({ids}) => 
+      from(
+        this.deleteProbateRecordCollections(ids)
+      ).pipe(
+          map((collections) =>
+            deleteProbateRecordsCollectionsSuccess({collections: collections as ProbateRecordCollection[]})
+            ), 
+            catchError((error) => 
+              of(deleteProbateRecordsCollectionsFailure({ error }))
+            )
+          )
+      )
+    )
+  );
+
+  async deleteProbateRecordCollections(ids: string[]): Promise<ProbateRecordCollection[]> {
+    const collections: ProbateRecordCollection[] = [];
+    for(const id of ids) {
+      const collection = await this.apiService.DeleteProbateRecordCollection({id});
+      collections.push(collection as ProbateRecordCollection);
+    }
+    return collections;
+  }
 
   associateProbateRecord$ = createEffect(() =>
     this.actions$.pipe(
@@ -164,9 +192,7 @@ export class ProbateRecordCollectionEffects {
     this.actions$.pipe(
       ofType(disassociateProbateRecord),
       mergeMap((action) =>
-        from(
-          this.disassociateRecord(action.collection, action.recordId)
-        ).pipe(
+        from(this.disassociateRecord(action.collection, action.recordId)).pipe(
           map((response) =>
             disassociateProbateRecordSuccess({ collection: response })
           ),
@@ -175,7 +201,6 @@ export class ProbateRecordCollectionEffects {
       )
     )
   );
-
 
   async disassociateRecord(
     collection: ProbateRecordCollection,
@@ -200,29 +225,33 @@ export class ProbateRecordCollectionEffects {
     recordId: string
   ): Promise<ProbateRecordCollection> {
     console.log('associating ' + recordId + ' with ', collection);
-    let updatedCollectionInput: UpdateProbateRecordCollectionInput = { ...collection };
-    delete updatedCollectionInput["__typename"];
-    delete updatedCollectionInput["createdAt"];
-    delete updatedCollectionInput["updatedAt"];
+    let updatedCollectionInput: UpdateProbateRecordCollectionInput = {
+      ...collection,
+    };
+    delete updatedCollectionInput['__typename'];
+    delete updatedCollectionInput['createdAt'];
+    delete updatedCollectionInput['updatedAt'];
     if (updatedCollectionInput.probateRecordIds) {
       if (!updatedCollectionInput.probateRecordIds.includes(recordId)) {
-        updatedCollectionInput.probateRecordIds = [...updatedCollectionInput.probateRecordIds, recordId];
-        
+        updatedCollectionInput.probateRecordIds = [
+          ...updatedCollectionInput.probateRecordIds,
+          recordId,
+        ];
       }
     } else {
       updatedCollectionInput.probateRecordIds = [recordId];
     }
     console.log('updated collection input before svc call');
     console.log(updatedCollectionInput);
-    const updatedCollection = await this.apiService.UpdateProbateRecordCollection(
-      updatedCollectionInput
-    );
+    const updatedCollection =
+      await this.apiService.UpdateProbateRecordCollection(
+        updatedCollectionInput
+      );
     console.log('updated collection after svc call');
     console.log(updateProbateRecordCollection);
     return updatedCollection;
   }
 
-  
   constructor(
     private actions$: Actions,
     private probateRecordService: ProbateRecordService,

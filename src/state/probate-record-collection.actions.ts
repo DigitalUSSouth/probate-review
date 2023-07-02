@@ -46,9 +46,34 @@ export const createProbateRecordCollection = createAction(
   props<{ title: string; description: string }>()
 );
 
+export const createProbateRecordCollectionSuccess = createAction(
+  '[Probate Record Collection] Create Probate Record Collection Success',
+  props<{ collection: ProbateRecordCollection }>()
+);
+
+export const createProbateRecordCollectionFailure = createAction(
+  '[Probate Record Collection] Create Probate Record Collection Failure',
+  props<{ error: any }>()
+);
+
 export const deleteProbateRecordCollection = createAction(
-  '[Probate Record Collection] Delete Probate Record',
+  '[Probate Record Collection] Delete Probate Record Collection',
   props<{ id: string }>()
+);
+
+export const deleteProbateRecordCollections = createAction(
+  '[Probate Record Collection] Delete Probate Record Collections',
+  props<{ ids: string[] }>()
+);
+
+export const deleteProbateRecordsCollectionsSuccess = createAction(
+  '[Probate Record Collection] Delete Probate Record Collections Success',
+  props<{ collections: ProbateRecordCollection[] }>()
+);
+
+export const deleteProbateRecordsCollectionsFailure = createAction(
+  '[Probate Record Collection] Delete Probate Record Collections Failure',
+  props<{ error: any }>()
 );
 
 export const updateProbateRecordCollectionSuccess = createAction(
@@ -89,15 +114,7 @@ export const loadProbateRecordCollectionFailure = createAction(
   props<{ error: any }>()
 );
 
-export const createProbateRecordCollectionSuccess = createAction(
-  '[Probate Record Collection] Create Probate Record Collection Success',
-  props<{ collection: ProbateRecordCollection }>()
-);
 
-export const createProbateRecordCollectionFailure = createAction(
-  '[Probate Record Collection] Create Probate Record Collection Failure',
-  props<{ error: any }>()
-);
 
 
 export const associateProbateRecord = createAction(

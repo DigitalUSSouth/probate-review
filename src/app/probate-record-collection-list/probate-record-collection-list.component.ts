@@ -1,11 +1,12 @@
 import { Component, OnInit, QueryList, ViewChild, ViewChildren, EventEmitter, Output, Input } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '../app.state';
-import { loadProbateRecordCollections } from '../../state/probate-record-collection.actions';
+import { deleteProbateRecordCollections, loadProbateRecordCollections } from '../../state/probate-record-collection.actions';
 import {
   selectProbateRecordCollections,
   selectProbateRecordCollectionsLoading,
   selectProbateRecordCollectionsError,
+  selectProbateRecordCollectionsUpdating,
 } from '../../state/probate-record-collection.selectors';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -25,6 +26,8 @@ import { Router } from '@angular/router';
 export class ProbateRecordCollectionListComponent implements OnInit {
   probateRecordCollections$?: Observable<ProbateRecordCollection[]>;
   loading$?: Observable<boolean>;
+  updating$: Observable<boolean>;
+  updating = false;
   error$?: Observable<string | null>;
   dataSource: MatTableDataSource<ProbateRecordCollection> = new MatTableDataSource<ProbateRecordCollection>();
   selection: SelectionModel<ProbateRecordCollection> = new SelectionModel<ProbateRecordCollection>(true, []);
@@ -38,6 +41,12 @@ export class ProbateRecordCollectionListComponent implements OnInit {
   displayedColumns = ['title', 'description', 'actions']; // Customize the displayed columns as needed
 
   constructor(private store: Store<AppState>, private router: Router) {
+    this.updating$ = this.store.pipe(
+      select(selectProbateRecordCollectionsUpdating)
+    );
+    this.updating$.subscribe((updating) => {
+      this.updating = updating;
+    });
     this.probateRecordCollections$ = this.store.pipe(
       select(selectProbateRecordCollections),
       tap((collections) => {
@@ -102,11 +111,6 @@ export class ProbateRecordCollectionListComponent implements OnInit {
     return numSelected === numRows;
   }
 
-  // selectCollections(): void {
-  //   const selectedCollections = this.selection.selected;
-  //   this.selectedCollections.emit(selectedCollections);
-  // }
-
   selectionChanged(): void {
     const selectedCollections = this.selection.selected;
     this.selectedCollections.emit(selectedCollections);
@@ -116,4 +120,9 @@ export class ProbateRecordCollectionListComponent implements OnInit {
     this.router.navigateByUrl('probate-record-collections/create')
   }
 
+  deleteSelected(): void {
+    const ids = this.selection.selected.map(c => c.id);
+    this.selection.clear();
+    this.store.dispatch(deleteProbateRecordCollections({ids}));
+  }
 }

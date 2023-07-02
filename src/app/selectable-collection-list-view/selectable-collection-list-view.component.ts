@@ -6,6 +6,9 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ProbateRecordCollection } from '../API.service';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { AppState } from '../app.state';
+import { deleteProbateRecordCollections } from 'src/state/probate-record-collection.actions';
 
 @Component({
   selector: 'app-selectable-collection-list-view',
@@ -26,7 +29,7 @@ export class SelectableCollectionListViewComponent {
 
   displayedColumns = ['title', 'description']; // Customize the displayed columns as needed
 
-  constructor(private router: Router) {}
+  constructor(private store: Store<AppState>, private router: Router) {}
 
   ngOnInit() {
     if (this.showCheckBoxes) {
@@ -90,5 +93,11 @@ export class SelectableCollectionListViewComponent {
   
   createNewRecord(): void {
     this.router.navigateByUrl('probate-record-collections/create')
+  }
+
+  deleteSelected(): void {
+    const ids = this.selection.selected.map(c => c.id);
+    this.selection.clear();
+    this.store.dispatch(deleteProbateRecordCollections({ids}));
   }
 }

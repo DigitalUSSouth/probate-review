@@ -17,7 +17,11 @@ import {
   associateProbateRecord,
   associateProbateRecordSuccess,
   updateProbateRecordCollectionSuccess,
-  updateProbateRecordCollectionFailure
+  updateProbateRecordCollectionFailure,
+  deleteProbateRecordCollections,
+  deleteProbateRecordsCollectionsFailure,
+  deleteProbateRecordsCollectionsSuccess,
+  createProbateRecordCollectionFailure
 } from './probate-record-collection.actions'
 
 export interface ProbateRecordCollectionState {
@@ -109,6 +113,26 @@ export const probateRecordCollectionReducer = createReducer(initialProbateRecord
     loading: false,
     error: null
   })),
+  on(createProbateRecordCollectionFailure, (state, { error }) => ({
+    ...state, 
+    updating: false,
+    error,
+ })),
+  on(deleteProbateRecordCollections, (state) => ({
+    ...state, 
+    updating: true
+ })),
+ on(deleteProbateRecordsCollectionsSuccess, (state, { collections }) => {
+   const deletedIds = collections.map(c => c.id);
+   const updatedCollections = state.probateRecordCollections.filter(c => !deletedIds.includes(c.id));
+   const updatedCollection = (state.collection && !deletedIds.includes(state.collection.id)) ? state.collection : null; 
+   return { ...state, updating: false, probateRecordCollections: updatedCollections, collection: updatedCollection };
+ }),
+ on(deleteProbateRecordsCollectionsFailure, (state, { error }) => ({
+   ...state, 
+   updating: false,
+   error,
+})),
   on(associateProbateRecord, (state) => ({ ...state, updating: true })),
   on(associateProbateRecordSuccess, (state, { collection }) => {
     const updatedRecordCollections = state.probateRecordCollections.map((recordCollection) => {
