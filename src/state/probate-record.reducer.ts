@@ -15,6 +15,8 @@ import {
   loadSelectedProbateRecordsByIdFailure,
   loadSelectedProbateRecordsByIdSuccess,
   loadSelectedRecordsById,
+  updateProbateRecordSuccess,
+  updateProbateRecordFailure,
 } from './probate-record.actions';
 import {
   ModelProbateRecordFilterInput,
@@ -59,12 +61,22 @@ export const probateRecordReducer = createReducer(
     loading: false,
     error: null,
   })),
-  on(loadProbateRecordsFailure, (state, { error }) => ({
+  on(loadProbateRecordsFailure, (state, { error }) => {
+    console.log('error updating');
+    console.log(error);
+    return {
     ...state,
     loading: false,
     error,
+    };
+  }),
+  on(updateProbateRecord, (state) => ({
+    ...state,
+    updating: true,
   })),
-  on(updateProbateRecord, (state, { probateRecord }) => {
+  on(updateProbateRecordSuccess, (state, { probateRecord }) => {
+    console.log('probate record updated');
+    console.log(probateRecord);
     const updatedRecords = state.records.map((record) => {
       if (record.id === probateRecord.id) {
         return { ...record, ...probateRecord };
@@ -72,8 +84,24 @@ export const probateRecordReducer = createReducer(
       return record;
     });
 
-    return { ...state, records: updatedRecords };
+
+    const updatedSelectedRecords = state.selectedRecords.map((record) => {
+      if (record.id === probateRecord.id) {
+        return { ...record, ...probateRecord };
+      }
+      return record;
+    });
+
+    return { ...state, records: updatedRecords, selectedRecord: probateRecord, selectedRecords: updatedSelectedRecords };
   }),
+  on(updateProbateRecordFailure, (state, { error }) => {
+    console.log('error updating');
+    console.log(error);
+    return {
+    ...state, 
+    updating: false,
+    error,
+ };}),
   on(clearProbateRecords, (state) => ({
     ...state,
     records: [],
@@ -114,7 +142,7 @@ export const probateRecordReducer = createReducer(
   })),
   on(loadProbateRecordByIdSuccess, (state, { probateRecord }) => {
     const records = [...state.records];
-    if(!state.records.map(r => r.id).includes(probateRecord.id)) {
+    if (!state.records.map((r) => r.id).includes(probateRecord.id)) {
       records.push(probateRecord);
     }
     return {
@@ -136,20 +164,21 @@ export const probateRecordReducer = createReducer(
   })),
   on(loadSelectedProbateRecordsByIdSuccess, (state, { probateRecords }) => {
     const records = [...state.records];
-    for(const record of probateRecords) {
-      if(!records.some(r => r.id === record.id)) {
+    for (const record of probateRecords) {
+      if (!records.some((r) => r.id === record.id)) {
         records.push(record);
       }
     }
     return {
-    ...state,
-    records,
-    selectedRecords: probateRecords,
-    loading: false,
-  };}),
+      ...state,
+      records,
+      selectedRecords: probateRecords,
+      loading: false,
+    };
+  }),
   on(loadSelectedProbateRecordsByIdFailure, (state, { error }) => ({
     ...state,
     loading: false,
     error,
-  })),
+  }))
 );

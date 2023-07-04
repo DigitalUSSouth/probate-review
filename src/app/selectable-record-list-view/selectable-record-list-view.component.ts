@@ -19,8 +19,6 @@ import { Store } from '@ngrx/store';
 import { AppState } from '../app.state';
 import { updateProbateRecord } from 'src/state/probate-record.actions';
 
-const UNREVIEWED_PAGE_SIZE = 'unreviewedPageSize';
-
 @Component({
   selector: 'app-selectable-record-list-view',
   templateUrl: './selectable-record-list-view.component.html',
@@ -33,15 +31,14 @@ export class SelectableRecordListViewComponent {
   pageIndex = 0;
   // MatPaginator Output
   pageEvent?: PageEvent;
-  displayedColumns: string[] = [
-    'thumbnail',
-    'title',
-  ];
+  displayedColumns: string[] = ['thumbnail', 'title'];
   nextToken: string | undefined;
   @ViewChild(MatSort) sort?: MatSort;
   @ViewChild(MatPaginator) paginator?: MatPaginator;
   @Input() showCheckBoxes = false;
   @Input() showLocked = false;
+  @Input() showMove = false;
+  @Input() pageSizeCookie: string | undefined;
   @Input() records?: (ProbateRecord | null)[] | null;
   @Output() selectedProbateRecords = new EventEmitter<ProbateRecord[]>();
   dataSource?: MatTableDataSource<ProbateRecord>;
@@ -58,29 +55,37 @@ export class SelectableRecordListViewComponent {
     if (this.showCheckBoxes) {
       this.displayedColumns = ['checked', ...this.displayedColumns];
     }
-    
-    if(this.showLocked) {
-      this.displayedColumns = this.displayedColumns.concat([ 'lockedBy',
-      'lockedDate',
-      'lockButton']);
+
+    if (this.showLocked) {
+      this.displayedColumns = this.displayedColumns.concat([
+        'lockedBy',
+        'lockedDate',
+        'lockButton',
+      ]);
     }
 
-    const pageSizeText = this.cookieService.get(UNREVIEWED_PAGE_SIZE);
-    console.log('page size is ' + pageSizeText);
+    if (this.showMove) {
+      this.displayedColumns.push('move');
+    }
 
-    this.pageSize = pageSizeText
-      ? parseInt(this.cookieService.get(UNREVIEWED_PAGE_SIZE)) ?? 10
-      : 10;
+    if (this.pageSizeCookie) {
+      const pageSize = parseInt(this.cookieService.get(this.pageSizeCookie));
+      this.pageSize = isNaN(pageSize) ? 10 : pageSize;
+
+      console.log('page size is ' + this.pageSize);
+    }
 
     if (this.records) {
-      this.dataSource = new MatTableDataSource<ProbateRecord>(this.records.map(r => r as ProbateRecord));
+      this.dataSource = new MatTableDataSource<ProbateRecord>(
+        this.records.map((r) => r as ProbateRecord)
+      );
       this.dataSource.sort = this.sort!;
       this.dataSource.paginator = this.paginator!;
     }
   }
 
   ngAfterViewInit() {
-    // this.user = this.authenticator.user;  
+    // this.user = this.authenticator.user;
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -89,7 +94,9 @@ export class SelectableRecordListViewComponent {
     if (recordChange) {
       console.log('updating data source');
       console.log(this.records);
-      this.dataSource = new MatTableDataSource<ProbateRecord>(this.records?.map(r => r as ProbateRecord));
+      this.dataSource = new MatTableDataSource<ProbateRecord>(
+        this.records?.map((r) => r as ProbateRecord)
+      );
       this.dataSource.sort = this.sort!;
       this.dataSource.paginator = this.paginator!;
     }
@@ -102,25 +109,29 @@ export class SelectableRecordListViewComponent {
 
   changePageSize(pageSize: number) {
     // Dispatch the action to change the page size
-    console.log('setting page size to ', pageSize);
-    this.cookieService.set(UNREVIEWED_PAGE_SIZE, String(pageSize));
+    if (this.pageSizeCookie) {
+      console.log('setting page size to ', pageSize);
+      this.cookieService.set(this.pageSizeCookie, String(pageSize));
+    }
   }
 
   async toggleRecordLock(record: ProbateRecord) {
-    console.log('title: ' + record.title);
-    if (record.lockedBy === this.user!.username!) {
-      record.lockedBy = '';
-      record.lockedDate = null;
-    } else {
-      record.lockedBy = this.user!.username!;
-      record.lockedDate = new Date().toISOString();
+    const unlockable = (this.user && this.user!.username! && record.lockedBy === this.user.username);
+    const lockable = !record.lockedBy;
+    
+    if(!unlockable && !lockable) {
+      return;
     }
 
+    console.log('toggling lock for: ' + record.title);
+    
     try {
+      const lockedBy = (lockable) ? this.user!.username! : '';
+      const lockedDate = (lockable) ? new Date().toISOString() : null ;
       const updatedRecord: ProbateRecord = {
         ...record,
-        lockedBy: record.lockedBy,
-        lockedDate: record.lockedDate,
+        lockedBy,
+        lockedDate,
       };
       this.store.dispatch(
         updateProbateRecord({ probateRecord: updatedRecord })
@@ -136,6 +147,25 @@ export class SelectableRecordListViewComponent {
 
   getLockedText(record: ProbateRecord) {
     return record.lockedBy === this.user!.username ? 'Unlock' : 'Lock';
+  }
+
+  moveRecordToUnreviewed(record: ProbateRecord) {
+    console.log('moving record back to unreviewed');
+    try {
+      const updatedRecord: ProbateRecord = {
+        ...record,
+        reviewCount: 0,
+      };
+      this.store.dispatch(
+        updateProbateRecord({ probateRecord: updatedRecord })
+      );
+    } catch (e) {
+      if (e instanceof Error) {
+        alert((e as Error).message);
+      } else {
+        alert('An error has occurred during save');
+      }
+    }
   }
 
   toggleCheck(record: ProbateRecord, event: MatCheckboxChange) {
