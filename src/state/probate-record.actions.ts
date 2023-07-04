@@ -41,6 +41,22 @@ export const updateProbateRecord = createAction(
   props<{ probateRecord: ProbateRecord }>()
 );
 
+export const updateProbateRecordSuccess = createAction(
+  '[Probate Record] Update Probate Record Success',
+  props<{ probateRecord: ProbateRecord }>()
+);
+
+export const updateProbateRecordFailure = createAction(
+  '[Probate Record] Update Probate Record Failure',
+  props<{ error: any }>()
+);
+
+// Action creator function
+export const updateProbateRecordAction = (probateRecord: ProbateRecord) => {
+  return updateProbateRecord({ probateRecord });
+};
+
+
 export const createProbateRecord = createAction(
   '[Probate Record] Create Probate Record',
   props<{ probateRecord: ProbateRecord }>()
@@ -51,15 +67,6 @@ export const deleteProbateRecord = createAction(
   props<{ id: string }>()
 );
 
-export const updateProbateRecordSuccess = createAction(
-  '[Probate Record] Update Probate Record Success',
-  props<{ probateRecord: ProbateRecord }>()
-);
-
-// Action creator function
-export const updateProbateRecordAction = (probateRecord: ProbateRecord) => {
-  return updateProbateRecord({ probateRecord });
-};
 
 export const setPage = createAction(
   '[Probate Record] Set Current Page',

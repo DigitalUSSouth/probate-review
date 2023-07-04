@@ -12,6 +12,6 @@
       <button mat-raised-button color="primary" [disabled]="selectedProbateRecords.length === 0"  (click)="removeSelected()">Remove Selected Probate
         Records</button>
     </div>
-    <app-selectable-record-list-view [records]="probateRecords" [showCheckBoxes]="true" [showLocked]="true" (selectedProbateRecords)="onSelectedProbateRecords($event)"></app-selectable-record-list-view>
+    <app-selectable-record-list-view [records]="probateRecords" [showCheckBoxes]="true" [showLocked]="true" [showMove]="true" (selectedProbateRecords)="onSelectedProbateRecords($event)"></app-selectable-record-list-view>
   </div>
 </ng-container>

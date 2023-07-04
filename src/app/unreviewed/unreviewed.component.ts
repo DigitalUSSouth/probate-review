@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class UnreviewedComponent implements OnInit {
   filter = { reviewCount: { lt: 2 } };
-
+  pageSizeCookie = 'unreviewedPageSize';  
   constructor() {}
 
   ngOnInit(): void {}

@@ -20,6 +20,8 @@ export class ProbateRecordService {
     count: number,
     nextToken?: string | null | undefined
   ) {
+    console.log('filter passed to probate svc');
+    console.log(filter);
     let result = await this.recordService.ListProbateRecords(
       undefined,
       filter,
@@ -97,7 +99,7 @@ export class ProbateRecordService {
   }
 
   loadFilteredProbateRecords(
-    filter: ModelProbateRecordFilterInput,
+    filter: ModelProbateRecordFilterInput | undefined,
     limit: number,
     nextToken: string | null | undefined,
     sortDirection: ModelSortDirection

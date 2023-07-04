@@ -3,12 +3,13 @@ import { AmplifyUser } from '@aws-amplify/ui';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
 import { Store, select } from '@ngrx/store';
 import { Observable, Subscription, tap } from 'rxjs';
-import { loadFilteredProbateRecords } from 'src/state/probate-record.actions';
+import { loadFilteredProbateRecords, setProbateRecordFilter } from 'src/state/probate-record.actions';
 import {
   selectProbateRecords,
   selectNextToken,
   selectProbateRecordsLoading,
   selectProbateRecordsError,
+  selectProbateRecordUpdating,
 } from 'src/state/probte-record.selectors';
 import { ModelProbateRecordFilterInput, ModelSortDirection, ProbateRecord } from '../API.service';
 import { AppState } from '../app.state';
@@ -25,12 +26,16 @@ export class LoadRecordListViewComponent {
   nextToken$?: Observable<string | null | undefined>;
   nextToken: string | undefined;
   error$?: Observable<string | null>;
+  updating$?: Observable<boolean>;
   user?: AmplifyUser;
+  @Input() pageSizeCookie: string | undefined;
   private subscriptions: Subscription[] = [];
 
-  @Input() filter?: ModelProbateRecordFilterInput;
+
+  @Input() filter: ModelProbateRecordFilterInput | undefined;
   @Input() showLocked = false;
   @Input() showCheckBoxes = false;
+  @Input() showMove = false;
   @Output() selectedProbateRecords = new EventEmitter<ProbateRecord[]>();
   
   constructor(
@@ -42,7 +47,8 @@ export class LoadRecordListViewComponent {
     if(!this.filter) {
       this.filter = { reviewCount: { lt: 2 } };
     }
-    
+    const filter = this.filter;
+    this.store.dispatch(setProbateRecordFilter({filter}))
     this.probateRecords$ = this.store.pipe(
       select(selectProbateRecords),
       tap((records) => {
@@ -51,7 +57,7 @@ export class LoadRecordListViewComponent {
           this.store.dispatch(
             loadFilteredProbateRecords({
               limit: 10,
-              filter: this.filter!,
+              filter,
               sortDirection: ModelSortDirection.DESC,
               nextToken: undefined,
             })
@@ -61,8 +67,11 @@ export class LoadRecordListViewComponent {
     );
     this.nextToken$ = this.store.pipe(select(selectNextToken));
     this.loading$ = this.store.pipe(select(selectProbateRecordsLoading));
+    this.updating$ = this.store.pipe(select(selectProbateRecordUpdating));
     this.error$ = this.store.pipe(select(selectProbateRecordsError));
-
+    this.error$.subscribe((error) => {
+      console.log('error ', error);
+    })
     // Subscribe to the probate records, page size, and next token
     this.subscriptions.push(
       this.probateRecords$.subscribe((records) => {
@@ -74,6 +83,9 @@ export class LoadRecordListViewComponent {
       this.nextToken$.subscribe((nextToken) => {
         // Do something with the next token
         this.nextToken = nextToken!;
+      }),
+      this.updating$.subscribe((updating) => {
+        console.log('updating: ' + updating);
       })
     );
   }
@@ -88,6 +100,8 @@ export class LoadRecordListViewComponent {
   }
 
   loadMoreRecords() {
+    console.log('load component filter');
+    console.log(this.filter);
     this.store.dispatch(
       loadFilteredProbateRecords({
         limit: 10,
