@@ -81,7 +81,7 @@
             Back to List
           </button>
           <mat-checkbox [(ngModel)]="isReviewed" (ngModelChange)="onReviewedChange($event)" color="primary"
-            >Reviewed</mat-checkbox
+            >{{reviewedCheckBoxText}}</mat-checkbox
           >
         </div>
         <div *ngIf="record != null">

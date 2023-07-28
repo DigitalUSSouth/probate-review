@@ -222,6 +222,7 @@ export class UnreviewedDetailComponent implements OnInit {
 
   // UI
   selectionButtonLabel: 'Select' | 'Exit' = 'Select';
+  reviewedCheckBoxText: 'Reviewed' | 'Publish' = 'Reviewed';
   isSelecting = false;
   isAdjustingBoundingBox = false;
   isSplitting = false;
@@ -300,7 +301,7 @@ export class UnreviewedDetailComponent implements OnInit {
 
   // UI mode
 
-  private unsubscriber : Subject<void> = new Subject<void>();
+  private unsubscriber: Subject<void> = new Subject<void>();
 
   constructor(
     public authenticator: AuthenticatorService,
@@ -313,30 +314,9 @@ export class UnreviewedDetailComponent implements OnInit {
     private location: LocationStrategy
   ) {
     Amplify.configure(awsExports);
-    // history.pushState(null, '', window.location.href);
-    // // check if back or forward button is pressed.
-    // this.location.onPopState(() => {
-    //   history.pushState(null, '', window.location.href);
-    //   console.log('navigating to r');
-    //   const delayInMilliseconds = 1000; //1 second
-
-    //   setTimeout(function () {
-    //     //your code to be executed after 1 second
-    //   }, delayInMilliseconds);
-    //   router.navigate(['../r'], { relativeTo: this.route });
-    // });
   }
 
-  ngOnInit(): void {
-    // history.pushState(null, '');
-
-    // fromEvent(window, 'popstate')
-    //   .pipe(takeUntil(this.unsubscriber))
-    //   .subscribe((_) => {
-    //     history.pushState(null, '');
-    //     alert(`You can't make changes or go back at this time.`);
-    //   });
-  }
+  ngOnInit(): void {}
 
   ngOnDestroy(): void {
     this.unsubscriber.next();
@@ -355,6 +335,7 @@ export class UnreviewedDetailComponent implements OnInit {
       type: commandType,
       wasDirtyBeforeCommand: this.isDirty,
     });
+    console.log('marked as reviewed change');
     this.isDirty = true;
   }
 
@@ -519,6 +500,16 @@ export class UnreviewedDetailComponent implements OnInit {
 
     record$.subscribe((record) => {
       this.record = record as ProbateRecord;
+      this.reviewedCheckBoxText =
+        record.reviewCount > 0 ? 'Publish' : 'Reviewed';
+      // check if we are allowed to update this item
+      console.log('record');
+      console.log(record);
+      console.log('user');
+      console.log(this.user!.username);
+      this.lockedByOtherUser = (record.lockedBy ?? '').length > 0 && this.user!.username != record.lockedBy;
+      console.log('locked by other user ', this.lockedByOtherUser);
+
       for (const word of this.record.words) {
         if (word) {
           this.wordMap.set(word.id, word);
@@ -539,10 +530,6 @@ export class UnreviewedDetailComponent implements OnInit {
           this.sortLineItems();
         }
       });
-
-      // check if we are allowed to update this item
-      this.lockedByOtherUser =
-        record.lockedBy != null && this.user!.username != record.lockedBy;
     });
   }
 
@@ -2384,6 +2371,10 @@ export class UnreviewedDetailComponent implements OnInit {
       }
       let item = { id: this.record!.id, reviewCount, words: updatedWords };
       let response = await this.probateRecordService.UpdateProbateRecord(item);
+      this.record = response as ProbateRecord;
+      this.reviewedCheckBoxText =
+        this.record.reviewCount > 0 ? 'Publish' : 'Reviewed';
+      this.isReviewed = false;
       this.isDirty = false;
       console.log(response);
       alert('record updated');
