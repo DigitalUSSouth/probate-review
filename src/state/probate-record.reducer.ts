@@ -77,21 +77,25 @@ export const probateRecordReducer = createReducer(
   on(updateProbateRecordSuccess, (state, { probateRecord }) => {
     console.log('probate record updated');
     console.log(probateRecord);
-    const updatedRecords = state.records.map((record) => {
+    
+    let updatedRecords = state.records.map((record) => {
+      if (record.id === probateRecord.id) {
+        return { ...record, ...probateRecord };
+      }
+      return record;
+    });
+    
+
+    let updatedSelectedRecords = state.selectedRecords.map((record) => {
       if (record.id === probateRecord.id) {
         return { ...record, ...probateRecord };
       }
       return record;
     });
 
-
-    const updatedSelectedRecords = state.selectedRecords.map((record) => {
-      if (record.id === probateRecord.id) {
-        return { ...record, ...probateRecord };
-      }
-      return record;
-    });
-
+    const showingDeleted = state.filter && state.filter.markedForDeletion && state.filter.markedForDeletion.eq === true;
+    updatedSelectedRecords = updatedSelectedRecords.filter(r => r.markedForDeletion == showingDeleted);
+    updatedRecords = updatedRecords.filter(r => r.markedForDeletion == showingDeleted);
     return { ...state, records: updatedRecords, selectedRecord: probateRecord, selectedRecords: updatedSelectedRecords };
   }),
   on(updateProbateRecordFailure, (state, { error }) => {

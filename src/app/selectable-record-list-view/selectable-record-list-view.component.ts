@@ -38,12 +38,16 @@ export class SelectableRecordListViewComponent {
   @Input() showCheckBoxes = false;
   @Input() showLocked = false;
   @Input() showMove = false;
+  @Input() showDelete = false;
   @Input() pageSizeCookie: string | undefined;
   @Input() records?: (ProbateRecord | null)[] | null;
+  @Input() deleteColTitle: 'Delete' | 'Restore' = 'Delete';
   @Output() selectedProbateRecords = new EventEmitter<ProbateRecord[]>();
   dataSource?: MatTableDataSource<ProbateRecord>;
   user?: AmplifyUser;
   selectedRecords: ProbateRecord[] = [];
+  
+
   constructor(
     private store: Store<AppState>,
     public authenticator: AuthenticatorService,
@@ -66,6 +70,10 @@ export class SelectableRecordListViewComponent {
 
     if (this.showMove) {
       this.displayedColumns.push('move');
+    }
+
+    if(this.showDelete) {
+      this.displayedColumns.push('delete');
     }
 
     if (this.pageSizeCookie) {
@@ -155,6 +163,25 @@ export class SelectableRecordListViewComponent {
       const updatedRecord: ProbateRecord = {
         ...record,
         reviewCount: 0,
+      };
+      this.store.dispatch(
+        updateProbateRecord({ probateRecord: updatedRecord })
+      );
+    } catch (e) {
+      if (e instanceof Error) {
+        alert((e as Error).message);
+      } else {
+        alert('An error has occurred during save');
+      }
+    }
+  }
+
+  toggleMarkRecordForDeletion(record) {
+    console.log('moving record back to unreviewed');
+    try {
+      const updatedRecord: ProbateRecord = {
+        ...record,
+        markedForDeletion: !record.markedForDeletion,
       };
       this.store.dispatch(
         updateProbateRecord({ probateRecord: updatedRecord })

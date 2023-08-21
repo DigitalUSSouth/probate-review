@@ -6,7 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./unreviewed.component.sass'],
 })
 export class UnreviewedComponent implements OnInit {
-  filter = { reviewCount: { lt: 2 } };
+  filter = { reviewCount: { lt: 2 }, markedForDeletion: {ne: true} };
   pageSizeCookie = 'unreviewedPageSize';  
   constructor() {}
 
