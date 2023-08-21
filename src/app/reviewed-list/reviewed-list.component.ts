@@ -5,7 +5,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./reviewed-list.component.sass']
 })
 export class ReviewedListComponent implements OnInit {
-  filter = { reviewCount: { ge: 2 } };
+  filter = { reviewCount: { ge: 2 }, markedForDeletion: {ne: true}};
   pageSizeCookie = 'reviewedPageSize';
 
   constructor() {}

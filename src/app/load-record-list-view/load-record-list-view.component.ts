@@ -36,6 +36,7 @@ export class LoadRecordListViewComponent {
   @Input() showLocked = false;
   @Input() showCheckBoxes = false;
   @Input() showMove = false;
+  @Input() showDelete = true;
   @Output() selectedProbateRecords = new EventEmitter<ProbateRecord[]>();
   
   constructor(
