@@ -36,32 +36,29 @@ export class ProbateRecordService {
     });
     let recordCount = records.length;
     while (recordCount < count && newNextToken) {
+      console.log('next token', newNextToken);
       result = await this.recordService.ListProbateRecords(
         undefined,
         filter,
         count - records.length,
-        nextToken ?? ''
+        newNextToken ?? ''
       );
       let recordsToAdd = result.items.map((r) => r as ProbateRecord);
       let dupesFound = false;
       for (const record of recordsToAdd) {
         if (ids.has(record.id)) {
           dupesFound = true;
+          console.log('dupe record found', record)
         } else {
           ids.add(record.id);
           records.push(record);
         }
       }
-      if (dupesFound) {
-        console.log('duplicates found');
-      }
+      
       if (newNextToken === result.nextToken) {
         break;
       }
-      if (recordCount === records.length) {
-        // no new records were added
-        break;
-      }
+      
       recordCount = records.length;
       newNextToken = result.nextToken;
     }
