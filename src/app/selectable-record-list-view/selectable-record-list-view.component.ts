@@ -29,7 +29,6 @@ export class SelectableRecordListViewComponent {
   pageSize = 10;
   pageSizes: number[] = [1, 5, 10, 25, 100];
   pageIndex = 0;
-  // MatPaginator Output
   pageEvent?: PageEvent;
   displayedColumns: string[] = ['thumbnail', 'title'];
   nextToken: string | undefined;
@@ -47,7 +46,6 @@ export class SelectableRecordListViewComponent {
   user?: AmplifyUser;
   selectedRecords: ProbateRecord[] = [];
   
-
   constructor(
     private store: Store<AppState>,
     public authenticator: AuthenticatorService,
@@ -55,6 +53,23 @@ export class SelectableRecordListViewComponent {
   ) {}
 
   ngOnInit(): void {
+    this.initializeComponent();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['records']) {
+      this.initializeComponent();
+    }
+  }
+
+  ngAfterViewInit() {
+    if (this.dataSource) {
+      this.dataSource.sort = this.sort!;
+      this.dataSource.paginator = this.paginator!;
+    }
+  }
+
+  initializeComponent() {
     this.user = this.authenticator.user;
     if (this.showCheckBoxes) {
       this.displayedColumns = ['checked', ...this.displayedColumns];
@@ -79,7 +94,6 @@ export class SelectableRecordListViewComponent {
     if (this.pageSizeCookie) {
       const pageSize = parseInt(this.cookieService.get(this.pageSizeCookie));
       this.pageSize = isNaN(pageSize) ? 10 : pageSize;
-
       console.log('page size is ' + this.pageSize);
     }
 
@@ -87,26 +101,10 @@ export class SelectableRecordListViewComponent {
       this.dataSource = new MatTableDataSource<ProbateRecord>(
         this.records.map((r) => r as ProbateRecord)
       );
-      this.dataSource.sort = this.sort!;
-      this.dataSource.paginator = this.paginator!;
-    }
-  }
-
-  ngAfterViewInit() {
-    // this.user = this.authenticator.user;
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    let recordChange = changes['records'];
-
-    if (recordChange) {
-      console.log('updating data source');
-      console.log(this.records);
-      this.dataSource = new MatTableDataSource<ProbateRecord>(
-        this.records?.map((r) => r as ProbateRecord)
-      );
-      this.dataSource.sort = this.sort!;
-      this.dataSource.paginator = this.paginator!;
+      if (this.sort && this.paginator) {
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
+      }
     }
   }
 
@@ -116,7 +114,6 @@ export class SelectableRecordListViewComponent {
   }
 
   changePageSize(pageSize: number) {
-    // Dispatch the action to change the page size
     if (this.pageSizeCookie) {
       console.log('setting page size to ', pageSize);
       this.cookieService.set(this.pageSizeCookie, String(pageSize));
