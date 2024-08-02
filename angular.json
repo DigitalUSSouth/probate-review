@@ -88,10 +88,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "probate-review:build:production"
+              "buildTarget": "probate-review:build:production"
             },
             "development": {
-              "browserTarget": "probate-review:build:development"
+              "buildTarget": "probate-review:build:development"
             }            
           },
           "defaultConfiguration": "development"
@@ -99,7 +99,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "probate-review:build"
+            "buildTarget": "probate-review:build"
           }
         },
         "test": {
