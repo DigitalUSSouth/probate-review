@@ -23,9 +23,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": {
-              "base": "dist/probate-review"
-            },
+            "outputPath": "dist/probate-review",
             "index": "src/index.html",
             "polyfills": [
               "src/polyfills.ts"
@@ -41,7 +39,7 @@
               "src/styles.sass"
             ],
             "scripts": [
-              
+
             ],
             "allowedCommonJsDependencies": [
               "uuid",
@@ -94,7 +92,7 @@
             },
             "development": {
               "buildTarget": "probate-review:build:development"
-            }            
+            }
           },
           "defaultConfiguration": "development"
         },
@@ -121,7 +119,7 @@
               "src/styles.sass"
             ],
             "scripts": [
-              
+
             ]
           }
         }
