@@ -192,7 +192,7 @@
     symbol-observable "4.0.0"
     yargs "17.7.2"
 
-"@angular/common@^16.0.0", "@angular/common@^18.0.0 || ^19.0.0", "@angular/common@^18.1.3", "@angular/common@>=9.0.0", "@angular/common@18.1.3":
+"@angular/common@^18.0.0 || ^19.0.0", "@angular/common@^18.0.0-rc.0", "@angular/common@^18.1.3", "@angular/common@>=9.0.0", "@angular/common@18.1.3":
   version "18.1.3"
   resolved "https://registry.npmjs.org/@angular/common/-/common-18.1.3.tgz"
   integrity sha512-TC71jVph4L+QaXlyJTrW27nbqis4sWwr9hD/RDSNkfY9XCvYDb2MjYjKrpbN03FWiv7lmcKT9zgse1fYENFsKQ==
@@ -220,7 +220,7 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/core@^16.0.0", "@angular/core@^18.0.0 || ^19.0.0", "@angular/core@^18.1.3", "@angular/core@>=9.0.0", "@angular/core@18.1.3":
+"@angular/core@^18.0.0", "@angular/core@^18.0.0 || ^19.0.0", "@angular/core@^18.0.0-rc.0", "@angular/core@^18.1.3", "@angular/core@>=9.0.0", "@angular/core@18.1.3":
   version "18.1.3"
   resolved "https://registry.npmjs.org/@angular/core/-/core-18.1.3.tgz"
   integrity sha512-1tFTyGLwio5oYAP2sMVDiOvy5wl/v0a4om7RTCpP2Bjro0ynuYe8FK7ilcmdyPXR1DF7GVdo/0R/eCIQJZ2PwA==
@@ -4378,10 +4378,10 @@
   resolved "https://registry.npmjs.org/@discoveryjs/json-ext/-/json-ext-0.5.7.tgz"
   integrity sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==
 
-"@esbuild/linux-x64@0.21.5":
+"@esbuild/darwin-arm64@0.21.5":
   version "0.21.5"
-  resolved "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.21.5.tgz"
-  integrity sha512-1rYdTpyv03iycF1+BhzrzQJCdOuAOtaqHTWJZCWvijKD2N5Xu0TtVC8/+1faWqcP9iBCWOmjmhoH94dH82BxPQ==
+  resolved "https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.21.5.tgz"
+  integrity sha512-DwqXqZyuk5AiWWf3UfLiRDJ5EDd49zg6O9wclZ7kUMv2WRFr4HKjXp/5t8JZ11QbQfUS6/cRCKGwYhtNAY88kQ==
 
 "@hapi/hoek@^9.0.0":
   version "9.3.0"
@@ -4692,27 +4692,35 @@
   dependencies:
     "@inquirer/type" "^1.3.3"
 
-"@lmdb/lmdb-linux-x64@3.0.12":
+"@lmdb/lmdb-darwin-arm64@3.0.12":
   version "3.0.12"
-  resolved "https://registry.npmjs.org/@lmdb/lmdb-linux-x64/-/lmdb-linux-x64-3.0.12.tgz"
-  integrity sha512-c+noT9IofktxktFllKHFmci8ka2SYGSLN17pj/KSl1hg7mmfAiGp4xxFxEwMLTb+SX95vP1DFiR++1I3WLVxvA==
+  resolved "https://registry.npmjs.org/@lmdb/lmdb-darwin-arm64/-/lmdb-darwin-arm64-3.0.12.tgz"
+  integrity sha512-vgTwzNUD3Hy4aqtGhX2+nV/usI0mwy3hDRuTjs8VcK0BLiMVEpNQXgzwlWEgPmA8AAPloUgyOs2nK5clJF5oIg==
 
-"@msgpackr-extract/msgpackr-extract-linux-x64@3.0.3":
+"@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.3":
   version "3.0.3"
-  resolved "https://registry.npmjs.org/@msgpackr-extract/msgpackr-extract-linux-x64/-/msgpackr-extract-linux-x64-3.0.3.tgz"
-  integrity sha512-cvwNfbP07pKUfq1uH+S6KJ7dT9K8WOE4ZiAcsrSes+UY55E/0jLYc+vq+DO7jlmqRb5zAggExKm0H7O/CBaesg==
+  resolved "https://registry.npmjs.org/@msgpackr-extract/msgpackr-extract-darwin-arm64/-/msgpackr-extract-darwin-arm64-3.0.3.tgz"
+  integrity sha512-QZHtlVgbAdy2zAqNA9Gu1UpIuI8Xvsd1v8ic6B2pZmeFnFcMWiPLfWXh7TVw4eGEZ/C9TH281KwhVoeQUKbyjw==
 
-"@ngrx/effects@^16.0.1":
-  version "16.0.1"
-  resolved "https://registry.npmjs.org/@ngrx/effects/-/effects-16.0.1.tgz"
-  integrity sha512-hpmON8p7kT44jIiruLBy3raFkYhNzQ45was0puKPkGhv41VrAoo44UcEn4Aysdx5yHaJc/CMCtI/+emFIpqgGA==
+"@ngrx/effects@^18.0.2":
+  version "18.0.2"
+  resolved "https://registry.npmjs.org/@ngrx/effects/-/effects-18.0.2.tgz"
+  integrity sha512-YojXcOD9Lsq4kl2HCjENccyUM/mOlgBdtddsg9j/ojzSUgu3ZuBVKLN3atrL2TJYkbMX1MN0RzafSkL3TPGFIA==
   dependencies:
+    "@ngrx/operators" "18.0.1"
     tslib "^2.0.0"
 
-"@ngrx/store@^16.0.1", "@ngrx/store@16.0.1":
-  version "16.0.1"
-  resolved "https://registry.npmjs.org/@ngrx/store/-/store-16.0.1.tgz"
-  integrity sha512-KkYzF3j29qKOzHcmiArRJgT+ABLqbddj1DuxerNq3A8zWnTDdC4YgNpDOKru8hQWb3pQ77ZbglLati5K9F8HnQ==
+"@ngrx/operators@^18.0.0", "@ngrx/operators@18.0.1":
+  version "18.0.1"
+  resolved "https://registry.npmjs.org/@ngrx/operators/-/operators-18.0.1.tgz"
+  integrity sha512-M+QMrHNKgcuiLaRGZxJ4aQi5/OCRfKC4+T/63dsHyLFZ53/FFpF6a/ytSO1Q+tzOplZ5o99S+i8FVaZqNQ3LmQ==
+  dependencies:
+    tslib "^2.3.0"
+
+"@ngrx/store@^18.0.2", "@ngrx/store@18.0.2":
+  version "18.0.2"
+  resolved "https://registry.npmjs.org/@ngrx/store/-/store-18.0.2.tgz"
+  integrity sha512-ajwv0+njsO4vzArp9esnFvs1wyUb1U1W8E8LSCKrcW2hWWo9o1Pezj+JRsdQwatxHfrrPFuTDyajsl6GQM/JSA==
   dependencies:
     tslib "^2.0.0"
 
@@ -5019,25 +5027,15 @@
   resolved "https://registry.npmjs.org/@react-native/polyfills/-/polyfills-2.0.0.tgz"
   integrity sha512-K0aGNn1TjalKj+65D7ycc1//H9roAQ51GJVk5ZJQFb2teECGmzd86bYDC0aYdbRf7gtovescq4Zt6FR0tgXiHQ==
 
-"@rollup/rollup-linux-x64-gnu@4.18.0":
+"@rollup/rollup-darwin-arm64@4.18.0":
   version "4.18.0"
-  resolved "https://registry.npmjs.org/@rollup/rollup-linux-x64-gnu/-/rollup-linux-x64-gnu-4.18.0.tgz"
-  integrity sha512-xuglR2rBVHA5UsI8h8UbX4VJ470PtGCf5Vpswh7p2ukaqBGFTnsfzxUBetoWBWymHMxbIG0Cmx7Y9qDZzr648w==
+  resolved "https://registry.npmjs.org/@rollup/rollup-darwin-arm64/-/rollup-darwin-arm64-4.18.0.tgz"
+  integrity sha512-IWfdwU7KDSm07Ty0PuA/W2JYoZ4iTj3TUQjkVsO/6U+4I1jN5lcR71ZEvRh52sDOERdnNhhHU57UITXz5jC1/w==
 
-"@rollup/rollup-linux-x64-gnu@4.19.2":
+"@rollup/rollup-darwin-arm64@4.19.2":
   version "4.19.2"
-  resolved "https://registry.npmjs.org/@rollup/rollup-linux-x64-gnu/-/rollup-linux-x64-gnu-4.19.2.tgz"
-  integrity sha512-OgaToJ8jSxTpgGkZSkwKE+JQGihdcaqnyHEFOSAU45utQ+yLruE1dkonB2SDI8t375wOKgNn8pQvaWY9kPzxDQ==
-
-"@rollup/rollup-linux-x64-musl@4.18.0":
-  version "4.18.0"
-  resolved "https://registry.npmjs.org/@rollup/rollup-linux-x64-musl/-/rollup-linux-x64-musl-4.18.0.tgz"
-  integrity sha512-LKaqQL9osY/ir2geuLVvRRs+utWUNilzdE90TpyoX0eNqPzWjRm14oMEE+YLve4k/NAqCdPkGYDaDF5Sw+xBfg==
-
-"@rollup/rollup-linux-x64-musl@4.19.2":
-  version "4.19.2"
-  resolved "https://registry.npmjs.org/@rollup/rollup-linux-x64-musl/-/rollup-linux-x64-musl-4.19.2.tgz"
-  integrity sha512-5V3mPpWkB066XZZBgSd1lwozBk7tmOkKtquyCJ6T4LN3mzKENXyBwWNQn8d0Ci81hvlBw5RoFgleVpL6aScLYg==
+  resolved "https://registry.npmjs.org/@rollup/rollup-darwin-arm64/-/rollup-darwin-arm64-4.19.2.tgz"
+  integrity sha512-IIARRgWCNWMTeQH+kr/gFTHJccKzwEaI0YSvtqkEBPj7AshElFq89TyreKNFAGh5frLfDCbodnq+Ye3dqGKPBw==
 
 "@schematics/angular@18.1.3":
   version "18.1.3"
@@ -7766,6 +7764,11 @@ fs.realpath@^1.0.0:
   resolved "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
   integrity sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==
 
+fsevents@^2.3.2, fsevents@~2.3.2, fsevents@~2.3.3:
+  version "2.3.3"
+  resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz"
+  integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
+
 function-bind@^1.1.2:
   version "1.1.2"
   resolved "https://registry.npmjs.org/function-bind/-/function-bind-1.1.2.tgz"
@@ -9988,12 +9991,12 @@ neo-async@^2.5.0, neo-async@^2.6.2:
   resolved "https://registry.npmjs.org/neo-async/-/neo-async-2.6.2.tgz"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-ngx-cookie-service@^16.0.0:
-  version "16.0.0"
-  resolved "https://registry.npmjs.org/ngx-cookie-service/-/ngx-cookie-service-16.0.0.tgz"
-  integrity sha512-bD0F8/I6Y7lfP1THeQDR70hv1SSEfFOjJqF1tnLphNBvR9EwkITO2KSOtfag7VH5CHT16PRIqv8XaGRDbCNAmA==
+ngx-cookie-service@^18.0.0:
+  version "18.0.0"
+  resolved "https://registry.npmjs.org/ngx-cookie-service/-/ngx-cookie-service-18.0.0.tgz"
+  integrity sha512-hkkUckzZTXXWtFgvVkT2hg6mwYMLXioXDZWBsVCOy9gYkADjsj0N5VViO7eo2izQ0VcMPd/Etog1trf/T4oZMQ==
   dependencies:
-    tslib "^2.0.0"
+    tslib "^2.6.2"
 
 nice-napi@^1.0.2:
   version "1.0.2"
@@ -12272,7 +12275,7 @@ tslib@^1.9.3:
   resolved "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tslib@^2, tslib@^2.0.0, tslib@^2.0.1, tslib@^2.0.3, tslib@^2.1.0, tslib@^2.3.0, tslib@^2.3.1, tslib@^2.5.0, tslib@2, tslib@2.6.3:
+tslib@^2, tslib@^2.0.0, tslib@^2.0.1, tslib@^2.0.3, tslib@^2.1.0, tslib@^2.3.0, tslib@^2.3.1, tslib@^2.5.0, tslib@^2.6.2, tslib@2, tslib@2.6.3:
   version "2.6.3"
   resolved "https://registry.npmjs.org/tslib/-/tslib-2.6.3.tgz"
   integrity sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ==
