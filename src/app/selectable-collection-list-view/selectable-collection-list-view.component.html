@@ -28,10 +28,17 @@
       <mat-cell mat-cell *matCellDef="let collection">{{ collection.title }}</mat-cell>
     </ng-container>
 
+    <ng-container matColumnDef="createdAt">
+      <mat-header-cell mat-header-cell *matHeaderCellDef mat-sort-header>Created At</mat-header-cell>
+      <mat-cell mat-cell *matCellDef="let collection">{{ collection.createdAt | date: 'short' }}</mat-cell>
+    </ng-container>
+
     <ng-container matColumnDef="description">
       <mat-header-cell *matHeaderCellDef mat-sort-header>Description</mat-header-cell>
       <mat-cell *matCellDef="let collection">{{ collection.description }}</mat-cell>
     </ng-container>
+
+
 
     <ng-container matColumnDef="actions">
       <mat-header-cell *matHeaderCellDef>
