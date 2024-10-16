@@ -27,7 +27,7 @@ export class SelectableCollectionListViewComponent {
   @Input() showActions = false;
   @Input() collections?: ProbateRecordCollection[];
 
-  displayedColumns = ['title', 'description']; // Customize the displayed columns as needed
+  displayedColumns = ['title', 'description','createdAt']; // Customize the displayed columns as needed
 
   constructor(private store: Store<AppState>, private router: Router) {}
 
