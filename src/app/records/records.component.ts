@@ -1,4 +1,5 @@
-import Auth from '@aws-amplify/auth';
+import {getCurrentUser} from 'aws-amplify/auth';
+
 import { Component, OnInit } from '@angular/core';
 import { Document, ProbateRecord, APIService, ListProbateRecordsQuery, ModelProbateRecordFilterInput} from '../API.service';
 import {PageEvent} from '@angular/material/paginator';
@@ -24,7 +25,7 @@ export class RecordsComponent implements OnInit {
   constructor(private recordService: APIService) {
     // https://stackoverflow.com/questions/52494919/mattabledatasource-cannot-read-property-length-of-undefined
     this.records = [];
-  }  
+  }
 
   setPageSizeOptions(setPageSizeOptionsInput: string) {
     if (setPageSizeOptionsInput) {
@@ -32,13 +33,13 @@ export class RecordsComponent implements OnInit {
     }
   }
 
-  ngOnInit(): void { 
-    Auth.currentAuthenticatedUser().then((user) => {
+  ngOnInit(): void {
+    getCurrentUser().then((user) => {
       console.log(user);
       this.displayedColumns.push('move');
     });
 
-    this.fetchRcords();    
+    this.fetchRcords();
   }
 
   fetchRcords(): void {
@@ -48,7 +49,7 @@ export class RecordsComponent implements OnInit {
       console.log(recordsQuery!.items);
       this.records = recordsQuery!.items!.map(x => x as ProbateRecord);
       this.length = this.records.length;
-      
+
       this.nextToken = (recordsQuery.nextToken) ? recordsQuery.nextToken : undefined;
       console.log('next token: ' + this.nextToken);
     });
@@ -58,7 +59,7 @@ export class RecordsComponent implements OnInit {
     this.length = event.length;
     if(this.pageSize != event.pageSize) {
       this.pageSize = event.pageSize;
-      this.nextToken = undefined;      
+      this.nextToken = undefined;
     }
     this.pageIndex = event.pageIndex;
     this.fetchRcords();
@@ -68,7 +69,7 @@ export class RecordsComponent implements OnInit {
     let record = (this.records as ProbateRecord[]).find(r => r.id === id);
     if(record) {
       await this.recordService.UpdateProbateRecord({id: id, reviewCount: 0});
-      this.records = (this.records as ProbateRecord[]).filter(r => r.id != id);      
+      this.records = (this.records as ProbateRecord[]).filter(r => r.id != id);
     }
 
   }

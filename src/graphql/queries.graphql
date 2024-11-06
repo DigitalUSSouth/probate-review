@@ -1,4 +1,5 @@
 # this is an auto generated file. This will be overwritten
+
 query GetProbateRecord($id: ID!) {
   getProbateRecord(id: $id) {
     id
@@ -27,12 +28,15 @@ query GetProbateRecord($id: ID!) {
           top
           width
           height
+          __typename
         }
         attributeForId
         createdAt
         updatedAt
+        __typename
       }
       nextToken
+      __typename
     }
     words {
       id
@@ -42,8 +46,10 @@ query GetProbateRecord($id: ID!) {
         top
         width
         height
+        __typename
       }
       lineIndex
+      __typename
     }
     totalValue
     reviewCount
@@ -54,8 +60,10 @@ query GetProbateRecord($id: ID!) {
     markedForDeletion
     createdAt
     updatedAt
+    __typename
   }
 }
+
 query ListProbateRecords(
   $id: ID
   $filter: ModelProbateRecordFilterInput
@@ -97,12 +105,15 @@ query ListProbateRecords(
             top
             width
             height
+            __typename
           }
           attributeForId
           createdAt
           updatedAt
+          __typename
         }
         nextToken
+        __typename
       }
       words {
         id
@@ -112,8 +123,10 @@ query ListProbateRecords(
           top
           width
           height
+          __typename
         }
         lineIndex
+        __typename
       }
       totalValue
       reviewCount
@@ -124,12 +137,15 @@ query ListProbateRecords(
       markedForDeletion
       createdAt
       updatedAt
+      __typename
     }
     nextToken
     scannedCount
     count
+    __typename
   }
 }
+
 query GetLineItem($id: ID!) {
   getLineItem(id: $id) {
     id
@@ -149,12 +165,15 @@ query GetLineItem($id: ID!) {
       top
       width
       height
+      __typename
     }
     attributeForId
     createdAt
     updatedAt
+    __typename
   }
 }
+
 query ListLineItems(
   $filter: ModelLineItemFilterInput
   $limit: Int
@@ -179,14 +198,18 @@ query ListLineItems(
         top
         width
         height
+        __typename
       }
       attributeForId
       createdAt
       updatedAt
+      __typename
     }
     nextToken
+    __typename
   }
 }
+
 query LineItemByProbateRecord(
   $probateId: ID!
   $rowIndex: ModelIntKeyConditionInput
@@ -221,14 +244,18 @@ query LineItemByProbateRecord(
         top
         width
         height
+        __typename
       }
       attributeForId
       createdAt
       updatedAt
+      __typename
     }
     nextToken
+    __typename
   }
 }
+
 query GetDocument($id: ID!) {
   getDocument(id: $id) {
     id
@@ -240,10 +267,12 @@ query GetDocument($id: ID!) {
         top
         width
         height
+        __typename
       }
       confidence
       rowIndex
       lowerText
+      __typename
     }
     words {
       id
@@ -253,13 +282,17 @@ query GetDocument($id: ID!) {
         top
         width
         height
+        __typename
       }
       lineIndex
+      __typename
     }
     createdAt
     updatedAt
+    __typename
   }
 }
+
 query ListDocuments(
   $filter: ModelDocumentFilterInput
   $limit: Int
@@ -276,10 +309,12 @@ query ListDocuments(
           top
           width
           height
+          __typename
         }
         confidence
         rowIndex
         lowerText
+        __typename
       }
       words {
         id
@@ -289,15 +324,20 @@ query ListDocuments(
           top
           width
           height
+          __typename
         }
         lineIndex
+        __typename
       }
       createdAt
       updatedAt
+      __typename
     }
     nextToken
+    __typename
   }
 }
+
 query GetLineItemReviewerNote($id: ID!) {
   getLineItemReviewerNote(id: $id) {
     id
@@ -307,8 +347,10 @@ query GetLineItemReviewerNote($id: ID!) {
     reviewer
     createdAt
     updatedAt
+    __typename
   }
 }
+
 query ListLineItemReviewerNotes(
   $filter: ModelLineItemReviewerNoteFilterInput
   $limit: Int
@@ -327,10 +369,13 @@ query ListLineItemReviewerNotes(
       reviewer
       createdAt
       updatedAt
+      __typename
     }
     nextToken
+    __typename
   }
 }
+
 query GetIssue($id: ID!) {
   getIssue(id: $id) {
     id
@@ -341,8 +386,10 @@ query GetIssue($id: ID!) {
     type
     createdAt
     updatedAt
+    __typename
   }
 }
+
 query ListIssues(
   $filter: ModelIssueFilterInput
   $limit: Int
@@ -358,10 +405,13 @@ query ListIssues(
       type
       createdAt
       updatedAt
+      __typename
     }
     nextToken
+    __typename
   }
 }
+
 query GetProbateRecordCollection($id: ID!) {
   getProbateRecordCollection(id: $id) {
     id
@@ -372,8 +422,10 @@ query GetProbateRecordCollection($id: ID!) {
     probateRecordIds
     createdAt
     updatedAt
+    __typename
   }
 }
+
 query ListProbateRecordCollections(
   $filter: ModelProbateRecordCollectionFilterInput
   $limit: Int
@@ -393,7 +445,9 @@ query ListProbateRecordCollections(
       probateRecordIds
       createdAt
       updatedAt
+      __typename
     }
     nextToken
+    __typename
   }
 }

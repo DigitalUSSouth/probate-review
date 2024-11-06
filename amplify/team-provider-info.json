@@ -1,43 +1,4 @@
 {
-  "prod": {
-    "awscloudformation": {
-      "AuthRoleName": "amplify-probatereview-prod-155203-authRole",
-      "UnauthRoleArn": "arn:aws:iam::752231335446:role/amplify-probatereview-prod-155203-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::752231335446:role/amplify-probatereview-prod-155203-authRole",
-      "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-probatereview-prod-155203-deployment",
-      "UnauthRoleName": "amplify-probatereview-prod-155203-unauthRole",
-      "StackName": "amplify-probatereview-prod-155203",
-      "StackId": "arn:aws:cloudformation:us-east-1:752231335446:stack/amplify-probatereview-prod-155203/0f34c0e0-0dc4-11ed-b9a8-0eb71f142fe3",
-      "AmplifyAppId": "dd5aqjyr5bqg5"
-    },
-    "categories": {
-      "auth": {
-        "probatereviewa3991353": {}
-      },
-      "function": {
-        "getProbateMetadata": {
-          "deploymentBucketName": "amplify-probatereview-prod-155203-deployment",
-          "s3Key": "amplify-builds/getProbateMetadata-3837792b376c48365450-build.zip"
-        },
-        "probatereviewawsclient": {
-          "deploymentBucketName": "amplify-probatereview-prod-155203-deployment",
-          "s3Key": "amplify-builds/probatereviewawsclient-LambdaLayerVersiondda4f91f-build.zip"
-        },
-        "S3Triggera1b411c2": {
-          "deploymentBucketName": "amplify-probatereview-prod-155203-deployment",
-          "s3Key": "amplify-builds/S3Triggera1b411c2-5662434e4b536735716f-build.zip"
-        },
-        "probateAddDynamodbRecord": {
-          "deploymentBucketName": "amplify-probatereview-prod-155203-deployment",
-          "s3Key": "amplify-builds/probateAddDynamodbRecord-54644c71627532545344-build.zip"
-        }
-      },
-      "storage": {
-        "uploads": {}
-      }
-    }
-  },
   "staging": {
     "awscloudformation": {
       "AuthRoleName": "amplify-probatereview-staging-142826-authRole",
@@ -74,6 +35,45 @@
       },
       "hosting": {
         "S3AndCloudFront": {}
+      },
+      "storage": {
+        "uploads": {}
+      }
+    }
+  },
+  "prod": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-probatereview-prod-155203-authRole",
+      "UnauthRoleArn": "arn:aws:iam::752231335446:role/amplify-probatereview-prod-155203-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::752231335446:role/amplify-probatereview-prod-155203-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-probatereview-prod-155203-deployment",
+      "UnauthRoleName": "amplify-probatereview-prod-155203-unauthRole",
+      "StackName": "amplify-probatereview-prod-155203",
+      "StackId": "arn:aws:cloudformation:us-east-1:752231335446:stack/amplify-probatereview-prod-155203/0f34c0e0-0dc4-11ed-b9a8-0eb71f142fe3",
+      "AmplifyAppId": "dd5aqjyr5bqg5"
+    },
+    "categories": {
+      "auth": {
+        "probatereviewa3991353": {}
+      },
+      "function": {
+        "getProbateMetadata": {
+          "deploymentBucketName": "amplify-probatereview-prod-155203-deployment",
+          "s3Key": "amplify-builds/getProbateMetadata-3837792b376c48365450-build.zip"
+        },
+        "probatereviewawsclient": {
+          "deploymentBucketName": "amplify-probatereview-prod-155203-deployment",
+          "s3Key": "amplify-builds/probatereviewawsclient-LambdaLayerVersiondda4f91f-build.zip"
+        },
+        "S3Triggera1b411c2": {
+          "deploymentBucketName": "amplify-probatereview-prod-155203-deployment",
+          "s3Key": "amplify-builds/S3Triggera1b411c2-5662434e4b536735716f-build.zip"
+        },
+        "probateAddDynamodbRecord": {
+          "deploymentBucketName": "amplify-probatereview-prod-155203-deployment",
+          "s3Key": "amplify-builds/probateAddDynamodbRecord-54644c71627532545344-build.zip"
+        }
       },
       "storage": {
         "uploads": {}

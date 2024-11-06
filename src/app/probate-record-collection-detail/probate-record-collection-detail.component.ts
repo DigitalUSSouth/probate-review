@@ -13,7 +13,7 @@ import {
   selectProbateRecordCollectionLoading,
 } from '../../state/probate-record-collection.selectors';
 import { ProbateRecordCollection, ProbateRecord } from '../API.service';
-import { AmplifyUser } from '@aws-amplify/ui';
+import { AuthUser } from 'aws-amplify/auth';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { SelectProbateRecordsDialogComponent } from '../select-probate-records-dialog/select-probate-records-dialog.component';
@@ -32,7 +32,7 @@ export class ProbateRecordCollectionDetailComponent implements OnInit {
   probateRecords: ProbateRecord[] = [];
   selectedProbateRecords: ProbateRecord[] = [];
   loading$: Observable<boolean>;
-  user?: AmplifyUser;
+  user?: AuthUser;
   displayedColumns = ['thumbnail', 'title'];
   collectionId = '';
   constructor(

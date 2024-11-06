@@ -6,7 +6,8 @@ import { Store } from '@ngrx/store';
 import { initializeAppState } from 'src/state/app.actions';
 import { Amplify } from 'aws-amplify';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
-import { AmplifyUser } from '@aws-amplify/ui';
+import { AuthUser } from 'aws-amplify/auth';
+
 
 @Component({
   selector: 'app-root',
@@ -15,14 +16,14 @@ import { AmplifyUser } from '@aws-amplify/ui';
 })
 export class AppComponent {
   title = 'Probate Review';
-  user: AmplifyUser | undefined;
+  user: AuthUser | undefined;
   // authState!: AuthState;
 
   constructor(private ref: ChangeDetectorRef, private router: Router, private store: Store, public authenticator: AuthenticatorService) {
     this.store.dispatch(initializeAppState());
     this.user = authenticator.user
   }
-  
+
   ngOnInit() {
     // onAuthUIStateChange((authState, authData) => {
     //   this.authState = authState;
@@ -30,7 +31,7 @@ export class AppComponent {
     //   this.ref.detectChanges();
     // })
   }
-  
+
   // ngOnDestroy() {
   //   return onAuthUIStateChange;
   // }

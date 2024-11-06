@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { AmplifyUser } from '@aws-amplify/ui';
+import { AuthUser } from 'aws-amplify/auth';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
 import { Store, select } from '@ngrx/store';
 import { Observable, Subscription, tap } from 'rxjs';
@@ -27,7 +27,7 @@ export class LoadRecordListViewComponent {
   nextToken: string | undefined;
   error$?: Observable<string | null>;
   updating$?: Observable<boolean>;
-  user?: AmplifyUser;
+  user?: AuthUser;
   @Input() pageSizeCookie: string | undefined;
   private subscriptions: Subscription[] = [];
 
@@ -38,7 +38,7 @@ export class LoadRecordListViewComponent {
   @Input() showMove = false;
   @Input() showDelete = true;
   @Output() selectedProbateRecords = new EventEmitter<ProbateRecord[]>();
-  
+
   constructor(
     private store: Store<AppState>,
     public authenticator: AuthenticatorService

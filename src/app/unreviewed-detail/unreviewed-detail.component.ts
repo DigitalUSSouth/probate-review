@@ -44,11 +44,12 @@ import { CookieService } from 'ngx-cookie-service';
 import { HelpDialogComponent } from '../help-dialog/help-dialog.component';
 
 import { CombineLineDialogComponent } from '../combine-line-dialog/combine-line-dialog.component';
-import { AmplifyUser } from '@aws-amplify/ui';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
+
 import awsExports from 'src/aws-exports';
 import { Amplify } from 'aws-amplify';
 import { LocationStrategy } from '@angular/common';
+import { AuthUser } from 'aws-amplify/auth';
 
 class BoundingBox {
   x: number;
@@ -296,7 +297,7 @@ export class UnreviewedDetailComponent implements OnInit {
   deletedLineIds = new Set<string>();
 
   // User
-  user?: AmplifyUser;
+  user?: AuthUser;
   lockedByOtherUser = true;
 
   // UI mode
@@ -1590,13 +1591,17 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   editLineItemByIndex(index: number): void {
+    console.log('Starting line item by index');
     let lineItem: LineItem | null = null;
     if (this.record && this.record.lineItems) {
+      console.log('in clause')
       lineItem = this.record.lineItems.items[index];
     }
 
     if (!lineItem) {
+      console.log('throwing error***************THROWING ERROR!!!!!!!!!!!!!');
       throw 'Invalid line index';
+
     }
 
     this.selectedLine = lineItem;

@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router } from '@angular/router';
+import { getCurrentUser } from 'aws-amplify/auth';
 import { Observable } from 'rxjs';
-import { Auth } from 'aws-amplify';
+
 
 @Injectable({
   providedIn: 'root'
@@ -13,11 +14,11 @@ export class AuthGuard  {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
     // from https://itnext.io/part-2-adding-authentication-to-your-angular-material-aws-amplify-powered-pwa-2a9d0fbd305a
-    return Auth.currentAuthenticatedUser().then(() => { return true; })
-      .catch(() => { 
+    return getCurrentUser().then(() => { return true; })
+      .catch(() => {
         this._router.navigate(['/']);
         return false;
       });
   }
-  
+
 }

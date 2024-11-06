@@ -13,7 +13,6 @@ import { MatSort } from '@angular/material/sort';
 import { ProbateRecordCollection, ModelProbateRecordCollectionFilterInput } from '../API.service';
 import { Observable, tap } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
-import { AmplifyUser } from '@aws-amplify/ui';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Router } from '@angular/router';
@@ -63,13 +62,13 @@ export class ProbateRecordCollectionListComponent implements OnInit {
     );
     this.loading$ = this.store.pipe(select(selectProbateRecordCollectionsLoading));
     this.error$ = this.store.pipe(select(selectProbateRecordCollectionsError));
-    
+
     this.probateRecordCollections$.subscribe((collections) => {
       console.log('collections loaded');
       console.log(collections);
       this.dataSource.data = collections;
     });
-    
+
     this.loading$.subscribe((loading) => {
       console.log('loading ' + loading);
     });
@@ -78,8 +77,8 @@ export class ProbateRecordCollectionListComponent implements OnInit {
   ngOnInit() {
     if (this.showCheckBoxes) {
       this.displayedColumns = ['checked', ...this.displayedColumns];
-    } 
-    
+    }
+
   }
 
   ngAfterViewInit() {
@@ -104,7 +103,7 @@ export class ProbateRecordCollectionListComponent implements OnInit {
     this.selection.toggle(collection);
     this.selectionChanged();
   }
-  
+
   isAllSelected(): boolean {
     const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.data.length;
@@ -115,7 +114,7 @@ export class ProbateRecordCollectionListComponent implements OnInit {
     const selectedCollections = this.selection.selected;
     this.selectedCollections.emit(selectedCollections);
   }
-  
+
   createNewRecord(): void {
     this.router.navigateByUrl('probate-record-collections/create')
   }

@@ -170,12 +170,9 @@ export class ProbateRecordEffects {
             console.log(response);
             return updateProbateRecordSuccess({
               probateRecord: response as ProbateRecord,
-            })
-          }
-          ),
-          catchError((error) =>
-            of(updateProbateRecordFailure({ error }))
-          )
+            });
+          }),
+          catchError((error) => of(updateProbateRecordFailure({ error })))
         )
       )
     )
@@ -192,8 +189,9 @@ export class ProbateRecordEffects {
   ): Promise<ProbateRecord[]> {
     const records: ProbateRecord[] = [];
     for (const recordId of recordIds) {
-      const record = await this.apiService.GetProbateRecord(recordId);
-      records.push(record);
+      const recordResponse = await this.apiService.GetProbateRecord(recordId);
+
+      records.push(recordResponse as ProbateRecord);
     }
     return records;
   }

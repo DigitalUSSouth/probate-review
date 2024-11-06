@@ -9,7 +9,6 @@ import {
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { AmplifyUser } from '@aws-amplify/ui';
 import { Subscription } from 'rxjs';
 import { ProbateRecord } from '../API.service';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
@@ -18,6 +17,7 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { Store } from '@ngrx/store';
 import { AppState } from '../app.state';
 import { updateProbateRecord } from 'src/state/probate-record.actions';
+import { AuthUser } from 'aws-amplify/auth';
 
 @Component({
   selector: 'app-selectable-record-list-view',
@@ -43,9 +43,9 @@ export class SelectableRecordListViewComponent {
   @Input() deleteColTitle: 'Delete' | 'Restore' = 'Delete';
   @Output() selectedProbateRecords = new EventEmitter<ProbateRecord[]>();
   dataSource?: MatTableDataSource<ProbateRecord>;
-  user?: AmplifyUser;
+  user?: AuthUser;
   selectedRecords: ProbateRecord[] = [];
-  
+
   constructor(
     private store: Store<AppState>,
     public authenticator: AuthenticatorService,
@@ -123,13 +123,13 @@ export class SelectableRecordListViewComponent {
   async toggleRecordLock(record: ProbateRecord) {
     const unlockable = (this.user && this.user!.username! && record.lockedBy === this.user.username);
     const lockable = !record.lockedBy;
-    
+
     if(!unlockable && !lockable) {
       return;
     }
 
     console.log('toggling lock for: ' + record.title);
-    
+
     try {
       const lockedBy = (lockable) ? this.user!.username! : '';
       const lockedDate = (lockable) ? new Date().toISOString() : null ;
