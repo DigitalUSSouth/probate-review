@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { APIService, ListProbateRecordsQuery, ListLineItemsQuery, ModelLineItemFilterInput, ModelProbateRecordFilterInput, ProbateRecord, ModelIDInput } from '../API.service';
 import { PageEvent } from '@angular/material/paginator';
 import { LineItem } from 'src/models';
-import { urlSafeDecode } from '@aws-amplify/core';
+
 
 @Component({
   selector: 'app-search-results',
@@ -73,12 +73,12 @@ export class SearchResultsComponent implements OnInit {
     let ids = await this.fetchLineItems(q, this.pageSize - this.records.length);
     // do not fetch records we have already fetched
     ids = ids.filter(r => !(this.records!.map(id => id.id)).includes(r));
-    
-    // fetch probate ids 
+
+    // fetch probate ids
     console.log('ids to fetch');
     console.log(ids);
     if (ids.length) {
-      probateFilter = (ids.length > 1) ? 
+      probateFilter = (ids.length > 1) ?
           this.getIdFilterFromArray(ids)
          :
       {
@@ -118,14 +118,14 @@ export class SearchResultsComponent implements OnInit {
           }
         }
       ]
-    };          
+    };
 
     console.log('line item filter');
     console.log(lineItemFilter);
 
 
     let lineItemQuery: ListLineItemsQuery;
-    let itemCount = 0; 
+    let itemCount = 0;
     do {
       try {
     lineItemQuery = await this.probateRecordService.ListLineItems(lineItemFilter, maxCount, this.lineItemNextToken);
@@ -142,7 +142,7 @@ export class SearchResultsComponent implements OnInit {
   }
   } while(itemCount > 0);
 
-    
+
 
     return Array.from(recordIdsToFetch.values());
   }

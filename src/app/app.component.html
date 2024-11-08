@@ -4,7 +4,7 @@
 <!-- Toolbar -->
 <div class="toolbar" role="banner">
   <mat-toolbar color="primary">
-    
+
     <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="menu icon">
       <mat-icon>menu</mat-icon>
     </button>
@@ -18,7 +18,7 @@
     </mat-menu>
     <span>Probate Review</span>
     <span class="example-spacer"></span>
-    <amplify-authenticator [hideSignUp]="true">
+    <amplify-authenticator initialState="forgotPassword" [hideSignUp]="true">
       <ng-template amplifySlot="authenticated" let-user="user" let-signOut="signOut">
         <h1>Welcome {{ user.username }}!</h1>
         <button (click)="signOut()">Sign Out</button>
@@ -28,12 +28,12 @@
       <a target="_blank" href="https://sc.libwizard.com/f/probatefb">Feedback</a>
     </div>
     </mat-toolbar>
-    
+
 </div>
 
 
 <div class="content" role="main">
-  <router-outlet></router-outlet>      
+  <router-outlet></router-outlet>
 </div>
 
 

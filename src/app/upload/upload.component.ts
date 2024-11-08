@@ -6,7 +6,8 @@ import {
   ViewEncapsulation,
   AfterViewInit,
 } from '@angular/core';
-import { Storage } from 'aws-amplify';
+import { uploadData } from 'aws-amplify/storage';
+
 import { v4 as uuidv4 } from 'uuid';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
 import { Observable, interval } from 'rxjs';
@@ -20,7 +21,10 @@ import { SelectProbateRecordCollectionDialogComponent } from '../select-probate-
 import { AppState } from '../app.state';
 import { Store, select } from '@ngrx/store';
 import { associateProbateRecord } from 'src/state/probate-record-collection.actions';
-import { selectProbateRecordCollectionsError, selectProbateRecordCollectionsUpdating } from 'src/state/probate-record-collection.selectors';
+import {
+  selectProbateRecordCollectionsError,
+  selectProbateRecordCollectionsUpdating,
+} from 'src/state/probate-record-collection.selectors';
 
 const POLL_INTERVAL = 20000;
 
@@ -54,13 +58,13 @@ export class UploadComponent implements OnInit {
     this.updating$.subscribe((updating) => {
       this.updating = updating;
       if (!this.updating) {
-        if(this.collectionsToBeUpdated.size > 0) {
+        if (this.collectionsToBeUpdated.size > 0) {
           const recordId = this.collectionsToBeUpdated.keys()[0];
           this.update(recordId);
         }
       }
     });
-    
+
     this.error$ = this.store.pipe(select(selectProbateRecordCollectionsError));
     this.error$.subscribe((error) => {
       console.log(error);
@@ -109,7 +113,7 @@ export class UploadComponent implements OnInit {
         }
       }
       if (!this.updating) {
-        if(this.collectionsToBeUpdated.size > 0) {
+        if (this.collectionsToBeUpdated.size > 0) {
           const recordId = this.collectionsToBeUpdated.keys()[0];
           this.update(recordId);
         }
@@ -119,7 +123,7 @@ export class UploadComponent implements OnInit {
 
   update(recordId: string) {
     console.log('update called for ' + recordId);
-    if(!recordId) {
+    if (!recordId) {
       return;
     }
 
@@ -127,22 +131,27 @@ export class UploadComponent implements OnInit {
       const collectionIds = this.collectionsToBeUpdated.get(recordId);
       if (collectionIds) {
         const collectionId = collectionIds.pop();
-        if(collectionIds.length === 0) {
+        if (collectionIds.length === 0) {
           this.collectionsToBeUpdated.delete(recordId);
         }
         const collection = this.selectedProbateRecordCollections.find(
           (c) => c.id === collectionId
         );
-        const updatedCollection = {...collection};
-        
-        if(updatedCollection.probateRecordIds) {
-          updatedCollection.probateRecordIds = [...updatedCollection.probateRecordIds, recordId];
-        }
-        else {
+        const updatedCollection = { ...collection };
+
+        if (updatedCollection.probateRecordIds) {
+          updatedCollection.probateRecordIds = [
+            ...updatedCollection.probateRecordIds,
+            recordId,
+          ];
+        } else {
           updatedCollection.probateRecordIds = [recordId];
         }
-        const index = this.selectedProbateRecordCollections.findIndex(c => c.id === updatedCollection.id);
-        this.selectedProbateRecordCollections[index] = updatedCollection as ProbateRecordCollection;
+        const index = this.selectedProbateRecordCollections.findIndex(
+          (c) => c.id === updatedCollection.id
+        );
+        this.selectedProbateRecordCollections[index] =
+          updatedCollection as ProbateRecordCollection;
 
         if (collection) {
           this.store.dispatch(associateProbateRecord({ collection, recordId }));
@@ -267,20 +276,25 @@ export class UploadComponent implements OnInit {
         uploader: this.authenticator.user.username!,
       };
       this.filesInProcessing.push(docid);
-      await Storage.put(file!.name, file, {
-        metadata,
-        progressCallback: (progress) => {
-          // console.log(`Uploaded: ${progress.loaded}/${progress.total} for ${docid}`);
-          let progressElement = document.getElementById(
-            `progress-${docid}`
-          ) as HTMLInputElement;
-          if (progressElement) {
-            progressElement.value = `${
-              (progress.loaded / progress.total) * 100
-            }`;
-          }
+
+      uploadData({
+        data: file!,
+        path: `public/${file!.name}`, // Specify public access level in the path
+        options: {
+          metadata,
+          onProgress: (progress) => {
+            const progressElement = document.getElementById(
+              `progress-${docid}`
+            ) as HTMLInputElement;
+            if (progressElement) {
+              progressElement.value = progress.totalBytes
+                ? `${(progress.transferredBytes / progress.totalBytes) * 100}`
+                : '0';
+            }
+          },
         },
       });
+
       anchorElement.innerText = 'processing';
     }
   }

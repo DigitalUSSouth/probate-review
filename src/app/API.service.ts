@@ -2,12 +2,8 @@
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 import { Injectable } from "@angular/core";
-import API, { graphqlOperation, GraphQLResult } from "@aws-amplify/api-graphql";
-import { Observable } from "zen-observable-ts";
-
-export interface SubscriptionResponse<T> {
-  value: GraphQLResult<T>;
-}
+import { Client, generateClient, GraphQLResult } from "aws-amplify/api";
+import { Observable } from "rxjs";
 
 export type __SubscriptionContainer = {
   onCreateProbateRecord: OnCreateProbateRecordSubscription;
@@ -79,6 +75,8 @@ export type ModelProbateRecordConditionInput = {
   and?: Array<ModelProbateRecordConditionInput | null> | null;
   or?: Array<ModelProbateRecordConditionInput | null> | null;
   not?: ModelProbateRecordConditionInput | null;
+  createdAt?: ModelStringInput | null;
+  updatedAt?: ModelStringInput | null;
 };
 
 export type ModelStringInput = {
@@ -286,6 +284,8 @@ export type ModelLineItemConditionInput = {
   and?: Array<ModelLineItemConditionInput | null> | null;
   or?: Array<ModelLineItemConditionInput | null> | null;
   not?: ModelLineItemConditionInput | null;
+  createdAt?: ModelStringInput | null;
+  updatedAt?: ModelStringInput | null;
 };
 
 export type UpdateLineItemInput = {
@@ -328,6 +328,8 @@ export type ModelDocumentConditionInput = {
   and?: Array<ModelDocumentConditionInput | null> | null;
   or?: Array<ModelDocumentConditionInput | null> | null;
   not?: ModelDocumentConditionInput | null;
+  createdAt?: ModelStringInput | null;
+  updatedAt?: ModelStringInput | null;
 };
 
 export type Document = {
@@ -375,6 +377,8 @@ export type ModelLineItemReviewerNoteConditionInput = {
   and?: Array<ModelLineItemReviewerNoteConditionInput | null> | null;
   or?: Array<ModelLineItemReviewerNoteConditionInput | null> | null;
   not?: ModelLineItemReviewerNoteConditionInput | null;
+  createdAt?: ModelStringInput | null;
+  updatedAt?: ModelStringInput | null;
 };
 
 export type LineItemReviewerNote = {
@@ -431,6 +435,8 @@ export type ModelIssueConditionInput = {
   and?: Array<ModelIssueConditionInput | null> | null;
   or?: Array<ModelIssueConditionInput | null> | null;
   not?: ModelIssueConditionInput | null;
+  createdAt?: ModelStringInput | null;
+  updatedAt?: ModelStringInput | null;
 };
 
 export type ModelIssueStatusInput = {
@@ -486,6 +492,8 @@ export type ModelProbateRecordCollectionConditionInput = {
   and?: Array<ModelProbateRecordCollectionConditionInput | null> | null;
   or?: Array<ModelProbateRecordCollectionConditionInput | null> | null;
   not?: ModelProbateRecordCollectionConditionInput | null;
+  createdAt?: ModelStringInput | null;
+  updatedAt?: ModelStringInput | null;
 };
 
 export type ProbateRecordCollection = {
@@ -528,6 +536,8 @@ export type ModelProbateRecordFilterInput = {
   lockedDate?: ModelStringInput | null;
   lockedBy?: ModelStringInput | null;
   markedForDeletion?: ModelBooleanInput | null;
+  createdAt?: ModelStringInput | null;
+  updatedAt?: ModelStringInput | null;
   and?: Array<ModelProbateRecordFilterInput | null> | null;
   or?: Array<ModelProbateRecordFilterInput | null> | null;
   not?: ModelProbateRecordFilterInput | null;
@@ -560,6 +570,8 @@ export type ModelLineItemFilterInput = {
   rowIndex?: ModelIntInput | null;
   lowerTitle?: ModelStringInput | null;
   attributeForId?: ModelIDInput | null;
+  createdAt?: ModelStringInput | null;
+  updatedAt?: ModelStringInput | null;
   and?: Array<ModelLineItemFilterInput | null> | null;
   or?: Array<ModelLineItemFilterInput | null> | null;
   not?: ModelLineItemFilterInput | null;
@@ -576,6 +588,8 @@ export type ModelIntKeyConditionInput = {
 
 export type ModelDocumentFilterInput = {
   id?: ModelIDInput | null;
+  createdAt?: ModelStringInput | null;
+  updatedAt?: ModelStringInput | null;
   and?: Array<ModelDocumentFilterInput | null> | null;
   or?: Array<ModelDocumentFilterInput | null> | null;
   not?: ModelDocumentFilterInput | null;
@@ -593,6 +607,8 @@ export type ModelLineItemReviewerNoteFilterInput = {
   title?: ModelStringInput | null;
   reviewed?: ModelBooleanInput | null;
   reviewer?: ModelStringInput | null;
+  createdAt?: ModelStringInput | null;
+  updatedAt?: ModelStringInput | null;
   and?: Array<ModelLineItemReviewerNoteFilterInput | null> | null;
   or?: Array<ModelLineItemReviewerNoteFilterInput | null> | null;
   not?: ModelLineItemReviewerNoteFilterInput | null;
@@ -611,6 +627,8 @@ export type ModelIssueFilterInput = {
   reporter?: ModelStringInput | null;
   status?: ModelIssueStatusInput | null;
   type?: ModelIssueTypeInput | null;
+  createdAt?: ModelStringInput | null;
+  updatedAt?: ModelStringInput | null;
   and?: Array<ModelIssueFilterInput | null> | null;
   or?: Array<ModelIssueFilterInput | null> | null;
   not?: ModelIssueFilterInput | null;
@@ -629,6 +647,8 @@ export type ModelProbateRecordCollectionFilterInput = {
   lowerTitle?: ModelStringInput | null;
   lowerDescription?: ModelStringInput | null;
   probateRecordIds?: ModelStringInput | null;
+  createdAt?: ModelStringInput | null;
+  updatedAt?: ModelStringInput | null;
   and?: Array<ModelProbateRecordCollectionFilterInput | null> | null;
   or?: Array<ModelProbateRecordCollectionFilterInput | null> | null;
   not?: ModelProbateRecordCollectionFilterInput | null;
@@ -655,6 +675,8 @@ export type ModelSubscriptionProbateRecordFilterInput = {
   lockedDate?: ModelSubscriptionStringInput | null;
   lockedBy?: ModelSubscriptionStringInput | null;
   markedForDeletion?: ModelSubscriptionBooleanInput | null;
+  createdAt?: ModelSubscriptionStringInput | null;
+  updatedAt?: ModelSubscriptionStringInput | null;
   and?: Array<ModelSubscriptionProbateRecordFilterInput | null> | null;
   or?: Array<ModelSubscriptionProbateRecordFilterInput | null> | null;
 };
@@ -732,12 +754,16 @@ export type ModelSubscriptionLineItemFilterInput = {
   rowIndex?: ModelSubscriptionIntInput | null;
   lowerTitle?: ModelSubscriptionStringInput | null;
   attributeForId?: ModelSubscriptionIDInput | null;
+  createdAt?: ModelSubscriptionStringInput | null;
+  updatedAt?: ModelSubscriptionStringInput | null;
   and?: Array<ModelSubscriptionLineItemFilterInput | null> | null;
   or?: Array<ModelSubscriptionLineItemFilterInput | null> | null;
 };
 
 export type ModelSubscriptionDocumentFilterInput = {
   id?: ModelSubscriptionIDInput | null;
+  createdAt?: ModelSubscriptionStringInput | null;
+  updatedAt?: ModelSubscriptionStringInput | null;
   and?: Array<ModelSubscriptionDocumentFilterInput | null> | null;
   or?: Array<ModelSubscriptionDocumentFilterInput | null> | null;
 };
@@ -748,6 +774,8 @@ export type ModelSubscriptionLineItemReviewerNoteFilterInput = {
   title?: ModelSubscriptionStringInput | null;
   reviewed?: ModelSubscriptionBooleanInput | null;
   reviewer?: ModelSubscriptionStringInput | null;
+  createdAt?: ModelSubscriptionStringInput | null;
+  updatedAt?: ModelSubscriptionStringInput | null;
   and?: Array<ModelSubscriptionLineItemReviewerNoteFilterInput | null> | null;
   or?: Array<ModelSubscriptionLineItemReviewerNoteFilterInput | null> | null;
 };
@@ -759,6 +787,8 @@ export type ModelSubscriptionIssueFilterInput = {
   reporter?: ModelSubscriptionStringInput | null;
   status?: ModelSubscriptionStringInput | null;
   type?: ModelSubscriptionStringInput | null;
+  createdAt?: ModelSubscriptionStringInput | null;
+  updatedAt?: ModelSubscriptionStringInput | null;
   and?: Array<ModelSubscriptionIssueFilterInput | null> | null;
   or?: Array<ModelSubscriptionIssueFilterInput | null> | null;
 };
@@ -770,6 +800,8 @@ export type ModelSubscriptionProbateRecordCollectionFilterInput = {
   lowerTitle?: ModelSubscriptionStringInput | null;
   lowerDescription?: ModelSubscriptionStringInput | null;
   probateRecordIds?: ModelSubscriptionStringInput | null;
+  createdAt?: ModelSubscriptionStringInput | null;
+  updatedAt?: ModelSubscriptionStringInput | null;
   and?: Array<ModelSubscriptionProbateRecordCollectionFilterInput | null> | null;
   or?: Array<ModelSubscriptionProbateRecordCollectionFilterInput | null> | null;
 };
@@ -2098,6 +2130,10 @@ export type OnDeleteProbateRecordCollectionSubscription = {
   providedIn: "root"
 })
 export class APIService {
+  public client: Client;
+  constructor() {
+    this.client = generateClient() as unknown as Client;
+  }
   async CreateProbateRecord(
     input: CreateProbateRecordInput,
     condition?: ModelProbateRecordConditionInput
@@ -2171,9 +2207,10 @@ export class APIService {
     if (condition) {
       gqlAPIServiceArguments.condition = condition;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <CreateProbateRecordMutation>response.data.createProbateRecord;
   }
   async UpdateProbateRecord(
@@ -2249,9 +2286,10 @@ export class APIService {
     if (condition) {
       gqlAPIServiceArguments.condition = condition;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <UpdateProbateRecordMutation>response.data.updateProbateRecord;
   }
   async DeleteProbateRecord(
@@ -2327,9 +2365,10 @@ export class APIService {
     if (condition) {
       gqlAPIServiceArguments.condition = condition;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <DeleteProbateRecordMutation>response.data.deleteProbateRecord;
   }
   async CreateLineItem(
@@ -2369,9 +2408,10 @@ export class APIService {
     if (condition) {
       gqlAPIServiceArguments.condition = condition;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <CreateLineItemMutation>response.data.createLineItem;
   }
   async UpdateLineItem(
@@ -2411,9 +2451,10 @@ export class APIService {
     if (condition) {
       gqlAPIServiceArguments.condition = condition;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <UpdateLineItemMutation>response.data.updateLineItem;
   }
   async DeleteLineItem(
@@ -2453,9 +2494,10 @@ export class APIService {
     if (condition) {
       gqlAPIServiceArguments.condition = condition;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <DeleteLineItemMutation>response.data.deleteLineItem;
   }
   async CreateDocument(
@@ -2504,9 +2546,10 @@ export class APIService {
     if (condition) {
       gqlAPIServiceArguments.condition = condition;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <CreateDocumentMutation>response.data.createDocument;
   }
   async UpdateDocument(
@@ -2555,9 +2598,10 @@ export class APIService {
     if (condition) {
       gqlAPIServiceArguments.condition = condition;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <UpdateDocumentMutation>response.data.updateDocument;
   }
   async DeleteDocument(
@@ -2606,9 +2650,10 @@ export class APIService {
     if (condition) {
       gqlAPIServiceArguments.condition = condition;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <DeleteDocumentMutation>response.data.deleteDocument;
   }
   async CreateLineItemReviewerNote(
@@ -2633,9 +2678,10 @@ export class APIService {
     if (condition) {
       gqlAPIServiceArguments.condition = condition;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <CreateLineItemReviewerNoteMutation>(
       response.data.createLineItemReviewerNote
     );
@@ -2662,9 +2708,10 @@ export class APIService {
     if (condition) {
       gqlAPIServiceArguments.condition = condition;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <UpdateLineItemReviewerNoteMutation>(
       response.data.updateLineItemReviewerNote
     );
@@ -2691,9 +2738,10 @@ export class APIService {
     if (condition) {
       gqlAPIServiceArguments.condition = condition;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <DeleteLineItemReviewerNoteMutation>(
       response.data.deleteLineItemReviewerNote
     );
@@ -2721,9 +2769,10 @@ export class APIService {
     if (condition) {
       gqlAPIServiceArguments.condition = condition;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <CreateIssueMutation>response.data.createIssue;
   }
   async UpdateIssue(
@@ -2749,9 +2798,10 @@ export class APIService {
     if (condition) {
       gqlAPIServiceArguments.condition = condition;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <UpdateIssueMutation>response.data.updateIssue;
   }
   async DeleteIssue(
@@ -2777,9 +2827,10 @@ export class APIService {
     if (condition) {
       gqlAPIServiceArguments.condition = condition;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <DeleteIssueMutation>response.data.deleteIssue;
   }
   async CreateProbateRecordCollection(
@@ -2805,9 +2856,10 @@ export class APIService {
     if (condition) {
       gqlAPIServiceArguments.condition = condition;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <CreateProbateRecordCollectionMutation>(
       response.data.createProbateRecordCollection
     );
@@ -2835,9 +2887,10 @@ export class APIService {
     if (condition) {
       gqlAPIServiceArguments.condition = condition;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <UpdateProbateRecordCollectionMutation>(
       response.data.updateProbateRecordCollection
     );
@@ -2865,9 +2918,10 @@ export class APIService {
     if (condition) {
       gqlAPIServiceArguments.condition = condition;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <DeleteProbateRecordCollectionMutation>(
       response.data.deleteProbateRecordCollection
     );
@@ -2939,9 +2993,10 @@ export class APIService {
     const gqlAPIServiceArguments: any = {
       id
     };
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <GetProbateRecordQuery>response.data.getProbateRecord;
   }
   async ListProbateRecords(
@@ -3042,9 +3097,10 @@ export class APIService {
     if (sortDirection) {
       gqlAPIServiceArguments.sortDirection = sortDirection;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <ListProbateRecordsQuery>response.data.listProbateRecords;
   }
   async GetLineItem(id: string): Promise<GetLineItemQuery> {
@@ -3078,9 +3134,10 @@ export class APIService {
     const gqlAPIServiceArguments: any = {
       id
     };
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <GetLineItemQuery>response.data.getLineItem;
   }
   async ListLineItems(
@@ -3129,9 +3186,10 @@ export class APIService {
     if (nextToken) {
       gqlAPIServiceArguments.nextToken = nextToken;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <ListLineItemsQuery>response.data.listLineItems;
   }
   async LineItemByProbateRecord(
@@ -3198,9 +3256,10 @@ export class APIService {
     if (nextToken) {
       gqlAPIServiceArguments.nextToken = nextToken;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <LineItemByProbateRecordQuery>response.data.lineItemByProbateRecord;
   }
   async GetDocument(id: string): Promise<GetDocumentQuery> {
@@ -3243,9 +3302,10 @@ export class APIService {
     const gqlAPIServiceArguments: any = {
       id
     };
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <GetDocumentQuery>response.data.getDocument;
   }
   async ListDocuments(
@@ -3303,9 +3363,10 @@ export class APIService {
     if (nextToken) {
       gqlAPIServiceArguments.nextToken = nextToken;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <ListDocumentsQuery>response.data.listDocuments;
   }
   async GetLineItemReviewerNote(
@@ -3326,9 +3387,10 @@ export class APIService {
     const gqlAPIServiceArguments: any = {
       id
     };
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <GetLineItemReviewerNoteQuery>response.data.getLineItemReviewerNote;
   }
   async ListLineItemReviewerNotes(
@@ -3362,9 +3424,10 @@ export class APIService {
     if (nextToken) {
       gqlAPIServiceArguments.nextToken = nextToken;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <ListLineItemReviewerNotesQuery>(
       response.data.listLineItemReviewerNotes
     );
@@ -3386,9 +3449,10 @@ export class APIService {
     const gqlAPIServiceArguments: any = {
       id
     };
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <GetIssueQuery>response.data.getIssue;
   }
   async ListIssues(
@@ -3423,9 +3487,10 @@ export class APIService {
     if (nextToken) {
       gqlAPIServiceArguments.nextToken = nextToken;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <ListIssuesQuery>response.data.listIssues;
   }
   async GetProbateRecordCollection(
@@ -3447,9 +3512,10 @@ export class APIService {
     const gqlAPIServiceArguments: any = {
       id
     };
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <GetProbateRecordCollectionQuery>(
       response.data.getProbateRecordCollection
     );
@@ -3490,9 +3556,10 @@ export class APIService {
     if (nextToken) {
       gqlAPIServiceArguments.nextToken = nextToken;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    })) as any;
     return <ListProbateRecordCollectionsQuery>(
       response.data.listProbateRecordCollections
     );
@@ -3500,7 +3567,7 @@ export class APIService {
   OnCreateProbateRecordListener(
     filter?: ModelSubscriptionProbateRecordFilterInput
   ): Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateProbateRecord">>
+    GraphQLResult<Pick<__SubscriptionContainer, "onCreateProbateRecord">>
   > {
     const statement = `subscription OnCreateProbateRecord($filter: ModelSubscriptionProbateRecordFilterInput) {
         onCreateProbateRecord(filter: $filter) {
@@ -3569,19 +3636,16 @@ export class APIService {
     if (filter) {
       gqlAPIServiceArguments.filter = filter;
     }
-    return API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    ) as Observable<
-      SubscriptionResponse<
-        Pick<__SubscriptionContainer, "onCreateProbateRecord">
-      >
-    >;
+    return this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    }) as any;
   }
 
   OnUpdateProbateRecordListener(
     filter?: ModelSubscriptionProbateRecordFilterInput
   ): Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateProbateRecord">>
+    GraphQLResult<Pick<__SubscriptionContainer, "onUpdateProbateRecord">>
   > {
     const statement = `subscription OnUpdateProbateRecord($filter: ModelSubscriptionProbateRecordFilterInput) {
         onUpdateProbateRecord(filter: $filter) {
@@ -3650,19 +3714,16 @@ export class APIService {
     if (filter) {
       gqlAPIServiceArguments.filter = filter;
     }
-    return API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    ) as Observable<
-      SubscriptionResponse<
-        Pick<__SubscriptionContainer, "onUpdateProbateRecord">
-      >
-    >;
+    return this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    }) as any;
   }
 
   OnDeleteProbateRecordListener(
     filter?: ModelSubscriptionProbateRecordFilterInput
   ): Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteProbateRecord">>
+    GraphQLResult<Pick<__SubscriptionContainer, "onDeleteProbateRecord">>
   > {
     const statement = `subscription OnDeleteProbateRecord($filter: ModelSubscriptionProbateRecordFilterInput) {
         onDeleteProbateRecord(filter: $filter) {
@@ -3731,19 +3792,16 @@ export class APIService {
     if (filter) {
       gqlAPIServiceArguments.filter = filter;
     }
-    return API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    ) as Observable<
-      SubscriptionResponse<
-        Pick<__SubscriptionContainer, "onDeleteProbateRecord">
-      >
-    >;
+    return this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    }) as any;
   }
 
   OnCreateLineItemListener(
     filter?: ModelSubscriptionLineItemFilterInput
   ): Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateLineItem">>
+    GraphQLResult<Pick<__SubscriptionContainer, "onCreateLineItem">>
   > {
     const statement = `subscription OnCreateLineItem($filter: ModelSubscriptionLineItemFilterInput) {
         onCreateLineItem(filter: $filter) {
@@ -3776,17 +3834,16 @@ export class APIService {
     if (filter) {
       gqlAPIServiceArguments.filter = filter;
     }
-    return API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    ) as Observable<
-      SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateLineItem">>
-    >;
+    return this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    }) as any;
   }
 
   OnUpdateLineItemListener(
     filter?: ModelSubscriptionLineItemFilterInput
   ): Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateLineItem">>
+    GraphQLResult<Pick<__SubscriptionContainer, "onUpdateLineItem">>
   > {
     const statement = `subscription OnUpdateLineItem($filter: ModelSubscriptionLineItemFilterInput) {
         onUpdateLineItem(filter: $filter) {
@@ -3819,17 +3876,16 @@ export class APIService {
     if (filter) {
       gqlAPIServiceArguments.filter = filter;
     }
-    return API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    ) as Observable<
-      SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateLineItem">>
-    >;
+    return this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    }) as any;
   }
 
   OnDeleteLineItemListener(
     filter?: ModelSubscriptionLineItemFilterInput
   ): Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteLineItem">>
+    GraphQLResult<Pick<__SubscriptionContainer, "onDeleteLineItem">>
   > {
     const statement = `subscription OnDeleteLineItem($filter: ModelSubscriptionLineItemFilterInput) {
         onDeleteLineItem(filter: $filter) {
@@ -3862,17 +3918,16 @@ export class APIService {
     if (filter) {
       gqlAPIServiceArguments.filter = filter;
     }
-    return API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    ) as Observable<
-      SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteLineItem">>
-    >;
+    return this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    }) as any;
   }
 
   OnCreateDocumentListener(
     filter?: ModelSubscriptionDocumentFilterInput
   ): Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateDocument">>
+    GraphQLResult<Pick<__SubscriptionContainer, "onCreateDocument">>
   > {
     const statement = `subscription OnCreateDocument($filter: ModelSubscriptionDocumentFilterInput) {
         onCreateDocument(filter: $filter) {
@@ -3914,17 +3969,16 @@ export class APIService {
     if (filter) {
       gqlAPIServiceArguments.filter = filter;
     }
-    return API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    ) as Observable<
-      SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateDocument">>
-    >;
+    return this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    }) as any;
   }
 
   OnUpdateDocumentListener(
     filter?: ModelSubscriptionDocumentFilterInput
   ): Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateDocument">>
+    GraphQLResult<Pick<__SubscriptionContainer, "onUpdateDocument">>
   > {
     const statement = `subscription OnUpdateDocument($filter: ModelSubscriptionDocumentFilterInput) {
         onUpdateDocument(filter: $filter) {
@@ -3966,17 +4020,16 @@ export class APIService {
     if (filter) {
       gqlAPIServiceArguments.filter = filter;
     }
-    return API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    ) as Observable<
-      SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateDocument">>
-    >;
+    return this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    }) as any;
   }
 
   OnDeleteDocumentListener(
     filter?: ModelSubscriptionDocumentFilterInput
   ): Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteDocument">>
+    GraphQLResult<Pick<__SubscriptionContainer, "onDeleteDocument">>
   > {
     const statement = `subscription OnDeleteDocument($filter: ModelSubscriptionDocumentFilterInput) {
         onDeleteDocument(filter: $filter) {
@@ -4018,19 +4071,16 @@ export class APIService {
     if (filter) {
       gqlAPIServiceArguments.filter = filter;
     }
-    return API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    ) as Observable<
-      SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteDocument">>
-    >;
+    return this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    }) as any;
   }
 
   OnCreateLineItemReviewerNoteListener(
     filter?: ModelSubscriptionLineItemReviewerNoteFilterInput
   ): Observable<
-    SubscriptionResponse<
-      Pick<__SubscriptionContainer, "onCreateLineItemReviewerNote">
-    >
+    GraphQLResult<Pick<__SubscriptionContainer, "onCreateLineItemReviewerNote">>
   > {
     const statement = `subscription OnCreateLineItemReviewerNote($filter: ModelSubscriptionLineItemReviewerNoteFilterInput) {
         onCreateLineItemReviewerNote(filter: $filter) {
@@ -4048,21 +4098,16 @@ export class APIService {
     if (filter) {
       gqlAPIServiceArguments.filter = filter;
     }
-    return API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    ) as Observable<
-      SubscriptionResponse<
-        Pick<__SubscriptionContainer, "onCreateLineItemReviewerNote">
-      >
-    >;
+    return this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    }) as any;
   }
 
   OnUpdateLineItemReviewerNoteListener(
     filter?: ModelSubscriptionLineItemReviewerNoteFilterInput
   ): Observable<
-    SubscriptionResponse<
-      Pick<__SubscriptionContainer, "onUpdateLineItemReviewerNote">
-    >
+    GraphQLResult<Pick<__SubscriptionContainer, "onUpdateLineItemReviewerNote">>
   > {
     const statement = `subscription OnUpdateLineItemReviewerNote($filter: ModelSubscriptionLineItemReviewerNoteFilterInput) {
         onUpdateLineItemReviewerNote(filter: $filter) {
@@ -4080,21 +4125,16 @@ export class APIService {
     if (filter) {
       gqlAPIServiceArguments.filter = filter;
     }
-    return API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    ) as Observable<
-      SubscriptionResponse<
-        Pick<__SubscriptionContainer, "onUpdateLineItemReviewerNote">
-      >
-    >;
+    return this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    }) as any;
   }
 
   OnDeleteLineItemReviewerNoteListener(
     filter?: ModelSubscriptionLineItemReviewerNoteFilterInput
   ): Observable<
-    SubscriptionResponse<
-      Pick<__SubscriptionContainer, "onDeleteLineItemReviewerNote">
-    >
+    GraphQLResult<Pick<__SubscriptionContainer, "onDeleteLineItemReviewerNote">>
   > {
     const statement = `subscription OnDeleteLineItemReviewerNote($filter: ModelSubscriptionLineItemReviewerNoteFilterInput) {
         onDeleteLineItemReviewerNote(filter: $filter) {
@@ -4112,20 +4152,15 @@ export class APIService {
     if (filter) {
       gqlAPIServiceArguments.filter = filter;
     }
-    return API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    ) as Observable<
-      SubscriptionResponse<
-        Pick<__SubscriptionContainer, "onDeleteLineItemReviewerNote">
-      >
-    >;
+    return this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    }) as any;
   }
 
   OnCreateIssueListener(
     filter?: ModelSubscriptionIssueFilterInput
-  ): Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateIssue">>
-  > {
+  ): Observable<GraphQLResult<Pick<__SubscriptionContainer, "onCreateIssue">>> {
     const statement = `subscription OnCreateIssue($filter: ModelSubscriptionIssueFilterInput) {
         onCreateIssue(filter: $filter) {
           __typename
@@ -4143,18 +4178,15 @@ export class APIService {
     if (filter) {
       gqlAPIServiceArguments.filter = filter;
     }
-    return API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    ) as Observable<
-      SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateIssue">>
-    >;
+    return this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    }) as any;
   }
 
   OnUpdateIssueListener(
     filter?: ModelSubscriptionIssueFilterInput
-  ): Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateIssue">>
-  > {
+  ): Observable<GraphQLResult<Pick<__SubscriptionContainer, "onUpdateIssue">>> {
     const statement = `subscription OnUpdateIssue($filter: ModelSubscriptionIssueFilterInput) {
         onUpdateIssue(filter: $filter) {
           __typename
@@ -4172,18 +4204,15 @@ export class APIService {
     if (filter) {
       gqlAPIServiceArguments.filter = filter;
     }
-    return API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    ) as Observable<
-      SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateIssue">>
-    >;
+    return this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    }) as any;
   }
 
   OnDeleteIssueListener(
     filter?: ModelSubscriptionIssueFilterInput
-  ): Observable<
-    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteIssue">>
-  > {
+  ): Observable<GraphQLResult<Pick<__SubscriptionContainer, "onDeleteIssue">>> {
     const statement = `subscription OnDeleteIssue($filter: ModelSubscriptionIssueFilterInput) {
         onDeleteIssue(filter: $filter) {
           __typename
@@ -4201,17 +4230,16 @@ export class APIService {
     if (filter) {
       gqlAPIServiceArguments.filter = filter;
     }
-    return API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    ) as Observable<
-      SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteIssue">>
-    >;
+    return this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    }) as any;
   }
 
   OnCreateProbateRecordCollectionListener(
     filter?: ModelSubscriptionProbateRecordCollectionFilterInput
   ): Observable<
-    SubscriptionResponse<
+    GraphQLResult<
       Pick<__SubscriptionContainer, "onCreateProbateRecordCollection">
     >
   > {
@@ -4232,19 +4260,16 @@ export class APIService {
     if (filter) {
       gqlAPIServiceArguments.filter = filter;
     }
-    return API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    ) as Observable<
-      SubscriptionResponse<
-        Pick<__SubscriptionContainer, "onCreateProbateRecordCollection">
-      >
-    >;
+    return this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    }) as any;
   }
 
   OnUpdateProbateRecordCollectionListener(
     filter?: ModelSubscriptionProbateRecordCollectionFilterInput
   ): Observable<
-    SubscriptionResponse<
+    GraphQLResult<
       Pick<__SubscriptionContainer, "onUpdateProbateRecordCollection">
     >
   > {
@@ -4265,19 +4290,16 @@ export class APIService {
     if (filter) {
       gqlAPIServiceArguments.filter = filter;
     }
-    return API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    ) as Observable<
-      SubscriptionResponse<
-        Pick<__SubscriptionContainer, "onUpdateProbateRecordCollection">
-      >
-    >;
+    return this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    }) as any;
   }
 
   OnDeleteProbateRecordCollectionListener(
     filter?: ModelSubscriptionProbateRecordCollectionFilterInput
   ): Observable<
-    SubscriptionResponse<
+    GraphQLResult<
       Pick<__SubscriptionContainer, "onDeleteProbateRecordCollection">
     >
   > {
@@ -4298,12 +4320,9 @@ export class APIService {
     if (filter) {
       gqlAPIServiceArguments.filter = filter;
     }
-    return API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    ) as Observable<
-      SubscriptionResponse<
-        Pick<__SubscriptionContainer, "onDeleteProbateRecordCollection">
-      >
-    >;
+    return this.client.graphql({
+      query: statement,
+      variables: gqlAPIServiceArguments
+    }) as any;
   }
 }

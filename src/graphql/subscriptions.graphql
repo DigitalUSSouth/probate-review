@@ -1,4 +1,5 @@
 # this is an auto generated file. This will be overwritten
+
 subscription OnCreateProbateRecord(
   $filter: ModelSubscriptionProbateRecordFilterInput
 ) {
@@ -29,12 +30,15 @@ subscription OnCreateProbateRecord(
           top
           width
           height
+          __typename
         }
         attributeForId
         createdAt
         updatedAt
+        __typename
       }
       nextToken
+      __typename
     }
     words {
       id
@@ -44,8 +48,10 @@ subscription OnCreateProbateRecord(
         top
         width
         height
+        __typename
       }
       lineIndex
+      __typename
     }
     totalValue
     reviewCount
@@ -56,8 +62,10 @@ subscription OnCreateProbateRecord(
     markedForDeletion
     createdAt
     updatedAt
+    __typename
   }
 }
+
 subscription OnUpdateProbateRecord(
   $filter: ModelSubscriptionProbateRecordFilterInput
 ) {
@@ -88,12 +96,15 @@ subscription OnUpdateProbateRecord(
           top
           width
           height
+          __typename
         }
         attributeForId
         createdAt
         updatedAt
+        __typename
       }
       nextToken
+      __typename
     }
     words {
       id
@@ -103,8 +114,10 @@ subscription OnUpdateProbateRecord(
         top
         width
         height
+        __typename
       }
       lineIndex
+      __typename
     }
     totalValue
     reviewCount
@@ -115,8 +128,10 @@ subscription OnUpdateProbateRecord(
     markedForDeletion
     createdAt
     updatedAt
+    __typename
   }
 }
+
 subscription OnDeleteProbateRecord(
   $filter: ModelSubscriptionProbateRecordFilterInput
 ) {
@@ -147,12 +162,15 @@ subscription OnDeleteProbateRecord(
           top
           width
           height
+          __typename
         }
         attributeForId
         createdAt
         updatedAt
+        __typename
       }
       nextToken
+      __typename
     }
     words {
       id
@@ -162,8 +180,10 @@ subscription OnDeleteProbateRecord(
         top
         width
         height
+        __typename
       }
       lineIndex
+      __typename
     }
     totalValue
     reviewCount
@@ -174,8 +194,10 @@ subscription OnDeleteProbateRecord(
     markedForDeletion
     createdAt
     updatedAt
+    __typename
   }
 }
+
 subscription OnCreateLineItem($filter: ModelSubscriptionLineItemFilterInput) {
   onCreateLineItem(filter: $filter) {
     id
@@ -195,12 +217,15 @@ subscription OnCreateLineItem($filter: ModelSubscriptionLineItemFilterInput) {
       top
       width
       height
+      __typename
     }
     attributeForId
     createdAt
     updatedAt
+    __typename
   }
 }
+
 subscription OnUpdateLineItem($filter: ModelSubscriptionLineItemFilterInput) {
   onUpdateLineItem(filter: $filter) {
     id
@@ -220,12 +245,15 @@ subscription OnUpdateLineItem($filter: ModelSubscriptionLineItemFilterInput) {
       top
       width
       height
+      __typename
     }
     attributeForId
     createdAt
     updatedAt
+    __typename
   }
 }
+
 subscription OnDeleteLineItem($filter: ModelSubscriptionLineItemFilterInput) {
   onDeleteLineItem(filter: $filter) {
     id
@@ -245,12 +273,15 @@ subscription OnDeleteLineItem($filter: ModelSubscriptionLineItemFilterInput) {
       top
       width
       height
+      __typename
     }
     attributeForId
     createdAt
     updatedAt
+    __typename
   }
 }
+
 subscription OnCreateDocument($filter: ModelSubscriptionDocumentFilterInput) {
   onCreateDocument(filter: $filter) {
     id
@@ -262,10 +293,12 @@ subscription OnCreateDocument($filter: ModelSubscriptionDocumentFilterInput) {
         top
         width
         height
+        __typename
       }
       confidence
       rowIndex
       lowerText
+      __typename
     }
     words {
       id
@@ -275,13 +308,17 @@ subscription OnCreateDocument($filter: ModelSubscriptionDocumentFilterInput) {
         top
         width
         height
+        __typename
       }
       lineIndex
+      __typename
     }
     createdAt
     updatedAt
+    __typename
   }
 }
+
 subscription OnUpdateDocument($filter: ModelSubscriptionDocumentFilterInput) {
   onUpdateDocument(filter: $filter) {
     id
@@ -293,10 +330,12 @@ subscription OnUpdateDocument($filter: ModelSubscriptionDocumentFilterInput) {
         top
         width
         height
+        __typename
       }
       confidence
       rowIndex
       lowerText
+      __typename
     }
     words {
       id
@@ -306,13 +345,17 @@ subscription OnUpdateDocument($filter: ModelSubscriptionDocumentFilterInput) {
         top
         width
         height
+        __typename
       }
       lineIndex
+      __typename
     }
     createdAt
     updatedAt
+    __typename
   }
 }
+
 subscription OnDeleteDocument($filter: ModelSubscriptionDocumentFilterInput) {
   onDeleteDocument(filter: $filter) {
     id
@@ -324,10 +367,12 @@ subscription OnDeleteDocument($filter: ModelSubscriptionDocumentFilterInput) {
         top
         width
         height
+        __typename
       }
       confidence
       rowIndex
       lowerText
+      __typename
     }
     words {
       id
@@ -337,13 +382,17 @@ subscription OnDeleteDocument($filter: ModelSubscriptionDocumentFilterInput) {
         top
         width
         height
+        __typename
       }
       lineIndex
+      __typename
     }
     createdAt
     updatedAt
+    __typename
   }
 }
+
 subscription OnCreateLineItemReviewerNote(
   $filter: ModelSubscriptionLineItemReviewerNoteFilterInput
 ) {
@@ -355,8 +404,10 @@ subscription OnCreateLineItemReviewerNote(
     reviewer
     createdAt
     updatedAt
+    __typename
   }
 }
+
 subscription OnUpdateLineItemReviewerNote(
   $filter: ModelSubscriptionLineItemReviewerNoteFilterInput
 ) {
@@ -368,8 +419,10 @@ subscription OnUpdateLineItemReviewerNote(
     reviewer
     createdAt
     updatedAt
+    __typename
   }
 }
+
 subscription OnDeleteLineItemReviewerNote(
   $filter: ModelSubscriptionLineItemReviewerNoteFilterInput
 ) {
@@ -381,8 +434,10 @@ subscription OnDeleteLineItemReviewerNote(
     reviewer
     createdAt
     updatedAt
+    __typename
   }
 }
+
 subscription OnCreateIssue($filter: ModelSubscriptionIssueFilterInput) {
   onCreateIssue(filter: $filter) {
     id
@@ -393,8 +448,10 @@ subscription OnCreateIssue($filter: ModelSubscriptionIssueFilterInput) {
     type
     createdAt
     updatedAt
+    __typename
   }
 }
+
 subscription OnUpdateIssue($filter: ModelSubscriptionIssueFilterInput) {
   onUpdateIssue(filter: $filter) {
     id
@@ -405,8 +462,10 @@ subscription OnUpdateIssue($filter: ModelSubscriptionIssueFilterInput) {
     type
     createdAt
     updatedAt
+    __typename
   }
 }
+
 subscription OnDeleteIssue($filter: ModelSubscriptionIssueFilterInput) {
   onDeleteIssue(filter: $filter) {
     id
@@ -417,8 +476,10 @@ subscription OnDeleteIssue($filter: ModelSubscriptionIssueFilterInput) {
     type
     createdAt
     updatedAt
+    __typename
   }
 }
+
 subscription OnCreateProbateRecordCollection(
   $filter: ModelSubscriptionProbateRecordCollectionFilterInput
 ) {
@@ -431,8 +492,10 @@ subscription OnCreateProbateRecordCollection(
     probateRecordIds
     createdAt
     updatedAt
+    __typename
   }
 }
+
 subscription OnUpdateProbateRecordCollection(
   $filter: ModelSubscriptionProbateRecordCollectionFilterInput
 ) {
@@ -445,8 +508,10 @@ subscription OnUpdateProbateRecordCollection(
     probateRecordIds
     createdAt
     updatedAt
+    __typename
   }
 }
+
 subscription OnDeleteProbateRecordCollection(
   $filter: ModelSubscriptionProbateRecordCollectionFilterInput
 ) {
@@ -459,5 +524,6 @@ subscription OnDeleteProbateRecordCollection(
     probateRecordIds
     createdAt
     updatedAt
+    __typename
   }
 }
