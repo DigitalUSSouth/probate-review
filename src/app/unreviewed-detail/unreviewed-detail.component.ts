@@ -1599,7 +1599,6 @@ export class UnreviewedDetailComponent implements OnInit {
     }
 
     if (!lineItem) {
-      console.log('throwing error***************THROWING ERROR!!!!!!!!!!!!!');
       throw 'Invalid line index';
 
     }
