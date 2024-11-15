@@ -84,8 +84,10 @@
             >{{reviewedCheckBoxText}}</mat-checkbox
           >
         </div>
-        <div *ngIf="record != null">
+        <div *ngIf="record != null" class="scrollable-container" cdk-scrollable>
+
           <table
+            [cdkDropListAutoScrollStep]="35"
             mat-table
             #table
             [dataSource]="record!.lineItems!.items"
