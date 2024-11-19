@@ -1766,23 +1766,21 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   drop(event: CdkDragDrop<LineItem[]>) {
-    let lineItem = this.record!.lineItems!.items[
-      event.previousIndex
-    ] as LineItem;
-    lineItem.rowIndex = event.currentIndex;
-    this.updatedLineIds.add(lineItem.id);
     moveItemInArray(
       this.record!.lineItems!.items,
       event.previousIndex,
       event.currentIndex
     );
-    this.commands.push({
-      type: CommandType.MoveLine,
-      lineItem,
-      wasDirtyBeforeCommand: this.isDirty,
-      oldIndex: event.previousIndex,
-      newIndex: event.currentIndex,
+
+    this.record!.lineItems!.items.forEach((item, index) => {
+      if (item) {
+        item.rowIndex = index;
+      }
+      if (item) {
+        this.updatedLineIds.add(item.id);
+      }
     });
+
     this.isDirty = true;
     this.table.renderRows();
   }
