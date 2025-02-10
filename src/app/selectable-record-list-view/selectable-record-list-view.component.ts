@@ -71,6 +71,9 @@ export class SelectableRecordListViewComponent {
 
   initializeComponent() {
     this.user = this.authenticator.user;
+
+    this.displayedColumns = ['thumbnail', 'title'];
+
     if (this.showCheckBoxes) {
       this.displayedColumns = ['checked', ...this.displayedColumns];
     }
@@ -101,12 +104,14 @@ export class SelectableRecordListViewComponent {
       this.dataSource = new MatTableDataSource<ProbateRecord>(
         this.records.map((r) => r as ProbateRecord)
       );
+
       if (this.sort && this.paginator) {
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
       }
     }
   }
+
 
   handlePageEvent(event: PageEvent) {
     console.log('page event');
