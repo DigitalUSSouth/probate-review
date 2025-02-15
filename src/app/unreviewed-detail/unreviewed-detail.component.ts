@@ -349,7 +349,23 @@ export class UnreviewedDetailComponent implements OnInit {
   }
 
   checkRow() {
-    this.isLineChecked = this.recordsChecked() > 0;
+    this.selectedLines = [];
+
+    if (this.checkBoxes && this.record?.lineItems?.items) {
+      const checkBoxArray = this.checkBoxes.toArray();
+      const lineItems = this.record.lineItems.items;
+
+      for (let i = 0; i < checkBoxArray.length; i++) {
+        if (checkBoxArray[i].checked) {
+          const item = lineItems[i];
+          if (item) { 
+            this.selectedLines.push(item);
+          }
+        }
+      }
+    }
+
+    this.isLineChecked = this.selectedLines.length > 0;
   }
 
   checkedCheckBoxesFilterFunction(checkBox: MatCheckbox): boolean {
