@@ -340,13 +340,6 @@ export class UnreviewedDetailComponent implements OnInit {
     this.isDirty = true;
   }
 
-  recordsChecked(): number {
-    return this.checkBoxes
-      ? (this.checkBoxes as QueryList<MatCheckbox>).filter(
-          (c: MatCheckbox) => c.checked == true
-        ).length
-      : 0;
-  }
 
   checkRow() {
     this.selectedLines = [];
