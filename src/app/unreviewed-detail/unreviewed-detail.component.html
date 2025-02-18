@@ -80,12 +80,23 @@
           >
             Back to List
           </button>
-          <mat-checkbox [(ngModel)]="isReviewed" (ngModelChange)="onReviewedChange($event)" color="primary"
-            >{{reviewedCheckBoxText}}</mat-checkbox
+          <button
+            mat-raised-button
+            class="form-button"
+            color="primary"
+            (click)="toggleAllBoundingBoxes()"
+          >
+            Show bounding boxes
+          </button>
+
+          <mat-checkbox
+            [(ngModel)]="isReviewed"
+            (ngModelChange)="onReviewedChange($event)"
+            color="primary"
+            >{{ reviewedCheckBoxText }}</mat-checkbox
           >
         </div>
         <div *ngIf="record != null" class="scrollable-container" cdk-scrollable>
-
           <table
             [cdkDropListAutoScrollStep]="35"
             mat-table
