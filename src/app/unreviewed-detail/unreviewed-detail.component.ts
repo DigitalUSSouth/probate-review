@@ -227,6 +227,8 @@ export class UnreviewedDetailComponent implements OnInit {
   isSelecting = false;
   isAdjustingBoundingBox = false;
   isSplitting = false;
+  showingAllBoundingBoxes = false;
+
 
   // Image
   osd?: OpenSeadragon.Viewer;
@@ -295,6 +297,7 @@ export class UnreviewedDetailComponent implements OnInit {
   existingLineIds = new Set<string>();
   updatedLineIds = new Set<string>();
   deletedLineIds = new Set<string>();
+  allBoxOverlayIds: string[] = [];
 
   // User
   user?: AuthUser;
@@ -2318,6 +2321,40 @@ export class UnreviewedDetailComponent implements OnInit {
           lowerTitle: l.lowerTitle,
         }))
       : [];
+  }
+
+  toggleAllBoundingBoxes() {
+    this.showingAllBoundingBoxes
+      ? this.hideAllBoundingBoxes()
+      : this.showAllBoundingBoxes();
+
+    this.showingAllBoundingBoxes = !this.showingAllBoundingBoxes;
+  }
+
+  private showAllBoundingBoxes() {
+    this.osd?.clearOverlays();
+
+    for (const lineItem of this.record?.lineItems?.items ?? []) {
+      if (lineItem) {
+        const overlayId = `boundingBox-${lineItem.id}`;
+        const overlayElem = this.createOverlayElement(
+          overlayId,
+          'highlighted-line'
+        );
+        const rect = this.texRect2osdRect(lineItem.boundingBox!);
+
+        this.allBoxOverlayIds.push(overlayId);
+
+        this.osd?.addOverlay(overlayElem, rect);
+      }
+    }
+  }
+
+  private hideAllBoundingBoxes() {
+    for (const overlayId of this.allBoxOverlayIds) {
+      this.osd?.removeOverlay(overlayId);
+    }
+    this.allBoxOverlayIds = [];
   }
 
   async save() {
