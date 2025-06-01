@@ -46,18 +46,7 @@ export class SearchResultsComponent implements OnInit {
           title: {
             contains: q
           }
-        },
-        {
-          appraiser: {
-            contains: q
-          }
-        },
-        {
-          witness: {
-            contains: q
-          }
         }
-
       ]
     };
 
