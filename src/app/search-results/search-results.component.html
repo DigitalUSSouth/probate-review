@@ -1,4 +1,8 @@
-<div class="table-container">
+<div *ngIf="loading" class="loading-container" style="display: flex; flex-direction: column; align-items: center; margin: 2em 0;">
+  <mat-spinner></mat-spinner>
+  <span style="margin-top: 1em;">Loading search results...</span>
+</div>
+<div *ngIf="!loading" class="table-container">
   <table mat-table [dataSource]="records!" class="mat-elevation-z8">
     <!--- Note that these columns can be defined in any order.
             The actual rendered columns are set as a property on the row definition" -->
@@ -32,6 +36,7 @@
   </table>
 </div>
 <mat-paginator
+  *ngIf="!loading"
   (page)="handlePageEvent($event)"
   [length]="length"
   [pageSize]="pageSize"
