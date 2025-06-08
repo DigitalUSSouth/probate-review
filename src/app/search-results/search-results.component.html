@@ -2,6 +2,9 @@
   <mat-spinner></mat-spinner>
   <span style="margin-top: 1em;">Loading search results...</span>
 </div>
+<div *ngIf="warning" class="warning-message" style="color: orange; margin-bottom: 1em;">
+  {{ warning }}
+</div>
 <div *ngIf="!loading" class="table-container">
   <table mat-table [dataSource]="records!" class="mat-elevation-z8">
     <!--- Note that these columns can be defined in any order.
