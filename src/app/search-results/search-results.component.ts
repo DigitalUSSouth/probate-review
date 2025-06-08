@@ -14,6 +14,7 @@ export class SearchResultsComponent implements OnInit {
   records?: ProbateRecord[];
   documents?: Document[];
   loading = false;
+  warning: string | null = null;
   // MatPaginator Inputs
   length = 50;
   pageSize = 100;
@@ -25,6 +26,7 @@ export class SearchResultsComponent implements OnInit {
   recordNextToken: string | undefined;
   lineItemNextToken: string | undefined;
   recordIdsToFetch = new Set<string>();
+  readonly MAX_RESULTS = 2000;
   constructor(private route: ActivatedRoute, private probateRecordService: APIService) { }
 
   ngOnInit(): void {
@@ -39,10 +41,10 @@ export class SearchResultsComponent implements OnInit {
 
   async fetchRcords(): Promise<void> {
     this.loading = true;
+    this.warning = null;
     try {
       const q = decodeURIComponent(String(this.route.snapshot.paramMap.get('q')));
       console.log(q);
-      // let filter: ModelProbateRecordFilterInput;
       let probateFilter: ModelProbateRecordFilterInput = {
         or: [
           {
@@ -53,22 +55,26 @@ export class SearchResultsComponent implements OnInit {
         ]
       };
 
-
-      let recordsQuery: ListProbateRecordsQuery = await this.probateRecordService.ListProbateRecords(undefined, probateFilter, this.pageSize, this.recordNextToken);
-      console.log(recordsQuery);
-      console.log(recordsQuery!.items);
-      this.records = recordsQuery!.items!.map(x => x as ProbateRecord);
+      let allRecords: ProbateRecord[] = [];
+      let nextToken: string | undefined = undefined;
+      let totalFetched = 0;
+      do {
+        let recordsQuery: ListProbateRecordsQuery = await this.probateRecordService.ListProbateRecords(undefined, probateFilter, this.pageSize, nextToken);
+        const items = (recordsQuery!.items || []).map(x => x as ProbateRecord);
+        allRecords = allRecords.concat(items);
+        totalFetched += items.length;
+        nextToken = recordsQuery.nextToken ? recordsQuery.nextToken : undefined;
+        if (totalFetched >= this.MAX_RESULTS) {
+          this.warning = `Showing first ${this.MAX_RESULTS} results. Please refine your search.`;
+          break;
+        }
+      } while (nextToken);
+      this.records = allRecords.slice(0, this.MAX_RESULTS);
       this.length = this.records.length;
 
-      this.recordNextToken = (recordsQuery.nextToken) ? recordsQuery.nextToken : undefined;
-
-      let ids = await this.fetchLineItems(q, this.pageSize - this.records.length);
-      // do not fetch records we have already fetched
+      
+      let ids = await this.fetchLineItems(q, this.MAX_RESULTS - this.records.length);
       ids = ids.filter(r => !(this.records!.map(id => id.id)).includes(r));
-
-      // fetch probate ids
-      console.log('ids to fetch');
-      console.log(ids);
       if (ids.length) {
         probateFilter = (ids.length > 1) ?
             this.getIdFilterFromArray(ids)
@@ -78,12 +84,21 @@ export class SearchResultsComponent implements OnInit {
             eq: ids[0]
           }
         }
-        console.log('filter');
-        console.log(probateFilter);
-        recordsQuery = await this.probateRecordService.ListProbateRecords(undefined, probateFilter, this.pageSize, this.recordNextToken);
-        console.log(recordsQuery);
-        console.log(recordsQuery!.items);
-        this.records = this.records.concat(recordsQuery!.items.map(x => x as ProbateRecord));
+        let allExtraRecords: ProbateRecord[] = [];
+        let extraNextToken: string | undefined = undefined;
+        let extraFetched = 0;
+        do {
+          let recordsQuery: ListProbateRecordsQuery = await this.probateRecordService.ListProbateRecords(undefined, probateFilter, this.pageSize, extraNextToken);
+          const items = (recordsQuery!.items || []).map(x => x as ProbateRecord);
+          allExtraRecords = allExtraRecords.concat(items);
+          extraFetched += items.length;
+          extraNextToken = recordsQuery.nextToken ? recordsQuery.nextToken : undefined;
+          if (this.records!.length + allExtraRecords.length >= this.MAX_RESULTS) {
+            this.warning = `Showing first ${this.MAX_RESULTS} results. Please refine your search.`;
+            break;
+          }
+        } while (extraNextToken);
+        this.records = this.records.concat(allExtraRecords).slice(0, this.MAX_RESULTS);
         this.recordIdsToFetch.clear();
       }
       this.loading = false;
@@ -95,8 +110,6 @@ export class SearchResultsComponent implements OnInit {
 
   async fetchLineItems(q: string, maxCount: number): Promise<string[]> {
     let recordIdsToFetch = new Set<string>();
-
-    // filter our line items
     let lineItemFilter: ModelLineItemFilterInput = {
       or: [
         {
@@ -116,32 +129,28 @@ export class SearchResultsComponent implements OnInit {
         }
       ]
     };
-
-    console.log('line item filter');
-    console.log(lineItemFilter);
-
-
     let lineItemQuery: ListLineItemsQuery;
     let itemCount = 0;
+    let nextToken: string | undefined = undefined;
+    let totalFetched = 0;
     do {
       try {
-    lineItemQuery = await this.probateRecordService.ListLineItems(lineItemFilter, maxCount, this.lineItemNextToken);
-    console.log(lineItemQuery);
-    itemCount = lineItemQuery.items.length;
-    for (const lineItem of lineItemQuery.items) {
-      recordIdsToFetch.add(lineItem!.probateId);
-      this.lineItemNextToken = (lineItemQuery.nextToken) ? lineItemQuery.nextToken : undefined;
-    }
-  }
-  catch(e) {
-    console.log(e);
-    break;
-  }
-  } while(itemCount > 0);
-
-
-
-    return Array.from(recordIdsToFetch.values());
+        lineItemQuery = await this.probateRecordService.ListLineItems(lineItemFilter, this.pageSize, nextToken);
+        itemCount = lineItemQuery.items.length;
+        for (const lineItem of lineItemQuery.items) {
+          recordIdsToFetch.add(lineItem!.probateId);
+        }
+        nextToken = lineItemQuery.nextToken ? lineItemQuery.nextToken : undefined;
+        totalFetched += itemCount;
+        if (totalFetched >= this.MAX_RESULTS) {
+          break;
+        }
+      } catch(e) {
+        console.log(e);
+        break;
+      }
+    } while(itemCount > 0 && nextToken);
+    return Array.from(recordIdsToFetch.values()).slice(0, this.MAX_RESULTS);
   }
 
   handlePageEvent(event: PageEvent) {
