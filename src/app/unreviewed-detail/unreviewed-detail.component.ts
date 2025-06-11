@@ -24,7 +24,7 @@ import {
   ModelSortDirection,
 } from '../API.service';
 import data from '../categories.json';
-import { Subject, from, fromEvent, takeUntil } from 'rxjs';
+import { Subject, from, takeUntil, interval } from 'rxjs';
 import { ContextMenuModel } from '../interfaces/context-menu-model';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -306,6 +306,7 @@ export class UnreviewedDetailComponent implements OnInit {
   // UI mode
 
   private unsubscriber: Subject<void> = new Subject<void>();
+  isSaving = false; 
 
   constructor(
     public authenticator: AuthenticatorService,
@@ -320,7 +321,16 @@ export class UnreviewedDetailComponent implements OnInit {
     Amplify.configure(awsExports);
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // Start an autosave timer that attempts to save every minute if there are unsaved changes.
+    interval(60000)
+      .pipe(takeUntil(this.unsubscriber))
+      .subscribe(() => {
+        if (this.isDirty && !this.isSaving) {
+          this.save(false);
+        }
+      });
+  }
 
   ngOnDestroy(): void {
     this.unsubscriber.next();
@@ -2357,7 +2367,11 @@ export class UnreviewedDetailComponent implements OnInit {
     this.allBoxOverlayIds = [];
   }
 
-  async save() {
+  async save(showAlert: boolean = true) {
+    if (this.isSaving) {
+      return;
+    }
+    this.isSaving = true;
     try {
       console.log('starting save');
       // create line items
@@ -2425,13 +2439,19 @@ export class UnreviewedDetailComponent implements OnInit {
       this.isReviewed = false;
       this.isDirty = false;
       console.log(response);
-      alert('record updated');
-    } catch (e) {
-      if (e instanceof Error) {
-        alert((e as Error).message);
-      } else {
-        alert('An error has occurred during save');
+      if (showAlert) {
+        alert('record updated');
       }
+    } catch (e) {
+      if (showAlert) {
+        if (e instanceof Error) {
+          alert((e as Error).message);
+        } else {
+          alert('An error has occurred during save');
+        }
+      }
+    } finally {
+      this.isSaving = false;
     }
   }
 }
